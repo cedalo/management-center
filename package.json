@@ -1,0 +1,18 @@
+{
+  "name": "mosquitto-ui",
+  "version": "1.0.0",
+  "description": "The web UI for Mosquitto",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cedalo/mosquitto-ui.git"
+  },
+  "author": "Cedalo AG",
+  "bugs": {
+    "url": "https://github.com/cedalo/mosquitto-ui/issues"
+  },
+  "homepage": "https://github.com/cedalo/mosquitto-ui#readme"
+}
