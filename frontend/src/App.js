@@ -8,7 +8,6 @@ import Button from "@material-ui/core/Button";
 import MenuIcon from "@material-ui/icons/Menu";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
@@ -139,7 +138,6 @@ export default function App() {
   return (
     <Router>
       <div className={classes.root}>
-        <CssBaseline />
         <AppBar
           position="fixed"
           className={clsx(classes.appBar, {
