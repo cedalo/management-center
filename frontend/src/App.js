@@ -26,6 +26,8 @@ import Groups from "./components/Groups";
 import Policies from "./components/Policies";
 import Settings from "./components/Settings";
 import System from "./components/System";
+import Users from "./components/Users";
+
 import {
   BrowserRouter as Router,
   Switch,
@@ -209,8 +211,9 @@ export default function App() {
         </Drawer>
         <Container className={classes.container}>
           <Switch>
-            <Route path="/users">Users</Route>
-            <Route path="/system">System</Route>
+            <Route path="/users">
+				<Users />
+			</Route>
             <Route path="/groups">
 				<Groups />
 			</Route>
