@@ -22,6 +22,7 @@ import PolicyIcon from "@material-ui/icons/Policy";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Container from "@material-ui/core/Container";
+import Groups from "./components/Groups";
 import {
   BrowserRouter as Router,
   Switch,
@@ -210,6 +211,9 @@ export default function App() {
             <Route path="/policies">Policies</Route>
             <Route path="/system">System</Route>
             <Route path="/settings">Settings</Route>
+            <Route path="/groups">
+				<Groups />
+			</Route>
           </Switch>
         </Container>
       </div>
