@@ -25,6 +25,7 @@ import Container from "@material-ui/core/Container";
 import Groups from "./components/Groups";
 import Policies from "./components/Policies";
 import Settings from "./components/Settings";
+import System from "./components/System";
 import {
   BrowserRouter as Router,
   Switch,
@@ -215,6 +216,9 @@ export default function App() {
 			</Route>
             <Route path="/policies">
 				<Policies />
+			</Route>
+			<Route path="/system">
+				<System />
 			</Route>
             <Route path="/settings">
 				<Settings />
