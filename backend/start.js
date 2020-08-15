@@ -5,8 +5,7 @@ const client = mqtt.connect(process.env.MOSQUITTO_URL, {
 });
 client.on("connect", () => {
   client.subscribe("$SYS/#", (error) => {
-    if (!error) {
-    } else {
+    if (error) {
       console.error(error);
     }
   });
