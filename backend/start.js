@@ -34,6 +34,12 @@ const updateSystemTopics = (system, topic, message) => {
   return system;
 };
 
+const handleClientMQTTMessage = message => {
+	const { command } = message;
+	console.log('Sending command to Mosquitto');
+	console.log(command);
+}
+
 const handleClientMessage = message => {
 	switch(message.type) {
 		case 'mqtt': 
