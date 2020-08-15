@@ -34,6 +34,16 @@ const updateSystemTopics = (system, topic, message) => {
   return system;
 };
 
+const handleClientMessage = message => {
+	switch(message.type) {
+		case 'mqtt': 
+			handleClientMQTTMessage(message);
+			break;
+		default:
+			break;
+	}
+}
+
 client.on("message", (topic, message) => {
   updateSystemTopics(system, topic, message);
   console.log(JSON.stringify(system, null, 2));
@@ -43,7 +53,12 @@ client.on("message", (topic, message) => {
 
 wss.on("connection", (ws) => {
   ws.on("message", (message) => {
-    console.log("received: %s", message);
+	  try {
+		  const messageObject = JSON.parse(message);
+		  handleClientMessage(messageObject);
+	  } catch (error) {
+		  console.error(error);
+	  }
   });
 
   ws.send(JSON.stringify(system));
