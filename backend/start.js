@@ -1,7 +1,13 @@
+const WebSocket = require("ws");
 const mqtt = require("mqtt");
 const client = mqtt.connect(process.env.MOSQUITTO_URL, {
   username: process.env.MOSQUITTO_USERNAME || "",
   password: process.env.MOSQUITTO_PASSWORD || "",
+
+const wss = new WebSocket.Server({
+  port: 8088,
+});
+
 });
 client.on("connect", () => {
   client.subscribe("$SYS/#", (error) => {
@@ -33,4 +39,12 @@ client.on("message", (topic, message) => {
   console.log(JSON.stringify(system, null, 2));
   console.log(system.$SYS?.broker?.clients?.connected);
   client.end();
+});
+
+wss.on("connection", (ws) => {
+  ws.on("message", (message) => {
+    console.log("received: %s", message);
+  });
+
+  ws.send(system);
 });
