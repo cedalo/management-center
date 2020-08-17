@@ -16,6 +16,5 @@
   },
   "homepage": "https://github.com/cedalo/mosquitto-ui#readme",
   "dependencies": {
-    "react-router-dom": "^5.2.0"
   }
 }
