@@ -12,8 +12,10 @@
   "dependencies": {
     "@material-ui/core": "latest",
     "@material-ui/icons": "^4.9.1",
+    "chart.js": "^2.9.3",
     "clsx": "latest",
     "react": "latest",
+    "react-chartjs-2": "^2.10.0",
     "react-dom": "latest",
     "react-redux": "^7.2.1",
     "react-router-dom": "^5.2.0",
