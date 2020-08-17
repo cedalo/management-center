@@ -1,5 +1,5 @@
 {
-  "name": "mosquitto-ui",
+  "name": "@cedalo/mosquitto-ui",
   "version": "1.0.0",
   "description": "The web UI for Mosquitto",
   "main": "index.js",
