@@ -1,5 +1,5 @@
 {
-  "name": "create-react-app",
+  "name": "@cedalo/mosquitto-ui-frontend",
   "version": "4.0.0",
   "private": true,
   "scripts": {
