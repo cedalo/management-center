@@ -1,7 +1,7 @@
 import React, { createContext } from 'react'
 import WS_BASE from './config';
 import { useDispatch } from 'react-redux';
-import { updateSystemStatus } from '../actions/actions';
+import { updateSystemStatus, updateTopicTree } from '../actions/actions';
 
 const WebSocketContext = createContext(null)
 
@@ -26,10 +26,13 @@ export default ({ children }) => {
 
         socket.onmessage = (msg) => {
 			try {
-				const payload = JSON.parse(msg.data);
+				const messageObject = JSON.parse(msg.data);
 				// TODO: handle type of message
-				console.log(payload);
-				dispatch(updateSystemStatus(payload));
+				if (messageObject.type === 'system_status') {
+					dispatch(updateSystemStatus(messageObject.payload));
+				} else if (messageObject.type === 'topic_tree') {
+					dispatch(updateTopicTree(messageObject.payload));
+				} 
 			} catch (error) {
 				//TODO: handle error
 			}
