@@ -146,6 +146,7 @@ export default function App() {
   return (
     <Router>
 		<Provider store={store}>
+		<WebSocketProvider>
       <div className={classes.root}>
         <AppBar
           position="fixed"
@@ -251,6 +252,7 @@ export default function App() {
           </Switch>
         </Container>
       </div>
+	  </WebSocketProvider>
 	  </Provider>
     </Router>
   );
