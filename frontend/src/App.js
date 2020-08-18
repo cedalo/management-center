@@ -195,6 +195,10 @@ export default function App() {
           </List>
           <Divider />
           <List>
+            <ListItemLink to="/streams" primary="Streams" icon={<StreamsIcon />} />
+          </List>
+          <Divider />
+          <List>
             <ListItemLink
               to="/system"
               primary="System Status"
@@ -222,6 +226,9 @@ export default function App() {
 			</Route>
             <Route path="/policies">
 				<Policies />
+			</Route>
+            <Route path="/streams">
+				<Streams />
 			</Route>
 			<Route path="/system">
 				<System />
