@@ -34,38 +34,76 @@ const updateSystemTopics = (system, topic, message) => {
   return system;
 };
 
-const handleClientMQTTMessage = message => {
-	const { command } = message;
-	console.log('Sending command to Mosquitto');
-	console.log(command);
+const topicTree = {};
+
+const updateTopicTree = (topicTree, topic, message) => {
+	const parts = topic.split("/");
+	let current = topicTree;
+	parts.forEach((part, index) => {
+	  if (!current[part]) {
+		current[part] = {};
+	  }
+	  current = current[part];
+	});
+	return topicTree;
+  };
+
+const handleClientMosquittoMessage = (message) => {
+  const { command } = message;
+  console.log("Sending command to Mosquitto");
+  console.log(command);
+};
+
+const handleClientMessage = (message) => {
+  switch (message.type) {
+    case "mosquitto":
+      handleClientMosquittoMessage(message);
+      break;
+    default:
+      break;
+  }
+};
+
+const sendSystemStatusUpdate = () => {
+	const messageObject = {
+		type: 'system_status',
+		payload:system
+	}
+	notifyWebSocketClients(messageObject);	
 }
 
-const handleClientMessage = message => {
-	switch(message.type) {
-		case 'mqtt': 
-			handleClientMQTTMessage(message);
-			break;
-		default:
-			break;
+const sendTopicTreeUpdate = () => {
+	const messageObject = {
+		type: 'topic_tree',
+		payload: topicTree
 	}
+	notifyWebSocketClients(messageObject);	
 }
+
+const notifyWebSocketClients = (message) => {
+  wss.clients.forEach((client) => {
+    client.send(JSON.stringify(message));
+  });
+};
 
 client.on("message", (topic, message) => {
-  updateSystemTopics(system, topic, message);
-  console.log(JSON.stringify(system, null, 2));
-  console.log(system.$SYS?.broker?.clients?.connected);
-  client.end();
+	if (topic.startsWith("$SYS")) {
+		updateSystemTopics(system, topic, message);	
+		sendSystemStatusUpdate();
+	} else {
+		updateTopicTree(topicTree, topic, message);
+		sendTopicTreeUpdate();
+	}
 });
 
 wss.on("connection", (ws) => {
   ws.on("message", (message) => {
-	  try {
-		  const messageObject = JSON.parse(message);
-		  handleClientMessage(messageObject);
-	  } catch (error) {
-		  console.error(error);
-	  }
+    try {
+      const messageObject = JSON.parse(message);
+	  handleClientMessage(messageObject);
+    } catch (error) {
+      console.error(error);
+    }
   });
 
-  ws.send(JSON.stringify(system));
 });
