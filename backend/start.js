@@ -111,4 +111,5 @@ wss.on("connection", (ws) => {
     }
   });
 
+  sendSystemStatusUpdate();
 });
