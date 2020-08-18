@@ -12,6 +12,7 @@
   "dependencies": {
     "@material-ui/core": "latest",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "chart.js": "^2.9.3",
     "clsx": "latest",
     "react": "latest",
