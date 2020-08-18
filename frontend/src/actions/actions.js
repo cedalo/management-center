@@ -6,3 +6,10 @@ export function updateSystemStatus(update){
         update
     }
 }
+
+export function updateTopicTree(update){
+    return {
+        type: ActionTypes.UPDATE_TOPIC_TREE,
+        update
+    }
+}
