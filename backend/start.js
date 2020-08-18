@@ -15,6 +15,11 @@ client.on("connect", () => {
       console.error(error);
     }
   });
+  client.subscribe("#", (error) => {
+    if (error) {
+      console.error(error);
+    }
+  });
 });
 
 const system = {};
