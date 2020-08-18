@@ -1,5 +1,6 @@
 import React from "react";
 import clsx from "clsx";
+import { Provider, useSelector, useDispatch } from 'react-redux';
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -20,12 +21,19 @@ import PersonIcon from "@material-ui/icons/Person";
 import PolicyIcon from "@material-ui/icons/Policy";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
 import SettingsIcon from "@material-ui/icons/Settings";
+import SvgIcon from '@material-ui/core/SvgIcon';
+import StreamsIcon from '@material-ui/icons/SettingsInputAntenna';
+import TopicTreeIcon from '@material-ui/icons/AccountTree';
 import Container from "@material-ui/core/Container";
 import Groups from "./components/Groups";
 import Policies from "./components/Policies";
 import Settings from "./components/Settings";
+import Streams from "./components/Streams";
 import System from "./components/System";
+import TopicTree from "./components/TopicTree";
 import Users from "./components/Users";
+import store from "./store";
+import WebSocketProvider, { WebSocketContext } from './websockets/WebSocket';
 
 import {
   BrowserRouter as Router,
