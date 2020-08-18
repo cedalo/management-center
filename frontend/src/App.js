@@ -201,6 +201,11 @@ export default function App() {
               icon={<EqualizerIcon />}
             />
             <ListItemLink
+              to="/topics"
+              primary="Topic Tree"
+              icon={<TopicTreeIcon />}
+            />
+            <ListItemLink
               to="/settings"
               primary="Settings"
               icon={<SettingsIcon />}
@@ -220,6 +225,9 @@ export default function App() {
 			</Route>
 			<Route path="/system">
 				<System />
+			</Route>
+            <Route path="/topics">
+				<TopicTree />
 			</Route>
             <Route path="/settings">
 				<Settings />
