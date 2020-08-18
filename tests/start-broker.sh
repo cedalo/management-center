@@ -1,0 +1,1 @@
+docker run -it -p 1885:1883 -p 9001:9001 -v $(pwd)/config:/mosquitto/config eclipse-mosquitto
