@@ -145,6 +145,7 @@ export default function App() {
 
   return (
     <Router>
+		<Provider store={store}>
       <div className={classes.root}>
         <AppBar
           position="fixed"
@@ -250,6 +251,7 @@ export default function App() {
           </Switch>
         </Container>
       </div>
+	  </Provider>
     </Router>
   );
 }
