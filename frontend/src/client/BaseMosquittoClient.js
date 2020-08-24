@@ -140,6 +140,62 @@ module.exports = class BaseMosquittoClient {
 		return Promise.resolve({});
 	}
 
+	/**
+	 * ******************************************************************************************
+	 * Methods for user and user group management
+	 * ******************************************************************************************
+	 */
+
+	async addUser(username, password, clientID, policyName) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async deleteUser(username) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async setUserPassword(username, password) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async addGroup(groupname, policyName) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async addUserToGroup(username, group) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async removeUserFromGroup(username, group) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async listUsers(verbose = false) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async listGroups(verbose = false) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async listGroupUsers(group) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async kickClient(username, clientID) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
 	on(event, listener) {
 		let listeners = this._eventListeners.get(event);
 		if (!listeners) {
