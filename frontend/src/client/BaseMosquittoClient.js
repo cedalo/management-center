@@ -248,6 +248,40 @@ module.exports = class BaseMosquittoClient {
 		return this._closeHandler;
 	}
 
+	sendRequest(request, timeout = this._timeout) {
+		/* eslint-disable */
+		this.logger.debug('Sending request to Mosquitto proxy', request);
+		return new Promise((resolve, reject) => {
+			const timeoutId = setTimeout(
+				() => timeoutHandler(request.id, this._requests),
+				timeout
+			);
+			this._requests.set(request.id, {
+				resolve,
+				reject,
+				timeoutId,
+				request
+			});
+			return new Promise((resolve /* , reject */) => {
+				this._ws.send(JSON.stringify(request));
+				resolve();
+			}).catch((error) => {
+				this.logger.error(
+					'Sending request to Mosquitto proxy',
+					request
+				);
+				this.logger.error(
+					`Error while communicating with Mosquitto proxy while executing request '${
+						request
+					}'`,
+					error
+				);
+				throw error;
+			});
+		});
+		/* eslint-enable */
+	}
+
 	// abstract method to be overwritten in subclass
 	_connectSocketServer() {
 		return Promise.reject(
