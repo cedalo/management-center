@@ -3,6 +3,15 @@ const createError = (code, message) => ({
 	message
 });
 
+
+const deletePendingRequest = (requestId, requests) => {
+	const request = requests.get(requestId);
+	if (request) {
+		clearTimeout(request.timeoutId);
+		requests.delete(requestId);
+	}
+	return request;
+};
 module.exports = class BaseMosquittoClient {
 	constructor({ name, logger, defaultListener } = {}) {
 		this.name = name || 'Default base Mosquitto client';
