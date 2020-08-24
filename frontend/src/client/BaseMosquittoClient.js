@@ -391,13 +391,13 @@ module.exports = class BaseMosquittoClient {
 	_handleSocketMessage(message) {
 		const parsedMessage = JSON.parse(message);
 		if (parsedMessage.type === 'response') {
-			const request = deletePendingRequest(message.requestId, this._requests);
+			const request = deletePendingRequest(parsedMessage.requestId, this._requests);
 			if (request) {
-				if (message.type === 'response') {
-					this.logger.debug('Got response from Mosquitto proxy', message);
-					request.resolve(message);
+				if (parsedMessage.type === 'response') {
+					this.logger.debug('Got response from Mosquitto proxy', parsedMessage);
+					request.resolve(parsedMessage);
 				} else {
-					request.reject(message);
+					request.reject(parsedMessage);
 				}
 			}
 		} else if (parsedMessage.type === 'event') {
