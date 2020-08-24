@@ -37,6 +37,7 @@ module.exports = class BaseMosquittoClient {
 		this._closeHandler = () => this.logger.info('Close Gateway Client');
 		this._eventListeners = new Map();
 		this._isConnected = false;
+		this._requests = new Map();
 	}
 
 	// eslint-disable-next-line consistent-return
