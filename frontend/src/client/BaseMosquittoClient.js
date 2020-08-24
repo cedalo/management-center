@@ -5,7 +5,7 @@ const createError = (code, message) => ({
 
 module.exports = class BaseMosquittoClient {
 	constructor({ name, logger, defaultListener } = {}) {
-		this.name = name || 'Default base gateway client';
+		this.name = name || 'Default base Mosquitto client';
 		this._logger = logger || {
 			log() {},
 			info() {},
