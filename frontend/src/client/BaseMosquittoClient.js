@@ -38,6 +38,9 @@ module.exports = class BaseMosquittoClient {
 		this._eventListeners = new Map();
 		this._isConnected = false;
 		this._requests = new Map();
+		// TODO: make timeout configurable
+		// request timeout in ms:
+		this._timeout = 20000;
 	}
 
 	// eslint-disable-next-line consistent-return
