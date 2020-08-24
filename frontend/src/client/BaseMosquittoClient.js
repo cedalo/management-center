@@ -12,6 +12,14 @@ const deletePendingRequest = (requestId, requests) => {
 	}
 	return request;
 };
+const timeoutHandler = (requestId, requests) => {
+	const { reject } = deletePendingRequest(requestId, requests);
+	reject({
+		message: 'BaseMosquittoClient: Timeout',
+		requestId
+	});
+};
+
 module.exports = class BaseMosquittoClient {
 	constructor({ name, logger, defaultListener } = {}) {
 		this.name = name || 'Default base Mosquitto client';
