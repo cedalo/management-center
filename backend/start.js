@@ -1,14 +1,24 @@
 const WebSocket = require("ws");
 const mqtt = require("mqtt");
-const client = mqtt.connect(process.env.MOSQUITTO_URL, {
-  username: process.env.MOSQUITTO_USERNAME || "",
-  password: process.env.MOSQUITTO_PASSWORD || "",
+
+const MOSQUITTO_PROXY_PORT = process.env.MOSQUITTO_PROXY_PORT || 8088;
 
 const wss = new WebSocket.Server({
-  port: 8088,
+  port: MOSQUITTO_PROXY_PORT,
+});
+console.log(
+  `Started Mosquitto proxy at http://localhost:${MOSQUITTO_PROXY_PORT}`
+);
+
+const MOSQUITTO_URL = process.env.MOSQUITTO_URL || "mqtt://localhost:1885";
+const MOSQUITTO_USERNAME = process.env.MOSQUITTO_USERNAME || "cedalo";
+const MOSQUITTO_PASSWORD = process.env.MOSQUITTO_PASSWORD || "r35aJkR!&dz";
+
+const client = mqtt.connect(MOSQUITTO_URL, {
+  username: MOSQUITTO_USERNAME,
+  password: MOSQUITTO_PASSWORD,
 });
 
-});
 client.on("connect", () => {
   client.subscribe("$SYS/#", (error) => {
     if (error) {
