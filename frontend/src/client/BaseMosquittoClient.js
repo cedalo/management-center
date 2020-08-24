@@ -34,7 +34,7 @@ module.exports = class BaseMosquittoClient {
 			error() {}
 		};
 		this._eventHandler = (event) => this.logger.info(event);
-		this._closeHandler = () => this.logger.info('Close Gateway Client');
+		this._closeHandler = () => this.logger.info('Close Mosquitto Proxy Client');
 		this._eventListeners = new Map();
 		this._isConnected = false;
 		this._requests = new Map();
