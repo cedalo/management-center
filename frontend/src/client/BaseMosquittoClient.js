@@ -256,7 +256,14 @@ module.exports = class BaseMosquittoClient {
 		return this._closeHandler;
 	}
 
-	sendRequest(request, timeout = this._timeout) {
+	async sendCommand(command, id = createID()) {
+		return this.sendRequest({
+			id,
+			command
+		})
+	}
+
+	async sendRequest(request, timeout = this._timeout) {
 		/* eslint-disable */
 		this.logger.debug('Sending request to Mosquitto proxy', request);
 		return new Promise((resolve, reject) => {
