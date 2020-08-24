@@ -42,16 +42,16 @@ const updateSystemTopics = (system, topic, message) => {
 const topicTree = {};
 
 const updateTopicTree = (topicTree, topic, message) => {
-	const parts = topic.split("/");
-	let current = topicTree;
-	parts.forEach((part, index) => {
-	  if (!current[part]) {
-		current[part] = {};
-	  }
-	  current = current[part];
-	});
-	return topicTree;
-  };
+  const parts = topic.split("/");
+  let current = topicTree;
+  parts.forEach((part, index) => {
+    if (!current[part]) {
+      current[part] = {};
+    }
+    current = current[part];
+  });
+  return topicTree;
+};
 
 const handleCommandMessage = async (message) => {
   const { command } = message;
@@ -82,20 +82,20 @@ const handleClientMessage = async (message, client) => {
 };
 
 const sendSystemStatusUpdate = () => {
-	const messageObject = {
-		type: 'system_status',
-		payload:system
-	}
-	notifyWebSocketClients(messageObject);	
-}
+  const messageObject = {
+    type: "system_status",
+    payload: system,
+  };
+  notifyWebSocketClients(messageObject);
+};
 
 const sendTopicTreeUpdate = () => {
-	const messageObject = {
-		type: 'topic_tree',
-		payload: topicTree
-	}
-	notifyWebSocketClients(messageObject);	
-}
+  const messageObject = {
+    type: "topic_tree",
+    payload: topicTree,
+  };
+  notifyWebSocketClients(messageObject);
+};
 
 const notifyWebSocketClients = (message) => {
   wss.clients.forEach((client) => {
@@ -104,13 +104,13 @@ const notifyWebSocketClients = (message) => {
 };
 
 client.on("message", (topic, message) => {
-	if (topic.startsWith("$SYS")) {
-		updateSystemTopics(system, topic, message);	
-		sendSystemStatusUpdate();
-	} else {
-		updateTopicTree(topicTree, topic, message);
-		sendTopicTreeUpdate();
-	}
+  if (topic.startsWith("$SYS")) {
+    updateSystemTopics(system, topic, message);
+    sendSystemStatusUpdate();
+  } else {
+    updateTopicTree(topicTree, topic, message);
+    sendTopicTreeUpdate();
+  }
 });
 
 wss.on("connection", (ws) => {
