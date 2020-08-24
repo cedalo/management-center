@@ -1,5 +1,7 @@
 const WebSocket = require("ws");
 const mqtt = require("mqtt");
+const system = {};
+const topicTree = {};
 
 const MOSQUITTO_PROXY_PORT = process.env.MOSQUITTO_PROXY_PORT || 8088;
 
@@ -33,7 +35,16 @@ client.on("connect", () => {
   });
 });
 
-const system = {};
+client.on("message", (topic, message) => {
+	if (topic.startsWith("$SYS")) {
+	  updateSystemTopics(system, topic, message);
+	  sendSystemStatusUpdate();
+	} else {
+	  updateTopicTree(topicTree, topic, message);
+	  sendTopicTreeUpdate();
+	}
+  });
+
 
 const updateSystemTopics = (system, topic, message) => {
   const parts = topic.split("/");
@@ -50,7 +61,6 @@ const updateSystemTopics = (system, topic, message) => {
   return system;
 };
 
-const topicTree = {};
 
 const updateTopicTree = (topicTree, topic, message) => {
   const parts = topic.split("/");
@@ -120,16 +130,6 @@ const notifyWebSocketClients = (message) => {
     client.send(JSON.stringify(message));
   });
 };
-
-client.on("message", (topic, message) => {
-  if (topic.startsWith("$SYS")) {
-    updateSystemTopics(system, topic, message);
-    sendSystemStatusUpdate();
-  } else {
-    updateTopicTree(topicTree, topic, message);
-    sendTopicTreeUpdate();
-  }
-});
 
 wss.on("connection", (ws) => {
   ws.on("message", (message) => {
