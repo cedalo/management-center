@@ -1,7 +1,7 @@
 const BaseMosquittoClient = require('./BaseMosquittoClient');
 
 module.exports = class WebMosquittoClient extends BaseMosquittoClient {
-	constructor({ name = 'Web Gateway Client', defaultListener } = {}) {
+	constructor({ name = 'Web Mosquitto Client', defaultListener } = {}) {
 		super({ name, logger: console, defaultListener });
 	}
 
