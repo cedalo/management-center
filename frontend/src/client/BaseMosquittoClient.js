@@ -57,6 +57,89 @@ module.exports = class BaseMosquittoClient {
 		return this._logger;
 	}
 
+	/**
+	 * ******************************************************************************************
+	 * Methods for security policy management
+	 * ******************************************************************************************
+	 */
+
+	async addPolicy(policyName, policy, users, groups) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async deletePolicy(policyName) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async replacePolicy(policyName, policy, users, groups) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async getPolicy(policyName) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	// TODO: should include user as parameter
+	async setUserPolicy(policyName) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	// TODO: should include user group as parameter
+	async setGroupPolicy(policyName) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async listPolicies() {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async setUserDefaultPolicy(policyName) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async setGroupDefaultPolicy(policyName) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async addPolicyFeature(policyName,featureName) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async removePolicyFeature(policyName,featureName) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async addTopicAccessControlPublishWrite(policyName, topicFilter, maxQoS = 2, allowRetain = true, maxPayloadSize = 1000, allow = false) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async addTopicAccessControlPublishRead(policyName, topicFilter) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async addTopicAccessControlSubscribe(policyName, topicFilter, maxQoS = 2, allow = true) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
+	async addTopicAccessControlSubscribeFixed(policyName, topicFilter, maxQoS = 2, allow = true) {
+		// TODO: implement
+		return Promise.resolve({});
+	}
+
 	on(event, listener) {
 		let listeners = this._eventListeners.get(event);
 		if (!listeners) {
