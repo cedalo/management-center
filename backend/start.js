@@ -20,6 +20,7 @@ const client = mqtt.connect(MOSQUITTO_URL, {
 });
 
 client.on("connect", () => {
+  console.log(`Connected to Mosquitto at ${MOSQUITTO_URL}`);
   client.subscribe("$SYS/#", (error) => {
     if (error) {
       console.error(error);
@@ -84,6 +85,7 @@ const handleClientMessage = async (message, client) => {
         requestId: message.id,
         response,
       };
+      console.log(responseMessage);
       client.send(JSON.stringify(responseMessage));
       break;
     default:
