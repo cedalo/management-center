@@ -53,16 +53,28 @@ const updateTopicTree = (topicTree, topic, message) => {
 	return topicTree;
   };
 
-const handleClientMosquittoMessage = (message) => {
+const handleCommandMessage = async (message) => {
   const { command } = message;
   console.log("Sending command to Mosquitto");
   console.log(command);
+  // TODO: send MQTT message to Mosquitto
+  const response = {
+    done: true,
+  };
+  return response;
 };
 
-const handleClientMessage = (message) => {
+const handleClientMessage = async (message, client) => {
   switch (message.type) {
-    case "mosquitto":
-      handleClientMosquittoMessage(message);
+    case "command":
+      const response = await handleCommandMessage(message);
+      const responseMessage = {
+        type: "response",
+        command: message.command.command,
+        requestId: message.id,
+        response,
+      };
+      client.send(JSON.stringify(responseMessage));
       break;
     default:
       break;
@@ -105,7 +117,7 @@ wss.on("connection", (ws) => {
   ws.on("message", (message) => {
     try {
       const messageObject = JSON.parse(message);
-	  handleClientMessage(messageObject);
+      handleClientMessage(messageObject, ws);
     } catch (error) {
       console.error(error);
     }
