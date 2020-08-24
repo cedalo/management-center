@@ -36,7 +36,7 @@ module.exports = class BaseMosquittoClient {
 		}
 	}
 
-	reconnect() {
+	async reconnect() {
 		const socketEndpointURL = this._socketEndpointURL;
 		this.connect({ socketEndpointURL });
 	}
