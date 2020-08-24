@@ -83,16 +83,22 @@ const handleClientMessage = async (message, client) => {
 
 const sendSystemStatusUpdate = () => {
   const messageObject = {
-    type: "system_status",
-    payload: system,
+	  type: 'event',
+	  event: {
+		type: "system_status",
+		payload: system,
+	  }
   };
   notifyWebSocketClients(messageObject);
 };
 
 const sendTopicTreeUpdate = () => {
   const messageObject = {
-    type: "topic_tree",
-    payload: topicTree,
+	  type: 'event',
+	  event: {
+		type: "topic_tree",
+		payload: topicTree,
+	  }
   };
   notifyWebSocketClients(messageObject);
 };
