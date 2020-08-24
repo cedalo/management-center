@@ -1,3 +1,5 @@
+const uuid = require('uuid/v1');
+
 const createError = (code, message) => ({
 	code,
 	message
@@ -19,6 +21,8 @@ const timeoutHandler = (requestId, requests) => {
 		requestId
 	});
 };
+
+const createID = () =>  uuid();
 
 module.exports = class BaseMosquittoClient {
 	constructor({ name, logger, defaultListener } = {}) {
