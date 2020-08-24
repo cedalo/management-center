@@ -2,44 +2,40 @@ import React, { createContext } from 'react'
 import WS_BASE from './config';
 import { useDispatch } from 'react-redux';
 import { updateSystemStatus, updateTopicTree } from '../actions/actions';
+import WebMosquittoClient from '../client/WebMosquittoClient';
 
 const WebSocketContext = createContext(null)
 
 export { WebSocketContext }
 
 export default ({ children }) => {
-    let socket;
+	let client;
     let ws;
 
     const dispatch = useDispatch();
 
     const sendMessage = (roomId, message) => {
         const payload = {
-            roomId: roomId,
             data: message
-        }
-        socket.emit("event://send-message", JSON.stringify(payload));
+		}
+		console.log('sendMessage()');
     }
 
-    if (!socket) {
-        socket = new WebSocket(WS_BASE.url);
+    if (!client) {
+		// TOOD: integrate Mosquitto client
+		client = new WebMosquittoClient({ logger: console });
+		client.connect({ socketEndpointURL: WS_BASE.url });
 
-        socket.onmessage = (msg) => {
-			try {
-				const messageObject = JSON.parse(msg.data);
-				// TODO: handle type of message
-				if (messageObject.type === 'system_status') {
-					dispatch(updateSystemStatus(messageObject.payload));
-				} else if (messageObject.type === 'topic_tree') {
-					dispatch(updateTopicTree(messageObject.payload));
-				} 
-			} catch (error) {
-				//TODO: handle error
-			}
-        }
+		client.on('system_status', (message) => {
+			console.log(message);
+			dispatch(updateSystemStatus(message.payload));
+		});
+		client.on('topic_tree', (message) => {
+			dispatch(updateTopicTree(message.payload));
+		})
 
         ws = {
-            socket: socket,
+            client: client,
             sendMessage
         }
     }
