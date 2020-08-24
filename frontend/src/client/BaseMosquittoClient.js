@@ -5,7 +5,7 @@ const createError = (code, message) => ({
 	message
 });
 
-
+// TODO: merge with method deletePendingRequest()
 const deletePendingRequest = (requestId, requests) => {
 	const request = requests.get(requestId);
 	if (request) {
@@ -89,80 +89,133 @@ module.exports = class BaseMosquittoClient {
 	 */
 
 	async addPolicy(policyName, policy, users, groups) {
-		// TODO: implement
-		return Promise.resolve({});
+		return this.sendCommand({
+			command: 'addPolicy',
+			policyName,
+			policy,
+			users,
+			groups
+		});
 	}
 
 	async deletePolicy(policyName) {
-		// TODO: implement
-		return Promise.resolve({});
+		return this.sendCommand({
+			command: 'deletePolicy',
+			policyName
+		});
 	}
 
 	async replacePolicy(policyName, policy, users, groups) {
-		// TODO: implement
-		return Promise.resolve({});
+		return this.sendCommand({
+			command: 'replacePolicy',
+			policyName,
+			policy,
+			users,
+			groups
+		});
 	}
 
 	async getPolicy(policyName) {
-		// TODO: implement
-		return Promise.resolve({});
+		return this.sendCommand({
+			command: 'getPolicy',
+			policyName
+		});
 	}
 
 	// TODO: should include user as parameter
 	async setUserPolicy(policyName) {
-		// TODO: implement
-		return Promise.resolve({});
+		return this.sendCommand({
+			command: 'setUserPolicy',
+			policyName
+		});
 	}
 
 	// TODO: should include user group as parameter
 	async setGroupPolicy(policyName) {
-		// TODO: implement
-		return Promise.resolve({});
+		return this.sendCommand({
+			command: 'setGroupPolicy',
+			policyName
+		});
 	}
 
 	async listPolicies() {
-		// TODO: implement
-		return Promise.resolve({});
+		return this.sendCommand({
+			command: 'listPolicies'
+		});
 	}
 
 	async setUserDefaultPolicy(policyName) {
-		// TODO: implement
-		return Promise.resolve({});
+		return this.sendCommand({
+			command: 'setUserDefaultPolicy',
+			policyName
+		});
 	}
 
 	async setGroupDefaultPolicy(policyName) {
-		// TODO: implement
-		return Promise.resolve({});
+		return this.sendCommand({
+			command: 'setGroupDefaultPolicy',
+			policyName
+		});
 	}
 
-	async addPolicyFeature(policyName,featureName) {
-		// TODO: implement
-		return Promise.resolve({});
+	async addPolicyFeature(policyName, featureName) {
+		return this.sendCommand({
+			command: 'addPolicyFeature',
+			policyName,
+			featureName
+		});
 	}
 
-	async removePolicyFeature(policyName,featureName) {
-		// TODO: implement
-		return Promise.resolve({});
+	async removePolicyFeature(policyName, featureName) {
+		return this.sendCommand({
+			command: 'removePolicyFeature',
+			policyName,
+			featureName
+		});
 	}
 
-	async addTopicAccessControlPublishWrite(policyName, topicFilter, maxQoS = 2, allowRetain = true, maxPayloadSize = 1000, allow = false) {
-		// TODO: implement
-		return Promise.resolve({});
+	async addTopicAccessControlPublishWrite(policyName, topicFilter, maxQos = 2, allowRetain = true, maxPayloadSize = 1000, allow = false) {
+		return this.sendCommand({
+			command: 'addTopicAccessControl',
+			type: 'publish-write',
+			policyName,
+			topicFilter,
+			maxQos,
+			allowRetain,
+			maxPayloadSize,
+			allow
+		});
 	}
 
 	async addTopicAccessControlPublishRead(policyName, topicFilter) {
-		// TODO: implement
-		return Promise.resolve({});
+		return this.sendCommand({
+			command: 'addTopicAccessControl',
+			type: 'publish-read',
+			policyName,
+			topicFilter
+		});
 	}
 
-	async addTopicAccessControlSubscribe(policyName, topicFilter, maxQoS = 2, allow = true) {
-		// TODO: implement
-		return Promise.resolve({});
+	async addTopicAccessControlSubscribe(policyName, topicFilter, maxQos = 2, allow = true) {
+		return this.sendCommand({
+			command: 'addTopicAccessControl',
+			type: 'subscribe-',
+			policyName,
+			topicFilter,
+			maxQos,
+			allow
+		});
 	}
 
-	async addTopicAccessControlSubscribeFixed(policyName, topicFilter, maxQoS = 2, allow = true) {
-		// TODO: implement
-		return Promise.resolve({});
+	async addTopicAccessControlSubscribeFixed(policyName, topicFilter, maxQos = 2, allow = true) {
+		return this.sendCommand({
+			command: 'addTopicAccessControl',
+			type: 'subscribe-fixed',
+			policyName,
+			topicFilter,
+			maxQos,
+			allow
+		});
 	}
 
 	/**
@@ -171,54 +224,82 @@ module.exports = class BaseMosquittoClient {
 	 * ******************************************************************************************
 	 */
 
-	async addUser(username, password, clientID, policyName) {
-		// TODO: implement
-		return Promise.resolve({});
+	async addUser(username, password, clientid, policyName) {
+		return this.sendCommand({
+			command: 'addUser',
+			username,
+			password,
+			clientid,
+			policyName
+		});
 	}
 
 	async deleteUser(username) {
-		// TODO: implement
-		return Promise.resolve({});
+		return this.sendCommand({
+			command: 'deleteUser',
+			username
+		});
 	}
 
 	async setUserPassword(username, password) {
-		// TODO: implement
-		return Promise.resolve({});
+		return this.sendCommand({
+			command: 'setUserPassword',
+			username,
+			password
+		});
 	}
 
 	async addGroup(groupname, policyName) {
-		// TODO: implement
-		return Promise.resolve({});
+		return this.sendCommand({
+			command: 'addGroup',
+			groupname,
+			policyName
+		});
 	}
 
 	async addUserToGroup(username, group) {
-		// TODO: implement
-		return Promise.resolve({});
+		return this.sendCommand({
+			command: 'addUserToGroup',
+			username,
+			group
+		});
 	}
 
 	async removeUserFromGroup(username, group) {
-		// TODO: implement
-		return Promise.resolve({});
+		return this.sendCommand({
+			command: 'removeUserFromGroup',
+			username,
+			group
+		});
 	}
 
 	async listUsers(verbose = false) {
-		// TODO: implement
-		return Promise.resolve({});
+		return this.sendCommand({
+			command: 'listUsers',
+			verbose
+		});
 	}
 
 	async listGroups(verbose = false) {
-		// TODO: implement
-		return Promise.resolve({});
+		return this.sendCommand({
+			command: 'listGroups',
+			verbose
+		});
 	}
 
 	async listGroupUsers(group) {
-		// TODO: implement
-		return Promise.resolve({});
+		return this.sendCommand({
+			command: 'listGroupUsers',
+			group
+		});
 	}
 
-	async kickClient(username, clientID) {
-		// TODO: implement
-		return Promise.resolve({});
+	async kickClient(username, clientid) {
+		return this.sendCommand({
+			command: 'kickClient',
+			username,
+			clientid
+		});
 	}
 
 	on(event, listener) {
