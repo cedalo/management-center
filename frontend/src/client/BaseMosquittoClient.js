@@ -340,6 +340,7 @@ module.exports = class BaseMosquittoClient {
 	async sendCommand(command, id = createID()) {
 		return this.sendRequest({
 			id,
+			type: 'command',
 			command
 		})
 	}
