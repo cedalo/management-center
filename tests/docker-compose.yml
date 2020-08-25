@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+  mosquitto-instance1:
+    image: eclipse-mosquitto
+    container_name: mosquitto-instance1
+    ports:
+      - 1885:1883
+      - 9001:9001
+    expose:
+      - 1885
+      - 9001
+    volumes:
+      - ./conf:/mosquitto/config
+  mosquitto-instance2:
+    image: eclipse-mosquitto
+    container_name: mosquitto-instance2
+    ports:
+      - 1886:1883
+      - 9002:9001
+    expose:
+      - 1886
+      - 9002
+    volumes:
+      - ./conf:/mosquitto/config
+  mosquitto-instance3:
+    image: eclipse-mosquitto
+    container_name: mosquitto-instance3
+    ports:
+      - 1887:1883
+      - 9003:9001
+    expose:
+      - 1887
+      - 9003
+    volumes:
+      - ./conf:/mosquitto/config

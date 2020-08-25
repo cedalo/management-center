@@ -3,7 +3,7 @@ const BaseMosquittoClient = require('./BaseMosquittoClient');
 
 module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 	constructor({ name = 'Node Mosquitto Client', logger } = {}) {
-		super({ name, logger: logger || console });
+		super({ name, logger: logger });
 	}
 
 	_connectSocketServer(url) {
