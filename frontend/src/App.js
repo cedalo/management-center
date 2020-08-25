@@ -1,6 +1,6 @@
 import React from "react";
 import clsx from "clsx";
-import { Provider, useSelector, useDispatch } from 'react-redux';
+import { Provider, useSelector, useDispatch } from "react-redux";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -21,11 +21,13 @@ import PersonIcon from "@material-ui/icons/Person";
 import PolicyIcon from "@material-ui/icons/Policy";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
 import SettingsIcon from "@material-ui/icons/Settings";
-import SvgIcon from '@material-ui/core/SvgIcon';
-import StreamsIcon from '@material-ui/icons/SettingsInputAntenna';
-import TopicTreeIcon from '@material-ui/icons/AccountTree';
+import SvgIcon from "@material-ui/core/SvgIcon";
+import StreamsIcon from "@material-ui/icons/SettingsInputAntenna";
+import TopicTreeIcon from "@material-ui/icons/AccountTree";
 import Container from "@material-ui/core/Container";
+import BrokerSelect from "./components/BrokerSelect";
 import Groups from "./components/Groups";
+import Login from "./components/Login";
 import Policies from "./components/Policies";
 import Settings from "./components/Settings";
 import Streams from "./components/Streams";
@@ -33,7 +35,7 @@ import System from "./components/System";
 import TopicTree from "./components/TopicTree";
 import Users from "./components/Users";
 import store from "./store";
-import WebSocketProvider, { WebSocketContext } from './websockets/WebSocket';
+import WebSocketProvider, { WebSocketContext } from "./websockets/WebSocket";
 
 import {
   BrowserRouter as Router,
@@ -103,6 +105,10 @@ const useStyles = makeStyles((theme) => ({
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
@@ -145,115 +151,150 @@ export default function App() {
 
   return (
     <Router>
-		<Provider store={store}>
-		<WebSocketProvider>
-      <div className={classes.root}>
-        <AppBar
-          position="fixed"
-          className={clsx(classes.appBar, {
-            [classes.appBarShift]: open,
-          })}
-        >
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              className={clsx(classes.menuButton, {
-                [classes.hide]: open,
-              })}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap>
-              Mosquitto UI
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <Drawer
-          variant="permanent"
-          className={clsx(classes.drawer, {
-            [classes.drawerOpen]: open,
-            [classes.drawerClose]: !open,
-          })}
-          classes={{
-            paper: clsx({
-              [classes.drawerOpen]: open,
-              [classes.drawerClose]: !open,
-            }),
-          }}
-        >
-          <div className={classes.toolbar}>
-            <IconButton onClick={handleDrawerClose}>
-              {theme.direction === "rtl" ? (
-                <ChevronRightIcon />
-              ) : (
-                <ChevronLeftIcon />
-              )}
-            </IconButton>
+      <Provider store={store}>
+        <WebSocketProvider>
+          <div className={classes.root}>
+            <Switch>
+              <Route path="/login">
+
+			  <AppBar
+                  position="fixed"
+                  className={clsx(classes.appBar, {
+                    [classes.appBarShift]: open,
+                  })}
+                >
+                  <Toolbar>
+                    <Typography variant="h6" noWrap>
+                      Mosquitto UI
+                    </Typography>
+                  </Toolbar>
+                </AppBar>
+			  <Container className={classes.container}>
+                <Login />
+				</Container>
+              </Route>
+              <Route path="/">
+                <AppBar
+                  position="fixed"
+                  className={clsx(classes.appBar, {
+                    [classes.appBarShift]: open,
+                  })}
+                >
+                  <Toolbar>
+                    <IconButton
+                      color="inherit"
+                      aria-label="open drawer"
+                      onClick={handleDrawerOpen}
+                      edge="start"
+                      className={clsx(classes.menuButton, {
+                        [classes.hide]: open,
+                      })}
+                    >
+                      <MenuIcon />
+                    </IconButton>
+                    <Typography variant="h6" noWrap>
+                      Mosquitto UI
+                    </Typography>
+					<BrokerSelect />
+                  </Toolbar>
+                </AppBar>
+                <Drawer
+                  variant="permanent"
+                  className={clsx(classes.drawer, {
+                    [classes.drawerOpen]: open,
+                    [classes.drawerClose]: !open,
+                  })}
+                  classes={{
+                    paper: clsx({
+                      [classes.drawerOpen]: open,
+                      [classes.drawerClose]: !open,
+                    }),
+                  }}
+                >
+                  <div className={classes.toolbar}>
+                    <IconButton onClick={handleDrawerClose}>
+                      {theme.direction === "rtl" ? (
+                        <ChevronRightIcon />
+                      ) : (
+                        <ChevronLeftIcon />
+                      )}
+                    </IconButton>
+                  </div>
+                  <Divider />
+                  <List>
+                    <ListItemLink
+                      to="/users"
+                      primary="Users"
+                      icon={<PersonIcon />}
+                    />
+                    <ListItemLink
+                      to="/groups"
+                      primary="Groups"
+                      icon={<GroupIcon />}
+                    />
+                    <ListItemLink
+                      to="/policies"
+                      primary="Policies"
+                      icon={<PolicyIcon />}
+                    />
+                  </List>
+                  <Divider />
+                  <List>
+                    <ListItemLink
+                      to="/streams"
+                      primary="Streams"
+                      icon={<StreamsIcon />}
+                    />
+                  </List>
+                  <Divider />
+                  <List>
+                    <ListItemLink
+                      to="/system"
+                      primary="System Status"
+                      icon={<EqualizerIcon />}
+                    />
+                    <ListItemLink
+                      to="/topics"
+                      primary="Topic Tree"
+                      icon={<TopicTreeIcon />}
+                    />
+                    <ListItemLink
+                      to="/settings"
+                      primary="Settings"
+                      icon={<SettingsIcon />}
+                    />
+                  </List>
+                </Drawer>
+                <Container className={classes.container}>
+                  <Switch>
+                    <Route path="/users">
+                      <Users />
+                    </Route>
+                    <Route path="/groups">
+                      <Groups />
+                    </Route>
+                    <Route path="/policies">
+                      <Policies />
+                    </Route>
+                    <Route path="/streams">
+                      <Streams />
+                    </Route>
+                    <Route path="/system">
+                      <System />
+                    </Route>
+                    <Route path="/topics">
+                      <TopicTree />
+                    </Route>
+                    <Route path="/settings">
+                      <Settings />
+                    </Route>
+                  </Switch>
+                </Container>
+              </Route>
+            </Switch>
           </div>
-          <Divider />
-          <List>
-            <ListItemLink to="/users" primary="Users" icon={<PersonIcon />} />
-            <ListItemLink to="/groups" primary="Groups" icon={<GroupIcon />} />
-            <ListItemLink
-              to="/policies"
-              primary="Policies"
-              icon={<PolicyIcon />}
-            />
-          </List>
-          <Divider />
-          <List>
-            <ListItemLink to="/streams" primary="Streams" icon={<StreamsIcon />} />
-          </List>
-          <Divider />
-          <List>
-            <ListItemLink
-              to="/system"
-              primary="System Status"
-              icon={<EqualizerIcon />}
-            />
-            <ListItemLink
-              to="/topics"
-              primary="Topic Tree"
-              icon={<TopicTreeIcon />}
-            />
-            <ListItemLink
-              to="/settings"
-              primary="Settings"
-              icon={<SettingsIcon />}
-            />
-          </List>
-        </Drawer>
-        <Container className={classes.container}>
-          <Switch>
-            <Route path="/users">
-				<Users />
-			</Route>
-            <Route path="/groups">
-				<Groups />
-			</Route>
-            <Route path="/policies">
-				<Policies />
-			</Route>
-            <Route path="/streams">
-				<Streams />
-			</Route>
-			<Route path="/system">
-				<System />
-			</Route>
-            <Route path="/topics">
-				<TopicTree />
-			</Route>
-            <Route path="/settings">
-				<Settings />
-			</Route>
-          </Switch>
-        </Container>
-      </div>
-	  </WebSocketProvider>
-	  </Provider>
+        </WebSocketProvider>
+      </Provider>
     </Router>
   );
 }

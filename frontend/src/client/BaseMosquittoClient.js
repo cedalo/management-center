@@ -31,6 +31,7 @@ module.exports = class BaseMosquittoClient {
 			log() {},
 			info() {},
 			warn() {},
+			debug() {},
 			error() {}
 		};
 		this._eventHandler = (event) => this.logger.info(event);
@@ -80,6 +81,39 @@ module.exports = class BaseMosquittoClient {
 
 	get logger() {
 		return this._logger;
+	}
+
+	/**
+	 * ******************************************************************************************
+	 * Methods for handling multiple broker connections
+	 * ******************************************************************************************
+	 */
+
+	async connectToBroker(brokerName) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'connectToBroker',
+			brokerName
+		});
+	}
+
+	async disconnectFromBroker(brokerName) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'disconnectFromBroker',
+			brokerName
+		});
+	}
+
+	async getBrokerConnections() {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'getBrokerConnections'
+		});
+		return response.response;
 	}
 
 	/**
@@ -342,7 +376,7 @@ module.exports = class BaseMosquittoClient {
 			id,
 			type: 'command',
 			command
-		})
+		});
 	}
 
 	async sendRequest(request, timeout = this._timeout) {
