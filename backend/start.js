@@ -201,9 +201,12 @@ const sendTopicTreeUpdate = (topicTree, brokerClient) => {
   notifyWebSocketClients(messageObject, brokerClient);
 };
 
-const notifyWebSocketClients = (message) => {
+const notifyWebSocketClients = (message, brokerClient) => {
   wss.clients.forEach((client) => {
-    client.send(JSON.stringify(message));
+	const broker = clientBrokerMappings.get(client);
+	if (broker === brokerClient) {
+		client.send(JSON.stringify(message));
+	}
   });
 };
 
