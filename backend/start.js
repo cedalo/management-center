@@ -142,17 +142,20 @@ const handleRequestMessage = async (message, client) => {
 
 const handleClientMessage = async (message, client) => {
   switch (message.type) {
-    case "command":
-      const response = await handleCommandMessage(message);
-      const responseMessage = {
-        type: "response",
-        command: message.command.command,
-        requestId: message.id,
-        response,
-      };
-      console.log(responseMessage);
-      client.send(JSON.stringify(responseMessage));
-      break;
+    case "command": {
+		try {
+			const response = await handleCommandMessage(message, client);
+			const responseMessage = {
+			  type: "response",
+			  command: message.command.command,
+			  requestId: message.id,
+			  response,
+			};
+			console.log(responseMessage);
+			client.send(JSON.stringify(responseMessage));
+		} catch (error) {
+		}
+		break;
     default:
       break;
   }
