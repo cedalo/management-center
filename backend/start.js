@@ -207,6 +207,9 @@ const notifyWebSocketClients = (message, brokerClient) => {
   });
 };
 
+
+// TODO: handle disconnect of clients
+
 wss.on("connection", (ws) => {
 	clientConnections.set(ws, ws);
   ws.on("message", (message) => {
