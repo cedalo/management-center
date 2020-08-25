@@ -100,6 +100,12 @@ const handleCommandMessage = async (message) => {
   return response;
 };
 
+const connectToBroker = (brokerName, client) => {
+	const { broker, system, topicTree } = brokerConnections.get(brokerName);
+	clientBrokerMappings.set(client, broker);
+	sendSystemStatusUpdate(system, broker);
+	sendTopicTreeUpdate(topicTree, broker);
+}
 const handleClientMessage = async (message, client) => {
   switch (message.type) {
     case "command":
