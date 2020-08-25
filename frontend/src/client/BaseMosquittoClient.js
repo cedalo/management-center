@@ -96,6 +96,16 @@ module.exports = class BaseMosquittoClient {
 			brokerName
 		});
 	}
+
+	async disconnectFromBroker(brokerName) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'disconnectFromBroker',
+			brokerName
+		});
+	}
+
 	/**
 	 * ******************************************************************************************
 	 * Methods for security policy management
@@ -356,7 +366,7 @@ module.exports = class BaseMosquittoClient {
 			id,
 			type: 'command',
 			command
-		})
+		});
 	}
 
 	async sendRequest(request, timeout = this._timeout) {
