@@ -187,7 +187,7 @@ const sendSystemStatusUpdate = (system, brokerClient) => {
 		payload: system,
 	  }
   };
-  notifyWebSocketClients(messageObject);
+  notifyWebSocketClients(messageObject, brokerClient);
 };
 
 const sendTopicTreeUpdate = (topicTree, brokerClient) => {
@@ -198,7 +198,7 @@ const sendTopicTreeUpdate = (topicTree, brokerClient) => {
 		payload: topicTree,
 	  }
   };
-  notifyWebSocketClients(messageObject);
+  notifyWebSocketClients(messageObject, brokerClient);
 };
 
 const notifyWebSocketClients = (message) => {
