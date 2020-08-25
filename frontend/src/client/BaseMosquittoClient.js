@@ -31,6 +31,7 @@ module.exports = class BaseMosquittoClient {
 			log() {},
 			info() {},
 			warn() {},
+			debug() {},
 			error() {}
 		};
 		this._eventHandler = (event) => this.logger.info(event);
