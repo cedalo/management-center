@@ -11,8 +11,43 @@ const wss = new WebSocket.Server({
   port: MOSQUITTO_PROXY_PORT,
 });
 
+
+const updateSystemTopics = (system, topic, message) => {
+	const parts = topic.split("/");
+	let current = system;
+	parts.forEach((part, index) => {
+	  if (!current[part]) {
+		current[part] = {};
+	  }
+	  if (index + 1 === parts.length) {
+		current[part] = message.toString();
+	  }
+	  current = current[part];
+	});
+	return system;
+  };
+  
+  
+  const updateTopicTree = (topicTree, topic, message) => {
+	const parts = topic.split("/");
+	let current = topicTree;
+	parts.forEach((part, index) => {
+	  if (!current[part]) {
+		current[part] = {};
+	  }
+	  current = current[part];
+	});
+	return topicTree;
+  };
+
+const brokerConnections = new Map();
+const clientConnections = new Map();
+const clientBrokerMappings = new Map();
+
 const connections = config.connections || [];
 connections.forEach((connection) => {
+	const system = {};
+	const topicTree = {};
 	const brokerClient = mqtt.connect(connection.url, {
 		username: connection.credentials?.username,
 		password: connection.credentials?.password
@@ -20,15 +55,31 @@ connections.forEach((connection) => {
 	brokerClient.on("connect", () => {
 		console.log(`Connected to '${connection.name}' at ${connection.url}`);
 		brokerClient.subscribe("$SYS/#", (error) => {
+			console.log(`Subscribed to system topics for '${connection.name}'`);
 		  if (error) {
 			console.error(error);
 		  }
 		});
 		brokerClient.subscribe("#", (error) => {
+			console.log(`Subscribed to all topics for '${connection.name}'`);
 		  if (error) {
 			console.error(error);
 		  }
 		});
+	  });
+	  brokerClient.on("message", (topic, message) => {
+		if (topic.startsWith("$SYS")) {
+		  updateSystemTopics(system, topic, message);
+		  sendSystemStatusUpdate(system, brokerClient);
+		} else {
+		  updateTopicTree(topicTree, topic, message);
+		  sendTopicTreeUpdate(topicTree, brokerClient);
+		}
+	  });
+	  brokerConnections.set(connection.name, {
+			broker: brokerClient,
+		  system,
+		  topicTree
 	  });
 });
 
@@ -36,67 +87,7 @@ console.log(
   `Started Mosquitto proxy at http://localhost:${MOSQUITTO_PROXY_PORT}`
 );
 
-const MOSQUITTO_URL = process.env.MOSQUITTO_URL || "mqtt://localhost:1885";
-const MOSQUITTO_USERNAME = process.env.MOSQUITTO_USERNAME || "cedalo";
-const MOSQUITTO_PASSWORD = process.env.MOSQUITTO_PASSWORD || "r35aJkR!&dz";
 
-const client = mqtt.connect(MOSQUITTO_URL, {
-  username: MOSQUITTO_USERNAME,
-  password: MOSQUITTO_PASSWORD,
-});
-
-client.on("connect", () => {
-  console.log(`Connected to Mosquitto at ${MOSQUITTO_URL}`);
-  client.subscribe("$SYS/#", (error) => {
-    if (error) {
-      console.error(error);
-    }
-  });
-  client.subscribe("#", (error) => {
-    if (error) {
-      console.error(error);
-    }
-  });
-});
-
-client.on("message", (topic, message) => {
-	if (topic.startsWith("$SYS")) {
-	  updateSystemTopics(system, topic, message);
-	  sendSystemStatusUpdate();
-	} else {
-	  updateTopicTree(topicTree, topic, message);
-	  sendTopicTreeUpdate();
-	}
-  });
-
-
-const updateSystemTopics = (system, topic, message) => {
-  const parts = topic.split("/");
-  let current = system;
-  parts.forEach((part, index) => {
-    if (!current[part]) {
-      current[part] = {};
-    }
-    if (index + 1 === parts.length) {
-      current[part] = message.toString();
-    }
-    current = current[part];
-  });
-  return system;
-};
-
-
-const updateTopicTree = (topicTree, topic, message) => {
-  const parts = topic.split("/");
-  let current = topicTree;
-  parts.forEach((part, index) => {
-    if (!current[part]) {
-      current[part] = {};
-    }
-    current = current[part];
-  });
-  return topicTree;
-};
 
 const handleCommandMessage = async (message) => {
   const { command } = message;
