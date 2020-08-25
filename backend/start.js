@@ -211,6 +211,7 @@ const notifyWebSocketClients = (message, brokerClient) => {
 };
 
 wss.on("connection", (ws) => {
+	clientConnections.set(ws, ws);
   ws.on("message", (message) => {
     try {
       const messageObject = JSON.parse(message);
