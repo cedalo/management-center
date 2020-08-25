@@ -106,6 +106,15 @@ module.exports = class BaseMosquittoClient {
 		});
 	}
 
+	async getBrokerConnections() {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'getBrokerConnections'
+		});
+		return response.response;
+	}
+
 	/**
 	 * ******************************************************************************************
 	 * Methods for security policy management
