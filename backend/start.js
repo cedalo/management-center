@@ -2,9 +2,6 @@ const WebSocket = require("ws");
 const mqtt = require("mqtt");
 const config = require("./config.json");
 
-const system = {};
-const topicTree = {};
-
 const MOSQUITTO_PROXY_PORT = process.env.MOSQUITTO_PROXY_PORT || 8088;
 
 const wss = new WebSocket.Server({
