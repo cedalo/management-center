@@ -179,7 +179,7 @@ const handleClientMessage = async (message, client) => {
   }
 };
 
-const sendSystemStatusUpdate = () => {
+const sendSystemStatusUpdate = (system, brokerClient) => {
   const messageObject = {
 	  type: 'event',
 	  event: {
