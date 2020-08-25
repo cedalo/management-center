@@ -190,7 +190,7 @@ const sendSystemStatusUpdate = (system, brokerClient) => {
   notifyWebSocketClients(messageObject);
 };
 
-const sendTopicTreeUpdate = () => {
+const sendTopicTreeUpdate = (topicTree, brokerClient) => {
   const messageObject = {
 	  type: 'event',
 	  event: {
