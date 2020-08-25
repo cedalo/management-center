@@ -154,6 +154,13 @@ const handleClientMessage = async (message, client) => {
 			console.log(responseMessage);
 			client.send(JSON.stringify(responseMessage));
 		} catch (error) {
+			const responseMessage = {
+				type: "response",
+				command: message.command.command,
+				requestId: message.id,
+				error: error.message
+			  };
+			  client.send(JSON.stringify(responseMessage));
 		}
 		break;
 	}
