@@ -84,6 +84,20 @@ module.exports = class BaseMosquittoClient {
 
 	/**
 	 * ******************************************************************************************
+	 * Methods for handling multiple broker connections
+	 * ******************************************************************************************
+	 */
+
+	async connectToBroker(brokerName) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'connectToBroker',
+			brokerName
+		});
+	}
+	/**
+	 * ******************************************************************************************
 	 * Methods for security policy management
 	 * ******************************************************************************************
 	 */
