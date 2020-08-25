@@ -220,7 +220,4 @@ wss.on("connection", (ws) => {
       console.error(error);
     }
   });
-
-  sendSystemStatusUpdate();
-  sendTopicTreeUpdate();
 });
