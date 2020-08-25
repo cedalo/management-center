@@ -132,6 +132,11 @@ const handleRequestMessage = async (message, client) => {
 			const response = await disconnectFromBroker(brokerName, client);
 			return response;
 		}
+		case "getBrokerConnections": {
+			const connections = Array.from(brokerConnections.keys());
+			return connections;
+		}
+	}
 	return {};
 }
 
