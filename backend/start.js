@@ -127,6 +127,11 @@ const handleRequestMessage = async (message, client) => {
 			const response = await connectToBroker(brokerName, client);
 			return response;
 		}
+		case "disconnectFromBroker": {
+			const { brokerName } = message;
+			const response = await disconnectFromBroker(brokerName, client);
+			return response;
+		}
 	return {};
 }
 
