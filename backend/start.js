@@ -89,15 +89,21 @@ console.log(
 
 
 
-const handleCommandMessage = async (message) => {
+const handleCommandMessage = async (message, client) => {
   const { command } = message;
   console.log("Sending command to Mosquitto");
   console.log(command);
-  // TODO: send MQTT message to Mosquitto
-  const response = {
-    done: true,
-  };
-  return response;
+  // TODO: get broker the client is currently connected to
+  const broker = clientBrokerMappings.get(client);
+  if (broker) {
+	// TODO: send MQTT message to Mosquitto
+	const response = {
+		done: true,
+	};
+	return response;
+  } else {
+	  throw new Error('Client not connected to any broker');
+  }
 };
 
 const connectToBroker = (brokerName, client) => {
