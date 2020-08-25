@@ -122,6 +122,11 @@ const disconnectFromBroker = (brokerName, client) => {
 const handleRequestMessage = async (message, client) => {
 	const { request } = message;
 	switch (request) {
+		case "connectToBroker": {
+			const { brokerName } = message;
+			const response = await connectToBroker(brokerName, client);
+			return response;
+		}
 	return {};
 }
 
