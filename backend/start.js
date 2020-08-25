@@ -1,5 +1,7 @@
 const WebSocket = require("ws");
 const mqtt = require("mqtt");
+const config = require("./config.json");
+
 const system = {};
 const topicTree = {};
 
@@ -8,6 +10,28 @@ const MOSQUITTO_PROXY_PORT = process.env.MOSQUITTO_PROXY_PORT || 8088;
 const wss = new WebSocket.Server({
   port: MOSQUITTO_PROXY_PORT,
 });
+
+const connections = config.connections || [];
+connections.forEach((connection) => {
+	const brokerClient = mqtt.connect(connection.url, {
+		username: connection.credentials?.username,
+		password: connection.credentials?.password
+	  });
+	brokerClient.on("connect", () => {
+		console.log(`Connected to '${connection.name}' at ${connection.url}`);
+		brokerClient.subscribe("$SYS/#", (error) => {
+		  if (error) {
+			console.error(error);
+		  }
+		});
+		brokerClient.subscribe("#", (error) => {
+		  if (error) {
+			console.error(error);
+		  }
+		});
+	  });
+});
+
 console.log(
   `Started Mosquitto proxy at http://localhost:${MOSQUITTO_PROXY_PORT}`
 );
