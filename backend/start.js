@@ -119,6 +119,12 @@ const disconnectFromBroker = (brokerName, client) => {
 	clientBrokerMappings.set(client, null);
 }
 
+const handleRequestMessage = async (message, client) => {
+	const { request } = message;
+	switch (request) {
+	return {};
+}
+
 const handleClientMessage = async (message, client) => {
   switch (message.type) {
     case "command":
