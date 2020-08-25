@@ -156,6 +156,17 @@ const handleClientMessage = async (message, client) => {
 		} catch (error) {
 		}
 		break;
+	}
+	case "request": {
+		const response = await handleRequestMessage(message, client);
+		const responseMessage = {
+		  type: "response",
+		  requestId: message.id,
+		  response,
+		};
+		client.send(JSON.stringify(responseMessage));
+		break;
+	}
     default:
       break;
   }
