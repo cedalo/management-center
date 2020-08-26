@@ -15,6 +15,8 @@
     "url": "https://github.com/cedalo/mosquitto-ui/issues"
   },
   "homepage": "https://github.com/cedalo/mosquitto-ui#readme",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
+    "mosca": "^2.8.3"
   }
 }
