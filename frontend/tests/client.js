@@ -42,4 +42,18 @@ const MOSQUITTO_PROXY_PORT = process.env.MOSQUITTO_PROXY_PORT || 8088;
 	} catch (error) {
 		console.error(error);
 	}
+});
+
+(async () => {
+	const client = new NodeMosquittoClient({ /* logger: console */ });
+	try {
+		await client.connect({ socketEndpointURL: `${MOSQUITTO_PROXY_URL}:${MOSQUITTO_PROXY_PORT}` });
+		await client.connectToBroker('Mosquitto Mock API');
+		await client.addUser('maxmustermann', 'secret', '1234567');
+		const users = await client.listUsers();
+		console.log(users);
+		const connections = await client.getBrokerConnections();
+	} catch (error) {
+		console.error(error);
+	}
 })();
