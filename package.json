@@ -17,6 +17,7 @@
   "homepage": "https://github.com/cedalo/mosquitto-ui#readme",
   "dependencies": {},
   "devDependencies": {
-    "mosca": "^2.8.3"
+    "mosca": "^2.8.3",
+    "mqtt": "^4.2.1"
   }
 }
