@@ -8,6 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import MenuIcon from "@material-ui/icons/Menu";
 import Drawer from "@material-ui/core/Drawer";
+import Link from '@material-ui/core/Link';
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
@@ -17,6 +18,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import GroupIcon from "@material-ui/icons/Group";
+import HomeIcon from '@material-ui/icons/Home';
 import PersonIcon from "@material-ui/icons/Person";
 import PolicyIcon from "@material-ui/icons/Policy";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
@@ -26,7 +28,10 @@ import StreamsIcon from "@material-ui/icons/SettingsInputAntenna";
 import TopicTreeIcon from "@material-ui/icons/AccountTree";
 import Container from "@material-ui/core/Container";
 import BrokerSelect from "./components/BrokerSelect";
+import Logo from "./components/Logo";
 import Groups from "./components/Groups";
+import Home from "./components/Home";
+import Security from "./components/Security";
 import Login from "./components/Login";
 import Policies from "./components/Policies";
 import Settings from "./components/Settings";
@@ -36,6 +41,7 @@ import TopicTree from "./components/TopicTree";
 import Users from "./components/Users";
 import store from "./store";
 import WebSocketProvider, { WebSocketContext } from "./websockets/WebSocket";
+import NewsDrawer from "./components/NewsDrawer";
 
 import {
   BrowserRouter as Router,
@@ -105,6 +111,10 @@ const useStyles = makeStyles((theme) => ({
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
   },
+  rightToolbar: {
+    marginLeft: "auto",
+    marginRight: -12
+  },
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
@@ -165,7 +175,7 @@ export default function App() {
                 >
                   <Toolbar>
                     <Typography variant="h6" noWrap>
-                      Mosquitto UI
+					 	Mosquitto UI
                     </Typography>
                   </Toolbar>
                 </AppBar>
@@ -195,9 +205,12 @@ export default function App() {
                     <Typography variant="h6" noWrap>
                       Mosquitto UI
                     </Typography>
-					<BrokerSelect />
+					<section className={classes.rightToolbar}>
+						<BrokerSelect />
+					</section>
                   </Toolbar>
                 </AppBar>
+				{/* <NewsDrawer /> */}
                 <Drawer
                   variant="permanent"
                   className={clsx(classes.drawer, {
@@ -221,19 +234,27 @@ export default function App() {
                     </IconButton>
                   </div>
                   <Divider />
+					<List>
+						<ListItemLink
+							to="/"
+							primary="Home"
+							icon={<HomeIcon />}
+						/>
+					<Divider />
+				  </List>
                   <List>
                     <ListItemLink
-                      to="/users"
+                      to="/security/users"
                       primary="Users"
                       icon={<PersonIcon />}
                     />
                     <ListItemLink
-                      to="/groups"
+                      to="/security/groups"
                       primary="Groups"
                       icon={<GroupIcon />}
                     />
                     <ListItemLink
-                      to="/policies"
+                      to="/security/policies"
                       primary="Policies"
                       icon={<PolicyIcon />}
                     />
@@ -249,15 +270,18 @@ export default function App() {
                   <Divider />
                   <List>
                     <ListItemLink
-                      to="/system"
+                      to="/system/status"
                       primary="System Status"
                       icon={<EqualizerIcon />}
                     />
                     <ListItemLink
-                      to="/topics"
+                      to="/system/topics"
                       primary="Topic Tree"
                       icon={<TopicTreeIcon />}
                     />
+				  </List>
+				  <Divider />
+				  <List>
                     <ListItemLink
                       to="/settings"
                       primary="Settings"
@@ -267,26 +291,32 @@ export default function App() {
                 </Drawer>
                 <Container className={classes.container}>
                   <Switch>
-                    <Route path="/users">
+                    <Route path="/security/users">
                       <Users />
                     </Route>
-                    <Route path="/groups">
+                    <Route path="/security/groups">
                       <Groups />
                     </Route>
-                    <Route path="/policies">
+                    <Route path="/security/policies">
                       <Policies />
+                    </Route>
+                    <Route path="/security">
+                      <Security />
                     </Route>
                     <Route path="/streams">
                       <Streams />
                     </Route>
-                    <Route path="/system">
+                    <Route path="/system/status">
                       <System />
                     </Route>
-                    <Route path="/topics">
+                    <Route path="/system/topics">
                       <TopicTree />
                     </Route>
-                    <Route path="/settings">
+                    <Route path="/system/settings">
                       <Settings />
+                    </Route>
+                    <Route path="/">
+                      <Home />
                     </Route>
                   </Switch>
                 </Container>
