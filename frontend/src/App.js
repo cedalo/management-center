@@ -36,7 +36,7 @@ import Login from "./components/Login";
 import Policies from "./components/Policies";
 import Settings from "./components/Settings";
 import Streams from "./components/Streams";
-import System from "./components/System";
+import Status from "./components/Status";
 import TopicTree from "./components/TopicTree";
 import Users from "./components/Users";
 import store from "./store";
@@ -307,7 +307,7 @@ export default function App() {
                       <Streams />
                     </Route>
                     <Route path="/system/status">
-                      <System />
+                      <Status />
                     </Route>
                     <Route path="/system/topics">
                       <TopicTree />
