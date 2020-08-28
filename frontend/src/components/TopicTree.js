@@ -3,8 +3,11 @@ import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import TreeView from "@material-ui/lab/TreeView";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import TreeItem from "@material-ui/lab/TreeItem";
+import Typography from "@material-ui/core/Typography";
+import { Link as RouterLink } from "react-router-dom";
 
 const useStyles = makeStyles({
   root: {
@@ -45,13 +48,21 @@ const TopicTree = ({ topicTree }) => {
   );
 
   return (
-    <TreeView
-      className={classes.root}
-      defaultCollapseIcon={<ExpandMoreIcon />}
-      defaultExpandIcon={<ChevronRightIcon />}
-    >
-      {renderTree(data)}
-    </TreeView>
+    <div>
+      <Breadcrumbs aria-label="breadcrumb">
+        <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/system">System</RouterLink>
+        <Typography color="textPrimary">Topic Tree</Typography>
+      </Breadcrumbs>
+      <br />
+      <TreeView
+        className={classes.root}
+        defaultCollapseIcon={<ExpandMoreIcon />}
+        defaultExpandIcon={<ChevronRightIcon />}
+      >
+        {renderTree(data)}
+      </TreeView>
+    </div>
   );
 };
 
