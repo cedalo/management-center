@@ -280,9 +280,6 @@ export default function App() {
                       primary="Topic Tree"
                       icon={<TopicTreeIcon />}
                     />
-				  </List>
-				  <Divider />
-				  <List>
                     <ListItemLink
                       to="/settings"
                       primary="Settings"
