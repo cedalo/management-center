@@ -35,7 +35,7 @@ function Home() {
 			title="System"
 			description="Analyse the system status of Mosquitto"
 			image={"system.png"}
-			link="/system/status"
+			link="/system"
 		  />
 		</Grid>
 	  </Grid>
