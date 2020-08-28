@@ -33,7 +33,7 @@ function Security() {
           <HomeCard
             title="User Groups"
             description="Manage user groups"
-            image={"usergroups.png"}
+            image={"groups.png"}
             link="/security/groups"
           />
         </Grid>
