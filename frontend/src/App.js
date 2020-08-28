@@ -32,6 +32,7 @@ import Logo from "./components/Logo";
 import Groups from "./components/Groups";
 import Home from "./components/Home";
 import Security from "./components/Security";
+import System from "./components/System";
 import Login from "./components/Login";
 import Policies from "./components/Policies";
 import Settings from "./components/Settings";
@@ -314,6 +315,9 @@ export default function App() {
                     </Route>
                     <Route path="/system/settings">
                       <Settings />
+                    </Route>
+                    <Route path="/system">
+                      <System />
                     </Route>
                     <Route path="/">
                       <Home />
