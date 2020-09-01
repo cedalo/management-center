@@ -8,6 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import MenuIcon from "@material-ui/icons/Menu";
 import Drawer from "@material-ui/core/Drawer";
+import Link from '@material-ui/core/Link';
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
@@ -17,6 +18,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import GroupIcon from "@material-ui/icons/Group";
+import HomeIcon from "@material-ui/icons/Home";
 import PersonIcon from "@material-ui/icons/Person";
 import PolicyIcon from "@material-ui/icons/Policy";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
@@ -26,16 +28,22 @@ import StreamsIcon from "@material-ui/icons/SettingsInputAntenna";
 import TopicTreeIcon from "@material-ui/icons/AccountTree";
 import Container from "@material-ui/core/Container";
 import BrokerSelect from "./components/BrokerSelect";
+import Logo from "./components/Logo";
 import Groups from "./components/Groups";
+import Hidden from "@material-ui/core/Hidden";
+import Home from "./components/Home";
+import Security from "./components/Security";
+import System from "./components/System";
 import Login from "./components/Login";
 import Policies from "./components/Policies";
 import Settings from "./components/Settings";
 import Streams from "./components/Streams";
-import System from "./components/System";
+import Status from "./components/Status";
 import TopicTree from "./components/TopicTree";
 import Users from "./components/Users";
 import store from "./store";
 import WebSocketProvider, { WebSocketContext } from "./websockets/WebSocket";
+import NewsDrawer from "./components/NewsDrawer";
 
 import {
   BrowserRouter as Router,
@@ -105,6 +113,10 @@ const useStyles = makeStyles((theme) => ({
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
   },
+  rightToolbar: {
+    marginLeft: "auto",
+    marginRight: -12
+  },
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
@@ -136,7 +148,8 @@ function ListItemLink(props) {
   );
 }
 
-export default function App() {
+export default function App(props) {
+	const { window } = props;
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -148,6 +161,57 @@ export default function App() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const container = window !== undefined ? () => window().document.body : undefined;
+
+  const drawer = (
+    <div>
+      <Divider />
+      <List>
+        <ListItemLink to="/" primary="Home" icon={<HomeIcon />} />
+        <Divider />
+      </List>
+      <List>
+        <ListItemLink
+          to="/security/users"
+          primary="Users"
+          icon={<PersonIcon />}
+        />
+        <ListItemLink
+          to="/security/groups"
+          primary="Groups"
+          icon={<GroupIcon />}
+        />
+        <ListItemLink
+          to="/security/policies"
+          primary="Policies"
+          icon={<PolicyIcon />}
+        />
+      </List>
+      <Divider />
+      <List>
+        <ListItemLink to="/streams" primary="Streams" icon={<StreamsIcon />} />
+      </List>
+      <Divider />
+      <List>
+        <ListItemLink
+          to="/system/status"
+          primary="System Status"
+          icon={<EqualizerIcon />}
+        />
+        <ListItemLink
+          to="/system/topics"
+          primary="Topic Tree"
+          icon={<TopicTreeIcon />}
+        />
+        <ListItemLink
+          to="/settings"
+          primary="Settings"
+          icon={<SettingsIcon />}
+        />
+      </List>
+    </div>
+  );
 
   return (
     <Router>
@@ -165,13 +229,13 @@ export default function App() {
                 >
                   <Toolbar>
                     <Typography variant="h6" noWrap>
-                      Mosquitto UI
+					 	Mosquitto UI
                     </Typography>
                   </Toolbar>
                 </AppBar>
-			  <Container className={classes.container}>
-                <Login />
-				</Container>
+                <Container className={classes.container}>
+                  <Login />
+                </Container>
               </Route>
               <Route path="/">
                 <AppBar
@@ -195,98 +259,89 @@ export default function App() {
                     <Typography variant="h6" noWrap>
                       Mosquitto UI
                     </Typography>
-					<BrokerSelect />
+                    <section className={classes.rightToolbar}>
+                      <BrokerSelect />
+                    </section>
                   </Toolbar>
                 </AppBar>
-                <Drawer
-                  variant="permanent"
-                  className={clsx(classes.drawer, {
-                    [classes.drawerOpen]: open,
-                    [classes.drawerClose]: !open,
-                  })}
-                  classes={{
-                    paper: clsx({
-                      [classes.drawerOpen]: open,
-                      [classes.drawerClose]: !open,
-                    }),
-                  }}
-                >
-                  <div className={classes.toolbar}>
-                    <IconButton onClick={handleDrawerClose}>
-                      {theme.direction === "rtl" ? (
-                        <ChevronRightIcon />
-                      ) : (
-                        <ChevronLeftIcon />
-                      )}
-                    </IconButton>
-                  </div>
-                  <Divider />
-                  <List>
-                    <ListItemLink
-                      to="/users"
-                      primary="Users"
-                      icon={<PersonIcon />}
-                    />
-                    <ListItemLink
-                      to="/groups"
-                      primary="Groups"
-                      icon={<GroupIcon />}
-                    />
-                    <ListItemLink
-                      to="/policies"
-                      primary="Policies"
-                      icon={<PolicyIcon />}
-                    />
-                  </List>
-                  <Divider />
-                  <List>
-                    <ListItemLink
-                      to="/streams"
-                      primary="Streams"
-                      icon={<StreamsIcon />}
-                    />
-                  </List>
-                  <Divider />
-                  <List>
-                    <ListItemLink
-                      to="/system"
-                      primary="System Status"
-                      icon={<EqualizerIcon />}
-                    />
-                    <ListItemLink
-                      to="/topics"
-                      primary="Topic Tree"
-                      icon={<TopicTreeIcon />}
-                    />
-                    <ListItemLink
-                      to="/settings"
-                      primary="Settings"
-                      icon={<SettingsIcon />}
-                    />
-                  </List>
-                </Drawer>
+                {/* <NewsDrawer /> */}
+
+                <nav>
+                  {/* <Hidden xsDown implementation="css"> */}
+                    <Drawer
+                      variant="permanent"
+                      className={clsx(classes.drawer, {
+                        [classes.drawerOpen]: open,
+                        [classes.drawerClose]: !open,
+                      })}
+                      classes={{
+                        paper: clsx({
+                          [classes.drawerOpen]: open,
+                          [classes.drawerClose]: !open,
+                        }),
+                      }}
+                    >
+                      <div className={classes.toolbar}>
+                        <IconButton onClick={handleDrawerClose}>
+                          {theme.direction === "rtl" ? (
+                            <ChevronRightIcon />
+                          ) : (
+                            <ChevronLeftIcon />
+                          )}
+                        </IconButton>
+                      </div>
+                      {drawer}
+                    </Drawer>
+                  {/* </Hidden> */}
+                  {/* <Hidden smUp implementation="css">
+                    <Drawer
+                      container={container}
+                      variant="temporary"
+                      anchor={theme.direction === "rtl" ? "right" : "left"}
+                      open={mobileOpen}
+                    //   onClose={handleDrawerToggle}
+                      classes={{
+                        paper: classes.drawerPaper,
+                      }}
+                      ModalProps={{
+                        keepMounted: true,
+                      }}
+                    >
+                      {drawer}
+                    </Drawer>
+                  </Hidden> */}
+                </nav>
                 <Container className={classes.container}>
                   <Switch>
-                    <Route path="/users">
+                    <Route path="/security/users">
                       <Users />
                     </Route>
-                    <Route path="/groups">
+                    <Route path="/security/groups">
                       <Groups />
                     </Route>
-                    <Route path="/policies">
+                    <Route path="/security/policies">
                       <Policies />
+                    </Route>
+                    <Route path="/security">
+                      <Security />
                     </Route>
                     <Route path="/streams">
                       <Streams />
                     </Route>
+                    <Route path="/system/status">
+                      <Status />
+                    </Route>
+                    <Route path="/system/topics">
+                      <TopicTree />
+                    </Route>
+                    <Route path="/system/settings">
+                      <Settings />
+                    </Route>
                     <Route path="/system">
                       <System />
                     </Route>
-                    <Route path="/topics">
-                      <TopicTree />
-                    </Route>
-                    <Route path="/settings">
-                      <Settings />
+                    <Route path="/">
+                      <Home />
                     </Route>
                   </Switch>
                 </Container>

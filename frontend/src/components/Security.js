@@ -18,31 +18,31 @@ function Security() {
     <div>
       <Breadcrumbs aria-label="breadcrumb">
         <RouterLink to="/">Home</RouterLink>
-        <Typography color="textPrimary">System</Typography>
+        <Typography color="textPrimary">Security</Typography>
       </Breadcrumbs>
       <Grid container spacing={3}>
         <Grid item lg={4} sm={6} xl={4} xs={12}>
           <HomeCard
-            title="Status"
-            description="Analyse system status"
-            image={"status.png"}
-            link="/system/status"
+            title="Users"
+            description="Manage users"
+            image={"users.png"}
+            link="/security/users"
           />
         </Grid>
         <Grid item lg={4} sm={6} xl={4} xs={12}>
           <HomeCard
-            title="Topic Tree"
-            description="Analyse topic tree"
-            image={"topictree.png"}
-            link="/system/topics"
+            title="User Groups"
+            description="Manage user groups"
+            image={"groups.png"}
+            link="/security/groups"
           />
         </Grid>
         <Grid item lg={4} sm={6} xl={4} xs={12}>
           <HomeCard
-            title="Settings"
-            description="Manage settings"
-            image={"settings.png"}
-            link="/system/settings"
+            title="Policies"
+            description="Manage policies"
+            image={"policies.png"}
+            link="/security/policies"
           />
         </Grid>
       </Grid>

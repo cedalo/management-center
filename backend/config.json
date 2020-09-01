@@ -23,6 +23,10 @@
 				"username": "cedalo",
 				"password": "cedalo"
 			}
+		},
+		{
+			"name": "Mosquitto Mock API",
+			"url": "mqtt://localhost:1888"
 		}
 	]
 }
