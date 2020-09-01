@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui/core/Chip";
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
+import Hidden from "@material-ui/core/Hidden";
 import IconButton from "@material-ui/core/IconButton";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -16,6 +17,16 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Paper from "@material-ui/core/Paper";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import Divider from "@material-ui/core/Divider";
+import ListItemText from "@material-ui/core/ListItemText";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import Avatar from "@material-ui/core/Avatar";
+import PolicyIcon from "@material-ui/icons/Policy";
+import SecurityIcon from '@material-ui/icons/Security';
+import UserManagementIcon from '@material-ui/icons/SupervisedUserCircle';
 import { Link as RouterLink } from "react-router-dom";
 
 import moment from "moment";
@@ -24,6 +35,14 @@ import React from "react";
 
 import policies from "../data/policies";
 
+const getIconForFeature = (feature) => {
+	switch (feature) {
+		case 'security-policy':
+			return <SecurityIcon />
+		case 'user-management':
+			return <UserManagementIcon />
+	}
+}
 const remove = (array, item) => {
   const index = array.indexOf(item);
   array.splice(index, 1);
@@ -78,6 +97,7 @@ const Policies = (props) => {
         <Typography color="textPrimary">Policies</Typography>
       </Breadcrumbs>
       <br />
+      <Hidden xsDown implementation="css">
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -114,12 +134,13 @@ const Policies = (props) => {
                 <TableCell className={classes.badges}>
                   {policy.features.map((feature) => (
                     <Chip
-                      // icon={<FaceIcon />}
+                      icon={ getIconForFeature(feature.name) }
                       label={feature.name}
                       onDelete={(event) => {
                         event.stopPropagation();
                       }}
                       color="secondary"
+					  variant="outlined"
                     />
                   ))}
                 </TableCell>
@@ -152,6 +173,50 @@ const Policies = (props) => {
           </TableBody>
         </Table>
       </TableContainer>
+      </Hidden>
+      <Hidden smUp implementation="css">
+        <List className={classes.root}>
+          {policies.map((policy) => (
+            <React.Fragment>
+              <ListItem alignItems="flex-start">
+                <ListItemAvatar>
+                  <Avatar>
+                    <PolicyIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={
+                    <span>
+                      <b>{policy.policyName}</b>
+                    </span>
+                  }
+                  //   secondary={
+                  //     <React.Fragment>
+                  //       <Typography
+                  //         component="span"
+                  //         variant="body2"
+                  //         className={classes.inline}
+                  //         color="textPrimary"
+                  //       >
+                  //         Policy details
+                  //       </Typography>
+                  //     </React.Fragment>
+                  //   }
+                />
+                <ListItemSecondaryAction>
+                  <IconButton edge="end" aria-label="edit">
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton edge="end" aria-label="delete">
+                    <DeleteIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+              <Divider variant="inset" component="li" />
+            </React.Fragment>
+          ))}
+        </List>
+      </Hidden>
 	  <Fab color="primary" aria-label="add" className={classes.fab}>
         <AddIcon />
       </Fab>
