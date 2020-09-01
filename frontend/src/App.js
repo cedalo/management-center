@@ -148,7 +148,8 @@ function ListItemLink(props) {
   );
 }
 
-export default function App() {
+export default function App(props) {
+	const { window } = props;
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
