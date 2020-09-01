@@ -1,8 +1,9 @@
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui/core/Chip";
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
+import Fab from "@material-ui/core/Fab";
+import AddIcon from "@material-ui/icons/Add";
+import Hidden from "@material-ui/core/Hidden";
 import IconButton from "@material-ui/core/IconButton";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -16,6 +17,15 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Paper from "@material-ui/core/Paper";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import Divider from "@material-ui/core/Divider";
+import ListItemText from "@material-ui/core/ListItemText";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import Avatar from "@material-ui/core/Avatar";
+import GroupIcon from "@material-ui/icons/Group";
+import UserIcon from "@material-ui/icons/Person";
 import { Link as RouterLink } from "react-router-dom";
 
 import moment from "moment";
@@ -36,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   fab: {
-    position: 'absolute',
+    position: "absolute",
     bottom: theme.spacing(2),
     right: theme.spacing(2),
   },
@@ -84,82 +94,128 @@ const Groups = (props) => {
         <Typography color="textPrimary">User Groups</Typography>
       </Breadcrumbs>
       <br />
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              {GROUP_TABLE_COLUMNS.map((column) => (
-                <TableCell
-                  key={column.id}
-                  sortDirection={sortBy === column.id ? sortDirection : false}
-                >
-                  <TableSortLabel
-                    active={sortBy === column.id}
-                    direction={sortDirection}
-                    onClick={() => onSort(column.id)}
+      <Hidden xsDown implementation="css">
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                {GROUP_TABLE_COLUMNS.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    sortDirection={sortBy === column.id ? sortDirection : false}
                   >
-                    {column.key}
-                  </TableSortLabel>
-                </TableCell>
-              ))}
-              <TableCell />
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {groups.map((group) => (
-              <TableRow
-                hover
-                key={group.groupname}
-                onClick={() => onSelectGroup(group.groupname)}
-                style={{ cursor: "pointer" }}
-              >
-                <TableCell>
-                  <b>{group.groupname}</b>
-                </TableCell>
-                {/* <TableCell>{moment(group.lastModified).fromNow()}</TableCell> */}
-                <TableCell className={classes.badges}>
-                  {group.users.map((user) => (
-                    <Chip
-                      // icon={<FaceIcon />}
-                      label={user}
-                      onDelete={(event) => {
-                        event.stopPropagation();
-                        handleRemoveUserFromGroup(user, group.groupname);
-                      }}
-                      color="secondary"
-                    />
-                  ))}
-                </TableCell>
-                <TableCell>
-                  {
-                    <div>
-                      <IconButton
-                        style={{ color: "#FF0022" }}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          onDeleteGroup(group.groupname);
-                        }}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        style={{ color: "#FF0022" }}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          onDeleteGroup(group.groupname);
-                        }}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </div>
-                  }
-                </TableCell>
+                    <TableSortLabel
+                      active={sortBy === column.id}
+                      direction={sortDirection}
+                      onClick={() => onSort(column.id)}
+                    >
+                      {column.key}
+                    </TableSortLabel>
+                  </TableCell>
+                ))}
+                <TableCell />
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-	  <Fab color="primary" aria-label="add" className={classes.fab}>
+            </TableHead>
+            <TableBody>
+              {groups.map((group) => (
+                <TableRow
+                  hover
+                  key={group.groupname}
+                  onClick={() => onSelectGroup(group.groupname)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <TableCell>
+                    <b>{group.groupname}</b>
+                  </TableCell>
+                  {/* <TableCell>{moment(group.lastModified).fromNow()}</TableCell> */}
+                  <TableCell className={classes.badges}>
+                    {group.users.map((user) => (
+                      <Chip
+                        icon={<UserIcon />}
+                        label={user}
+                        onDelete={(event) => {
+                          event.stopPropagation();
+                          handleRemoveUserFromGroup(user, group.groupname);
+                        }}
+                        color="secondary"
+						variant="outlined"
+                      />
+                    ))}
+                  </TableCell>
+                  <TableCell>
+                    {
+                      <div>
+                        <IconButton
+                          style={{ color: "#FF0022" }}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            onDeleteGroup(group.groupname);
+                          }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          style={{ color: "#FF0022" }}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            onDeleteGroup(group.groupname);
+                          }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </div>
+                    }
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Hidden>
+      <Hidden smUp implementation="css">
+        <List className={classes.root}>
+          {groups.map((group) => (
+            <React.Fragment>
+              <ListItem alignItems="flex-start">
+                <ListItemAvatar>
+                  <Avatar>
+                    <GroupIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={
+                    <span>
+                      <b>{group.groupname}</b>
+                    </span>
+                  }
+                  //   secondary={
+                  //     <React.Fragment>
+                  //       <Typography
+                  //         component="span"
+                  //         variant="body2"
+                  //         className={classes.inline}
+                  //         color="textPrimary"
+                  //       >
+                  //         Group details
+                  //       </Typography>
+                  //     </React.Fragment>
+                  //   }
+                />
+                <ListItemSecondaryAction>
+                  <IconButton edge="end" aria-label="edit">
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton edge="end" aria-label="delete">
+                    <DeleteIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+              <Divider variant="inset" component="li" />
+            </React.Fragment>
+          ))}
+        </List>
+      </Hidden>
+      <Fab color="primary" aria-label="add" className={classes.fab}>
         <AddIcon />
       </Fab>
     </div>
