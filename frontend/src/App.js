@@ -160,6 +160,57 @@ export default function App() {
     setOpen(false);
   };
 
+  const container = window !== undefined ? () => window().document.body : undefined;
+
+  const drawer = (
+    <div>
+      <Divider />
+      <List>
+        <ListItemLink to="/" primary="Home" icon={<HomeIcon />} />
+        <Divider />
+      </List>
+      <List>
+        <ListItemLink
+          to="/security/users"
+          primary="Users"
+          icon={<PersonIcon />}
+        />
+        <ListItemLink
+          to="/security/groups"
+          primary="Groups"
+          icon={<GroupIcon />}
+        />
+        <ListItemLink
+          to="/security/policies"
+          primary="Policies"
+          icon={<PolicyIcon />}
+        />
+      </List>
+      <Divider />
+      <List>
+        <ListItemLink to="/streams" primary="Streams" icon={<StreamsIcon />} />
+      </List>
+      <Divider />
+      <List>
+        <ListItemLink
+          to="/system/status"
+          primary="System Status"
+          icon={<EqualizerIcon />}
+        />
+        <ListItemLink
+          to="/system/topics"
+          primary="Topic Tree"
+          icon={<TopicTreeIcon />}
+        />
+        <ListItemLink
+          to="/settings"
+          primary="Settings"
+          icon={<SettingsIcon />}
+        />
+      </List>
+    </div>
+  );
+
   return (
     <Router>
       <Provider store={store}>
@@ -180,9 +231,9 @@ export default function App() {
                     </Typography>
                   </Toolbar>
                 </AppBar>
-			  <Container className={classes.container}>
-                <Login />
-				</Container>
+                <Container className={classes.container}>
+                  <Login />
+                </Container>
               </Route>
               <Route path="/">
                 <AppBar
@@ -206,87 +257,58 @@ export default function App() {
                     <Typography variant="h6" noWrap>
                       Mosquitto UI
                     </Typography>
-					<section className={classes.rightToolbar}>
-						<BrokerSelect />
-					</section>
+                    <section className={classes.rightToolbar}>
+                      <BrokerSelect />
+                    </section>
                   </Toolbar>
                 </AppBar>
-				{/* <NewsDrawer /> */}
-                <Drawer
-                  variant="permanent"
-                  className={clsx(classes.drawer, {
-                    [classes.drawerOpen]: open,
-                    [classes.drawerClose]: !open,
-                  })}
-                  classes={{
-                    paper: clsx({
-                      [classes.drawerOpen]: open,
-                      [classes.drawerClose]: !open,
-                    }),
-                  }}
-                >
-                  <div className={classes.toolbar}>
-                    <IconButton onClick={handleDrawerClose}>
-                      {theme.direction === "rtl" ? (
-                        <ChevronRightIcon />
-                      ) : (
-                        <ChevronLeftIcon />
-                      )}
-                    </IconButton>
-                  </div>
-                  <Divider />
-					<List>
-						<ListItemLink
-							to="/"
-							primary="Home"
-							icon={<HomeIcon />}
-						/>
-					<Divider />
-				  </List>
-                  <List>
-                    <ListItemLink
-                      to="/security/users"
-                      primary="Users"
-                      icon={<PersonIcon />}
-                    />
-                    <ListItemLink
-                      to="/security/groups"
-                      primary="Groups"
-                      icon={<GroupIcon />}
-                    />
-                    <ListItemLink
-                      to="/security/policies"
-                      primary="Policies"
-                      icon={<PolicyIcon />}
-                    />
-                  </List>
-                  <Divider />
-                  <List>
-                    <ListItemLink
-                      to="/streams"
-                      primary="Streams"
-                      icon={<StreamsIcon />}
-                    />
-                  </List>
-                  <Divider />
-                  <List>
-                    <ListItemLink
-                      to="/system/status"
-                      primary="System Status"
-                      icon={<EqualizerIcon />}
-                    />
-                    <ListItemLink
-                      to="/system/topics"
-                      primary="Topic Tree"
-                      icon={<TopicTreeIcon />}
-                    />
-                    <ListItemLink
-                      to="/settings"
-                      primary="Settings"
-                      icon={<SettingsIcon />}
-                    />
-                  </List>
-                </Drawer>
+                {/* <NewsDrawer /> */}
+
+                <nav>
+                  {/* <Hidden xsDown implementation="css"> */}
+                    <Drawer
+                      variant="permanent"
+                      className={clsx(classes.drawer, {
+                        [classes.drawerOpen]: open,
+                        [classes.drawerClose]: !open,
+                      })}
+                      classes={{
+                        paper: clsx({
+                          [classes.drawerOpen]: open,
+                          [classes.drawerClose]: !open,
+                        }),
+                      }}
+                    >
+                      <div className={classes.toolbar}>
+                        <IconButton onClick={handleDrawerClose}>
+                          {theme.direction === "rtl" ? (
+                            <ChevronRightIcon />
+                          ) : (
+                            <ChevronLeftIcon />
+                          )}
+                        </IconButton>
+                      </div>
+                      {drawer}
+                    </Drawer>
+                  {/* </Hidden> */}
+                  {/* <Hidden smUp implementation="css">
+                    <Drawer
+                      container={container}
+                      variant="temporary"
+                      anchor={theme.direction === "rtl" ? "right" : "left"}
+                      open={mobileOpen}
+                    //   onClose={handleDrawerToggle}
+                      classes={{
+                        paper: classes.drawerPaper,
+                      }}
+                      ModalProps={{
+                        keepMounted: true,
+                      }}
+                    >
+                      {drawer}
+                    </Drawer>
+                  </Hidden> */}
+                </nav>
                 <Container className={classes.container}>
                   <Switch>
                     <Route path="/security/users">
