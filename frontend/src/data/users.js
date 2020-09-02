@@ -1,6 +1,6 @@
 export default [
 	{
-		"clientid": "1",
+		"clientid": "mosquitto-client-1",
 		"username": "maxmustermann",
 		"firstName": "Max",
 		"lastName": "Mustermann",
@@ -21,7 +21,7 @@ export default [
 		]
 	},
 	{
-		"clientid": "2",
+		"clientid": "mosquitto-client-2",
 		"username": "maxmustermann2",
 		"firstName": "Max",
 		"lastName": "Mustermann",
@@ -46,7 +46,7 @@ export default [
 		]
 	},
 	{
-		"clientid": "3",
+		"clientid": "mosquitto-client-3",
 		"username": "maxmustermann3",
 		"firstName": "Max",
 		"lastName": "Mustermann",
