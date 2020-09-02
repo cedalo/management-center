@@ -86,7 +86,7 @@ const UserDetail = (props) => {
 
   return (
     <div className={classes.root}>
-      <Breadcrumbs aria-label="breadcrumb">
+      <Breadcrumbs maxItems={2} aria-label="breadcrumb">
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/security">Security</RouterLink>
         <Typography color="textPrimary">Users</Typography>
