@@ -120,85 +120,87 @@ const UserDetail = (props) => {
       </Tabs>
       <TabPanel value={value} index={0}>
         <form className={classes.form} noValidate autoComplete="off">
-		<div className={classes.margin}>
-          <Grid container spacing={1} alignItems="flex-end">
-            <Grid item xs={12}>
-              <TextField
-                required
-                id="client-id"
-                label="Client ID"
-                defaultValue=""
-                variant="outlined"
-                fullWidth
-				className={classes.textField}
-				InputProps={{
-					startAdornment: (
-					  <InputAdornment position="start">
-						<AccountCircle />
-					  </InputAdornment>
-					),
-				  }}
-              />
+          <div className={classes.margin}>
+            <Grid container spacing={1} alignItems="flex-end">
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  id="client-id"
+                  label="Client ID"
+				  value={user.clientid}
+                  defaultValue=""
+                  variant="outlined"
+				  fullWidth
+                  className={classes.textField}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <ClientIDIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  id="username"
+				  label="Username"
+				  value={user.username}
+                  defaultValue=""
+                  variant="outlined"
+                  fullWidth
+                  className={classes.textField}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <AccountCircle />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  id="firstname"
+                  label="First name"
+				  value={user.firstName}
+                  defaultValue=""
+                  variant="outlined"
+                  fullWidth
+                  className={classes.textField}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  id="lastname"
+				  value={user.lastName}
+                  label="Last name"
+                  defaultValue=""
+                  variant="outlined"
+                  fullWidth
+                  className={classes.textField}
+                />
+              </Grid>
+              {/* <Grid item xs={12}>
+			<FormGroup row>
+      <FormControlLabel
+        control={
+          <Switch
+            checked={state.checkedB}
+            onChange={handleBannedChange}
+            name="banned"
+            color="primary"
+          />
+        }
+        label="Banned"
+      />
+    </FormGroup>
+            </Grid> */}
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                id="username"
-                label="Username"
-                defaultValue=""
-                variant="outlined"
-                fullWidth
-				className={classes.textField}
-				InputProps={{
-					startAdornment: (
-					  <InputAdornment position="start">
-						<AccountCircle />
-					  </InputAdornment>
-					),
-				  }}
-				
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                id="firstname"
-                label="First name"
-                defaultValue=""
-                variant="outlined"
-                fullWidth
-				className={classes.textField}
-				InputProps={{
-					startAdornment: (
-					  <InputAdornment position="start">
-						<AccountCircle />
-					  </InputAdornment>
-					),
-				  }}
-				
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                id="lastname"
-                label="Last name"
-                defaultValue=""
-                variant="outlined"
-                fullWidth
-				className={classes.textField}
-				InputProps={{
-					startAdornment: (
-					  <InputAdornment position="start">
-						<AccountCircle />
-					  </InputAdornment>
-					),
-				  }}
-				
-              />
-            </Grid>
-          </Grid>
-		  </div>
+          </div>
         </form>
       </TabPanel>
       <TabPanel value={value} index={1}>
