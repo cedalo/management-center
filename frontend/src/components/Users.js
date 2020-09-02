@@ -196,7 +196,7 @@ const Users = (props) => {
                 <ListItemText
                   primary={
                     <span>
-                      <b>{user.username}</b> ({user.clientid})
+                      <b>{user.username}</b>
                     </span>
                   }
                   secondary={
@@ -207,8 +207,9 @@ const Users = (props) => {
                         className={classes.inline}
                         color="textPrimary"
                       >
-                        {user.firstName} {user.lastName}
+                        {user.username}
                       </Typography>
+					  <span> —  {user.firstName} {user.lastName}</span>
 
                       {/* <div className={classes.badges}>
                         {user.groups.map((group) => (
