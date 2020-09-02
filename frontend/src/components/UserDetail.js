@@ -89,7 +89,8 @@ const UserDetail = (props) => {
       <Breadcrumbs maxItems={2} aria-label="breadcrumb">
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/security">Security</RouterLink>
-        <Typography color="textPrimary">Users</Typography>
+        <RouterLink to="/security/Users">Users</RouterLink>
+  		<Typography color="textPrimary">{user.username}</Typography>
       </Breadcrumbs>
       <br />
       <Tabs
