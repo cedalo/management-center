@@ -82,7 +82,29 @@ const UserDetail = (props) => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  const { user } = props;
+  //   const { user } = props;
+  // TODO: get current user
+  const user = {
+    clientid: "mosquitto-client-1",
+    username: "maxmustermann",
+    firstName: "Max",
+    lastName: "Mustermann",
+    password: "secret",
+    banned: false,
+    connectionRate: 0,
+    messageRate: 0,
+    policyName: "",
+    groups: [
+      {
+        name: "admins",
+        priority: 0,
+      },
+      {
+        name: "example",
+        priority: 0,
+      },
+    ],
+  };
 
   return (
     <div className={classes.root}>
