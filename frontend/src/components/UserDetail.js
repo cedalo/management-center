@@ -202,7 +202,52 @@ const UserDetail = (props) => {
         </form>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Credentials
+        <form className={classes.form} noValidate autoComplete="off">
+          <div className={classes.margin}>
+            <Grid container spacing={1} alignItems="flex-end">
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  id="password"
+                  label="Password"
+				  value={user.password}
+                  defaultValue=""
+                  variant="outlined"
+                  fullWidth
+                  type="password"
+                  className={classes.textField}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <PasswordIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  id="password-confirm"
+				  label="Confirm password"
+				  value={user.password}
+                  defaultValue=""
+                  variant="outlined"
+                  fullWidth
+                  type="password"
+                  className={classes.textField}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <PasswordIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </div>
+        </form>
       </TabPanel>
       <TabPanel value={value} index={2}>
 	  <List className={classes.root}>
