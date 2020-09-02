@@ -187,7 +187,7 @@ const Users = (props) => {
         <List className={classes.root}>
           {users.map((user) => (
             <React.Fragment>
-              <ListItem alignItems="flex-start">
+              <ListItem alignItems="flex-start" component={RouterLink} to="users/detail">
                 <ListItemAvatar>
                   <Avatar>
                     <UserIcon />
