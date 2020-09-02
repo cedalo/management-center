@@ -205,7 +205,24 @@ const UserDetail = (props) => {
         Credentials
       </TabPanel>
       <TabPanel value={value} index={2}>
-        Groups
+	  <List className={classes.root}>
+          {user.groups?.map((group) => (
+            <React.Fragment>
+              <ListItem button>
+                <ListItemText
+                  primary={group.name}
+                  secondary={<span>Priority: {group.priority}</span>}
+                />
+                <ListItemSecondaryAction>
+                  <IconButton edge="end" aria-label="delete">
+                    <DeleteIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+              <Divider variant="inset" component="li" />
+            </React.Fragment>
+          ))}
+        </List>
       </TabPanel>
     </div>
   );
