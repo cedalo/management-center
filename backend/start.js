@@ -1,8 +1,12 @@
 const WebSocket = require("ws");
 const mqtt = require("mqtt");
-const config = require("./config.json");
 
 const MOSQUITTO_PROXY_PORT = process.env.MOSQUITTO_PROXY_PORT || 8088;
+const MOSQUITTO_UI_PROXY_CONFIG_DIR = process.env.MOSQUITTO_UI_PROXY_PORT || "../config/config.json";
+
+
+// TODO: add error handling
+const config = require(MOSQUITTO_UI_PROXY_CONFIG_DIR);
 
 const wss = new WebSocket.Server({
   port: MOSQUITTO_PROXY_PORT,
