@@ -1,0 +1,32 @@
+{
+	"connections": [
+		{
+			"name": "Mosquitto 1",
+			"url": "mqtt://localhost:1885",
+			"credentials": {
+				"username": "cedalo",
+				"password": "cedalo"
+			}
+		},
+		{
+			"name": "Mosquitto 2",
+			"url": "mqtt://localhost:1886",
+			"credentials": {
+				"username": "cedalo",
+				"password": "cedalo"
+			}
+		},
+		{
+			"name": "Mosquitto 3",
+			"url": "mqtt://localhost:1887",
+			"credentials": {
+				"username": "cedalo",
+				"password": "cedalo"
+			}
+		},
+		{
+			"name": "Mosquitto Mock API",
+			"url": "mqtt://localhost:1888"
+		}
+	]
+}
