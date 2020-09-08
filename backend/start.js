@@ -85,7 +85,7 @@ connections.forEach((connection) => {
 });
 
 console.log(
-  `Started Mosquitto proxy at http://localhost:${MOSQUITTO_PROXY_PORT}`
+  `Started Mosquitto proxy at http://localhost:${MOSQUITTO_UI_PROXY_PORT}`
 );
 
 
