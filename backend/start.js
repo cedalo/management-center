@@ -113,6 +113,8 @@ const handleCommandMessage = async (message, client) => {
   const broker = clientBrokerMappings.get(client);
   if (broker) {
 	// TODO: send MQTT message to Mosquitto
+	// TODO: get correct topic
+	broker.publish('$CONTROL/user-management/v1', JSON.stringify(command));
 	const response = {
 		done: true,
 	};
