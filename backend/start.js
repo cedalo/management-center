@@ -72,6 +72,14 @@ connections.forEach((connection) => {
 		if (topic.startsWith("$SYS")) {
 		  updateSystemTopics(system, topic, message);
 		  sendSystemStatusUpdate(system, brokerClient);
+		} else if (
+			// TODO: change topic
+			topic.startsWith("$CONTROL/v1/response")
+		) {
+			// TODO: handle broker response message
+			console.log("topic")
+			console.log(topic)
+			console.log(message.toString());
 		} else {
 		  updateTopicTree(topicTree, topic, message);
 		  sendTopicTreeUpdate(topicTree, brokerClient);
@@ -85,10 +93,25 @@ connections.forEach((connection) => {
 });
 
 console.log(
-  `Started Mosquitto proxy at http://localhost:${MOSQUITTO_PROXY_PORT}`
+  `Started Mosquitto proxy at http://localhost:${MOSQUITTO_UI_PROXY_PORT}`
 );
 
 
+const deletePendingRequest = (requestId, requests) => {
+	const request = requests.get(requestId);
+	if (request) {
+		clearTimeout(request.timeoutId);
+		requests.delete(requestId);
+	}
+	return request;
+};
+const timeoutHandler = (requestId, requests) => {
+	const { reject } = deletePendingRequest(requestId, requests);
+	reject({
+		message: 'Mosquitto Proxy: Timeout',
+		requestId
+	});
+};
 
 const handleCommandMessage = async (message, client) => {
   const { command } = message;
@@ -98,6 +121,8 @@ const handleCommandMessage = async (message, client) => {
   const broker = clientBrokerMappings.get(client);
   if (broker) {
 	// TODO: send MQTT message to Mosquitto
+	// TODO: get correct topic
+	broker.publish('$CONTROL/user-management/v1', JSON.stringify(command));
 	const response = {
 		done: true,
 	};
@@ -108,10 +133,13 @@ const handleCommandMessage = async (message, client) => {
 };
 
 const connectToBroker = (brokerName, client) => {
-	const { broker, system, topicTree } = brokerConnections.get(brokerName);
-	clientBrokerMappings.set(client, broker);
-	sendSystemStatusUpdate(system, broker);
-	sendTopicTreeUpdate(topicTree, broker);
+	const brokerConnection = brokerConnections.get(brokerName);
+	if (brokerConnection) {
+		const { broker, system, topicTree } = brokerConnection;
+		clientBrokerMappings.set(client, broker);
+		sendSystemStatusUpdate(system, broker);
+		sendTopicTreeUpdate(topicTree, broker);
+	}
 }
 
 const disconnectFromBroker = (brokerName, client) => {
