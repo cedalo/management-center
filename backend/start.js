@@ -89,6 +89,13 @@ console.log(
 );
 
 
+const timeoutHandler = (requestId, requests) => {
+	const { reject } = deletePendingRequest(requestId, requests);
+	reject({
+		message: 'Mosquitto Proxy: Timeout',
+		requestId
+	});
+};
 
 const handleCommandMessage = async (message, client) => {
   const { command } = message;
