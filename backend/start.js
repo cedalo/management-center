@@ -108,10 +108,13 @@ const handleCommandMessage = async (message, client) => {
 };
 
 const connectToBroker = (brokerName, client) => {
-	const { broker, system, topicTree } = brokerConnections.get(brokerName);
-	clientBrokerMappings.set(client, broker);
-	sendSystemStatusUpdate(system, broker);
-	sendTopicTreeUpdate(topicTree, broker);
+	const brokerConnection = brokerConnections.get(brokerName);
+	if (brokerConnection) {
+		const { broker, system, topicTree } = brokerConnection;
+		clientBrokerMappings.set(client, broker);
+		sendSystemStatusUpdate(system, broker);
+		sendTopicTreeUpdate(topicTree, broker);
+	}
 }
 
 const disconnectFromBroker = (brokerName, client) => {
