@@ -72,6 +72,14 @@ connections.forEach((connection) => {
 		if (topic.startsWith("$SYS")) {
 		  updateSystemTopics(system, topic, message);
 		  sendSystemStatusUpdate(system, brokerClient);
+		} else if (
+			// TODO: change topic
+			topic.startsWith("$CONTROL/v1/response")
+		) {
+			// TODO: handle broker response message
+			console.log("topic")
+			console.log(topic)
+			console.log(message.toString());
 		} else {
 		  updateTopicTree(topicTree, topic, message);
 		  sendTopicTreeUpdate(topicTree, brokerClient);
