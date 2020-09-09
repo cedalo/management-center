@@ -1,7 +1,7 @@
 import React, { createContext } from 'react'
 import WS_BASE from './config';
 import { useDispatch } from 'react-redux';
-import { updateBrokerConnections, updateSystemStatus, updateTopicTree } from '../actions/actions';
+import { updateBrokerConfigurations, updateBrokerConnections, updateSystemStatus, updateTopicTree } from '../actions/actions';
 import WebMosquittoClient from '../client/WebMosquittoClient';
 
 const WebSocketContext = createContext(null)
@@ -31,6 +31,10 @@ export default ({ children }) => {
 			.then(brokerConnections => {
 				dispatch(updateBrokerConnections(brokerConnections));
 			})
+			.then(() => client.getBrokerConfigurations())
+			.then(brokerConfigurations => {
+				dispatch(updateBrokerConfigurations(brokerConfigurations));
+			});
 
 		client.on('system_status', (message) => {
 			console.log(message);
