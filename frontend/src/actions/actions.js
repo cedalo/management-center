@@ -1,11 +1,19 @@
 import * as ActionTypes from '../constants/ActionTypes';
 
+export function updateBrokerConfigurations(update){
+    return {
+        type: ActionTypes.UPDATE_BROKER_CONFIGURATIONS,
+        update
+    }
+}
+
 export function updateBrokerConnections(update){
     return {
         type: ActionTypes.UPDATE_BROKER_CONNECTIONS,
         update
     }
 }
+
 
 export function updateSystemStatus(update){
     return {
