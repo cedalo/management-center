@@ -39,6 +39,14 @@ function Security() {
         </Grid>
         <Grid item lg={4} sm={6} xl={4} xs={12}>
           <HomeCard
+            title="Configurations"
+            description="Manage configurations"
+            image={"settings.png"}
+            link="/system/configurations"
+          />
+        </Grid>
+        <Grid item lg={4} sm={6} xl={4} xs={12}>
+          <HomeCard
             title="Settings"
             description="Manage settings"
             image={"settings.png"}
