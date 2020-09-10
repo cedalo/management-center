@@ -2,7 +2,7 @@ const mosca = require('mosca');
 const mqtt = require('mqtt');
 
 const settings = {
-  port: 1888
+  port: 1889
 };
 
 let mockAPI = null;
