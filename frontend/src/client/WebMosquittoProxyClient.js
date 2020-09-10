@@ -1,7 +1,7 @@
-const BaseMosquittoClient = require('./BaseMosquittoClient');
+import BaseMosquittoClient from './BaseMosquittoProxyClient';
 
-module.exports = class WebMosquittoClient extends BaseMosquittoClient {
-	constructor({ name = 'Web Mosquitto Client', defaultListener } = {}) {
+export default class WebMosquittoProxyClient extends BaseMosquittoClient {
+	constructor({ name = 'Web Mosquitto Proxy Client', defaultListener } = {}) {
 		super({ name, logger: console, defaultListener });
 	}
 
