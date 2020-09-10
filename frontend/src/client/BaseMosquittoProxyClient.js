@@ -17,16 +17,16 @@ const deletePendingRequest = (requestId, requests) => {
 const timeoutHandler = (requestId, requests) => {
 	const { reject } = deletePendingRequest(requestId, requests);
 	reject({
-		message: 'BaseMosquittoClient: Timeout',
+		message: 'BaseMosquittoProxyClient: Timeout',
 		requestId
 	});
 };
 
 const createID = () =>  uuid();
 
-module.exports = class BaseMosquittoClient {
+export default class BaseMosquittoProxyClient {
 	constructor({ name, logger, defaultListener } = {}) {
-		this.name = name || 'Default base Mosquitto client';
+		this.name = name || 'Default Base Mosquitto Proxy Client';
 		this._logger = logger || {
 			log() {},
 			info() {},

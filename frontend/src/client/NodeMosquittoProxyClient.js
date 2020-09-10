@@ -1,8 +1,8 @@
 const WebSocket = require('ws');
-const BaseMosquittoClient = require('./BaseMosquittoClient');
+const BaseMosquittoClient = require('./BaseMosquittoProxyClient');
 
-module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
-	constructor({ name = 'Node Mosquitto Client', logger } = {}) {
+module.exports = class NodeMosquittoProxyClient extends BaseMosquittoClient {
+	constructor({ name = 'Node Mosquitto Proxy Client', logger } = {}) {
 		super({ name, logger: logger });
 	}
 
