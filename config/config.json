@@ -25,8 +25,16 @@
 			}
 		},
 		{
-			"name": "Mosquitto Mock API",
-			"url": "mqtt://localhost:1888"
+			"name": "Mosquitto 2.0 Preview",
+			"url": "mqtt://localhost:1888",
+			"credentials": {
+				"username": "cedalo",
+				"password": "cedalo"
+			}
+		},
+		{
+			"name": "Mosquitto 2.0 Mock API",
+			"url": "mqtt://localhost:1889"
 		}
 	]
 }
