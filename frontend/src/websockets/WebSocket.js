@@ -2,7 +2,7 @@ import React, { createContext } from 'react'
 import WS_BASE from './config';
 import { useDispatch } from 'react-redux';
 import { updateBrokerConfigurations, updateBrokerConnections, updateSystemStatus, updateTopicTree } from '../actions/actions';
-import WebMosquittoClient from '../client/WebMosquittoClient';
+import WebMosquittoProxyClient from '../client/WebMosquittoProxyClient';
 
 const WebSocketContext = createContext(null)
 
@@ -23,7 +23,7 @@ export default ({ children }) => {
 
     if (!client) {
 		// TOOD: integrate Mosquitto client
-		client = new WebMosquittoClient({ logger: console });
+		client = new WebMosquittoProxyClient({ logger: console });
 		client.connect({ socketEndpointURL: WS_BASE.url })
 			.then(() => client.connectToBroker('Mosquitto 1'))
 			.then(() => console.log('connected to broker'))
