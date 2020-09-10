@@ -1,21 +1,31 @@
 const mqtt = require('mqtt');
 
-const users = [];
+const users = new Map();
 
 const handleCommand = (message) => {
+	// TODO: Mock API only handles one command
 	console.log(message);
-	switch (message.command) {
+	const command = message.commands[0];
+	const { correlationData } = command;
+	switch (command.command) {
 		case 'addUser': {
-			const { username, password, clientid } = message;
-			users.push({
+			const { username, password, clientid } = command;
+			const user = {
 				username,
 				password,
 				clientid
-			});
-			break;
+			};
+			users.set(username, user);
+			return {
+				correlationData,
+				user
+			}
 		}
 		case 'listUsers': {
-			return users;
+			return {
+				correlationData,
+				users: Array.from(users.values())
+			};
 		}
 	}
 }
@@ -26,7 +36,7 @@ const sendResponse = (response) => {
 	mockAPI.publish("$CONTROL/v1/response", JSON.stringify(response));
 }
 
-const mockAPI = mqtt.connect('mqtt://localhost:1888');
+const mockAPI = mqtt.connect('mqtt://localhost:1889');
 mockAPI.on('connect', () => {
 	mockAPI.subscribe('$CONTROL/#', (error) => {
 		if (error) {
@@ -49,15 +59,11 @@ mockAPI.on('message', (topic, payload) => {
 	if (topic.startsWith('$CONTROL')) {
 		const parts = topic.split('/');
 		const type = parts[1];
-		console.log("payload.toString()")
-		console.log(payload.toString())
-		console.log("payload.toString()")
 		const message = JSON.parse(payload.toString());
 		switch (type) {
 			case 'user-management': {
 				const result = handleCommand(message);
-				console.log("handling")
-				console.log(message)
+				console.log(result)
 				sendResponse(result);
 				break;
 			}
