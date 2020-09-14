@@ -9,6 +9,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 	_connectBroker(url) {
 		return new Promise((resolve, reject) => {
 			const brokerClient = mqtt.connect(url);
+			this._client = brokerClient;
 			brokerClient.on("connect", () => {
 			  this.logger.log(`Connected to ${url}`);
 			  brokerClient.subscribe("$CONTROL/#", (error) => {
@@ -22,5 +23,13 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 			  brokerClient.on("message", (topic, message) => this._handleBrokerMessage(topic, message.toString()));
 			});
 		});
+	}
+
+	on(event, callback) {
+		this._client.on(event, callback);
+	}
+
+	subscribe(topic) {
+		this._client.subscribe(topic);
 	}
 };
