@@ -43,7 +43,7 @@ mockAPI.on('connect', () => {
 			console.error(error);
 		}
 	});
-	mockAPI.publish('$SYS/broker/version', 'Mosquitto Mock API (mosca)');
+	mockAPI.publish('$SYS/broker/version', 'Mosquitto 2.0 Mock API', { retain: true });
 	mockAPI.publish('$SYS/broker/clients/total', '15');
 	mockAPI.publish('$SYS/broker/clients/active', '5');
 	mockAPI.publish('$SYS/broker/clients/connected', '5');
