@@ -1,7 +1,7 @@
 import React, { createContext } from 'react'
 import WS_BASE from './config';
 import { useDispatch } from 'react-redux';
-import { updateBrokerConfigurations, updateBrokerConnections, updateSystemStatus, updateTopicTree } from '../actions/actions';
+import { updateUsers, updateBrokerConfigurations, updateBrokerConnections, updateSystemStatus, updateTopicTree } from '../actions/actions';
 import WebMosquittoProxyClient from '../client/WebMosquittoProxyClient';
 
 const WebSocketContext = createContext(null)
@@ -25,7 +25,7 @@ export default ({ children }) => {
 		// TOOD: integrate Mosquitto client
 		client = new WebMosquittoProxyClient({ logger: console });
 		client.connect({ socketEndpointURL: WS_BASE.url })
-			.then(() => client.connectToBroker('Mosquitto 1'))
+			.then(() => client.connectToBroker('Mosquitto 2.0 Mock API'))
 			.then(() => console.log('connected to broker'))
 			.then(() => client.getBrokerConnections())
 			.then(brokerConnections => {
@@ -34,6 +34,10 @@ export default ({ children }) => {
 			.then(() => client.getBrokerConfigurations())
 			.then(brokerConfigurations => {
 				dispatch(updateBrokerConfigurations(brokerConfigurations));
+			})
+			.then(() => client.listUsers())
+			.then(users => {
+				dispatch(updateUsers(users));
 			});
 
 		client.on('system_status', (message) => {
