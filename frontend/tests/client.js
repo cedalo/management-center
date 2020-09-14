@@ -1,12 +1,12 @@
-const NodeMosquittoClient = require('../src/client/NodeMosquittoClient');
+const NodeMosquittoProxyClient = require('../src/client/NodeMosquittoProxyClient');
 
 const MOSQUITTO_PROXY_URL = process.env.MOSQUITTO_PROXY_URL || 'ws://localhost';
 const MOSQUITTO_PROXY_PORT = process.env.MOSQUITTO_PROXY_PORT || 8088;
 
 (async () => {
-	const client1 = new NodeMosquittoClient({ /* logger: console */ });
-	const client2 = new NodeMosquittoClient({ /* logger: console */ });
-	const client3 = new NodeMosquittoClient({ /* logger: console */ });
+	const client1 = new NodeMosquittoProxyClient({ /* logger: console */ });
+	const client2 = new NodeMosquittoProxyClient({ /* logger: console */ });
+	const client3 = new NodeMosquittoProxyClient({ /* logger: console */ });
 	try {
 		await client1.connect({ socketEndpointURL: `${MOSQUITTO_PROXY_URL}:${MOSQUITTO_PROXY_PORT}` });
 		await client1.connectToBroker('Mosquitto 1');
@@ -45,7 +45,7 @@ const MOSQUITTO_PROXY_PORT = process.env.MOSQUITTO_PROXY_PORT || 8088;
 });
 
 (async () => {
-	const client = new NodeMosquittoClient({ /* logger: console */ });
+	const client = new NodeMosquittoProxyClient({ /* logger: console */ });
 	try {
 		await client.connect({ socketEndpointURL: `${MOSQUITTO_PROXY_URL}:${MOSQUITTO_PROXY_PORT}` });
 		await client.connectToBroker('Mosquitto Mock API');
