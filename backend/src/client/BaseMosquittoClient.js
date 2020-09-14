@@ -159,23 +159,25 @@ module.exports = class BaseMosquittoClient {
   }
 
   _handleBrokerMessage(topic, message) {
-	const parsedMessage = JSON.parse(message);
-    if (topic === "$CONTROL/v1/response") {
-      const request = deletePendingRequest(
-        parsedMessage.correlationData,
-        this._requests
-      );
-      if (request) {
-        if (topic === "$CONTROL/v1/response") {
-          this.logger.debug("Got response from Mosquitto", parsedMessage);
-          request.resolve(parsedMessage);
-        } else {
-          request.reject(parsedMessage);
-        }
-      }
-    } else if (parsedMessage.type === "event") {
-      this._handleEvent(parsedMessage.event);
-    }
+	  if (topic.startsWith('$CONTROL')) {
+		const parsedMessage = JSON.parse(message);
+		if (topic === "$CONTROL/v1/response") {
+		  const request = deletePendingRequest(
+			parsedMessage.correlationData,
+			this._requests
+		  );
+		  if (request) {
+			if (topic === "$CONTROL/v1/response") {
+			  this.logger.debug("Got response from Mosquitto", parsedMessage);
+			  request.resolve(parsedMessage);
+			} else {
+			  request.reject(parsedMessage);
+			}
+		  }
+		} else if (parsedMessage.type === "event") {
+		  this._handleEvent(parsedMessage.event);
+		}
+	  }
   }
 
   _handleEvent(event) {
