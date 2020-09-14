@@ -1,5 +1,12 @@
 import * as ActionTypes from '../constants/ActionTypes';
 
+export function updateUsers(update){
+    return {
+        type: ActionTypes.UPDATE_USERS,
+        update
+    }
+}
+
 export function updateBrokerConfigurations(update){
     return {
         type: ActionTypes.UPDATE_BROKER_CONFIGURATIONS,
