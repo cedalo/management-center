@@ -1,5 +1,6 @@
 const WebSocket = require("ws");
 const mqtt = require("mqtt");
+const NodeMosquittoClient = require("./src/client/NodeMosquittoClient");
 
 const MOSQUITTO_UI_PROXY_CONFIG_DIR = process.env.MOSQUITTO_UI_PROXY_PORT || "../config/config.json";
 const MOSQUITTO_UI_PROXY_PORT = process.env.MOSQUITTO_UI_PROXY_PORT || 8088;
@@ -46,15 +47,25 @@ const clientConnections = new Map();
 const clientBrokerMappings = new Map();
 
 const connections = config.connections || [];
-connections.forEach((connection) => {
+connections.forEach(async (connection) => {
 	const system = {};
 	const topicTree = {};
-	const brokerClient = mqtt.connect(connection.url, {
-		username: connection.credentials?.username,
-		password: connection.credentials?.password
-	  });
-	brokerClient.on("connect", () => {
-		console.log(`Connected to '${connection.name}' at ${connection.url}`);
+	const brokerClient = new NodeMosquittoClient({ /* logger: console */ });
+	console.log(`Connecting to ${connection.url}`);
+	try {
+		await brokerClient.connect({
+		  mqttEndpointURL: connection.url,
+		});
+	} catch (error) {
+		console.error(error);
+	}
+	console.log(`Connected to '${connection.name}' at ${connection.url}`);
+	// const brokerClient = mqtt.connect(connection.url, {
+	// 	username: connection.credentials?.username,
+	// 	password: connection.credentials?.password
+	//   });
+	// brokerClient.on("connect", () => {
+	// 	console.log(`Connected to '${connection.name}' at ${connection.url}`);
 		brokerClient.subscribe("$SYS/#", (error) => {
 			console.log(`Subscribed to system topics for '${connection.name}'`);
 		  if (error) {
@@ -67,7 +78,7 @@ connections.forEach((connection) => {
 			console.error(error);
 		  }
 		});
-	  });
+	//   });
 	  brokerClient.on("message", (topic, message) => {
 		if (topic.startsWith("$SYS")) {
 		  updateSystemTopics(system, topic, message);
@@ -115,15 +126,17 @@ const timeoutHandler = (requestId, requests) => {
 
 const handleCommandMessage = async (message, client) => {
   const { command } = message;
-  console.log("Sending command to Mosquitto");
-  console.log(command);
   // TODO: get broker the client is currently connected to
   const broker = clientBrokerMappings.get(client);
   if (broker) {
 	// TODO: send MQTT message to Mosquitto
 	// TODO: get correct topic
-	broker.publish('$CONTROL/user-management/v1', JSON.stringify(command));
+	// broker.publish('$CONTROL/user-management/v1', JSON.stringify(command));
+	const result = await broker.sendCommandMessage('user-management', command);
+	console.log(JSON.stringify(command))
+	console.log(JSON.stringify(result))
 	const response = {
+		data: result.users,
 		done: true,
 	};
 	return response;
@@ -165,6 +178,9 @@ const handleRequestMessage = async (message, client) => {
 			const connections = Array.from(brokerConnections.keys());
 			return connections;
 		}
+		case "getBrokerConfigurations": {
+			return config;
+		}
 	}
 	return {};
 }
@@ -180,7 +196,6 @@ const handleClientMessage = async (message, client) => {
 			  requestId: message.id,
 			  response,
 			};
-			console.log(responseMessage);
 			client.send(JSON.stringify(responseMessage));
 		} catch (error) {
 			const responseMessage = {
