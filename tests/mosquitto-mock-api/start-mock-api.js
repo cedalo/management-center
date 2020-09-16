@@ -116,6 +116,16 @@ const handleCommand = (message) => {
 				user
 			}
 		}
+		case 'removeUserFromGroup': {
+			const { username, group: groupName } = command;
+			const user = users.get(username);
+			user.groups = user.groups || [];
+			const result = user.groups.filter(group => group.name !== groupName);
+			user.groups = result;
+			return {
+				correlationData
+			}
+		}
 		case 'listUsers': {
 			return {
 				correlationData,
