@@ -264,7 +264,10 @@ Users.defaultProps = {
 };
 
 const mapStateToProps = (state) => {
-  return {};
+  return {
+	  // TODO: check object hierarchy
+	  users: state.users?.users,
+  };
 };
 
 export default connect(mapStateToProps)(Users);
