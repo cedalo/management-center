@@ -361,6 +361,12 @@ export default class BaseMosquittoProxyClient {
 		return users.length;
 	}
 
+	async deleteAllUsers() {
+		const users = await this.listUsers();
+		for (const user of users) {
+			await this.deleteUser(user.username);
+		}
+	}
 	on(event, listener) {
 		let listeners = this._eventListeners.get(event);
 		if (!listeners) {
