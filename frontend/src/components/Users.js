@@ -123,7 +123,7 @@ const Users = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map((user) => (
+              {users && users.map((user) => (
                 <TableRow
                   hover
                   key={user.id}
@@ -139,7 +139,7 @@ const Users = (props) => {
                   <TableCell>{user.firstName}</TableCell>
                   <TableCell>{user.lastName}</TableCell>
                   <TableCell className={classes.badges}>
-                    {user.groups.map((group) => (
+                    {user.groups && user.groups.map((group) => (
                       <Chip
                         icon={<GroupIcon />}
                         label={group.name}
