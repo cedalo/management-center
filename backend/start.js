@@ -194,7 +194,7 @@ const handleClientMessage = async (message, client) => {
 			  type: "response",
 			  command: message.command.command,
 			  requestId: message.id,
-			  response,
+			  ...response,
 			};
 			client.send(JSON.stringify(responseMessage));
 		} catch (error) {
