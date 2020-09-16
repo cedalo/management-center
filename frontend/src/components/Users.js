@@ -53,15 +53,16 @@ const useStyles = makeStyles((theme) => ({
 const userShape = PropTypes.shape({
   username: PropTypes.string,
   lastName: PropTypes.string,
-  firstName: PropTypes.string,
+//   lastName: PropTypes.string,
+//   firstName: PropTypes.string,
   groups: PropTypes.array,
 });
 
 const USER_TABLE_COLUMNS = [
   { id: "clientid", key: "Client ID" },
   { id: "username", key: "Username" },
-  { id: "firstName", key: "Firstname" },
-  { id: "lastName", key: "Lastname" },
+//   { id: "firstName", key: "Firstname" },
+//   { id: "lastName", key: "Lastname" },
   { id: "groups", key: "Groups" },
 ];
 
@@ -137,8 +138,8 @@ const Users = (props) => {
                   <TableCell>
                     <b>{user.username}</b>
                   </TableCell>
-                  <TableCell>{user.firstName}</TableCell>
-                  <TableCell>{user.lastName}</TableCell>
+                  {/* <TableCell>{user.firstName}</TableCell>
+                  <TableCell>{user.lastName}</TableCell> */}
                   <TableCell className={classes.badges}>
                     {user.groups && user.groups.map((group) => (
                       <Chip
@@ -210,7 +211,7 @@ const Users = (props) => {
                       >
                         {user.username}
                       </Typography>
-					  <span> —  {user.firstName} {user.lastName}</span>
+					  {/* <span> —  {user.firstName} {user.lastName}</span> */}
 
                       {/* <div className={classes.badges}>
                         {user.groups.map((group) => (
