@@ -26,7 +26,13 @@ const BrokerSelect = ({ brokerConnections, sendMessage }) => {
 	client.disconnectFromBroker(connection)
 		.then((response) => console.log(response))
 		.then(client.connectToBroker(event.target.value))
-		.then((response) => console.log(response));
+		.then(() => {
+			console.log('connected to broker');
+		})
+		.then(() => client.getBrokerConnections())
+		.then(brokerConnections => {
+			dispatch(updateBrokerConnections(brokerConnections));
+		})
 	setConnection(event.target.value);
   };
 
