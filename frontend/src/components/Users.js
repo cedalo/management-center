@@ -32,8 +32,6 @@ import moment from "moment";
 import PropTypes from "prop-types";
 import React from "react";
 
-import users from "../data/users";
-
 const remove = (array, item) => {
   const index = array.indexOf(item);
   array.splice(index, 1);
