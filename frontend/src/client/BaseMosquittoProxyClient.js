@@ -355,6 +355,12 @@ export default class BaseMosquittoProxyClient {
 		const users = await this.listUsers();
 		return users.find((user) => user.username === username);
 	}
+
+	async getUserCount() {
+		const users = await this.listUsers();
+		return users.length;
+	}
+
 	on(event, listener) {
 		let listeners = this._eventListeners.get(event);
 		if (!listeners) {
