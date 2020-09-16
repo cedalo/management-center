@@ -103,6 +103,19 @@ const handleCommand = (message) => {
 				correlationData
 			}
 		}
+		case 'addUserToGroup': {
+			const { username, group } = command;
+			const user = users.get(username);
+			user.groups = user.groups || [];
+			user.groups.push({
+				name: group,
+				// TODO: priority
+			});
+			return {
+				correlationData,
+				user
+			}
+		}
 		case 'listUsers': {
 			return {
 				correlationData,
