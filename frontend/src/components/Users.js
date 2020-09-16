@@ -52,7 +52,6 @@ const useStyles = makeStyles((theme) => ({
 
 const userShape = PropTypes.shape({
   username: PropTypes.string,
-  lastName: PropTypes.string,
 //   lastName: PropTypes.string,
 //   firstName: PropTypes.string,
   groups: PropTypes.array,
