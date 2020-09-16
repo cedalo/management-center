@@ -17,6 +17,12 @@ afterAll(async (callback) => {
 	await client.disconnectFromBroker(TEST_BROKER);
 	callback();
 });
+
+beforeEach(async (callback) => {
+	await client.deleteAll();
+	callback();
+});
+
 test('addUser()', async (callback) => {
 	const initialUsers = await client.getUserCount();
 	await client.addUser('maxmustermann', 'secret', 'fsdf');
