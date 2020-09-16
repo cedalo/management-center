@@ -77,8 +77,9 @@ const FormattedUserType = (props) => {
 const Users = (props) => {
   const classes = useStyles();
 
-  const {
-    /* users, */ onDeleteUser,
+  let {
+	users,
+	onDeleteUser,
     onSelectUser,
     onSort,
     sortBy,
