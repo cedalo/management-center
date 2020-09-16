@@ -37,6 +37,10 @@ const BrokerSelect = ({ brokerConnections, sendMessage }) => {
 		.then(brokerConfigurations => {
 			dispatch(updateBrokerConfigurations(brokerConfigurations));
 		})
+		.then(() => client.listUsers())
+		.then(users => {
+			dispatch(updateUsers(users));
+		});
 	setConnection(event.target.value);
   };
 
