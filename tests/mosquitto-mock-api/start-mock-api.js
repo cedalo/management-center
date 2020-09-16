@@ -1,73 +1,73 @@
 const mqtt = require('mqtt');
 
 const users = new Map();
-users.set('maxmustermann', {
-	"clientid": "mosquitto-client-mock-api1",
-	"username": "maxmustermann",
-	"firstName": "Max",
-	"lastName": "Mustermann",
-	"password": "",
-	"banned": false,
-	"connectionRate": 0,
-	"messageRate": 0,
-	"policyName": "",
-	"groups": [
-		{
-			"name": "admins",
-			"priority": 0
-		},
-		{
-			"name": "example",
-			"priority": 0
-		},
-	]
-});
-users.set('maxmustermann2', {
-	"clientid": "mosquitto-client-mock-api2",
-	"username": "maxmustermann2",
-	"firstName": "Max",
-	"lastName": "Mustermann",
-	"password": "",
-	"banned": false,
-	"connectionRate": 0,
-	"messageRate": 0,
-	"policyName": "",
-	"groups": [
-		{
-			"name": "admins",
-			"priority": 0
-		},
-		{
-			"name": "example",
-			"priority": 0
-		},
-		{
-			"name": "example2",
-			"priority": 0
-		},
-	]
-});
-users.set('maxmustermann3', {
-	"clientid": "mosquitto-client-mock-api3",
-	"username": "maxmustermann3",
-	"firstName": "Max",
-	"lastName": "Mustermann",
-	"password": "",
-	"banned": false,
-	"connectionRate": 0,
-	"messageRate": 0,
-	"policyName": "",
-	"groups": [
-		{
-			"name": "admins",
-			"priority": 0
-		},
-		{
-			"name": "example",
-			"priority": 0
-		},
-	]
-});
+// users.set('maxmustermann', {
+// 	"clientid": "mosquitto-client-mock-api1",
+// 	"username": "maxmustermann",
+// 	"firstName": "Max",
+// 	"lastName": "Mustermann",
+// 	"password": "",
+// 	"banned": false,
+// 	"connectionRate": 0,
+// 	"messageRate": 0,
+// 	"policyName": "",
+// 	"groups": [
+// 		{
+// 			"name": "admins",
+// 			"priority": 0
+// 		},
+// 		{
+// 			"name": "example",
+// 			"priority": 0
+// 		},
+// 	]
+// });
+// users.set('maxmustermann2', {
+// 	"clientid": "mosquitto-client-mock-api2",
+// 	"username": "maxmustermann2",
+// 	"firstName": "Max",
+// 	"lastName": "Mustermann",
+// 	"password": "",
+// 	"banned": false,
+// 	"connectionRate": 0,
+// 	"messageRate": 0,
+// 	"policyName": "",
+// 	"groups": [
+// 		{
+// 			"name": "admins",
+// 			"priority": 0
+// 		},
+// 		{
+// 			"name": "example",
+// 			"priority": 0
+// 		},
+// 		{
+// 			"name": "example2",
+// 			"priority": 0
+// 		},
+// 	]
+// });
+// users.set('maxmustermann3', {
+// 	"clientid": "mosquitto-client-mock-api3",
+// 	"username": "maxmustermann3",
+// 	"firstName": "Max",
+// 	"lastName": "Mustermann",
+// 	"password": "",
+// 	"banned": false,
+// 	"connectionRate": 0,
+// 	"messageRate": 0,
+// 	"policyName": "",
+// 	"groups": [
+// 		{
+// 			"name": "admins",
+// 			"priority": 0
+// 		},
+// 		{
+// 			"name": "example",
+// 			"priority": 0
+// 		},
+// 	]
+// });
 
 const handleCommand = (message) => {
 	// TODO: Mock API only handles one command
