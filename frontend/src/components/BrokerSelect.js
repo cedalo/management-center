@@ -33,6 +33,10 @@ const BrokerSelect = ({ brokerConnections, sendMessage }) => {
 		.then(brokerConnections => {
 			dispatch(updateBrokerConnections(brokerConnections));
 		})
+		.then(() => client.getBrokerConfigurations())
+		.then(brokerConfigurations => {
+			dispatch(updateBrokerConfigurations(brokerConfigurations));
+		})
 	setConnection(event.target.value);
   };
 
