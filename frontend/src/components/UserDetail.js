@@ -198,7 +198,7 @@ const UserDetail = (props) => {
                   }}
                 />
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <TextField
                   required
                   id="firstname"
@@ -221,7 +221,7 @@ const UserDetail = (props) => {
                   fullWidth
                   className={classes.textField}
                 />
-              </Grid>
+              </Grid> */}
               {/* <Grid item xs={12}>
 			<FormGroup row>
       <FormControlLabel
