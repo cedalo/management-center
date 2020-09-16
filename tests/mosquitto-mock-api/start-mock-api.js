@@ -88,6 +88,13 @@ const handleCommand = (message) => {
 				user
 			}
 		}
+		case 'deleteUser': {
+			const { username } = command;
+			users.delete(username);
+			return {
+				correlationData
+			}
+		}
 		case 'listUsers': {
 			return {
 				correlationData,
