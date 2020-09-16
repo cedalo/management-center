@@ -60,3 +60,15 @@ test('listUsers()', async (callback) => {
 	expect(users3.length).toBe(3);
 	callback();
 });
+
+test('getUser()', async (callback) => {
+	const user = {
+		username: 'maxmustermann',
+		password: 'secret',
+		clientid: 'fsdf'
+	}
+	await client.addUser(user.username, user.password, user.clientid);
+	const userLoaded = await client.getUser(user.username);
+	expect(userLoaded).toEqual(user);
+	callback();
+});
