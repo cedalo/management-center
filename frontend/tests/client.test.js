@@ -35,3 +35,28 @@ test('deleteUser()', async (callback) => {
 	expect(updatedUsers).toBe(initialUsers);
 	callback();
 });
+
+test('listUsers()', async (callback) => {
+	const users = await client.listUsers();
+	for (const user of users) {
+		expect(user.username).toBeDefined();
+		expect(user.password).toBeDefined();
+		expect(user.clientid).toBeDefined();
+	} 
+	callback();
+});
+
+test('listUsers()', async (callback) => {
+	const users0 = await client.listUsers();
+	expect(users0.length).toBe(0);
+	await client.addUser('maxmustermann', 'secret', 'fsdf');
+	const users1 = await client.listUsers();
+	expect(users1.length).toBe(1);
+	await client.addUser('maxmustermann2', 'secret', 'fsdf');
+	const users2 = await client.listUsers();
+	expect(users2.length).toBe(2);
+	await client.addUser('maxmustermann3', 'secret', 'fsdf');
+	const users3 = await client.listUsers();
+	expect(users3.length).toBe(3);
+	callback();
+});
