@@ -95,6 +95,14 @@ const handleCommand = (message) => {
 				correlationData
 			}
 		}
+		case 'setUserPassword': {
+			const { username, password } = command;
+			const user = users.get(username);
+			user.password = password;
+			return {
+				correlationData
+			}
+		}
 		case 'listUsers': {
 			return {
 				correlationData,
