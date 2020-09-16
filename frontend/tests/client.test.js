@@ -24,3 +24,14 @@ test('addUser()', async (callback) => {
 	expect(newUsers).toBe(initialUsers + 1);
 	callback();
 });
+
+test('deleteUser()', async (callback) => {
+	const initialUsers = await client.getUserCount();
+	await client.addUser('maxmustermann2', 'secret', 'fsdf');
+	const newUsers = await client.getUserCount();
+	expect(newUsers).toBe(initialUsers + 1);
+	await client.deleteUser('maxmustermann2');
+	const updatedUsers = await client.getUserCount();
+	expect(updatedUsers).toBe(initialUsers);
+	callback();
+});
