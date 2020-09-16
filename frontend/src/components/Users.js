@@ -85,6 +85,8 @@ const Users = (props) => {
     sortDirection,
   } = props;
 
+  users = users || [];
+
   const handleRemoveUserFromGroup = (user, group) => {
     remove(user.groups, group);
     user.username = "tests";
