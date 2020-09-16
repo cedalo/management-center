@@ -408,11 +408,12 @@ export default class BaseMosquittoProxyClient {
 	}
 
 	async sendCommand(command, id = createID()) {
-		return this.sendRequest({
+		const response = await this.sendRequest({
 			id,
 			type: 'command',
 			command
 		});
+		return response.data;
 	}
 
 	async sendRequest(request, timeout = this._timeout) {
