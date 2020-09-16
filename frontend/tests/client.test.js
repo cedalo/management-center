@@ -72,3 +72,17 @@ test('getUser()', async (callback) => {
 	expect(userLoaded).toEqual(user);
 	callback();
 });
+
+test('setUserPassword()', async (callback) => {
+	const user = {
+		username: 'maxmustermann',
+		password: 'secret',
+		clientid: 'fsdf'
+	}
+	const newPassword = 'newPassword';
+	await client.addUser(user.username, user.password, user.clientid);
+	await client.setUserPassword(user.username, newPassword);
+	const userLoaded = await client.getUser(user.username);
+	expect(userLoaded.password).toEqual(newPassword);
+	callback();
+});
