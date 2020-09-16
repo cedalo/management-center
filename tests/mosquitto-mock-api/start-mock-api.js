@@ -132,6 +132,14 @@ const handleCommand = (message) => {
 				users: Array.from(users.values())
 			};
 		}
+		case 'listGroups': {
+			console.log("listGroups");
+			console.log(Array.from(groups.values()))
+			return {
+				correlationData,
+				groups: Array.from(groups.values())
+			};
+		}
 	}
 }
 
