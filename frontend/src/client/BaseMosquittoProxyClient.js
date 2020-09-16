@@ -345,6 +345,16 @@ export default class BaseMosquittoProxyClient {
 		});
 	}
 
+	/**
+	 * ******************************************************************************************
+	 * Additional methods not specified in the Mosquitto API
+	 * ******************************************************************************************
+	 */
+
+	async getUser(username) {
+		const users = await this.listUsers();
+		return users.find((user) => user.username === username);
+	}
 	on(event, listener) {
 		let listeners = this._eventListeners.get(event);
 		if (!listeners) {
