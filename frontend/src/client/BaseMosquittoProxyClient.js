@@ -320,17 +320,19 @@ export default class BaseMosquittoProxyClient {
 	}
 
 	async listUsers(verbose = false) {
-		return this.sendCommand({
+		const users = await this.sendCommand({
 			command: 'listUsers',
 			verbose
-		});
+		}, API_USER_MANAGEMENT);
+		return users;
 	}
 
 	async listGroups(verbose = false) {
-		return this.sendCommand({
+		const groups = await this.sendCommand({
 			command: 'listGroups',
 			verbose
-		});
+		}, API_USER_MANAGEMENT);
+		return groups;
 	}
 
 	async listGroupUsers(group) {
