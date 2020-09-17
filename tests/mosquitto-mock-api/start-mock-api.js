@@ -73,7 +73,6 @@ const groups = new Map();
 
 const handleCommand = (message) => {
 	// TODO: Mock API only handles one command
-	console.log(message);
 	const command = message.commands[0];
 	const { correlationData } = command;
 	switch (command.command) {
@@ -135,8 +134,6 @@ const handleCommand = (message) => {
 			};
 		}
 		case 'listGroups': {
-			console.log("listGroups");
-			console.log(Array.from(groups.values()))
 			return {
 				correlationData,
 				groups: Array.from(groups.values())
@@ -172,8 +169,6 @@ const handleCommand = (message) => {
 }
 
 const sendResponse = (response) => {
-	console.log('send response');
-	console.log(response)
 	mockAPI.publish("$CONTROL/v1/response", JSON.stringify(response));
 }
 
@@ -196,7 +191,6 @@ mockAPI.on('connect', () => {
 });
 
 mockAPI.on('message', (topic, payload) => {
-	console.log(topic);
 	if (topic.startsWith('$CONTROL')) {
 		const parts = topic.split('/');
 		const type = parts[1];
@@ -204,7 +198,6 @@ mockAPI.on('message', (topic, payload) => {
 		switch (type) {
 			case 'user-management': {
 				const result = handleCommand(message);
-				console.log(result)
 				sendResponse(result);
 				break;
 			}
