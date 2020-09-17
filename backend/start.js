@@ -136,7 +136,7 @@ const handleCommandMessage = async (message, client) => {
 	console.log(JSON.stringify(command))
 	console.log(JSON.stringify(result))
 	const response = {
-		data: result.users,
+		data: result.data,
 		done: true,
 	};
 	return response;
