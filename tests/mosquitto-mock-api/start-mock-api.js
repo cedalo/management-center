@@ -102,6 +102,13 @@ const handleCommand = (message) => {
 				correlationData
 			}
 		}
+		case 'deleteGroup': {
+			const { groupname } = command;
+			groups.delete(groupname);
+			return {
+				correlationData
+			}
+		}
 		case 'setUserPassword': {
 			const { username, password } = command;
 			const user = users.get(username);
