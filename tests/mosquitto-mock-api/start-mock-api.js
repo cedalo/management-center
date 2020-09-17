@@ -111,13 +111,20 @@ const handleCommand = (message) => {
 			}
 		}
 		case 'addUserToGroup': {
-			const { username, group } = command;
+			const { username, group: groupName } = command;
 			const user = users.get(username);
 			user.groups = user.groups || [];
 			user.groups.push({
-				name: group,
+				name: groupName,
 				// TODO: priority
 			});
+			const group = groups.get(groupName);
+			if (group) {
+				group.users = group.users || [];
+				if (!group.users.includes(username)) {
+					group.users.push(username);
+				}
+			}
 			return {
 				correlationData,
 				data: user
