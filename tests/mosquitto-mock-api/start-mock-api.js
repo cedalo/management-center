@@ -92,7 +92,7 @@ const handleCommand = (message) => {
 			users.set(username, user);
 			return {
 				correlationData,
-				user
+				data: user
 			}
 		}
 		case 'deleteUser': {
@@ -120,7 +120,7 @@ const handleCommand = (message) => {
 			});
 			return {
 				correlationData,
-				user
+				data: user
 			}
 		}
 		case 'removeUserFromGroup': {
@@ -136,13 +136,13 @@ const handleCommand = (message) => {
 		case 'listUsers': {
 			return {
 				correlationData,
-				users: Array.from(users.values())
+				data: Array.from(users.values())
 			};
 		}
 		case 'listGroups': {
 			return {
 				correlationData,
-				groups: Array.from(groups.values())
+				data: Array.from(groups.values())
 			};
 		}
 		case 'addGroup': {
