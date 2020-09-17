@@ -152,4 +152,20 @@ test('listGroups()', async (callback) => {
 	expect(groups3.length).toBe(3);
 	callback();
 });
+
+test('listGroupUsers()', async (callback) => {
+	const user = {
+		username: 'maxmustermann',
+		password: 'secret',
+		clientid: 'fsdf'
+	}
+	const groupname = 'example';
+	await client.addUser(user.username, user.password, user.clientid);
+	await client.addGroup(groupname, 'examplePolicy');
+	const groupUsers = await client.listGroupUsers(groupname);
+	expect(groupUsers.length).toBe(0);
+	await client.addUserToGroup(user.username, groupname);
+	const groupUsers2 = await client.listGroupUsers(groupname);
+	expect(groupUsers2.length).toBe(1);
+	callback();
 });
