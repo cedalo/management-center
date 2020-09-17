@@ -92,3 +92,12 @@ test('setUserPassword()', async (callback) => {
 	expect(userLoaded.password).toEqual(newPassword);
 	callback();
 });
+
+test('addGroup()', async (callback) => {
+	const initialGroups = await client.getGroupCount();
+	await client.addGroup('example', 'examplePolicy');
+	const newGroups = await client.getGroupCount();
+	expect(newGroups).toBe(initialGroups + 1);
+	callback();
+});
+});
