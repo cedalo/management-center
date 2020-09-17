@@ -78,6 +78,12 @@ const handleCommand = (message) => {
 	switch (command.command) {
 		case 'addUser': {
 			const { username, password, clientid } = command;
+			if (users.get(username)) {
+				return {
+					correlationData,
+					error: 'User exists'
+				}
+			}
 			const user = {
 				username,
 				password,
