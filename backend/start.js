@@ -129,6 +129,8 @@ const handleCommandMessage = async (message, client) => {
   // TODO: get broker the client is currently connected to
   const broker = clientBrokerMappings.get(client);
   if (broker) {
+	const result = await broker.sendCommandMessage(api, command);
+	console.log(JSON.stringify(api))
 	console.log(JSON.stringify(command))
 	console.log(JSON.stringify(result))
 	const response = {
