@@ -40,6 +40,10 @@ const BrokerSelect = ({ brokerConnections, sendMessage }) => {
 		.then(() => client.listUsers())
 		.then(users => {
 			dispatch(updateUsers(users));
+		})
+		.then(() => client.listGroups())
+		.then(groups => {
+			dispatch(updateGroups(groups));
 		});
 	setConnection(event.target.value);
   };
