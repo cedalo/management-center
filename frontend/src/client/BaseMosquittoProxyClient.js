@@ -364,6 +364,10 @@ export default class BaseMosquittoProxyClient {
 		return users.length;
 	}
 
+	async getGroupCount() {
+		const groups = await this.listGroups();
+		return groups.length;
+	}
 	async deleteAllUsers() {
 		const users = await this.listUsers();
 		for (const user of users) {
