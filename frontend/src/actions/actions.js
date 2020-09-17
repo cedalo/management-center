@@ -7,6 +7,13 @@ export function updateUsers(update){
     }
 }
 
+export function updateGroups(update){
+    return {
+        type: ActionTypes.UPDATE_GROUPS,
+        update
+    }
+}
+
 export function updateBrokerConfigurations(update){
     return {
         type: ActionTypes.UPDATE_BROKER_CONFIGURATIONS,
