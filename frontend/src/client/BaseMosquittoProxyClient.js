@@ -368,6 +368,14 @@ export default class BaseMosquittoProxyClient {
 		const groups = await this.listGroups();
 		return groups.length;
 	}
+
+	async deleteGroup(groupname) {
+		return this.sendCommand({
+			command: 'deleteGroup',
+			groupname
+		}, API_USER_MANAGEMENT);
+	}
+
 	async deleteAllUsers() {
 		const users = await this.listUsers();
 		for (const user of users) {
