@@ -125,14 +125,10 @@ const timeoutHandler = (requestId, requests) => {
 };
 
 const handleCommandMessage = async (message, client) => {
-  const { command } = message;
+  const { api, command } = message;
   // TODO: get broker the client is currently connected to
   const broker = clientBrokerMappings.get(client);
   if (broker) {
-	// TODO: send MQTT message to Mosquitto
-	// TODO: get correct topic
-	// broker.publish('$CONTROL/user-management/v1', JSON.stringify(command));
-	const result = await broker.sendCommandMessage('user-management', command);
 	console.log(JSON.stringify(command))
 	console.log(JSON.stringify(result))
 	const response = {
