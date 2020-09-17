@@ -69,6 +69,8 @@ const users = new Map();
 // 	]
 // });
 
+const groups = new Map();
+
 const handleCommand = (message) => {
 	// TODO: Mock API only handles one command
 	console.log(message);
@@ -139,6 +141,24 @@ const handleCommand = (message) => {
 				correlationData,
 				groups: Array.from(groups.values())
 			};
+		}
+		case 'addGroup': {
+			const { groupname, policyName } = command;
+			if (groups.get(groupname)) {
+				return {
+					correlationData,
+					error: 'Group exists'
+				}
+			}
+			const group = {
+				groupname,
+				policyName
+			};
+			groups.set(groupname, group);
+			return {
+				correlationData,
+				data: group
+			}
 		}
 	}
 }
