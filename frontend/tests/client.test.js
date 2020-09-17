@@ -137,4 +137,19 @@ test('removeUserFromGroup()', async (callback) => {
 	expect(groupUsers3.length).toBe(0);
 	callback();
 });
+
+test('listGroups()', async (callback) => {
+	const groups0 = await client.listGroups();
+	expect(groups0.length).toBe(0);
+	await client.addGroup('exampleGroup1', 'examplePolicy');
+	const groups1 = await client.listGroups();
+	expect(groups1.length).toBe(1);
+	await client.addGroup('exampleGroup2', 'examplePolicy');
+	const groups2 = await client.listGroups();
+	expect(groups2.length).toBe(2);
+	await client.addGroup('exampleGroup3', 'examplePolicy');
+	const groups3 = await client.listGroups();
+	expect(groups3.length).toBe(3);
+	callback();
+});
 });
