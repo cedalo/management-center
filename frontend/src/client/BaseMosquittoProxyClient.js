@@ -5,6 +5,9 @@ const createError = (code, message) => ({
 	message
 });
 
+const API_USER_MANAGEMENT = 'user-management';
+const API_SECURITY_POLICY = 'security-policy';
+
 // TODO: merge with method deletePendingRequest()
 const deletePendingRequest = (requestId, requests) => {
 	const request = requests.get(requestId);
@@ -138,14 +141,14 @@ export default class BaseMosquittoProxyClient {
 			policy,
 			users,
 			groups
-		});
+		}, API_SECURITY_POLICY);
 	}
 
 	async deletePolicy(policyName) {
 		return this.sendCommand({
 			command: 'deletePolicy',
 			policyName
-		});
+		}, API_SECURITY_POLICY);
 	}
 
 	async replacePolicy(policyName, policy, users, groups) {
@@ -155,14 +158,14 @@ export default class BaseMosquittoProxyClient {
 			policy,
 			users,
 			groups
-		});
+		}, API_SECURITY_POLICY);
 	}
 
 	async getPolicy(policyName) {
 		return this.sendCommand({
 			command: 'getPolicy',
 			policyName
-		});
+		}, API_SECURITY_POLICY);
 	}
 
 	// TODO: should include user as parameter
@@ -170,7 +173,7 @@ export default class BaseMosquittoProxyClient {
 		return this.sendCommand({
 			command: 'setUserPolicy',
 			policyName
-		});
+		}, API_SECURITY_POLICY);
 	}
 
 	// TODO: should include user group as parameter
@@ -178,27 +181,27 @@ export default class BaseMosquittoProxyClient {
 		return this.sendCommand({
 			command: 'setGroupPolicy',
 			policyName
-		});
+		}, API_SECURITY_POLICY);
 	}
 
 	async listPolicies() {
 		return this.sendCommand({
 			command: 'listPolicies'
-		});
+		}, API_SECURITY_POLICY);
 	}
 
 	async setUserDefaultPolicy(policyName) {
 		return this.sendCommand({
 			command: 'setUserDefaultPolicy',
 			policyName
-		});
+		}, API_SECURITY_POLICY);
 	}
 
 	async setGroupDefaultPolicy(policyName) {
 		return this.sendCommand({
 			command: 'setGroupDefaultPolicy',
 			policyName
-		});
+		}, API_SECURITY_POLICY);
 	}
 
 	async addPolicyFeature(policyName, featureName) {
@@ -206,7 +209,7 @@ export default class BaseMosquittoProxyClient {
 			command: 'addPolicyFeature',
 			policyName,
 			featureName
-		});
+		}, API_SECURITY_POLICY);
 	}
 
 	async removePolicyFeature(policyName, featureName) {
@@ -214,7 +217,7 @@ export default class BaseMosquittoProxyClient {
 			command: 'removePolicyFeature',
 			policyName,
 			featureName
-		});
+		}, API_SECURITY_POLICY);
 	}
 
 	async addTopicAccessControlPublishWrite(policyName, topicFilter, maxQos = 2, allowRetain = true, maxPayloadSize = 1000, allow = false) {
@@ -227,7 +230,7 @@ export default class BaseMosquittoProxyClient {
 			allowRetain,
 			maxPayloadSize,
 			allow
-		});
+		}, API_SECURITY_POLICY);
 	}
 
 	async addTopicAccessControlPublishRead(policyName, topicFilter) {
@@ -236,7 +239,7 @@ export default class BaseMosquittoProxyClient {
 			type: 'publish-read',
 			policyName,
 			topicFilter
-		});
+		}, API_SECURITY_POLICY);
 	}
 
 	async addTopicAccessControlSubscribe(policyName, topicFilter, maxQos = 2, allow = true) {
@@ -247,7 +250,7 @@ export default class BaseMosquittoProxyClient {
 			topicFilter,
 			maxQos,
 			allow
-		});
+		}, API_SECURITY_POLICY);
 	}
 
 	async addTopicAccessControlSubscribeFixed(policyName, topicFilter, maxQos = 2, allow = true) {
@@ -258,7 +261,7 @@ export default class BaseMosquittoProxyClient {
 			topicFilter,
 			maxQos,
 			allow
-		});
+		}, API_SECURITY_POLICY);
 	}
 
 	/**
@@ -274,14 +277,14 @@ export default class BaseMosquittoProxyClient {
 			password,
 			clientid,
 			policyName
-		});
+		}, API_USER_MANAGEMENT);
 	}
 
 	async deleteUser(username) {
 		return this.sendCommand({
 			command: 'deleteUser',
 			username
-		});
+		}, API_USER_MANAGEMENT);
 	}
 
 	async setUserPassword(username, password) {
@@ -289,7 +292,7 @@ export default class BaseMosquittoProxyClient {
 			command: 'setUserPassword',
 			username,
 			password
-		});
+		}, API_USER_MANAGEMENT);
 	}
 
 	async addGroup(groupname, policyName) {
@@ -297,7 +300,7 @@ export default class BaseMosquittoProxyClient {
 			command: 'addGroup',
 			groupname,
 			policyName
-		});
+		}, API_USER_MANAGEMENT);
 	}
 
 	async addUserToGroup(username, group) {
@@ -305,7 +308,7 @@ export default class BaseMosquittoProxyClient {
 			command: 'addUserToGroup',
 			username,
 			group
-		});
+		}, API_USER_MANAGEMENT);
 	}
 
 	async removeUserFromGroup(username, group) {
@@ -313,7 +316,7 @@ export default class BaseMosquittoProxyClient {
 			command: 'removeUserFromGroup',
 			username,
 			group
-		});
+		}, API_USER_MANAGEMENT);
 	}
 
 	async listUsers(verbose = false) {
@@ -334,7 +337,7 @@ export default class BaseMosquittoProxyClient {
 		return this.sendCommand({
 			command: 'listGroupUsers',
 			group
-		});
+		}, API_USER_MANAGEMENT);
 	}
 
 	async kickClient(username, clientid) {
@@ -342,7 +345,7 @@ export default class BaseMosquittoProxyClient {
 			command: 'kickClient',
 			username,
 			clientid
-		});
+		}, API_USER_MANAGEMENT);
 	}
 
 	/**
@@ -407,9 +410,10 @@ export default class BaseMosquittoProxyClient {
 		return this._closeHandler;
 	}
 
-	async sendCommand(command, id = createID()) {
+	async sendCommand(command, api, id = createID()) {
 		const response = await this.sendRequest({
 			id,
+			api,
 			type: 'command',
 			command
 		});
