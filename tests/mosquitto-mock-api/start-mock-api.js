@@ -129,6 +129,15 @@ const handleCommand = (message) => {
 			user.groups = user.groups || [];
 			const result = user.groups.filter(group => group.name !== groupName);
 			user.groups = result;
+
+			const group = groups.get(groupName);
+			if (group) {
+				group.users = group.users || [];
+				if (group.users.includes(username)) {
+					const index = group.users.indexOf(username);
+					group.users.splice(index, 1);
+				}
+			}
 			return {
 				correlationData
 			}
