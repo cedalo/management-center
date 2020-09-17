@@ -380,6 +380,7 @@ export default class BaseMosquittoProxyClient {
 
 	async deleteAll() {
 		await this.deleteAllUsers();
+		await this.deleteAllGroups();
 	}
 
 	on(event, listener) {
