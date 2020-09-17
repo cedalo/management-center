@@ -160,6 +160,14 @@ const handleCommand = (message) => {
 				data: group
 			}
 		}
+		case 'listGroupUsers': {
+			const { group: groupName } = command;
+			const group = groups.get(groupName);
+			return {
+				correlationData,
+				data: group.users || []
+			}
+		}
 	}
 }
 
