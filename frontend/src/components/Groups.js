@@ -73,6 +73,8 @@ const Groups = (props) => {
 
   const onDeleteGroup = async (groupname) => {
 	  await client.deleteGroup(groupname);
+	  const groups = await client.listGroups();
+	  dispatch(updateGroups(groups));
   }
 
   const onRemoveUserFromGroup = async (username, group) => {
