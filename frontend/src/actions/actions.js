@@ -42,3 +42,10 @@ export function updateTopicTree(update){
         update
     }
 }
+
+export function deletedUser(update){
+    return {
+        type: ActionTypes.DELETED_USER,
+        update
+    }
+}
