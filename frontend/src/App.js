@@ -316,13 +316,23 @@ export default function App(props) {
                     </Drawer>
                   </Hidden> */}
                 </nav>
+			
                 <Container className={classes.container}>
                   <Switch>
+                    <Route path="/security/users/detail">
+                      <UserDetail />
+                    </Route>
                     <Route path="/security/users">
                       <Users />
                     </Route>
+                    <Route path="/security/groups/detail">
+                      <GroupDetail />
+                    </Route>
                     <Route path="/security/groups">
                       <Groups />
+                    </Route>
+                    <Route path="/security/policies/detail">
+                      <PolicyDetail />
                     </Route>
                     <Route path="/security/policies">
                       <Policies />
