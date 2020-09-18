@@ -349,6 +349,9 @@ export default function App(props) {
                     <Route path="/system/topics">
                       <TopicTree />
                     </Route>
+                    <Route path="/system/configurations">
+                      <Configurations />
+                    </Route>
                     <Route path="/system/settings">
                       <Settings />
                     </Route>
