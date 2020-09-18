@@ -87,7 +87,7 @@ const handleCommand = (message) => {
 			const user = {
 				username,
 				password,
-				clientid
+				clientid,
 			};
 			users.set(username, user);
 			return {
