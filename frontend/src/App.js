@@ -205,7 +205,12 @@ export default function App(props) {
           icon={<TopicTreeIcon />}
         />
         <ListItemLink
-          to="/settings"
+          to="/system/configurations"
+          primary="Configurations"
+          icon={<ConfigurationIcon />}
+        />
+        <ListItemLink
+          to="/system/settings"
           primary="Settings"
           icon={<SettingsIcon />}
         />
