@@ -70,6 +70,11 @@ const Groups = (props) => {
   const context = useContext(WebSocketContext);
   const dispatch = useDispatch();
   const { client } = context;
+
+  const onDeleteGroup = async (groupname) => {
+	  await client.deleteGroup(groupname);
+  }
+
   const onRemoveUserFromGroup = async (username, group) => {
 	await client.removeUserFromGroup(username, group);
 	const groups = await client.listGroups();
