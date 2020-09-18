@@ -24,6 +24,7 @@ export default ({ children }) => {
     if (!client) {
 		// TOOD: integrate Mosquitto client
 		client = new WebMosquittoProxyClient({ logger: console });
+		// TODO: merge with code from BrokerSelect
 		client.connect({ socketEndpointURL: WS_BASE.url })
 			.then(() => client.connectToBroker('Mosquitto 2.0 Mock API'))
 			.then(() => console.log('connected to broker'))
