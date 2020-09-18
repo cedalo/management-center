@@ -33,7 +33,9 @@ const BrokerSelect = ({ brokerConnections, sendMessage }) => {
   const handleConnectionChange = (event) => {
 	  const { client } = context;
 	client.disconnectFromBroker(connection)
-		.then((response) => console.log(response))
+		.then((response) => {
+			console.log(response);
+		})
 		.then(client.connectToBroker(event.target.value))
 		.then(() => {
 			console.log('connected to broker');
