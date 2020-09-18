@@ -1,7 +1,7 @@
 import React, { createContext } from 'react'
 import WS_BASE from './config';
 import { useDispatch } from 'react-redux';
-import { updateUsers, updateBrokerConfigurations, updateBrokerConnections, updateSystemStatus, updateTopicTree } from '../actions/actions';
+import { updateGroups, updateUsers, updateBrokerConfigurations, updateBrokerConnections, updateSystemStatus, updateTopicTree } from '../actions/actions';
 import WebMosquittoProxyClient from '../client/WebMosquittoProxyClient';
 
 const WebSocketContext = createContext(null)
@@ -38,6 +38,10 @@ export default ({ children }) => {
 			.then(() => client.listUsers())
 			.then(users => {
 				dispatch(updateUsers(users));
+			})
+			.then(() => client.listGroups())
+			.then(groups => {
+				dispatch(updateGroups(groups));
 			});
 
 		client.on('system_status', (message) => {
