@@ -67,8 +67,13 @@ const FormattedGroupType = (props) => {
 
 const Groups = (props) => {
   const classes = useStyles();
+  const context = useContext(WebSocketContext);
+  const dispatch = useDispatch();
+  const { client } = context;
   const onRemoveUserFromGroup = async (username, group) => {
 	await client.removeUserFromGroup(username, group);
+	const groups = await client.listGroups();
+	dispatch(updateGroups(groups));
 };
 
   const {
