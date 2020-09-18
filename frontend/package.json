@@ -6,7 +6,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+	"test": "react-scripts test",
+	"test-client": "npx jest tests/client.test.js --detectOpenHandles",
     "eject": "react-scripts eject"
   },
   "dependencies": {
@@ -34,5 +35,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "jest": "24"
   }
 }

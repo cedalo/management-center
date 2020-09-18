@@ -64,11 +64,8 @@ function a11yProps(index) {
   };
 }
 
-const userShape = PropTypes.shape({
-  username: PropTypes.string,
-  lastName: PropTypes.string,
-  firstName: PropTypes.string,
-  groups: PropTypes.array,
+const policyShape = PropTypes.shape({
+  policyName: PropTypes.string,
 });
 
 const useStyles = makeStyles((theme) => ({
@@ -90,33 +87,43 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const UserDetail = (props) => {
+const PolicyDetail = (props) => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
+  const [state, setState] = React.useState({
+    checkedA: true,
+    checkedB: true,
+  });
+
+  const handleBannedChange = (event) => {
+    setState({ ...state, [event.target.name]: event.target.checked });
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  //   const { user } = props;
-  // TODO: get current user
-  const user = {
-    clientid: "mosquitto-client-1",
-    username: "maxmustermann",
-    firstName: "Max",
-    lastName: "Mustermann",
-    password: "secret",
-    banned: false,
-    connectionRate: 0,
-    messageRate: 0,
+  //   const { policy } = props;
+  // TODO: get current policy
+  const policy = {
     policyName: "",
-    groups: [
+    features: [
       {
-        name: "admins",
-        priority: 0,
+        name: "user-management",
+        allow: true,
       },
       {
-        name: "example",
-        priority: 0,
+        name: "security-policy",
+        allow: true,
+      },
+    ],
+    topics: [
+      {
+        type: "publish-write",
+        topicFilter: "",
+        maxQos: 2,
+        allowRetain: true,
+        maxPayloadSize: 1000,
+        allow: false,
       },
     ],
   };
@@ -126,8 +133,8 @@ const UserDetail = (props) => {
       <Breadcrumbs maxItems={2} aria-label="breadcrumb">
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/security">Security</RouterLink>
-        <RouterLink to="/security/users">Users</RouterLink>
-  		<Typography color="textPrimary">{user.username}</Typography>
+        <RouterLink to="/security/policies">Policies</RouterLink>
+        <Typography color="textPrimary">{policy.policyName}</Typography>
       </Breadcrumbs>
       <br />
       <Tabs
@@ -135,7 +142,7 @@ const UserDetail = (props) => {
         onChange={handleChange}
         variant="scrollable"
         scrollButtons="off"
-        aria-label="User"
+        aria-label="Policy"
       >
         <Tab
           label="Details"
@@ -143,10 +150,22 @@ const UserDetail = (props) => {
           aria-label="details"
           {...a11yProps(0)}
         />
+        {/* <Tab
+          label="Features"
+          icon={<UserIcon />}
+          aria-label="features"
+          {...a11yProps(1)}
+        />
         <Tab
-          label="Credentials"
-          icon={<CredentialsIcon />}
-          aria-label="credentials"
+          label="Topics"
+          icon={<UserIcon />}
+          aria-label="topics"
+          {...a11yProps(2)}
+        /> */}
+        <Tab
+          label="Users"
+          icon={<UserIcon />}
+          aria-label="users"
           {...a11yProps(1)}
         />
         <Tab
@@ -155,6 +174,12 @@ const UserDetail = (props) => {
           aria-label="groups"
           {...a11yProps(2)}
         />
+        {/* <Tab
+          label="Policy"
+          icon={<GroupsIcon />}
+          aria-label="policy"
+          {...a11yProps(3)}
+        /> */}
       </Tabs>
       <TabPanel value={value} index={0}>
         <form className={classes.form} noValidate autoComplete="off">
@@ -163,12 +188,12 @@ const UserDetail = (props) => {
               <Grid item xs={12}>
                 <TextField
                   required
-                  id="client-id"
-                  label="Client ID"
-				  value={user.clientid}
+                  id="policy-name"
+                  label="Name"
+                  value={policy.policyName}
                   defaultValue=""
                   variant="outlined"
-				  fullWidth
+                  fullWidth
                   className={classes.textField}
                   InputProps={{
                     startAdornment: (
@@ -179,124 +204,34 @@ const UserDetail = (props) => {
                   }}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  id="username"
-				  label="Username"
-				  value={user.username}
-                  defaultValue=""
-                  variant="outlined"
-                  fullWidth
-                  className={classes.textField}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <AccountCircle />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-              {/* <Grid item xs={12}>
-                <TextField
-                  required
-                  id="firstname"
-                  label="First name"
-				  value={user.firstName}
-                  defaultValue=""
-                  variant="outlined"
-                  fullWidth
-                  className={classes.textField}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  id="lastname"
-				  value={user.lastName}
-                  label="Last name"
-                  defaultValue=""
-                  variant="outlined"
-                  fullWidth
-                  className={classes.textField}
-                />
-              </Grid> */}
-              {/* <Grid item xs={12}>
-			<FormGroup row>
-      <FormControlLabel
-        control={
-          <Switch
-            checked={state.checkedB}
-            onChange={handleBannedChange}
-            name="banned"
-            color="primary"
-          />
-        }
-        label="Banned"
-      />
-    </FormGroup>
-            </Grid> */}
             </Grid>
           </div>
         </form>
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <form className={classes.form} noValidate autoComplete="off">
-          <div className={classes.margin}>
-            <Grid container spacing={1} alignItems="flex-end">
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  id="password"
-                  label="Password"
-				  value={user.password}
-                  defaultValue=""
-                  variant="outlined"
-                  fullWidth
-                  type="password"
-                  className={classes.textField}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <PasswordIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  id="password-confirm"
-				  label="Confirm password"
-				  value={user.password}
-                  defaultValue=""
-                  variant="outlined"
-                  fullWidth
-                  type="password"
-                  className={classes.textField}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <PasswordIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-            </Grid>
-          </div>
-        </form>
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-	  <List className={classes.root}>
-          {user.groups?.map((group) => (
+        <List className={classes.root}>
+          {policy.features?.map((feature) => (
             <React.Fragment>
               <ListItem button>
                 <ListItemText
-                  primary={group.name}
-                  secondary={<span>Priority: {group.priority}</span>}
+                  primary={feature.name}
+                  secondary={<span>Allow: {feature.allow}</span>}
+                />
+                <ListItemSecondaryAction>
+                  <IconButton edge="end" aria-label="delete">
+                    <DeleteIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+              <Divider variant="inset" component="li" />
+            </React.Fragment>
+          ))}
+        </List>
+        <List className={classes.root}>
+          {policy.topics?.map((topic) => (
+            <React.Fragment>
+              <ListItem button>
+                <ListItemText
+                  primary={topic.type}
+                  secondary={<span>{topic.allow}</span>}
                 />
                 <ListItemSecondaryAction>
                   <IconButton edge="end" aria-label="delete">
@@ -309,16 +244,32 @@ const UserDetail = (props) => {
           ))}
         </List>
       </TabPanel>
+      <TabPanel value={value} index={1}>
+        <form className={classes.form} noValidate autoComplete="off">
+          <div className={classes.margin}>
+            <Grid container spacing={1} alignItems="flex-end">
+            </Grid>
+          </div>
+        </form>
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        <form className={classes.form} noValidate autoComplete="off">
+          <div className={classes.margin}>
+            <Grid container spacing={1} alignItems="flex-end">
+            </Grid>
+          </div>
+        </form>
+      </TabPanel>
     </div>
   );
 };
 
-UserDetail.propTypes = {
-  user: userShape.isRequired,
+PolicyDetail.propTypes = {
+  policy: policyShape.isRequired,
 };
 
 const mapStateToProps = (state) => {
   return {};
 };
 
-export default connect(mapStateToProps)(UserDetail);
+export default connect(mapStateToProps)(PolicyDetail);

@@ -1,4 +1,7 @@
-import { connect } from "react-redux";
+import moment from "moment";
+import PropTypes from "prop-types";
+import React, { useContext } from "react";
+import { connect, useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui/core/Chip";
 import Fab from "@material-ui/core/Fab";
@@ -28,16 +31,8 @@ import GroupIcon from "@material-ui/icons/Group";
 import UserIcon from "@material-ui/icons/Person";
 import { Link as RouterLink } from "react-router-dom";
 
-import moment from "moment";
-import PropTypes from "prop-types";
-import React from "react";
-
-import groups from "../data/groups";
-
-const remove = (array, item) => {
-  const index = array.indexOf(item);
-  array.splice(index, 1);
-};
+import { WebSocketContext } from '../websockets/WebSocket';
+import { updateGroups } from '../actions/actions';
 
 const useStyles = makeStyles((theme) => ({
   badges: {
@@ -72,19 +67,29 @@ const FormattedGroupType = (props) => {
 
 const Groups = (props) => {
   const classes = useStyles();
+  const context = useContext(WebSocketContext);
+  const dispatch = useDispatch();
+  const { client } = context;
+
+  const onDeleteGroup = async (groupname) => {
+	  await client.deleteGroup(groupname);
+	  const groups = await client.listGroups();
+	  dispatch(updateGroups(groups));
+  }
+
+  const onRemoveUserFromGroup = async (username, group) => {
+	await client.removeUserFromGroup(username, group);
+	const groups = await client.listGroups();
+	dispatch(updateGroups(groups));
+};
+
   const {
-    /* groups, */ onDeleteGroup,
+	groups = [],
     onSelectGroup,
     onSort,
     sortBy,
     sortDirection,
   } = props;
-
-  const handleRemoveUserFromGroup = (user, group) => {
-    remove(user.groups, group);
-    user.username = "tests";
-    console.log(user);
-  };
 
   return (
     <div>
@@ -117,7 +122,7 @@ const Groups = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {groups.map((group) => (
+              {groups && groups.map((group) => (
                 <TableRow
                   hover
                   key={group.groupname}
@@ -129,13 +134,13 @@ const Groups = (props) => {
                   </TableCell>
                   {/* <TableCell>{moment(group.lastModified).fromNow()}</TableCell> */}
                   <TableCell className={classes.badges}>
-                    {group.users.map((user) => (
+                    {group.users && group.users.map((user) => (
                       <Chip
                         icon={<UserIcon />}
                         label={user}
                         onDelete={(event) => {
                           event.stopPropagation();
-                          handleRemoveUserFromGroup(user, group.groupname);
+                          onRemoveUserFromGroup(user, group.groupname);
                         }}
                         color="secondary"
 						variant="outlined"
@@ -226,7 +231,6 @@ Groups.propTypes = {
   groups: PropTypes.arrayOf(groupShape).isRequired,
   sortBy: PropTypes.string,
   sortDirection: PropTypes.string,
-  onDeleteGroup: PropTypes.func.isRequired,
   onSelectGroup: PropTypes.func.isRequired,
   onSort: PropTypes.func.isRequired,
 };
@@ -237,7 +241,10 @@ Groups.defaultProps = {
 };
 
 const mapStateToProps = (state) => {
-  return {};
+  return {
+		// TODO: check object hierarchy
+		groups: state.groups?.groups,
+  };
 };
 
 export default connect(mapStateToProps)(Groups);

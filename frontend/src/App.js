@@ -24,10 +24,17 @@ import PolicyIcon from "@material-ui/icons/Policy";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
 import SettingsIcon from "@material-ui/icons/Settings";
 import SvgIcon from "@material-ui/core/SvgIcon";
+import ConfigurationIcon from '@material-ui/icons/Tune';
 import StreamsIcon from "@material-ui/icons/SettingsInputAntenna";
 import TopicTreeIcon from "@material-ui/icons/AccountTree";
 import Container from "@material-ui/core/Container";
 import BrokerSelect from "./components/BrokerSelect";
+import BottomNavigation from '@material-ui/core/BottomNavigation';
+import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
+import FolderIcon from '@material-ui/icons/Folder';
+import RestoreIcon from '@material-ui/icons/Restore';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
 import Logo from "./components/Logo";
 import Groups from "./components/Groups";
 import Hidden from "@material-ui/core/Hidden";
@@ -36,10 +43,14 @@ import Security from "./components/Security";
 import System from "./components/System";
 import Login from "./components/Login";
 import Policies from "./components/Policies";
+import Configurations from "./components/Configurations";
 import Settings from "./components/Settings";
 import Streams from "./components/Streams";
 import Status from "./components/Status";
 import TopicTree from "./components/TopicTree";
+import GroupDetail from "./components/GroupDetail";
+import PolicyDetail from "./components/PolicyDetail";
+import UserDetail from "./components/UserDetail";
 import Users from "./components/Users";
 import store from "./store";
 import WebSocketProvider, { WebSocketContext } from "./websockets/WebSocket";
@@ -109,8 +120,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-end",
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
+	padding: theme.spacing(0, 1),
     ...theme.mixins.toolbar,
   },
   rightToolbar: {
@@ -125,6 +135,9 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
   },
+  bottom: {
+	width: 500,
+  }
 }));
 
 function ListItemLink(props) {
@@ -149,10 +162,17 @@ function ListItemLink(props) {
 }
 
 export default function App(props) {
+
+	
 	const { window } = props;
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState('recents');
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -205,7 +225,12 @@ export default function App(props) {
           icon={<TopicTreeIcon />}
         />
         <ListItemLink
-          to="/settings"
+          to="/system/configurations"
+          primary="Configurations"
+          icon={<ConfigurationIcon />}
+        />
+        <ListItemLink
+          to="/system/settings"
           primary="Settings"
           icon={<SettingsIcon />}
         />
@@ -311,13 +336,23 @@ export default function App(props) {
                     </Drawer>
                   </Hidden> */}
                 </nav>
+			
                 <Container className={classes.container}>
                   <Switch>
+                    <Route path="/security/users/detail">
+                      <UserDetail />
+                    </Route>
                     <Route path="/security/users">
                       <Users />
                     </Route>
+                    <Route path="/security/groups/detail">
+                      <GroupDetail />
+                    </Route>
                     <Route path="/security/groups">
                       <Groups />
+                    </Route>
+                    <Route path="/security/policies/detail">
+                      <PolicyDetail />
                     </Route>
                     <Route path="/security/policies">
                       <Policies />
@@ -333,6 +368,9 @@ export default function App(props) {
                     </Route>
                     <Route path="/system/topics">
                       <TopicTree />
+                    </Route>
+                    <Route path="/system/configurations">
+                      <Configurations />
                     </Route>
                     <Route path="/system/settings">
                       <Settings />

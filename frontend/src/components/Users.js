@@ -1,4 +1,7 @@
-import { connect } from "react-redux";
+import moment from "moment";
+import PropTypes from "prop-types";
+import React, { useContext } from "react";
+import { connect, useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui/core/Chip";
 import Fab from "@material-ui/core/Fab";
@@ -28,16 +31,8 @@ import GroupIcon from "@material-ui/icons/Group";
 import UserIcon from "@material-ui/icons/Person";
 import { Link as RouterLink } from "react-router-dom";
 
-import moment from "moment";
-import PropTypes from "prop-types";
-import React from "react";
-
-import users from "../data/users";
-
-const remove = (array, item) => {
-  const index = array.indexOf(item);
-  array.splice(index, 1);
-};
+import { WebSocketContext } from '../websockets/WebSocket';
+import { updateUsers } from '../actions/actions';
 
 const useStyles = makeStyles((theme) => ({
   badges: {
@@ -54,16 +49,16 @@ const useStyles = makeStyles((theme) => ({
 
 const userShape = PropTypes.shape({
   username: PropTypes.string,
-  lastName: PropTypes.string,
-  firstName: PropTypes.string,
+//   lastName: PropTypes.string,
+//   firstName: PropTypes.string,
   groups: PropTypes.array,
 });
 
 const USER_TABLE_COLUMNS = [
   { id: "clientid", key: "Client ID" },
   { id: "username", key: "Username" },
-  { id: "firstName", key: "Firstname" },
-  { id: "lastName", key: "Lastname" },
+//   { id: "firstName", key: "Firstname" },
+//   { id: "lastName", key: "Lastname" },
   { id: "groups", key: "Groups" },
 ];
 
@@ -78,19 +73,31 @@ const FormattedUserType = (props) => {
 
 const Users = (props) => {
   const classes = useStyles();
+  const context = useContext(WebSocketContext);
+  const dispatch = useDispatch();
+  const { client } = context;
+
+  const onDeleteUser = async (username) => {
+	  await client.deleteUser(username);
+	  const users = await client.listUsers();
+	  dispatch(updateUsers(users));
+  }
+
+	const onRemoveUserFromGroup = async (user, group) => {
+		await client.removeUserFromGroup(user, group);
+		const users = await client.listUsers();
+		dispatch(updateUsers(users));
+	};
 
   const {
-    /* users, */ onDeleteUser,
+	users = [],
     onSelectUser,
     onSort,
     sortBy,
     sortDirection,
   } = props;
 
-  const handleRemoveUserFromGroup = (user, group) => {
-    remove(user.groups, group);
-    user.username = "tests";
-  };
+
 
   return (
     <div>
@@ -123,11 +130,11 @@ const Users = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map((user) => (
+              {users && users.map((user) => (
                 <TableRow
                   hover
-                  key={user.id}
-                  onClick={() => onSelectUser(user.id)}
+                  key={user.username}
+                  onClick={() => onSelectUser(user.username)}
                   style={{ cursor: "pointer" }}
                 >
                   <TableCell>
@@ -136,16 +143,16 @@ const Users = (props) => {
                   <TableCell>
                     <b>{user.username}</b>
                   </TableCell>
-                  <TableCell>{user.firstName}</TableCell>
-                  <TableCell>{user.lastName}</TableCell>
+                  {/* <TableCell>{user.firstName}</TableCell>
+                  <TableCell>{user.lastName}</TableCell> */}
                   <TableCell className={classes.badges}>
-                    {user.groups.map((group) => (
+                    {user.groups && user.groups.map((group) => (
                       <Chip
                         icon={<GroupIcon />}
                         label={group.name}
                         onDelete={(event) => {
                           event.stopPropagation();
-                          handleRemoveUserFromGroup(user, group.name);
+                          onRemoveUserFromGroup(user.username, group.name);
                         }}
 						color="secondary"
 						variant="outlined"
@@ -160,7 +167,7 @@ const Users = (props) => {
                           style={{ color: "#FF0022" }}
                           onClick={(event) => {
                             event.stopPropagation();
-                            onDeleteUser(user.id);
+                            onDeleteUser(user.username);
                           }}
                         >
                           <EditIcon />
@@ -169,7 +176,7 @@ const Users = (props) => {
                           style={{ color: "#FF0022" }}
                           onClick={(event) => {
                             event.stopPropagation();
-                            onDeleteUser(user.id);
+                            onDeleteUser(user.username);
                           }}
                         >
                           <DeleteIcon />
@@ -209,7 +216,7 @@ const Users = (props) => {
                       >
                         {user.username}
                       </Typography>
-					  <span> —  {user.firstName} {user.lastName}</span>
+					  {/* <span> —  {user.firstName} {user.lastName}</span> */}
 
                       {/* <div className={classes.badges}>
                         {user.groups.map((group) => (
@@ -219,7 +226,7 @@ const Users = (props) => {
                             label={group.name}
                             onDelete={(event) => {
                               event.stopPropagation();
-                              handleRemoveUserFromGroup(user, group.name);
+                              onRemoveUserFromGroup(user, group.name);
                             }}
                             color="secondary"
                           />
@@ -253,7 +260,6 @@ Users.propTypes = {
   users: PropTypes.arrayOf(userShape).isRequired,
   sortBy: PropTypes.string,
   sortDirection: PropTypes.string,
-  onDeleteUser: PropTypes.func.isRequired,
   onSelectUser: PropTypes.func.isRequired,
   onSort: PropTypes.func.isRequired,
 };
@@ -264,7 +270,10 @@ Users.defaultProps = {
 };
 
 const mapStateToProps = (state) => {
-  return {};
+  return {
+	  // TODO: check object hierarchy
+	  users: state.users?.users,
+  };
 };
 
 export default connect(mapStateToProps)(Users);
