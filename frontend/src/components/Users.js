@@ -1,4 +1,7 @@
-import { connect } from "react-redux";
+import moment from "moment";
+import PropTypes from "prop-types";
+import React, { useContext } from "react";
+import { connect, useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui/core/Chip";
 import Fab from "@material-ui/core/Fab";
@@ -28,14 +31,8 @@ import GroupIcon from "@material-ui/icons/Group";
 import UserIcon from "@material-ui/icons/Person";
 import { Link as RouterLink } from "react-router-dom";
 
-import moment from "moment";
-import PropTypes from "prop-types";
-import React from "react";
-
-const remove = (array, item) => {
-  const index = array.indexOf(item);
-  array.splice(index, 1);
-};
+import { WebSocketContext } from '../websockets/WebSocket';
+import { updateUsers } from '../actions/actions';
 
 const useStyles = makeStyles((theme) => ({
   badges: {
@@ -76,22 +73,31 @@ const FormattedUserType = (props) => {
 
 const Users = (props) => {
   const classes = useStyles();
+  const context = useContext(WebSocketContext);
+  const dispatch = useDispatch();
+  const { client } = context;
 
-  let {
-	users,
-	onDeleteUser,
+  const onDeleteUser = async (username) => {
+	  await client.deleteUser(username);
+	  const users = await client.listUsers();
+	  dispatch(updateUsers(users));
+  }
+
+	const onRemoveUserFromGroup = async (user, group) => {
+		await client.removeUserFromGroup(user, group);
+		const users = await client.listUsers();
+		dispatch(updateUsers(users));
+	};
+
+  const {
+	users = [],
     onSelectUser,
     onSort,
     sortBy,
     sortDirection,
   } = props;
 
-  users = users || [];
 
-  const handleRemoveUserFromGroup = (user, group) => {
-    remove(user.groups, group);
-    user.username = "tests";
-  };
 
   return (
     <div>
@@ -127,8 +133,8 @@ const Users = (props) => {
               {users && users.map((user) => (
                 <TableRow
                   hover
-                  key={user.id}
-                  onClick={() => onSelectUser(user.id)}
+                  key={user.username}
+                  onClick={() => onSelectUser(user.username)}
                   style={{ cursor: "pointer" }}
                 >
                   <TableCell>
@@ -146,7 +152,7 @@ const Users = (props) => {
                         label={group.name}
                         onDelete={(event) => {
                           event.stopPropagation();
-                          handleRemoveUserFromGroup(user, group.name);
+                          onRemoveUserFromGroup(user.username, group.name);
                         }}
 						color="secondary"
 						variant="outlined"
@@ -161,7 +167,7 @@ const Users = (props) => {
                           style={{ color: "#FF0022" }}
                           onClick={(event) => {
                             event.stopPropagation();
-                            onDeleteUser(user.id);
+                            onDeleteUser(user.username);
                           }}
                         >
                           <EditIcon />
@@ -170,7 +176,7 @@ const Users = (props) => {
                           style={{ color: "#FF0022" }}
                           onClick={(event) => {
                             event.stopPropagation();
-                            onDeleteUser(user.id);
+                            onDeleteUser(user.username);
                           }}
                         >
                           <DeleteIcon />
@@ -220,7 +226,7 @@ const Users = (props) => {
                             label={group.name}
                             onDelete={(event) => {
                               event.stopPropagation();
-                              handleRemoveUserFromGroup(user, group.name);
+                              onRemoveUserFromGroup(user, group.name);
                             }}
                             color="secondary"
                           />
@@ -254,7 +260,6 @@ Users.propTypes = {
   users: PropTypes.arrayOf(userShape).isRequired,
   sortBy: PropTypes.string,
   sortDirection: PropTypes.string,
-  onDeleteUser: PropTypes.func.isRequired,
   onSelectUser: PropTypes.func.isRequired,
   onSort: PropTypes.func.isRequired,
 };
