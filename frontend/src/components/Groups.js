@@ -67,6 +67,10 @@ const FormattedGroupType = (props) => {
 
 const Groups = (props) => {
   const classes = useStyles();
+  const onRemoveUserFromGroup = async (username, group) => {
+	await client.removeUserFromGroup(username, group);
+};
+
   const {
 	groups = [],
     onSelectGroup,
@@ -124,7 +128,7 @@ const Groups = (props) => {
                         label={user}
                         onDelete={(event) => {
                           event.stopPropagation();
-                          handleRemoveUserFromGroup(user, group.groupname);
+                          onRemoveUserFromGroup(user, group.groupname);
                         }}
                         color="secondary"
 						variant="outlined"
