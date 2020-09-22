@@ -4,22 +4,36 @@ import Grid from "@material-ui/core/Grid";
 // import SecurityIcon from '@material-ui/icons/VerifiedUser';
 // import StreamsIcon from "@material-ui/icons/SettingsInputAntenna";
 // import SystemIcon from '@material-ui/icons/Assessment';
+import { makeStyles } from "@material-ui/core/styles";
 
 import Typography from "@material-ui/core/Typography";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
-import {
-	Link as RouterLink,
-  } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 
 import HomeCard from "./HomeCard";
 
+const useStyles = makeStyles((theme) => ({
+  breadcrumbLink: {
+    color: "inherit",
+    textDecoration: "none",
+    "&:hover": {
+      textDecoration: "underline",
+    },
+  },
+}));
+
 function Security() {
+  const classes = useStyles();
+
   return (
     <div>
       <Breadcrumbs aria-label="breadcrumb">
-        <RouterLink to="/">Home</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/">
+          Home
+        </RouterLink>
         <Typography color="textPrimary">Security</Typography>
       </Breadcrumbs>
+      <br />
       <Grid container spacing={3}>
         <Grid item lg={4} sm={6} xl={4} xs={12}>
           <HomeCard
