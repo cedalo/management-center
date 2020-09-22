@@ -354,9 +354,7 @@ export default function App(props) {
                     <Route path="/security/groups">
                       <Groups />
                     </Route>
-                    <Route path="/security/policies/detail">
-                      <PolicyDetail />
-                    </Route>
+                    <Route path="/security/policies/:policyId" component={PolicyDetail} />
                     <Route path="/security/policies">
                       <Policies />
                     </Route>
