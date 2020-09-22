@@ -182,15 +182,11 @@ module.exports = class BaseMosquittoClient {
 			this._requests
 		  );
 		  if (request) {
-			if (topic === "$CONTROL/v1/response") {
-			  this.logger.debug("Got response from Mosquitto", parsedMessage);
-			  if (parsedMessage.error) {
+			this.logger.debug("Got response from Mosquitto", parsedMessage);
+			if (parsedMessage.error) {
 				request.reject(parsedMessage);
-			  }
-			  request.resolve(parsedMessage);
-			} else {
-			  request.reject(parsedMessage);
 			}
+			request.resolve(parsedMessage);
 		  }
 		} else if (parsedMessage.type === "event") {
 		  this._handleEvent(parsedMessage.event);
