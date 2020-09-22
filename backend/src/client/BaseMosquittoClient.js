@@ -158,10 +158,25 @@ module.exports = class BaseMosquittoClient {
     );
   }
 
+  _isResponse(topic, message) {
+	  if (topic === "$CONTROL/v1/response") {
+		  return true;
+	  }
+	  try {
+		const parsedMessage = JSON.parse(message);
+		if (parsedMessage.result || parsedMessage.data) {
+			return true;
+		}
+	  } catch (error) {
+		return false;
+	  }
+  }
+
   _handleBrokerMessage(topic, message) {
 	  if (topic.startsWith('$CONTROL')) {
 		const parsedMessage = JSON.parse(message);
-		if (topic === "$CONTROL/v1/response") {
+		const isResponse = this._isResponse(topic, message);
+		if (isResponse) {
 		  const request = deletePendingRequest(
 			parsedMessage.correlationData,
 			this._requests
