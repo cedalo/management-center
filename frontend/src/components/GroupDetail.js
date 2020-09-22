@@ -88,6 +88,13 @@ const useStyles = makeStyles((theme) => ({
   margin: {
     margin: theme.spacing(1),
   },
+  breadcrumbLink: {
+	color: "inherit",
+	textDecoration: "none",
+	"&:hover": {
+	  textDecoration: "underline"
+	}
+  },
 }));
 
 const GroupDetail = (props) => {
@@ -118,9 +125,9 @@ const GroupDetail = (props) => {
   return (
     <div className={classes.root}>
       <Breadcrumbs maxItems={2} aria-label="breadcrumb">
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/security">Security</RouterLink>
-        <RouterLink to="/security/Groups">Groups</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/">Home</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/security/Groups">Groups</RouterLink>
   		<Typography color="textPrimary">{group.groupname}</Typography>
       </Breadcrumbs>
       <br />
