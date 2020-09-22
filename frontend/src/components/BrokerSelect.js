@@ -30,33 +30,19 @@ const BrokerSelect = ({ brokerConnections, sendMessage }) => {
   const dispatch = useDispatch();
   const [connection, setConnection] = React.useState("");
 
-  const handleConnectionChange = (event) => {
+  const handleConnectionChange = async (event) => {
 	  const { client } = context;
-	client.disconnectFromBroker(connection)
-		.then((response) => {
-			console.log(response);
-		})
-		.then(client.connectToBroker(event.target.value))
-		.then(() => {
-			console.log('connected to broker');
-		})
-		.then(() => client.getBrokerConnections())
-		.then(brokerConnections => {
-			dispatch(updateBrokerConnections(brokerConnections));
-		})
-		.then(() => client.getBrokerConfigurations())
-		.then(brokerConfigurations => {
-			dispatch(updateBrokerConfigurations(brokerConfigurations));
-		})
-		.then(() => client.listUsers())
-		.then(users => {
-			dispatch(updateUsers(users));
-		})
-		.then(() => client.listGroups())
-		.then(groups => {
-			dispatch(updateGroups(groups));
-		});
-	setConnection(event.target.value);
+	  await client.disconnectFromBroker(connection);
+	  await client.connectToBroker(event.target.value);
+	  const brokerConnections = await client.getBrokerConnections();
+	  dispatch(updateBrokerConnections(brokerConnections));
+	  const brokerConfigurations = await client.getBrokerConfigurations();
+	  dispatch(updateBrokerConfigurations(brokerConfigurations));
+	  const users = await client.listUsers();
+	  dispatch(updateUsers(users));
+	  const groups = await client.listGroups();
+	  dispatch(updateGroups(groups));
+	  setConnection(event.target.value);
   };
 
   return (
