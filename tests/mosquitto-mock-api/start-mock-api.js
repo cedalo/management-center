@@ -118,7 +118,7 @@ const handleCommand = (message) => {
 			}
 		}
 		case 'addUserToGroup': {
-			const { username, group: groupName } = command;
+			const { username, groupName } = command;
 			const user = users.get(username);
 			user.groups = user.groups || [];
 			user.groups.push({
@@ -169,25 +169,25 @@ const handleCommand = (message) => {
 			};
 		}
 		case 'addGroup': {
-			const { groupname, policyName } = command;
-			if (groups.get(groupname)) {
+			const { groupName, policyName } = command;
+			if (groups.get(groupName)) {
 				return {
 					correlationData,
 					error: 'Group exists'
 				}
 			}
 			const group = {
-				groupname,
+				groupName,
 				policyName
 			};
-			groups.set(groupname, group);
+			groups.set(groupName, group);
 			return {
 				correlationData,
 				data: group
 			}
 		}
 		case 'listGroupUsers': {
-			const { group: groupName } = command;
+			const { groupName: groupName } = command;
 			const group = groups.get(groupName);
 			return {
 				correlationData,
