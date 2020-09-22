@@ -104,29 +104,35 @@ const UserDetail = (props) => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  //   const { user } = props;
-  // TODO: get current user
-  const user = {
-    clientid: "mosquitto-client-1",
-    username: "maxmustermann",
-    firstName: "Max",
-    lastName: "Mustermann",
-    password: "secret",
-    banned: false,
-    connectionRate: 0,
-    messageRate: 0,
-    policyName: "",
-    groups: [
-      {
-        name: "admins",
-        priority: 0,
-      },
-      {
-        name: "example",
-        priority: 0,
-      },
-    ],
-  };
+	const { user = {} } = props;
+	const { match: {
+		params: {
+			userId
+		}
+	}} = props;
+	// TODO: get user by id if current user is not defined
+	
+//   const user = {
+//     clientid: "mosquitto-client-1",
+//     username: "maxmustermann",
+//     firstName: "Max",
+//     lastName: "Mustermann",
+//     password: "secret",
+//     banned: false,
+//     connectionRate: 0,
+//     messageRate: 0,
+//     policyName: "",
+//     groups: [
+//       {
+//         name: "admins",
+//         priority: 0,
+//       },
+//       {
+//         name: "example",
+//         priority: 0,
+//       },
+//     ],
+//   };
 
   return (
     <div className={classes.root}>
@@ -324,7 +330,10 @@ UserDetail.propTypes = {
 };
 
 const mapStateToProps = (state) => {
-  return {};
+  return {
+	// TODO: check object hierarchy
+	user: state.users?.user,
+  };
 };
 
 export default connect(mapStateToProps)(UserDetail);
