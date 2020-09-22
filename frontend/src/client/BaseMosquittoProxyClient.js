@@ -295,27 +295,27 @@ module.exports = class BaseMosquittoProxyClient {
 		}, API_USER_MANAGEMENT);
 	}
 
-	async addGroup(groupname, policyName) {
+	async addGroup(groupName, policyName) {
 		return this.sendCommand({
 			command: 'addGroup',
-			groupname,
+			groupName,
 			policyName
 		}, API_USER_MANAGEMENT);
 	}
 
-	async addUserToGroup(username, group) {
+	async addUserToGroup(username, groupName) {
 		return this.sendCommand({
 			command: 'addUserToGroup',
 			username,
-			group
+			groupName
 		}, API_USER_MANAGEMENT);
 	}
 
-	async removeUserFromGroup(username, group) {
+	async removeUserFromGroup(username, groupName) {
 		return this.sendCommand({
 			command: 'removeUserFromGroup',
 			username,
-			group
+			groupName
 		}, API_USER_MANAGEMENT);
 	}
 
