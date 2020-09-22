@@ -72,6 +72,12 @@ const useStyles = makeStyles((theme) => ({
   container: {
     paddingTop: "100px",
   },
+  logo: {
+	width: "80px",
+	verticalAlign: "middle",
+	marginRight: "9px",
+	marginBottom: "5px",
+  },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(["width", "margin"], {
@@ -282,7 +288,8 @@ export default function App(props) {
                       <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" noWrap>
-                      Mosquitto UI
+					  <img className={clsx(classes.logo)} src="https://cedalo.com/images/logo.png" />
+					   Mosquitto UI
                     </Typography>
                     <section className={classes.rightToolbar}>
                       <BrokerSelect />
