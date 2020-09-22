@@ -2,6 +2,7 @@ import moment from "moment";
 import PropTypes from "prop-types";
 import React, { useContext } from "react";
 import { connect, useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui/core/Chip";
 import Fab from "@material-ui/core/Fab";
@@ -32,7 +33,7 @@ import UserIcon from "@material-ui/icons/Person";
 import { Link as RouterLink } from "react-router-dom";
 
 import { WebSocketContext } from '../websockets/WebSocket';
-import { updateGroups } from '../actions/actions';
+import { updateGroup, updateGroups } from '../actions/actions';
 
 const useStyles = makeStyles((theme) => ({
   badges: {
@@ -44,6 +45,13 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     bottom: theme.spacing(2),
     right: theme.spacing(2),
+  },
+  breadcrumbLink: {
+	color: "inherit",
+	textDecoration: "none",
+	"&:hover": {
+	  textDecoration: "underline"
+	}
   },
 }));
 
@@ -69,7 +77,14 @@ const Groups = (props) => {
   const classes = useStyles();
   const context = useContext(WebSocketContext);
   const dispatch = useDispatch();
+  const history = useHistory();
   const { client } = context;
+
+  const onSelectGroup = async (groupName) => {
+	const group = await client.getGroup(groupName);
+	dispatch(updateGroup(group));
+	history.push(`/security/groups/${groupName}`);
+  }
 
   const onDeleteGroup = async (groupname) => {
 	  await client.deleteGroup(groupname);
@@ -85,7 +100,6 @@ const Groups = (props) => {
 
   const {
 	groups = [],
-    onSelectGroup,
     onSort,
     sortBy,
     sortDirection,
@@ -94,8 +108,8 @@ const Groups = (props) => {
   return (
     <div>
       <Breadcrumbs aria-label="breadcrumb">
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/security">Security</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/">Home</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
         <Typography color="textPrimary">User Groups</Typography>
       </Breadcrumbs>
       <br />
@@ -231,7 +245,6 @@ Groups.propTypes = {
   groups: PropTypes.arrayOf(groupShape).isRequired,
   sortBy: PropTypes.string,
   sortDirection: PropTypes.string,
-  onSelectGroup: PropTypes.func.isRequired,
   onSort: PropTypes.func.isRequired,
 };
 
