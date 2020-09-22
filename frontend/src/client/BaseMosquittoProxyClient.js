@@ -366,6 +366,11 @@ module.exports = class BaseMosquittoProxyClient {
 		return users.length;
 	}
 
+	async getGroup(groupname) {
+		const groups = await this.listGroups();
+		return groups.find((group) => group.groupname === groupname);
+	}
+
 	async getGroupCount() {
 		const groups = await this.listGroups();
 		return groups.length;
