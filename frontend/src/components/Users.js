@@ -2,6 +2,7 @@ import moment from "moment";
 import PropTypes from "prop-types";
 import React, { useContext } from "react";
 import { connect, useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui/core/Chip";
 import Fab from "@material-ui/core/Fab";
@@ -75,6 +76,7 @@ const Users = (props) => {
   const classes = useStyles();
   const context = useContext(WebSocketContext);
   const dispatch = useDispatch();
+  const history = useHistory();
   const { client } = context;
 
   const onSelectUser = async (userName) => {
