@@ -1,4 +1,17 @@
 {
+	"themes": [
+		{
+			"name": "Cedalo AG",
+			"logo": "https://cedalo.com/images/logo.png",
+			"palette": {
+				"primary": {
+					"main": "#556cd6"
+				},
+				"secondary": {
+					"main": "#19857b"
+				}
+			}
+		},
 	"connections": [
 		{
 			"name": "Mosquitto 1",
