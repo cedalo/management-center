@@ -59,6 +59,13 @@ const useStyles = makeStyles((theme) => ({
     bottom: theme.spacing(2),
     right: theme.spacing(2),
   },
+  breadcrumbLink: {
+	color: "inherit",
+	textDecoration: "none",
+	"&:hover": {
+	  textDecoration: "underline"
+	}
+  },
 }));
 
 const Policieshape = PropTypes.shape({
@@ -92,8 +99,8 @@ const Policies = (props) => {
   return (
     <div>
       <Breadcrumbs aria-label="breadcrumb">
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/security">Security</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/">Home</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
         <Typography color="textPrimary">Policies</Typography>
       </Breadcrumbs>
       <br />
