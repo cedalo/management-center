@@ -32,7 +32,7 @@ import UserIcon from "@material-ui/icons/Person";
 import { Link as RouterLink } from "react-router-dom";
 
 import { WebSocketContext } from '../websockets/WebSocket';
-import { updateUsers } from '../actions/actions';
+import { updateUser, updateUsers } from '../actions/actions';
 
 const useStyles = makeStyles((theme) => ({
   badges: {
