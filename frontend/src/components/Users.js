@@ -82,6 +82,13 @@ const Users = (props) => {
 	dispatch(updateUser(user));
 	history.push(`/security/users/${userName}`);
   }
+
+  const onEditUser = async (userName) => {
+	const user = await client.getUser(userName);
+	dispatch(updateUser(user));
+	history.push("/security/users/detail?action=edit");
+  }
+
   const onDeleteUser = async (username) => {
 	  await client.deleteUser(username);
 	  const users = await client.listUsers();
@@ -171,7 +178,7 @@ const Users = (props) => {
                           style={{ color: "#FF0022" }}
                           onClick={(event) => {
                             event.stopPropagation();
-                            onDeleteUser(user.username);
+                            onEditUser(user.username);
                           }}
                         >
                           <EditIcon />
