@@ -46,6 +46,13 @@ const useStyles = makeStyles((theme) => ({
     bottom: theme.spacing(2),
     right: theme.spacing(2),
   },
+  breadcrumbLink: {
+	color: "inherit",
+	textDecoration: "none",
+	"&:hover": {
+	  textDecoration: "underline"
+	}
+  },
 }));
 
 const userShape = PropTypes.shape({
@@ -115,8 +122,8 @@ const Users = (props) => {
   return (
     <div>
       <Breadcrumbs aria-label="breadcrumb">
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/security">Security</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/">Home</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} color="inherit" to="/security">Security</RouterLink>
         <Typography color="textPrimary">Users</Typography>
       </Breadcrumbs>
       <br />
