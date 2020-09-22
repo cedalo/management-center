@@ -77,6 +77,11 @@ const Users = (props) => {
   const dispatch = useDispatch();
   const { client } = context;
 
+  const onSelectUser = async (userName) => {
+	const user = await client.getUser(userName);
+	dispatch(updateUser(user));
+	history.push(`/security/users/${userName}`);
+  }
   const onDeleteUser = async (username) => {
 	  await client.deleteUser(username);
 	  const users = await client.listUsers();
@@ -91,7 +96,6 @@ const Users = (props) => {
 
   const {
 	users = [],
-    onSelectUser,
     onSort,
     sortBy,
     sortDirection,
