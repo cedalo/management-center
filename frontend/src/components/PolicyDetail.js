@@ -85,6 +85,13 @@ const useStyles = makeStyles((theme) => ({
   margin: {
     margin: theme.spacing(1),
   },
+  breadcrumbLink: {
+	color: "inherit",
+	textDecoration: "none",
+	"&:hover": {
+	  textDecoration: "underline"
+	}
+  },
 }));
 
 const PolicyDetail = (props) => {
@@ -131,9 +138,9 @@ const PolicyDetail = (props) => {
   return (
     <div className={classes.root}>
       <Breadcrumbs maxItems={2} aria-label="breadcrumb">
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/security">Security</RouterLink>
-        <RouterLink to="/security/policies">Policies</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/">Home</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/security/policies">Policies</RouterLink>
         <Typography color="textPrimary">{policy.policyName}</Typography>
       </Breadcrumbs>
       <br />
