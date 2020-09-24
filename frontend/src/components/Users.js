@@ -99,8 +99,8 @@ const Users = (props) => {
 	  dispatch(updateUsers(users));
   }
 
-	const onRemoveUserFromGroup = async (user, group) => {
-		await client.removeUserFromGroup(user, group);
+	const onDeleteUserFromGroup = async (user, group) => {
+		await client.deleteUserFromGroup(user, group);
 		const users = await client.listUsers();
 		dispatch(updateUsers(users));
 	};
@@ -174,10 +174,10 @@ const Users = (props) => {
                       <Chip
 					    size="small"
                         icon={<GroupIcon />}
-                        label={group.name}
+                        label={group.groupName}
                         onDelete={(event) => {
                           event.stopPropagation();
-                          onRemoveUserFromGroup(user.username, group.name);
+                          onDeleteUserFromGroup(user.username, group.groupName);
                         }}
 						color="secondary"
 						variant="outlined"
