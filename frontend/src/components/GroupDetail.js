@@ -88,13 +88,8 @@ const useStyles = makeStyles((theme) => ({
   margin: {
     margin: theme.spacing(1),
   },
-  breadcrumbLink: {
-	color: "inherit",
-	textDecoration: "none",
-	"&:hover": {
-	  textDecoration: "underline"
-	}
-  },
+  breadcrumbItem: theme.palette.breadcrumbItem,
+  breadcrumbLink: theme.palette.breadcrumbLink,
 }));
 
 const GroupDetail = (props) => {
@@ -128,7 +123,7 @@ const GroupDetail = (props) => {
         <RouterLink className={classes.breadcrumbLink} to="/">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security/Groups">Groups</RouterLink>
-  		<Typography color="textPrimary">{group.groupname}</Typography>
+  		<Typography className={classes.breadcrumbItem} color="textPrimary">{group.groupname}</Typography>
       </Breadcrumbs>
       <br />
       <Tabs
