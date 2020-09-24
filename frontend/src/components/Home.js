@@ -39,7 +39,7 @@ function Home() {
 		  />
 		</Grid>
 	  </Grid>
-	  <br />
+	  {/* <br />
 	  <Typography variant="h4" gutterBottom fontWeight="fontWeightBold">
 	  <Box fontWeight="fontWeightBold" m={1}>
         Latest news
@@ -70,7 +70,7 @@ function Home() {
 			link="https://cedalo.com/newsposts/2020/08/01/Open-Industry-4-Virtual-Fair.html"
 		  />
 		</Grid>
-	  </Grid>
+	  </Grid> */}
 	  </div>
 		  
   );
