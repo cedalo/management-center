@@ -159,7 +159,9 @@ const handleCommand = (message) => {
 		case 'listUsers': {
 			return {
 				correlationData,
-				data: Array.from(users.values())
+				data: {
+					users: Array.from(users.values())
+				}
 			};
 		}
 		case 'listGroups': {
