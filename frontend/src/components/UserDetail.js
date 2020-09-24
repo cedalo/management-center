@@ -88,7 +88,6 @@ const useStyles = makeStyles((theme) => ({
   margin: {
     margin: theme.spacing(1),
   },
-  breadcrumbLink: {
   breadcrumbItem: theme.palette.breadcrumbItem,
   breadcrumbLink: theme.palette.breadcrumbLink,
 }));
@@ -305,8 +304,8 @@ const UserDetail = (props) => {
             <React.Fragment>
               <ListItem button>
                 <ListItemText
-                  primary={group.name}
-                  secondary={<span>Priority: {group.priority}</span>}
+                  primary={group.groupName}
+                  secondary={group.textDescription}
                 />
                 <ListItemSecondaryAction>
                   <IconButton edge="end" aria-label="delete">
