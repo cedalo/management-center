@@ -13,13 +13,8 @@ import { Link as RouterLink } from "react-router-dom";
 import HomeCard from "./HomeCard";
 
 const useStyles = makeStyles((theme) => ({
-  breadcrumbLink: {
-    color: "inherit",
-    textDecoration: "none",
-    "&:hover": {
-      textDecoration: "underline",
-    },
-  },
+	breadcrumbItem: theme.palette.breadcrumbItem,
+	breadcrumbLink: theme.palette.breadcrumbLink,
 }));
 
 function Security() {
@@ -31,7 +26,7 @@ function Security() {
         <RouterLink className={classes.breadcrumbLink} to="/">
           Home
         </RouterLink>
-        <Typography color="textPrimary">Security</Typography>
+        <Typography className={classes.breadcrumbItem} color="textPrimary">Security</Typography>
       </Breadcrumbs>
       <br />
       <Grid container spacing={3}>
