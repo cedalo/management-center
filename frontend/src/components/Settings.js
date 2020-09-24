@@ -33,6 +33,8 @@ import { Link as RouterLink } from "react-router-dom";
 import { WebSocketContext } from '../websockets/WebSocket';
 
 const useStyles = makeStyles((theme) => ({
+	  breadcrumbItem: theme.palette.breadcrumbItem,
+	  breadcrumbLink: theme.palette.breadcrumbLink,
 }));
 
 const Settings = ({ settings, sendMessage }) => {
@@ -44,9 +46,9 @@ const Settings = ({ settings, sendMessage }) => {
   return (
 	  <div>
 		<Breadcrumbs aria-label="breadcrumb">
-			<RouterLink to="/">Home</RouterLink>
-			<RouterLink to="/system">System</RouterLink>
-			<Typography color="textPrimary">Settings</Typography>
+			<RouterLink className={classes.breadcrumbLink} to="/">Home</RouterLink>
+			<RouterLink className={classes.breadcrumbLink} to="/system">System</RouterLink>
+			<Typography className={classes.breadcrumbItem} color="textPrimary">Settings</Typography>
 		</Breadcrumbs>
 		<br />
 		Settings
