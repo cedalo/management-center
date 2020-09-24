@@ -85,6 +85,8 @@ const Users = (props) => {
 	const user = await client.getUser(userName);
 	dispatch(updateUser(user));
 	history.push(`/security/users/${userName}`);
+  const onNewUser = () => {
+	history.push("/security/users/new");
   }
 
   const onEditUser = async (userName) => {
@@ -278,7 +280,15 @@ const Users = (props) => {
 		:
 		<div>No users found</div>
 		}
-      <Fab color="primary" aria-label="add" className={classes.fab}>
+      <Fab
+		  color="primary"
+		  aria-label="add"
+		  className={classes.fab}
+		  onClick={(event) => {
+			event.stopPropagation();
+			onNewUser();
+		  }}
+		>
         <AddIcon />
       </Fab>
     </div>
