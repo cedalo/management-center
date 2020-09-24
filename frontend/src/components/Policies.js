@@ -99,6 +99,8 @@ const Policies = (props) => {
         <Typography className={classes.breadcrumbItem} color="textPrimary">Policies</Typography>
       </Breadcrumbs>
       <br />
+	  { policies && policies.length > 0 ? 
+	  <div>
       <Hidden xsDown implementation="css">
       <TableContainer component={Paper}>
         <Table>
