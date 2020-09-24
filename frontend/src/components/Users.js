@@ -166,6 +166,7 @@ const Users = (props) => {
                   <TableCell className={classes.badges}>
                     {user.groups && user.groups.map((group) => (
                       <Chip
+					    size="small"
                         icon={<GroupIcon />}
                         label={group.name}
                         onDelete={(event) => {
