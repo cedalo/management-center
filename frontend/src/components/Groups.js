@@ -138,8 +138,8 @@ const Groups = (props) => {
               {groups && groups.map((group) => (
                 <TableRow
                   hover
-                  key={group.groupname}
-                  onClick={() => onSelectGroup(group.groupname)}
+                  key={group.groupName}
+                  onClick={() => onSelectGroup(group.groupName)}
                   style={{ cursor: "pointer" }}
                 >
                   <TableCell>
@@ -157,10 +157,10 @@ const Groups = (props) => {
                       <Chip
 					    size="small"
                         icon={<UserIcon />}
-                        label={user}
+                        label={user.username}
                         onDelete={(event) => {
                           event.stopPropagation();
-                          onRemoveUserFromGroup(user, group.groupname);
+                          onDeleteUserFromGroup(user.username, group.groupName);
                         }}
                         color="secondary"
 						variant="outlined"
@@ -174,7 +174,7 @@ const Groups = (props) => {
 						  size="small"
                           onClick={(event) => {
                             event.stopPropagation();
-                            onDeleteGroup(group.groupname);
+                            onDeleteGroup(group.groupName);
                           }}
                         >
                           <EditIcon fontSize="small" />
@@ -183,7 +183,7 @@ const Groups = (props) => {
 						  size="small"
                           onClick={(event) => {
                             event.stopPropagation();
-                            onDeleteGroup(group.groupname);
+                            onDeleteGroup(group.groupName);
                           }}
                         >
                           <DeleteIcon fontSize="small" />
@@ -210,7 +210,7 @@ const Groups = (props) => {
                 <ListItemText
                   primary={
                     <span>
-                      <b>{group.groupname}</b>
+                      <b>{group.groupName}</b>
                     </span>
                   }
                   //   secondary={
