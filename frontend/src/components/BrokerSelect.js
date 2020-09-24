@@ -1,12 +1,13 @@
 import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { useDispatch } from 'react-redux';
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles, useTheme, withStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
+import InputBase from '@material-ui/core/InputBase';
 import { updateGroups, updateUsers, updateBrokerConfigurations, updateBrokerConnections, updateSystemStatus, updateTopicTree } from '../actions/actions';
 
 // import {
@@ -15,8 +16,32 @@ import { updateGroups, updateUsers, updateBrokerConfigurations, updateBrokerConn
 
 import { WebSocketContext } from '../websockets/WebSocket';
 
+const CustomInput = withStyles((theme) => ({
+	root: {
+	  'label + &': {
+		marginTop: theme.spacing(1),
+	  },
+	},
+  }))(InputBase);
+
 const useStyles = makeStyles((theme) => ({
+  root: {
+	  backgroundColor: "rgba(255,255,255,0.2)",
+	  border: "thin solid rgba(255,255,255,0.5)",
+  },
+  icon: {
+	  color: "white",
+	//   top: "calc(50% - 14px)",
+  },
+  label: {
+	  color: "white",
+	  fontSize: "12px",
+	  textTransform: "uppercase",
+	  transform: "translate(14px, 20px) scale(1)",
+  },
   formControl: {
+	// margin: theme.spacing(1),
+	// height: "25px",
     margin: theme.spacing(1),
 	minWidth: 120,
 	// color: colors.white,
@@ -31,6 +56,8 @@ const BrokerSelect = ({ brokerConnections, sendMessage }) => {
   const [connection, setConnection] = React.useState("");
 
   const handleConnectionChange = async (event) => {
+	  console.log("handleConnectionChange");
+	  console.log(event.target.value);
 	  const { client } = context;
 	  await client.disconnectFromBroker(connection);
 	  await client.connectToBroker(event.target.value);
@@ -47,20 +74,31 @@ const BrokerSelect = ({ brokerConnections, sendMessage }) => {
 
   return (
     <FormControl variant="outlined" className={classes.formControl}>
-      <InputLabel id="demo-simple-select-outlined-label">Connection</InputLabel>
+      <InputLabel
+	    id="broker-select-outlined-label" 
+		classes={{
+			root: classes.label,
+		}}>
+		Connection
+	  </InputLabel>
       <Select
-        labelId="demo-simple-select-outlined-label"
+        labelId="broker-select-outlined-label"
         id="connection"
         value={connection}
         onChange={handleConnectionChange}
-        label="Connection"
+		label="Connection"
+		classes={{
+			root: classes.root,
+			icon: classes.icon,
+		}}
+		input={<CustomInput />}
       >
         <MenuItem value="">
           <em>None</em>
         </MenuItem>
-        {Array.isArray(brokerConnections)
+        {brokerConnections && Array.isArray(brokerConnections)
           ? brokerConnections.map((brokerConnection) => (
-              <MenuItem value={brokerConnection}>{brokerConnection}</MenuItem>
+              <MenuItem value={brokerConnection} >{brokerConnection}</MenuItem>
             ))
           : null}
       </Select>
