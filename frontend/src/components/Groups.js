@@ -171,22 +171,22 @@ const Groups = (props) => {
                     {
                       <div>
                         <IconButton
-                          style={{ color: "#FF0022" }}
+						  size="small"
                           onClick={(event) => {
                             event.stopPropagation();
                             onDeleteGroup(group.groupname);
                           }}
                         >
-                          <EditIcon />
+                          <EditIcon fontSize="small" />
                         </IconButton>
                         <IconButton
-                          style={{ color: "#FF0022" }}
+						  size="small"
                           onClick={(event) => {
                             event.stopPropagation();
                             onDeleteGroup(group.groupname);
                           }}
                         >
-                          <DeleteIcon />
+                          <DeleteIcon fontSize="small" />
                         </IconButton>
                       </div>
                     }
