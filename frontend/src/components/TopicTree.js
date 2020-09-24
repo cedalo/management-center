@@ -9,13 +9,15 @@ import TreeItem from "@material-ui/lab/TreeItem";
 import Typography from "@material-ui/core/Typography";
 import { Link as RouterLink } from "react-router-dom";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
     height: 216,
     flexGrow: 1,
     maxWidth: 400,
   },
-});
+  breadcrumbItem: theme.palette.breadcrumbItem,
+  breadcrumbLink: theme.palette.breadcrumbLink,
+}));
 
 const generateTreeData = (id, name, obj) => {
   const node = {
@@ -49,12 +51,12 @@ const TopicTree = ({ topicTree }) => {
 
   return (
     <div>
-      <Breadcrumbs aria-label="breadcrumb">
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/system">System</RouterLink>
-        <Typography color="textPrimary">Topic Tree</Typography>
-      </Breadcrumbs>
-      <br />
+	<Breadcrumbs aria-label="breadcrumb">
+	  <RouterLink className={classes.breadcrumbLink} to="/">Home</RouterLink>
+	  <RouterLink className={classes.breadcrumbLink} to="/system">System</RouterLink>
+	  <Typography className={classes.breadcrumbItem} color="textPrimary">Topic Tree</Typography>
+	</Breadcrumbs>
+	<br />
       <TreeView
         className={classes.root}
         defaultCollapseIcon={<ExpandMoreIcon />}
