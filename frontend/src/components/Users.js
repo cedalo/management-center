@@ -122,6 +122,9 @@ const Users = (props) => {
         <Typography className={classes.breadcrumbItem} color="textPrimary">Users</Typography>
       </Breadcrumbs>
       <br />
+	  {
+		users && users.length > 0 ? 
+		<div>
       <Hidden xsDown implementation="css">
         <TableContainer component={Paper}>
           <Table>
@@ -264,6 +267,10 @@ const Users = (props) => {
           ))}
         </List>
       </Hidden>
+	  </div>
+		:
+		<div>No users found</div>
+		}
       <Fab color="primary" aria-label="add" className={classes.fab}>
         <AddIcon />
       </Fab>
