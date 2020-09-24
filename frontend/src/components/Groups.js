@@ -80,7 +80,7 @@ const Groups = (props) => {
   const onSelectGroup = async (groupName) => {
 	const group = await client.getGroup(groupName);
 	dispatch(updateGroup(group));
-	history.push(`/security/groups/${groupName}`);
+	history.push(`/security/groups/detail/${groupName}`);
   }
 
   const onDeleteGroup = async (groupname) => {
