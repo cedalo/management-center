@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const groupShape = PropTypes.shape({
-  groupname: PropTypes.string,
+  groupName: PropTypes.string,
 });
 
 const GROUP_TABLE_COLUMNS = [
@@ -83,8 +83,8 @@ const Groups = (props) => {
 	history.push(`/security/groups/detail/${groupName}`);
   }
 
-  const onDeleteGroup = async (groupname) => {
-	  await client.deleteGroup(groupname);
+  const onDeleteGroup = async (groupName) => {
+	  await client.deleteGroup(groupName);
 	  const groups = await client.listGroups();
 	  dispatch(updateGroups(groups));
   }
@@ -163,13 +163,11 @@ const Groups = (props) => {
                           onDeleteUserFromGroup(user.username, group.groupName);
                         }}
                         color="secondary"
-						variant="outlined"
+						// variant="outlined"
                       />
                     ))}
                   </TableCell>
-                  <TableCell>
-                    {
-                      <div>
+                  <TableCell align="right">
                         <IconButton
 						  size="small"
                           onClick={(event) => {
@@ -188,8 +186,6 @@ const Groups = (props) => {
                         >
                           <DeleteIcon fontSize="small" />
                         </IconButton>
-                      </div>
-                    }
                   </TableCell>
                 </TableRow>
               ))}
