@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import clsx from "clsx";
 import { Provider, useSelector, useDispatch } from "react-redux";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { ThemeProvider } from '@material-ui/core/styles';
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -23,21 +25,27 @@ import PersonIcon from "@material-ui/icons/Person";
 import PolicyIcon from "@material-ui/icons/Policy";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
 import SettingsIcon from "@material-ui/icons/Settings";
+import ThemeModeIcon from '@material-ui/icons/Brightness4';
+import NotificationsIcon from '@material-ui/icons/Notifications';
 import SvgIcon from "@material-ui/core/SvgIcon";
 import ConfigurationIcon from '@material-ui/icons/Tune';
 import StreamsIcon from "@material-ui/icons/SettingsInputAntenna";
 import TopicTreeIcon from "@material-ui/icons/AccountTree";
 import Container from "@material-ui/core/Container";
-import BrokerSelect from "./components/BrokerSelect";
+import SearchIcon from '@material-ui/icons/Search';
+import InputBase from '@material-ui/core/InputBase';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 import FolderIcon from '@material-ui/icons/Folder';
 import RestoreIcon from '@material-ui/icons/Restore';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
+import Hidden from "@material-ui/core/Hidden";
 import Logo from "./components/Logo";
 import Groups from "./components/Groups";
-import Hidden from "@material-ui/core/Hidden";
+import BrokerSelect from "./components/BrokerSelect";
+import customTheme from './theme';
+import darkTheme from './theme-dark';
 import Home from "./components/Home";
 import Security from "./components/Security";
 import System from "./components/System";
@@ -67,7 +75,7 @@ const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: "flex",
+	display: "flex",
   },
   container: {
     paddingTop: "100px",
@@ -131,11 +139,19 @@ const useStyles = makeStyles((theme) => ({
   },
   rightToolbar: {
     marginLeft: "auto",
-    marginRight: -12
+	marginRight: -12,
+	alignItems: "center",
+	alignContent: "center",
+  },
+  menuItem: {
+	  fontSize: '14px',
   },
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
+  },
+  toolbarButton: {
+    margin: theme.spacing(1),
   },
   content: {
     flexGrow: 1,
@@ -147,7 +163,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function ListItemLink(props) {
-  const { icon, primary, to } = props;
+  const { icon, primary, to, classes } = props;
 
   const renderLink = React.useMemo(
     () =>
@@ -159,9 +175,9 @@ function ListItemLink(props) {
 
   return (
     <li>
-      <ListItem button component={renderLink}>
+      <ListItem button component={renderLink} >
         {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
-        <ListItemText primary={primary} />
+        <ListItemText primary={primary} classes={{primary:classes.menuItem}} />
       </ListItem>
     </li>
   );
@@ -175,6 +191,9 @@ export default function App(props) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('recents');
+  const [currentTheme, setCurrentTheme] = useState(true);
+
+  const appliedTheme = currentTheme ? customTheme : darkTheme;
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -194,21 +213,24 @@ export default function App(props) {
     <div>
       <Divider />
       <List>
-        <ListItemLink to="/" primary="Home" icon={<HomeIcon />} />
+        <ListItemLink classes={classes} to="/" primary="Home" icon={<HomeIcon />} />
         <Divider />
       </List>
       <List>
         <ListItemLink
+		  classes={classes} 
           to="/security/users"
           primary="Users"
           icon={<PersonIcon />}
         />
         <ListItemLink
+		  classes={classes} 
           to="/security/groups"
           primary="Groups"
           icon={<GroupIcon />}
         />
         <ListItemLink
+		  classes={classes} 
           to="/security/policies"
           primary="Policies"
           icon={<PolicyIcon />}
@@ -216,26 +238,35 @@ export default function App(props) {
       </List>
       <Divider />
       <List>
-        <ListItemLink to="/streams" primary="Streams" icon={<StreamsIcon />} />
+        <ListItemLink 
+		  classes={classes}
+		  to="/streams"
+		  primary="Streams"
+		  icon={<StreamsIcon 
+		/>} />
       </List>
       <Divider />
       <List>
         <ListItemLink
+		  classes={classes} 
           to="/system/status"
           primary="System Status"
           icon={<EqualizerIcon />}
         />
         <ListItemLink
+		  classes={classes} 
           to="/system/topics"
           primary="Topic Tree"
           icon={<TopicTreeIcon />}
         />
         <ListItemLink
+		  classes={classes} 
           to="/system/configurations"
           primary="Configurations"
           icon={<ConfigurationIcon />}
         />
         <ListItemLink
+		  classes={classes} 
           to="/system/settings"
           primary="Settings"
           icon={<SettingsIcon />}
@@ -245,6 +276,8 @@ export default function App(props) {
   );
 
   return (
+	<ThemeProvider theme={appliedTheme}>
+	  <CssBaseline />
     <Router>
       <Provider store={store}>
         <WebSocketProvider>
@@ -260,7 +293,7 @@ export default function App(props) {
                 >
                   <Toolbar>
                     <Typography variant="h6" noWrap>
-					 	Mosquitto UI
+					 	{/* Mosquitto UI */}
                     </Typography>
                   </Toolbar>
                 </AppBar>
@@ -288,11 +321,38 @@ export default function App(props) {
                       <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" noWrap>
-					  <img className={clsx(classes.logo)} src="https://cedalo.com/images/logo.png" />
-					   Mosquitto UI
+					  <img
+					  	className={clsx(classes.logo)} 
+					  	src="https://cedalo.com/images/logo.png" 
+					  	// src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Siemens_Energy_logo_white.svg/1200px-Siemens_Energy_logo_white.svg.png"
+					  	// style={{height: '35px', width: '35px'}} src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Yello_Strom_GmbH.svg/2000px-Yello_Strom_GmbH.svg.png" 
+					  />
+					   {/* Mosquitto UI */}
                     </Typography>
                     <section className={classes.rightToolbar}>
                       <BrokerSelect />
+					  <IconButton
+						edge="end"
+						aria-label="Theme Mode"
+						aria-controls="theme-mode"
+						aria-haspopup="true"
+						onClick={() => setCurrentTheme(!currentTheme)}
+						color="inherit"
+						className={classes.toolbarButton}
+            			>
+							<ThemeModeIcon />
+						</IconButton>
+					  <IconButton
+						edge="end"
+						aria-label="Notifications"
+						aria-controls="notifications"
+						aria-haspopup="true"
+						// onClick={() => setCurrentTheme(!currentTheme)}
+						color="inherit"
+						className={classes.toolbarButton}
+            			>
+							<NotificationsIcon />
+						</IconButton>
                     </section>
                   </Toolbar>
                 </AppBar>
@@ -390,5 +450,6 @@ export default function App(props) {
         </WebSocketProvider>
       </Provider>
     </Router>
+  </ThemeProvider>
   );
 }
