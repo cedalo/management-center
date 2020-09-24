@@ -84,7 +84,9 @@ const Users = (props) => {
   const onSelectUser = async (userName) => {
 	const user = await client.getUser(userName);
 	dispatch(updateUser(user));
-	history.push(`/security/users/${userName}`);
+	history.push(`/security/users/detail/${userName}`);
+  }
+
   const onNewUser = () => {
 	history.push("/security/users/new");
   }
