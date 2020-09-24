@@ -315,9 +315,9 @@ module.exports = class BaseMosquittoProxyClient {
 		}, API_USER_MANAGEMENT);
 	}
 
-	async removeUserFromGroup(username, groupName) {
+	async deleteUserFromGroup(username, groupName) {
 		return this.sendCommand({
-			command: 'removeUserFromGroup',
+			command: 'deleteUserFromGroup',
 			username,
 			groupName
 		}, API_USER_MANAGEMENT);
