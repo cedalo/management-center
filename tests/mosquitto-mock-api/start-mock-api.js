@@ -137,8 +137,8 @@ const handleCommand = (message) => {
 				data: user
 			}
 		}
-		case 'removeUserFromGroup': {
-			const { username, group: groupName } = command;
+		case 'deleteUserFromGroup': {
+			const { username, groupName } = command;
 			const user = users.get(username);
 			user.groups = user.groups || [];
 			const result = user.groups.filter(group => group.name !== groupName);
