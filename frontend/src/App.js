@@ -406,7 +406,7 @@ export default function App(props) {
 			
                 <Container className={classes.container}>
                   <Switch>
-                    <Route path="/security/users/:userId" component={UserDetail} />
+                    <Route path="/security/users/detail/:userId" component={UserDetail} />
                     <Route path="/security/users">
                       <Users />
                     </Route>
