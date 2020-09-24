@@ -60,8 +60,8 @@ const userShape = PropTypes.shape({
 const USER_TABLE_COLUMNS = [
   { id: "clientid", key: "Client ID" },
   { id: "username", key: "Username" },
-//   { id: "firstName", key: "Firstname" },
-//   { id: "lastName", key: "Lastname" },
+  { id: "textName", key: "Text name" },
+  { id: "textDescription", key: "Description" },
   { id: "groups", key: "Groups" },
 ];
 
@@ -160,6 +160,12 @@ const Users = (props) => {
                   </TableCell>
                   <TableCell>
                     {user.username}
+                  </TableCell>
+                  <TableCell>
+                    {user.textName}
+                  </TableCell>
+                  <TableCell>
+                    {user.textDescription}
                   </TableCell>
                   {/* <TableCell>{user.firstName}</TableCell>
                   <TableCell>{user.lastName}</TableCell> */}
