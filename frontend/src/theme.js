@@ -15,7 +15,21 @@ const theme = createMuiTheme({
     },
     background: {
       default: 'rgb(254, 249, 248)',
-    },
+	},
+	breadcrumbItem: {
+		fontSize: "12px",
+		fontWeight: '500',
+		textTransform: "uppercase",
+	},
+	breadcrumbLink: {
+		color: "inherit",
+		textDecoration: "none",
+		textTransform: "uppercase",
+		fontSize: "12px",
+		"&:hover": {
+			textDecoration: "underline"
+		}
+	}
   },
 });
 
