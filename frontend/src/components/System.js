@@ -1,6 +1,7 @@
 import React from "react";
 
 import Grid from "@material-ui/core/Grid";
+import { makeStyles } from "@material-ui/core";
 // import SecurityIcon from '@material-ui/icons/VerifiedUser';
 // import StreamsIcon from "@material-ui/icons/SettingsInputAntenna";
 // import SystemIcon from '@material-ui/icons/Assessment';
@@ -13,13 +14,26 @@ import {
 
 import HomeCard from "./HomeCard";
 
+const useStyles = makeStyles((theme) => ({
+	root: {
+	  backgroundColor: theme.palette.background.dark,
+	  minHeight: "100%",
+	  paddingBottom: theme.spacing(3),
+	  paddingTop: theme.spacing(3),
+	},
+	breadcrumbItem: theme.palette.breadcrumbItem,
+	breadcrumbLink: theme.palette.breadcrumbLink,
+  }));
+
 function Security() {
+  const classes = useStyles();
   return (
     <div>
-      <Breadcrumbs aria-label="breadcrumb">
-        <RouterLink to="/">Home</RouterLink>
-        <Typography color="textPrimary">System</Typography>
+	  <Breadcrumbs aria-label="breadcrumb">
+        <RouterLink className={classes.breadcrumbLink} to="/">Home</RouterLink>
+        <Typography className={classes.breadcrumbItem} color="textPrimary">System</Typography>
       </Breadcrumbs>
+	  <br />
       <Grid container spacing={3}>
         <Grid item lg={4} sm={6} xl={4} xs={12}>
           <HomeCard
