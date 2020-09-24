@@ -31,6 +31,8 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(3),
     paddingTop: theme.spacing(3),
   },
+  breadcrumbItem: theme.palette.breadcrumbItem,
+  breadcrumbLink: theme.palette.breadcrumbLink,
 }));
 
 const Status = ({ systemStatus }) => {
@@ -82,9 +84,9 @@ const Status = ({ systemStatus }) => {
   return (
     <div>
       <Breadcrumbs aria-label="breadcrumb">
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/system">System</RouterLink>
-        <Typography color="textPrimary">Status</Typography>
+        <RouterLink className={classes.breadcrumbLink} to="/">Home</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/system">System</RouterLink>
+        <Typography className={classes.breadcrumbItem} color="textPrimary">Status</Typography>
       </Breadcrumbs>
       <br />
       <Container maxWidth={false}>
