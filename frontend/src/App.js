@@ -59,6 +59,7 @@ import TopicTree from "./components/TopicTree";
 import GroupDetail from "./components/GroupDetail";
 import PolicyDetail from "./components/PolicyDetail";
 import UserDetail from "./components/UserDetail";
+import UserNew from "./components/UserNew";
 import Users from "./components/Users";
 import store from "./store";
 import WebSocketProvider, { WebSocketContext } from "./websockets/WebSocket";
@@ -407,6 +408,9 @@ export default function App(props) {
                 <Container className={classes.container}>
                   <Switch>
                     <Route path="/security/users/detail/:userId" component={UserDetail} />
+					<Route path="/security/users/new">
+                      <UserNew />
+                    </Route>
                     <Route path="/security/users">
                       <Users />
                     </Route>
