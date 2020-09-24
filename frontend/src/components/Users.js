@@ -127,7 +127,7 @@ const Users = (props) => {
 		<div>
       <Hidden xsDown implementation="css">
         <TableContainer component={Paper}>
-          <Table>
+          <Table size="medium">
             <TableHead>
               <TableRow>
                 {USER_TABLE_COLUMNS.map((column) => (
