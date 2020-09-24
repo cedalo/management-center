@@ -270,13 +270,15 @@ module.exports = class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	async addUser(username, password, clientid, policyName) {
+	async addUser(username, password, clientid, policyName = "", textName, textDescription) {
 		return this.sendCommand({
 			command: 'addUser',
 			username,
 			password,
 			clientid,
-			policyName
+			policyName,
+			textName,
+			textDescription
 		}, API_USER_MANAGEMENT);
 	}
 
