@@ -89,12 +89,8 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
   },
   breadcrumbLink: {
-	color: "inherit",
-	textDecoration: "none",
-	"&:hover": {
-	  textDecoration: "underline"
-	}
-  },
+  breadcrumbItem: theme.palette.breadcrumbItem,
+  breadcrumbLink: theme.palette.breadcrumbLink,
 }));
 
 const UserDetail = (props) => {
@@ -136,11 +132,11 @@ const UserDetail = (props) => {
 
   return (
     <div>
-      <Breadcrumbs maxItems={2} aria-label="breadcrumb">
+      <Breadcrumbs aria-label="breadcrumb">
         <RouterLink className={classes.breadcrumbLink} to="/">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security/users">Users</RouterLink>
-  		<Typography color="textPrimary">{user.username}</Typography>
+        <Typography className={classes.breadcrumbItem} color="textPrimary">{user.username}</Typography>
       </Breadcrumbs>
       <br />
     <div className={classes.root}>
