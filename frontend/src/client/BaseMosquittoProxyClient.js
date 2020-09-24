@@ -323,12 +323,12 @@ module.exports = class BaseMosquittoProxyClient {
 		}, API_USER_MANAGEMENT);
 	}
 
-	async listUsers(verbose = false) {
-		const users = await this.sendCommand({
+	async listUsers(verbose = true) {
+		const data = await this.sendCommand({
 			command: 'listUsers',
 			verbose
 		}, API_USER_MANAGEMENT);
-		return users;
+		return data.users;
 	}
 
 	async listGroups(verbose = false) {
