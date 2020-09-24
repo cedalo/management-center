@@ -44,7 +44,9 @@ const useStyles = makeStyles((theme) => ({
 	  },
 	  iconRoot: {
 		textAlign: 'center'
-	  }
+	  },
+	  breadcrumbItem: theme.palette.breadcrumbItem,
+	  breadcrumbLink: theme.palette.breadcrumbLink,
 }));
 
 const Configurations = ({ brokerConfigurations, sendMessage }) => {
@@ -56,9 +58,9 @@ const Configurations = ({ brokerConfigurations, sendMessage }) => {
   return (
 	  <div>
 		<Breadcrumbs aria-label="breadcrumb">
-			<RouterLink to="/">Home</RouterLink>
-			<RouterLink to="/system">System</RouterLink>
-			<Typography color="textPrimary">Configurations</Typography>
+			<RouterLink className={classes.breadcrumbLink} to="/">Home</RouterLink>
+			<RouterLink className={classes.breadcrumbLink} to="/system">System</RouterLink>
+			<Typography className={classes.breadcrumbItem} color="textPrimary">Configurations</Typography>
 		</Breadcrumbs>
 		<br />
 		<List className={classes.root}>
