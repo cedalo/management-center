@@ -182,22 +182,22 @@ const Users = (props) => {
                     {
                       <div>
                         <IconButton
-                          style={{ color: "#FF0022" }}
+						  size="small"
                           onClick={(event) => {
                             event.stopPropagation();
                             onEditUser(user.username);
                           }}
                         >
-                          <EditIcon />
+                          <EditIcon fontSize="small" />
                         </IconButton>
                         <IconButton
-                          style={{ color: "#FF0022" }}
+						  size="small"
                           onClick={(event) => {
                             event.stopPropagation();
                             onDeleteUser(user.username);
                           }}
                         >
-                          <DeleteIcon />
+                          <DeleteIcon fontSize="small" />
                         </IconButton>
                       </div>
                     }
