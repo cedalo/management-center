@@ -92,7 +92,7 @@ const Users = (props) => {
   const onEditUser = async (userName) => {
 	const user = await client.getUser(userName);
 	dispatch(updateUser(user));
-	history.push("/security/users/detail?action=edit");
+	history.push(`/security/users/detail/${userName}/?action=edit`);
   }
 
   const onDeleteUser = async (username) => {
