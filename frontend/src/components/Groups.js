@@ -108,6 +108,8 @@ const Groups = (props) => {
         <Typography className={classes.breadcrumbItem} color="textPrimary">User Groups</Typography>
       </Breadcrumbs>
       <br />
+	  { groups && groups.length > 0 ? 
+	  <div>
       <Hidden xsDown implementation="css">
         <TableContainer component={Paper}>
           <Table>
@@ -229,6 +231,7 @@ const Groups = (props) => {
           ))}
         </List>
       </Hidden>
+	  </div>
       <Fab color="primary" aria-label="add" className={classes.fab}>
         <AddIcon />
       </Fab>
