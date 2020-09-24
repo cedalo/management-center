@@ -250,10 +250,10 @@ const Users = (props) => {
                           <Chip
                             // icon={<FaceIcon />}
                             size="small"
-                            label={group.name}
+                            label={group}
                             onDelete={(event) => {
                               event.stopPropagation();
-                              onRemoveUserFromGroup(user, group.name);
+                              onDeleteUserFromGroup(user, group);
                             }}
                             color="secondary"
                           />
