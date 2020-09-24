@@ -55,7 +55,9 @@ const groupShape = PropTypes.shape({
 });
 
 const GROUP_TABLE_COLUMNS = [
-  { id: "groupname", key: "Name" },
+  { id: "groupName", key: "Name" },
+  { id: "textName", key: "Text name" },
+  { id: "textDescription", key: "Description" },
   { id: "users", key: "Users" },
 ];
 
@@ -141,7 +143,13 @@ const Groups = (props) => {
                   style={{ cursor: "pointer" }}
                 >
                   <TableCell>
-                    <b>{group.groupname}</b>
+                    {group.groupName}
+                  </TableCell>
+                  <TableCell>
+                    {group.textName}
+                  </TableCell>
+                  <TableCell>
+                    {group.textDescription}
                   </TableCell>
                   {/* <TableCell>{moment(group.lastModified).fromNow()}</TableCell> */}
                   <TableCell className={classes.badges}>
