@@ -410,7 +410,7 @@ export default function App(props) {
                     <Route path="/security/users">
                       <Users />
                     </Route>
-                    <Route path="/security/groups/:groupId" component={GroupDetail} />
+                    <Route path="/security/groups/detail/:groupId" component={GroupDetail} />
                     <Route path="/security/groups">
                       <Groups />
                     </Route>
