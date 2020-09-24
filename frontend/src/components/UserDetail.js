@@ -135,13 +135,15 @@ const UserDetail = (props) => {
 //   };
 
   return (
-    <div className={classes.root}>
+    <div>
       <Breadcrumbs maxItems={2} aria-label="breadcrumb">
         <RouterLink className={classes.breadcrumbLink} to="/">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/security/users">Users</RouterLink>
   		<Typography color="textPrimary">{user.username}</Typography>
       </Breadcrumbs>
       <br />
+    <div className={classes.root}>
       <Tabs
         value={value}
         onChange={handleChange}
@@ -321,6 +323,7 @@ const UserDetail = (props) => {
           ))}
         </List>
       </TabPanel>
+    </div>
     </div>
   );
 };
