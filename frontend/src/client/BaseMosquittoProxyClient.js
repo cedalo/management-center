@@ -297,11 +297,13 @@ module.exports = class BaseMosquittoProxyClient {
 		}, API_USER_MANAGEMENT);
 	}
 
-	async addGroup(groupName, policyName) {
+	async addGroup(groupName, policyName = "", textName, textDescription) {
 		return this.sendCommand({
 			command: 'addGroup',
 			groupName,
-			policyName
+			policyName,
+			textName,
+			textDescription
 		}, API_USER_MANAGEMENT);
 	}
 
