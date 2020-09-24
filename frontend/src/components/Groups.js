@@ -111,7 +111,7 @@ const Groups = (props) => {
 	  { groups && groups.length > 0 ? 
 	  <div>
       <Hidden xsDown implementation="css">
-        <TableContainer component={Paper}>
+		<TableContainer component={Paper}>
           <Table>
             <TableHead>
               <TableRow>
@@ -232,6 +232,9 @@ const Groups = (props) => {
         </List>
       </Hidden>
 	  </div>
+		:
+		<div>No groups found</div>
+		}
       <Fab color="primary" aria-label="add" className={classes.fab}>
         <AddIcon />
       </Fab>
