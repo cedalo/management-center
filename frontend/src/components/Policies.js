@@ -219,6 +219,10 @@ const Policies = (props) => {
           ))}
         </List>
       </Hidden>
+	  </div>
+		:
+		<div>No policies found</div>
+		}
 	  <Fab color="primary" aria-label="add" className={classes.fab}>
         <AddIcon />
       </Fab>
