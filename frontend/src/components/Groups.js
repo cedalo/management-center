@@ -255,7 +255,15 @@ const Groups = (props) => {
 		:
 		<div>No groups found</div>
 		}
-      <Fab color="primary" aria-label="add" className={classes.fab}>
+      <Fab
+		  color="primary"
+		  aria-label="add"
+		  className={classes.fab}
+		  onClick={(event) => {
+			event.stopPropagation();
+			onNewGroup();
+		  }}
+	  >
         <AddIcon />
       </Fab>
     </div>
