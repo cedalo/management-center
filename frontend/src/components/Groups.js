@@ -81,6 +81,10 @@ const Groups = (props) => {
 	history.push(`/security/groups/detail/${groupName}`);
   }
 
+  const onNewGroup = () => {
+	history.push("/security/groups/new");
+  }
+
   const onDeleteGroup = async (groupName) => {
 	  await client.deleteGroup(groupName);
 	  const groups = await client.listGroups();
