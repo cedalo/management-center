@@ -218,6 +218,7 @@ const Users = (props) => {
         </TableContainer>
       </Hidden>
       <Hidden smUp implementation="css">
+		  <Paper>
         <List className={classes.root}>
           {users.map((user) => (
             <React.Fragment>
@@ -286,6 +287,7 @@ const Users = (props) => {
             </React.Fragment>
           ))}
         </List>
+		</Paper>
       </Hidden>
 	  </div>
 		:
