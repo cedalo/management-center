@@ -161,14 +161,14 @@ const Configurations = ({ brokerConfigurations, sendMessage }) => {
 					      </React.Fragment>
 					    }
 					/>
-					<ListItemSecondaryAction>
+					{/* <ListItemSecondaryAction>
 					  <IconButton edge="end" aria-label="edit">
 						<EditIcon />
 					  </IconButton>
 					  <IconButton edge="end" aria-label="delete">
 						<DeleteIcon />
 					  </IconButton>
-					</ListItemSecondaryAction>
+					</ListItemSecondaryAction> */}
 				  </ListItem>
 				  <Divider variant="inset" component="li" />
 				</React.Fragment>
