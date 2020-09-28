@@ -22,6 +22,7 @@ import Divider from "@material-ui/core/Divider";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import PasswordIcon from "@material-ui/icons/VpnKey";
+import Paper from "@material-ui/core/Paper";
 import UserIcon from "@material-ui/icons/Person";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
@@ -74,7 +75,6 @@ const userShape = PropTypes.shape({
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-    backgroundColor: theme.palette.background.paper,
   },
   form: {
     display: "flex",
@@ -126,6 +126,7 @@ const GroupDetail = (props) => {
   		<Typography className={classes.breadcrumbItem} color="textPrimary">{group.groupname}</Typography>
       </Breadcrumbs>
       <br />
+	  <Paper>
       <Tabs
         value={value}
         onChange={handleChange}
@@ -192,6 +193,7 @@ const GroupDetail = (props) => {
           ))}
         </List>
       </TabPanel>
+	  </Paper>
     </div>
   );
 };
