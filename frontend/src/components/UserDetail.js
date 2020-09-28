@@ -12,6 +12,7 @@ import IconButton from "@material-ui/core/IconButton";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
+import Paper from "@material-ui/core/Paper";
 import CredentialsIcon from "@material-ui/icons/Lock";
 import GroupsIcon from "@material-ui/icons/Group";
 import ClientIDIcon from "@material-ui/icons/Fingerprint";
@@ -74,7 +75,6 @@ const userShape = PropTypes.shape({
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-    backgroundColor: theme.palette.background.paper,
   },
   form: {
     display: "flex",
@@ -138,7 +138,7 @@ const UserDetail = (props) => {
         <Typography className={classes.breadcrumbItem} color="textPrimary">{user.username}</Typography>
       </Breadcrumbs>
       <br />
-    <div className={classes.root}>
+    <Paper>
       <Tabs
         value={value}
         onChange={handleChange}
@@ -318,7 +318,7 @@ const UserDetail = (props) => {
           ))}
         </List>
       </TabPanel>
-    </div>
+	  </Paper>
     </div>
   );
 };
