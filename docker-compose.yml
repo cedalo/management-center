@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  mosquitto:
+    image: ralight/mosquitto-dynsec
+    container_name: mosquitto
+    ports:
+      - 1890:1883
+      - 9009:9001
+    expose:
+      - 1890
+      - 9009
+    # volumes:
+    #   - ./conf:/mosquitto/config
+  mosquitto-ui:
+    image: cedalo/mosquitto-ui
+    container_name: mosquitto-ui
+    environment:
+      MOSQUITTO_UI_BROKER_NAME: Mosquitto 2.0 Preview
+      MOSQUITTO_UI_BROKER_URL: mosquitto:1890
+      # MOSQUITTO_UI_BROKER_USERNAME: cedalo
+      # MOSQUITTO_UI_BROKER_PASSWORD: cedalo
+    ports:
+      - 8089:8088
+      - 9010:9000
+    expose:
+      - 8089
+      - 9010
+    # volumes:
+    #   - ./config-docker:/mosquitto-ui/config
