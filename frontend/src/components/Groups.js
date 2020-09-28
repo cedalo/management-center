@@ -165,7 +165,6 @@ const Groups = (props) => {
                           onDeleteUserFromGroup(user.username, group.groupName);
                         }}
                         color="secondary"
-						// variant="outlined"
                       />
                     ))}
                   </TableCell>
@@ -207,7 +206,7 @@ const Groups = (props) => {
                 <ListItemText
                   primary={
                     <span>
-                      <b>{group.groupName}</b>
+                      {group.groupName}
                     </span>
                   }
                     secondary={
@@ -250,7 +249,7 @@ const Groups = (props) => {
 					</IconButton>
                 </ListItemSecondaryAction>
               </ListItem>
-              <Divider variant="inset" component="li" />
+			  <Divider />
             </React.Fragment>
           ))}
         </List>
