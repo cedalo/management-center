@@ -22,8 +22,6 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import Divider from "@material-ui/core/Divider";
 import ListItemText from "@material-ui/core/ListItemText";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import Avatar from "@material-ui/core/Avatar";
 import PolicyIcon from "@material-ui/icons/Policy";
 import SecurityIcon from '@material-ui/icons/Security';
 import UserManagementIcon from '@material-ui/icons/SupervisedUserCircle';
@@ -183,11 +181,6 @@ const Policies = (props) => {
           {policies.map((policy) => (
             <React.Fragment>
               <ListItem alignItems="flex-start">
-                <ListItemAvatar>
-                  <Avatar>
-                    <PolicyIcon />
-                  </Avatar>
-                </ListItemAvatar>
                 <ListItemText
                   primary={
                     <span>
