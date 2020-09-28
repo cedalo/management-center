@@ -24,8 +24,6 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import Divider from "@material-ui/core/Divider";
 import ListItemText from "@material-ui/core/ListItemText";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import Avatar from "@material-ui/core/Avatar";
 import ConfigurationIcon from '@material-ui/icons/Tune';
 import { Link as RouterLink } from "react-router-dom";
 // import {
@@ -134,14 +132,6 @@ const Configurations = ({ brokerConfigurations, sendMessage }) => {
           ? brokerConfigurations.connections.map((brokerConfiguration) => (
 				<React.Fragment>
 				  <ListItem alignItems="flex-start">
-					<ListItemAvatar>
-					  <Avatar>
-						  <ConfigurationIcon />
-						{/* <Icon classes={{root: classes.iconRoot}}>
-							<img className={classes.imageIcon} src="https://projects.eclipse.org/sites/default/files/mosquitto-200px.png"/>
-						</Icon> */}
-					  </Avatar>
-					</ListItemAvatar>
 					<ListItemText
 					  primary={
 						<span>
