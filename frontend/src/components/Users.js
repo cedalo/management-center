@@ -182,14 +182,12 @@ const Users = (props) => {
                           onDeleteUserFromGroup(user.username, group.groupName);
                         }}
 						color="secondary"
-						variant="outlined"
+						// variant="outlined"
                       />
                     ))}
                   </TableCell>
                   {/* <TableCell>{moment(user.lastModified).fromNow()}</TableCell> */}
-                  <TableCell>
-                    {
-                      <div>
+                  <TableCell align="right">
                         <IconButton
 						  size="small"
                           onClick={(event) => {
@@ -208,8 +206,6 @@ const Users = (props) => {
                         >
                           <DeleteIcon fontSize="small" />
                         </IconButton>
-                      </div>
-                    }
                   </TableCell>
                 </TableRow>
               ))}
@@ -222,10 +218,14 @@ const Users = (props) => {
         <List className={classes.root}>
           {users.map((user) => (
             <React.Fragment>
+              <ListItem
+			  	alignItems="flex-start" 
+          		onClick={(event) => onSelectUser(user.username)}
+			  >
                 <ListItemText
                   primary={
                     <span>
-                      <b>{user.username}</b>
+                      {user.username}
                     </span>
                   }
                   secondary={
@@ -236,9 +236,9 @@ const Users = (props) => {
                         className={classes.inline}
                         color="textPrimary"
                       >
-                        {user.username}
+                        {user.textName}
                       </Typography>
-					  {/* <span> —  {user.firstName} {user.lastName}</span> */}
+					  <span> —  {user.textDescription} </span>
 
                       {/* <div className={classes.badges}>
                         {user.groups.map((group) => (
@@ -283,7 +283,7 @@ const Users = (props) => {
 					</IconButton>
                 </ListItemSecondaryAction>
               </ListItem>
-              <Divider variant="inset" component="li" />
+			  <Divider />
             </React.Fragment>
           ))}
         </List>
