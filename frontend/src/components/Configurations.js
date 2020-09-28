@@ -63,6 +63,72 @@ const Configurations = ({ brokerConfigurations, sendMessage }) => {
 			<Typography className={classes.breadcrumbItem} color="textPrimary">Configurations</Typography>
 		</Breadcrumbs>
 		<br />
+	  { brokerConfigurations && brokerConfigurations.connections && brokerConfigurations.connections.length > 0 ? 
+		<div>
+      <Hidden xsDown implementation="css">
+		<TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                {GROUP_TABLE_COLUMNS.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    sortDirection={sortBy === column.id ? sortDirection : false}
+                  >
+                    <TableSortLabel
+                      active={sortBy === column.id}
+                      direction={sortDirection}
+                      onClick={() => onSort(column.id)}
+                    >
+                      {column.key}
+                    </TableSortLabel>
+                  </TableCell>
+                ))}
+                <TableCell />
+              </TableRow>
+            </TableHead>
+            <TableBody>
+			{brokerConfigurations && brokerConfigurations.connections.map((brokerConfiguration) => (
+                <TableRow
+                  hover
+                  key={brokerConfiguration.name}
+                //   onClick={() => onSelectConfiguration(brokerConfiguration.name)}
+                //   style={{ cursor: "pointer" }}
+                >
+                  <TableCell>
+                    {brokerConfiguration.name}
+                  </TableCell>
+                  <TableCell>
+                    {brokerConfiguration.url}
+                  </TableCell>
+                  <TableCell align="right">
+                        {/* <IconButton
+						  size="small"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            onDeleteConfiguration(brokerConfiguration.name);
+                          }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+						  size="small"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            onDeleteConfiguration(brokerConfiguration.name);
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton> */}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Hidden>
+      <Hidden smUp implementation="css">
+		  <Paper>
 		<List className={classes.root}>
 		{brokerConfigurations && Array.isArray(brokerConfigurations.connections)
           ? brokerConfigurations.connections.map((brokerConfiguration) => (
@@ -109,6 +175,12 @@ const Configurations = ({ brokerConfigurations, sendMessage }) => {
             ))
           : null}
 		</List>
+		</Paper>
+      </Hidden>
+	  </div>
+		:
+		<div>No configurations found</div>
+		}
 	  </div>
   );
 };
