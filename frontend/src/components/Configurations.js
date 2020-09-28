@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 	  breadcrumbLink: theme.palette.breadcrumbLink,
 }));
 
-const Configurations = ({ brokerConfigurations, sendMessage }) => {
+const Configurations = ({ brokerConfigurations, sendMessage, onSort, sortBy, sortDirection }) => {
   const classes = useStyles();
   const theme = useTheme();
   const context = useContext(WebSocketContext);
