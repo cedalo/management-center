@@ -210,18 +210,19 @@ const Groups = (props) => {
                       <b>{group.groupName}</b>
                     </span>
                   }
-                  //   secondary={
-                  //     <React.Fragment>
-                  //       <Typography
-                  //         component="span"
-                  //         variant="body2"
-                  //         className={classes.inline}
-                  //         color="textPrimary"
-                  //       >
-                  //         Group details
-                  //       </Typography>
-                  //     </React.Fragment>
-                  //   }
+                    secondary={
+                      <React.Fragment>
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          className={classes.inline}
+                          color="textPrimary"
+                        >
+                        {group.textName}
+                      </Typography>
+					  <span> —  {group.textDescription} </span>
+                      </React.Fragment>
+                    }
                 />
                 <ListItemSecondaryAction>
 					<IconButton
