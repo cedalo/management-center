@@ -174,7 +174,7 @@ const Groups = (props) => {
 						  size="small"
                           onClick={(event) => {
                             event.stopPropagation();
-                            onDeleteGroup(group.groupName);
+                            onSelectGroup(group.groupName);
                           }}
                         >
                           <EditIcon fontSize="small" />
