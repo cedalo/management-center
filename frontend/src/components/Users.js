@@ -257,12 +257,29 @@ const Users = (props) => {
                   }
                 />
                 <ListItemSecondaryAction>
-                  <IconButton edge="end" aria-label="edit">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton edge="end" aria-label="delete">
-                    <DeleteIcon />
-                  </IconButton>
+					<IconButton
+							edge="end"
+							size="small"
+							onClick={(event) => {
+							event.stopPropagation();
+								onSelectUser(user.username);
+							}}
+							aria-label="edit"
+						>
+						<EditIcon fontSize="small" />
+					</IconButton>
+
+					<IconButton
+							edge="end"
+							size="small"
+							onClick={(event) => {
+							event.stopPropagation();
+								onDeleteUser(user.username);
+							}}
+							aria-label="delete"
+						>
+						<DeleteIcon fontSize="small" />
+					</IconButton>
                 </ListItemSecondaryAction>
               </ListItem>
               <Divider variant="inset" component="li" />
