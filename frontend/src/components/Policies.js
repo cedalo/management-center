@@ -201,11 +201,19 @@ const Policies = (props) => {
                   //   }
                 />
                 <ListItemSecondaryAction>
-                  <IconButton edge="end" aria-label="edit">
-                    <EditIcon />
+                  <IconButton
+				  	edge="end" 
+					size="small"
+					aria-label="edit"
+				>
+                    <EditIcon fontSize="small" />
                   </IconButton>
-                  <IconButton edge="end" aria-label="delete">
-                    <DeleteIcon />
+                  <IconButton
+				  	edge="end" 
+					size="small"
+					aria-label="delete"
+				>
+                    <DeleteIcon fontSize="small"/>
                   </IconButton>
                 </ListItemSecondaryAction>
               </ListItem>
