@@ -32,6 +32,11 @@ import { Link as RouterLink } from "react-router-dom";
 
 import { WebSocketContext } from '../websockets/WebSocket';
 
+const GROUP_TABLE_COLUMNS = [
+	{ id: "configurationName", key: "Name" },
+	{ id: "URL", key: "URL" },
+  ];
+
 const useStyles = makeStyles((theme) => ({
 	avatar: {
 		backgroundColor: 'white'
