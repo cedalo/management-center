@@ -46,7 +46,27 @@ const brokerConnections = new Map();
 const clientConnections = new Map();
 const clientBrokerMappings = new Map();
 
-const connections = config.connections || [];
+const initConnections = (config) => {
+	const connections = config.connections || [];
+	if (process.env.MOSQUITTO_UI_BROKER_NAME
+		&& process.env.MOSQUITTO_UI_BROKER_URL) {
+			const connection = {
+				name: process.env.MOSQUITTO_UI_BROKER_NAME,
+				url: process.env.MOSQUITTO_UI_BROKER_URL
+			}
+			if (process.env.MOSQUITTO_UI_BROKER_USERNAME
+				&& process.env.MOSQUITTO_UI_BROKER_PASSWORD) {
+				connection.credentials = {
+					username: process.env.MOSQUITTO_UI_BROKER_USERNAME,
+					password: process.env.MOSQUITTO_UI_BROKER_PASSWORD
+				}
+			}
+			connections.push(connection);
+	}
+	return connections;
+}
+const connections = initConnections(config);
+
 connections.forEach(async (connection) => {
 	const system = {};
 	const topicTree = {};
