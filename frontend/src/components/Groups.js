@@ -200,6 +200,10 @@ const Groups = (props) => {
         <List className={classes.root}>
           {groups.map((group) => (
             <React.Fragment>
+			<ListItem
+				alignItems="flex-start" 
+          		onClick={(event) => onSelectGroup(group.groupname)}
+			>
                 <ListItemText
                   primary={
                     <span>
