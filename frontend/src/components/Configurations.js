@@ -140,7 +140,7 @@ const Configurations = ({ brokerConfigurations, sendMessage }) => {
 					<ListItemText
 					  primary={
 						<span>
-						  <b>{brokerConfiguration.name}</b>
+						  {brokerConfiguration.name}
 						</span>
 					  }
 					    secondary={
@@ -165,7 +165,7 @@ const Configurations = ({ brokerConfigurations, sendMessage }) => {
 					  </IconButton>
 					</ListItemSecondaryAction> */}
 				  </ListItem>
-				  <Divider variant="inset" component="li" />
+				  <Divider />
 				</React.Fragment>
             ))
           : null}
