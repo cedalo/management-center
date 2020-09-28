@@ -26,8 +26,6 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import Divider from "@material-ui/core/Divider";
 import ListItemText from "@material-ui/core/ListItemText";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import Avatar from "@material-ui/core/Avatar";
 import GroupIcon from "@material-ui/icons/Group";
 import UserIcon from "@material-ui/icons/Person";
 import { Link as RouterLink } from "react-router-dom";
@@ -223,12 +221,6 @@ const Users = (props) => {
         <List className={classes.root}>
           {users.map((user) => (
             <React.Fragment>
-              <ListItem alignItems="flex-start" component={RouterLink} to={`users/${user.username}`}>
-                <ListItemAvatar>
-                  <Avatar>
-                    <UserIcon />
-                  </Avatar>
-                </ListItemAvatar>
                 <ListItemText
                   primary={
                     <span>
