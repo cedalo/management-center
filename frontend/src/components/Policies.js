@@ -100,7 +100,7 @@ const Policies = (props) => {
 	  { policies && policies.length > 0 ? 
 	  <div>
       <Hidden xsDown implementation="css">
-      <TableContainer component={Paper}>
+	  <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
@@ -130,45 +130,41 @@ const Policies = (props) => {
                 style={{ cursor: "pointer" }}
               >
                 <TableCell>
-                  <b>{policy.policyName}</b>
+                  {policy.policyName}
                 </TableCell>
                 {/* <TableCell>{moment(group.lastModified).fromNow()}</TableCell> */}
                 <TableCell className={classes.badges}>
                   {policy.features.map((feature) => (
                     <Chip
+					  size="small"
                       icon={ getIconForFeature(feature.name) }
                       label={feature.name}
                       onDelete={(event) => {
                         event.stopPropagation();
                       }}
                       color="secondary"
-					  variant="outlined"
                     />
                   ))}
                 </TableCell>
-                <TableCell>
-                  {
-                    <div>
+                <TableCell align="right">
                       <IconButton
-                        style={{ color: "#FF0022" }}
+						size="small"
                         onClick={(event) => {
                           event.stopPropagation();
                           onDeletePolicy(policy.policyName);
                         }}
                       >
-                        <EditIcon />
+                        <EditIcon fontSize="small" />
                       </IconButton>
                       <IconButton
-                        style={{ color: "#FF0022" }}
+						size="small"
                         onClick={(event) => {
                           event.stopPropagation();
                           onDeletePolicy(policy.policyName);
                         }}
                       >
-                        <DeleteIcon />
+                        <DeleteIcon fontSize="small" />
                       </IconButton>
-                    </div>
-                  }
                 </TableCell>
               </TableRow>
             ))}
@@ -177,6 +173,7 @@ const Policies = (props) => {
       </TableContainer>
       </Hidden>
       <Hidden smUp implementation="css">
+		  <Paper>
         <List className={classes.root}>
           {policies.map((policy) => (
             <React.Fragment>
@@ -184,7 +181,7 @@ const Policies = (props) => {
                 <ListItemText
                   primary={
                     <span>
-                      <b>{policy.policyName}</b>
+                      {policy.policyName}
                     </span>
                   }
                   //   secondary={
@@ -217,10 +214,11 @@ const Policies = (props) => {
                   </IconButton>
                 </ListItemSecondaryAction>
               </ListItem>
-              <Divider variant="inset" component="li" />
+              <Divider />
             </React.Fragment>
           ))}
         </List>
+		</Paper>
       </Hidden>
 	  </div>
 		:
