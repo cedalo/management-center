@@ -2,7 +2,7 @@ const WebSocket = require("ws");
 const mqtt = require("mqtt");
 const NodeMosquittoClient = require("./src/client/NodeMosquittoClient");
 
-const MOSQUITTO_UI_PROXY_CONFIG_DIR = process.env.MOSQUITTO_UI_PROXY_PORT || "../config/config.json";
+const MOSQUITTO_UI_PROXY_CONFIG_DIR = process.env.MOSQUITTO_UI_PROXY_CONFIG_DIR || "../config/config.json";
 const MOSQUITTO_UI_PROXY_PORT = process.env.MOSQUITTO_UI_PROXY_PORT || 8088;
 
 
