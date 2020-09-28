@@ -196,6 +196,7 @@ const Groups = (props) => {
         </TableContainer>
       </Hidden>
       <Hidden smUp implementation="css">
+		  <Paper>
         <List className={classes.root}>
           {groups.map((group) => (
             <React.Fragment>
@@ -248,6 +249,7 @@ const Groups = (props) => {
             </React.Fragment>
           ))}
         </List>
+		</Paper>
       </Hidden>
 	  </div>
 		:
