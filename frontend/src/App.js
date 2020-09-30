@@ -70,6 +70,7 @@ import {
   Switch,
   Route,
   Link as RouterLink,
+  Redirect,
 } from "react-router-dom";
 
 const drawerWidth = 240;
