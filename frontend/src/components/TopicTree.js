@@ -52,7 +52,7 @@ const TopicTree = ({ topicTree }) => {
   return (
     <div>
 	<Breadcrumbs aria-label="breadcrumb">
-	  <RouterLink className={classes.breadcrumbLink} to="/">Home</RouterLink>
+	  <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
 	  <RouterLink className={classes.breadcrumbLink} to="/system">System</RouterLink>
 	  <Typography className={classes.breadcrumbItem} color="textPrimary">Topic Tree</Typography>
 	</Breadcrumbs>

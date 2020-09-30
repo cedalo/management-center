@@ -82,7 +82,7 @@ const GroupNew = (props) => {
   return (
     <div>
       <Breadcrumbs aria-label="breadcrumb">
-        <RouterLink className={classes.breadcrumbLink} to="/">Home</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
         <Typography className={classes.breadcrumbItem} color="textPrimary">Groups</Typography>
       </Breadcrumbs>
