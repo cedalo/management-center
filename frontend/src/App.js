@@ -343,7 +343,7 @@ export default function App(props) {
             			>
 							<ThemeModeIcon />
 						</IconButton>
-					  <IconButton
+					  {/* <IconButton
 						edge="end"
 						aria-label="Notifications"
 						aria-controls="notifications"
@@ -353,7 +353,7 @@ export default function App(props) {
 						className={classes.toolbarButton}
             			>
 							<NotificationsIcon />
-						</IconButton>
+						</IconButton> */}
                     </section>
                   </Toolbar>
                 </AppBar>
