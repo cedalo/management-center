@@ -360,6 +360,36 @@ export default class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
+	async updateUserGroups(user, groupNames = []) {
+		if (!groupNames) {
+			groupNames = [];
+		}
+		const userGroupNames = user.groups.map(group => group.groupName);
+		const groupsToRemove = userGroupNames.filter(groupName => !groupNames.includes(groupName));
+		const groupsToAdd = groupNames.filter(groupName => !userGroupNames.includes(groupName));
+		for (const groupToRemove of groupsToRemove) {
+			await this.deleteUserFromGroup(user.username, groupToRemove);
+		}
+		for (const groupToAdd of groupsToAdd) {
+		  	await this.addUserToGroup(user.username, groupToAdd);
+	  }
+	}
+
+	async updateGroupUsers(group, userNames = []) {
+		if (!userNames) {
+			userNames = [];
+		}
+		const groupUserNames = group.users.map(user => user.username);
+		const usersToRemove = groupUserNames.filter(username => !userNames.includes(username));
+		const usersToAdd = userNames.filter(username => !groupUserNames.includes(username));
+		for (const userToRemove of usersToRemove) {
+			await this.deleteUserFromGroup(userToRemove, group.groupName);
+		}
+		for (const userToAdd of usersToAdd) {
+		  	await this.addUserToGroup(userToAdd, group.groupName);
+	  }
+	}
+
 	async getUser(username) {
 		const users = await this.listUsers();
 		return users.find((user) => user.username === username);
@@ -378,6 +408,14 @@ export default class BaseMosquittoProxyClient {
 	async getGroupCount() {
 		const groups = await this.listGroups();
 		return groups.length;
+	}
+
+	async addUserToGroups(username, groups) {
+		if (groups) {
+			for (const group of groups) {
+				await this.addUserToGroup(username, group);
+			}
+		}
 	}
 
 	async deleteGroup(groupname) {

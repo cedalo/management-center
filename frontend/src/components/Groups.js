@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import { connect, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
+import { useConfirm } from 'material-ui-confirm';
 import Chip from "@material-ui/core/Chip";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
@@ -30,8 +31,9 @@ import GroupIcon from "@material-ui/icons/Group";
 import UserIcon from "@material-ui/icons/Person";
 import { Link as RouterLink } from "react-router-dom";
 
+import AutoSuggest from './AutoSuggest';
 import { WebSocketContext } from '../websockets/WebSocket';
-import { updateGroup, updateGroups } from '../actions/actions';
+import { updateGroup, updateGroups, updateUsers } from '../actions/actions';
 
 const useStyles = makeStyles((theme) => ({
   badges: {
@@ -73,7 +75,20 @@ const Groups = (props) => {
   const context = useContext(WebSocketContext);
   const dispatch = useDispatch();
   const history = useHistory();
+  const confirm = useConfirm();
   const { client } = context;
+
+  const onUpdateGroupUsers = async (group, users = []) => {
+	if (!users) {
+		users = [];
+	}
+	const userNames = users.map(user => user.value);
+	await client.updateGroupUsers(group, userNames);
+	const groups = await client.listGroups();
+	dispatch(updateGroups(groups));
+	const usersUpdated = await client.listUsers();
+	dispatch(updateUsers(usersUpdated));
+  }
 
   const onSelectGroup = async (groupName) => {
 	const group = await client.getGroup(groupName);
@@ -84,11 +99,17 @@ const Groups = (props) => {
   const onNewGroup = () => {
 	history.push("/security/groups/new");
   }
-
+  
   const onDeleteGroup = async (groupName) => {
+		await confirm({
+			title: 'Confirm group deletion',
+			description: `Do you really want to delete the group "${groupName}"?`
+		});
 	  await client.deleteGroup(groupName);
 	  const groups = await client.listGroups();
 	  dispatch(updateGroups(groups));
+	  const users = await client.listUsers();
+	  dispatch(updateUsers(users));
   }
 
   const onDeleteUserFromGroup = async (username, group) => {
@@ -99,10 +120,19 @@ const Groups = (props) => {
 
   const {
 	groups = [],
+	users = [],
     onSort,
     sortBy,
     sortDirection,
   } = props;
+
+  const userSuggestions = users
+	.map(user => user.username)
+	.sort()
+	.map(username => ({
+		label: username,
+		value: username,
+	}));
 
   return (
     <div>
@@ -140,8 +170,12 @@ const Groups = (props) => {
               {groups && groups.map((group) => (
                 <TableRow
                   hover
-                  key={group.groupName}
-                  onClick={() => onSelectGroup(group.groupName)}
+				  key={group.groupName}
+                  onClick={(event) => {
+					if (event.target.nodeName?.toLowerCase() === "td") {
+						onSelectGroup(group.groupName);
+					}
+				  }}
                   style={{ cursor: "pointer" }}
                 >
                   <TableCell>
@@ -155,7 +189,17 @@ const Groups = (props) => {
                   </TableCell>
                   {/* <TableCell>{moment(group.lastModified).fromNow()}</TableCell> */}
                   <TableCell className={classes.badges}>
-                    {group.users && group.users.map((user) => (
+					<AutoSuggest 
+						suggestions={userSuggestions}
+						values={group.users.map((user) => ({
+							label: user.username,
+							value: user.username
+						}))}
+						handleChange={(value) => {
+							onUpdateGroupUsers(group, value);
+						}}
+					/>
+                    {/* {group.users && group.users.map((user) => (
                       <Chip
 					    size="small"
                         icon={<UserIcon />}
@@ -166,7 +210,7 @@ const Groups = (props) => {
                         }}
                         color="secondary"
                       />
-                    ))}
+                    ))} */}
                   </TableCell>
                   <TableCell align="right">
                         <IconButton
@@ -288,8 +332,8 @@ Groups.defaultProps = {
 
 const mapStateToProps = (state) => {
   return {
-		// TODO: check object hierarchy
 		groups: state.groups?.groups,
+		users: state.users?.users,
   };
 };
 

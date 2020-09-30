@@ -3,6 +3,7 @@ import React, { useContext, useState } from "react";
 import PropTypes from "prop-types";
 import Button from '@material-ui/core/Button';
 import { makeStyles } from "@material-ui/core/styles";
+import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from "react-router-dom";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Paper from '@material-ui/core/Paper';
@@ -69,6 +70,7 @@ const UserNew = (props) => {
   const context = useContext(WebSocketContext);
   const dispatch = useDispatch();
   const history = useHistory();
+  const confirm = useConfirm();
   const { client } = context;
 
   const onSaveUser = async () => {
@@ -78,7 +80,11 @@ const UserNew = (props) => {
 	history.push(`/security/users`);
   }
 
-  const onCancel = () => {
+  const onCancel = async () => {
+	await confirm({
+		title: 'Cancel user creation',
+		description: `Do you really want to cancel creating this user?`
+	});
 	history.goBack();
   }
 
