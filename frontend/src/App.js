@@ -233,7 +233,7 @@ export default function App(props) {
         <ListItemLink
 		  classes={classes} 
           to="/security/policies"
-          primary="Policies"
+          primary="🚧 Policies"
           icon={<PolicyIcon />}
         />
       </List>
@@ -242,9 +242,9 @@ export default function App(props) {
         <ListItemLink 
 		  classes={classes}
 		  to="/streams"
-		  primary="Streams"
-		  icon={<StreamsIcon 
-		/>} />
+		  primary="🚧 Streams"
+		  icon={<StreamsIcon />}
+		/>
       </List>
       <Divider />
       <List>
@@ -257,7 +257,7 @@ export default function App(props) {
         <ListItemLink
 		  classes={classes} 
           to="/system/topics"
-          primary="Topic Tree"
+          primary="🚧 Topic Tree"
           icon={<TopicTreeIcon />}
         />
         <ListItemLink
@@ -269,7 +269,7 @@ export default function App(props) {
         <ListItemLink
 		  classes={classes} 
           to="/system/settings"
-          primary="Settings"
+          primary="🚧 Settings"
           icon={<SettingsIcon />}
         />
       </List>
