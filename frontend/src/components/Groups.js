@@ -76,6 +76,18 @@ const Groups = (props) => {
   const history = useHistory();
   const { client } = context;
 
+  const onUpdateGroupUsers = async (group, users = []) => {
+	if (!users) {
+		users = [];
+	}
+	const userNames = users.map(user => user.value);
+	await client.updateGroupUsers(group, userNames);
+	const groups = await client.listGroups();
+	dispatch(updateGroups(groups));
+	const usersUpdated = await client.listUsers();
+	dispatch(updateUsers(usersUpdated));
+  }
+
   const onSelectGroup = async (groupName) => {
 	const group = await client.getGroup(groupName);
 	dispatch(updateGroup(group));
