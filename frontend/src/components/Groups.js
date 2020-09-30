@@ -30,6 +30,7 @@ import GroupIcon from "@material-ui/icons/Group";
 import UserIcon from "@material-ui/icons/Person";
 import { Link as RouterLink } from "react-router-dom";
 
+import AutoSuggest from './AutoSuggest';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { updateGroup, updateGroups } from '../actions/actions';
 
@@ -99,10 +100,19 @@ const Groups = (props) => {
 
   const {
 	groups = [],
+	users = [],
     onSort,
     sortBy,
     sortDirection,
   } = props;
+
+  const userSuggestions = users
+	.map(user => user.username)
+	.sort()
+	.map(username => ({
+		label: username,
+		value: username,
+	}));
 
   return (
     <div>
@@ -155,7 +165,17 @@ const Groups = (props) => {
                   </TableCell>
                   {/* <TableCell>{moment(group.lastModified).fromNow()}</TableCell> */}
                   <TableCell className={classes.badges}>
-                    {group.users && group.users.map((user) => (
+					<AutoSuggest 
+						suggestions={userSuggestions}
+						values={group.users.map((user) => ({
+							label: user.username,
+							value: user.username
+						}))}
+						handleChange={(value) => {
+							onUpdateGroupUsers(group, value);
+						}}
+					/>
+                    {/* {group.users && group.users.map((user) => (
                       <Chip
 					    size="small"
                         icon={<UserIcon />}
@@ -166,7 +186,7 @@ const Groups = (props) => {
                         }}
                         color="secondary"
                       />
-                    ))}
+                    ))} */}
                   </TableCell>
                   <TableCell align="right">
                         <IconButton
@@ -288,8 +308,8 @@ Groups.defaultProps = {
 
 const mapStateToProps = (state) => {
   return {
-		// TODO: check object hierarchy
 		groups: state.groups?.groups,
+		users: state.users?.users,
   };
 };
 
