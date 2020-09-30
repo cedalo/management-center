@@ -304,6 +304,11 @@ wss.on("connection", (ws) => {
 app.get("/api/system/status", (request, response) => {
 	response.json(globalSystem);
 });
+  
+app.get("/api/system/topictree", (request, response) => {
+	response.json(globalTopicTree);
+});
+  
 server.listen(MOSQUITTO_UI_PROXY_PORT, () => {
     console.log(`Mosquitto proxy server started on port ${server.address().port} :)`);
 });
