@@ -59,6 +59,7 @@ import TopicTree from "./components/TopicTree";
 import GroupDetail from "./components/GroupDetail";
 import PolicyDetail from "./components/PolicyDetail";
 import UserDetail from "./components/UserDetail";
+import GroupNew from "./components/GroupNew";
 import UserNew from "./components/UserNew";
 import Users from "./components/Users";
 import store from "./store";
@@ -416,6 +417,9 @@ export default function App(props) {
                       <Users />
                     </Route>
                     <Route path="/security/groups/detail/:groupId" component={GroupDetail} />
+					<Route path="/security/groups/new">
+                      <GroupNew />
+                    </Route>
                     <Route path="/security/groups">
                       <Groups />
                     </Route>
