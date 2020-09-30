@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import { connect, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
+import { useConfirm } from 'material-ui-confirm';
 import Chip from "@material-ui/core/Chip";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
@@ -74,6 +75,7 @@ const Groups = (props) => {
   const context = useContext(WebSocketContext);
   const dispatch = useDispatch();
   const history = useHistory();
+  const confirm = useConfirm();
   const { client } = context;
 
   const onUpdateGroupUsers = async (group, users = []) => {
@@ -97,11 +99,17 @@ const Groups = (props) => {
   const onNewGroup = () => {
 	history.push("/security/groups/new");
   }
-
+  
   const onDeleteGroup = async (groupName) => {
+		await confirm({
+			title: 'Confirm group deletion',
+			description: `Do you really want to delete the group "${groupName}"?`
+		});
 	  await client.deleteGroup(groupName);
 	  const groups = await client.listGroups();
 	  dispatch(updateGroups(groups));
+	  const users = await client.listUsers();
+	  dispatch(updateUsers(users));
   }
 
   const onDeleteUserFromGroup = async (username, group) => {
