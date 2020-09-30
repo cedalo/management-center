@@ -300,6 +300,12 @@ wss.on("connection", (ws) => {
   });
 });
 
+app.get("/api/version", (request, response) => {
+	response.json({
+		version: '2.0',
+		buildNumber: '1',
+	});
+});
 
 app.get("/api/system/status", (request, response) => {
 	response.json(globalSystem);
