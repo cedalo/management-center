@@ -202,12 +202,6 @@ const Users = (props) => {
                   {/* <TableCell>{user.firstName}</TableCell>
                   <TableCell>{user.lastName}</TableCell> */}
                   <TableCell className={classes.badges}>
-				  {/* <ChipInput
-					value={user.groups.map((group) => group.groupName)}
-					dataSource={["software", "tests"]}
-					// onAdd={(chip) => handleAddChip(chip)}
-					onDelete={(groupName, index) => onDeleteUserFromGroup(user.username, groupName)}
-					/> */}
 					<AutoSuggest 
 						suggestions={groupSuggestions}
 						values={user.groups.map((group) => ({
