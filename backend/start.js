@@ -9,6 +9,8 @@ const MOSQUITTO_UI_PROXY_PORT = process.env.MOSQUITTO_UI_PROXY_PORT || 8088;
 
 const globalSystem = {};
 const globalTopicTree = {};
+const app = express();
+const server = http.createServer(app);
 
 // TODO: add error handling
 const config = require(MOSQUITTO_UI_PROXY_CONFIG_DIR);
