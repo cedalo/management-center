@@ -27,7 +27,7 @@ const timeoutHandler = (requestId, requests) => {
 
 const createID = () =>  uuid();
 
-module.exports = class BaseMosquittoProxyClient {
+export default class BaseMosquittoProxyClient {
 	constructor({ name, logger, defaultListener } = {}) {
 		this.name = name || 'Default Base Mosquitto Proxy Client';
 		this._logger = logger || {
