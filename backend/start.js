@@ -1,3 +1,5 @@
+const http = require("http");
+const express = require("express");
 const WebSocket = require("ws");
 const mqtt = require("mqtt");
 const NodeMosquittoClient = require("./src/client/NodeMosquittoClient");
@@ -10,7 +12,8 @@ const MOSQUITTO_UI_PROXY_PORT = process.env.MOSQUITTO_UI_PROXY_PORT || 8088;
 const config = require(MOSQUITTO_UI_PROXY_CONFIG_DIR);
 
 const wss = new WebSocket.Server({
-  port: MOSQUITTO_UI_PROXY_PORT,
+//   port: MOSQUITTO_UI_PROXY_PORT,
+  server
 });
 
 
@@ -289,4 +292,7 @@ wss.on("connection", (ws) => {
       console.error(error);
     }
   });
+});
+server.listen(MOSQUITTO_UI_PROXY_PORT, () => {
+    console.log(`Mosquitto proxy server started on port ${server.address().port} :)`);
 });
