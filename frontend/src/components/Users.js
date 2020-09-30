@@ -80,6 +80,24 @@ const Users = (props) => {
   const history = useHistory();
   const { client } = context;
 
+  const onUpdateUserGroups = async (user, groups = []) => {
+	if (!groups) {
+		groups = [];
+	}
+	if (groups.length === 0) {
+		await confirm({
+			title: 'Confirm remove user from all groups',
+			description: `Do you really want to remove user "${user.username}" from all groups?`
+		});
+	}
+	const groupNames = groups.map(group => group.value);
+	await client.updateUserGroups(user, groupNames);
+	const users = await client.listUsers();
+	dispatch(updateUsers(users));
+	const groupsUpdated = await client.listGroups();
+	dispatch(updateGroups(groupsUpdated));
+  }
+
   const onSelectUser = async (userName) => {
 	const user = await client.getUser(userName);
 	dispatch(updateUser(user));
