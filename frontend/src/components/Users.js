@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import { connect, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
+import { useConfirm } from 'material-ui-confirm';
 import Chip from "@material-ui/core/Chip";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
@@ -32,7 +33,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import AutoSuggest from './AutoSuggest';
 import { WebSocketContext } from '../websockets/WebSocket';
-import { updateUser, updateUsers } from '../actions/actions';
+import { updateUser, updateUsers, updateGroups } from '../actions/actions';
 
 const useStyles = makeStyles((theme) => ({
   badges: {
@@ -78,6 +79,7 @@ const Users = (props) => {
   const context = useContext(WebSocketContext);
   const dispatch = useDispatch();
   const history = useHistory();
+  const confirm = useConfirm();
   const { client } = context;
 
   const onUpdateUserGroups = async (user, groups = []) => {
@@ -115,12 +117,20 @@ const Users = (props) => {
   }
 
   const onDeleteUser = async (username) => {
-	  await client.deleteUser(username);
-	  const users = await client.listUsers();
-	  dispatch(updateUsers(users));
+	await confirm({
+		title: 'Confirm user deletion',
+		description: `Do you really want to delete user "${username}"?`
+	});
+	await client.deleteUser(username);
+	const users = await client.listUsers();
+	dispatch(updateUsers(users));
   }
 
 	const onDeleteUserFromGroup = async (user, group) => {
+		await confirm({
+			title: 'Remove user from group',
+			description: `Do you really want to remove user "${user.username}" from group "${group}"?`
+		});
 		await client.deleteUserFromGroup(user, group);
 		const users = await client.listUsers();
 		dispatch(updateUsers(users));
