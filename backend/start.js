@@ -309,6 +309,20 @@ app.get("/api/system/topictree", (request, response) => {
 	response.json(globalTopicTree);
 });
   
+app.delete("/api/system/topictree", (request, response) => {
+	Object.keys(globalTopicTree).forEach(brokerName => {
+		const topicTree = globalTopicTree[brokerName];
+		Object.keys(topicTree).forEach((key) => { delete topicTree[key]; });
+		const brokerConnection = brokerConnections.get(brokerName);
+		if (brokerConnection) {
+			const { broker, system, topicTree } = brokerConnection;
+			sendSystemStatusUpdate(system, broker);
+			sendTopicTreeUpdate(topicTree, broker);
+		}
+	})
+	response.send();
+});
+
 server.listen(MOSQUITTO_UI_PROXY_PORT, () => {
     console.log(`Mosquitto proxy server started on port ${server.address().port} :)`);
 });
