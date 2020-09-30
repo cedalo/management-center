@@ -111,6 +111,8 @@ connections.forEach(async (connection) => {
 			console.log("topic")
 			console.log(topic)
 			console.log(message.toString());
+		} else if (topic.startsWith("$CONTROL")) {
+			// Nothing to do
 		} else {
 		  updateTopicTree(topicTree, topic, message);
 		  sendTopicTreeUpdate(topicTree, brokerClient);
