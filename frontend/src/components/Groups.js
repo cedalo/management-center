@@ -32,7 +32,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import AutoSuggest from './AutoSuggest';
 import { WebSocketContext } from '../websockets/WebSocket';
-import { updateGroup, updateGroups } from '../actions/actions';
+import { updateGroup, updateGroups, updateUsers } from '../actions/actions';
 
 const useStyles = makeStyles((theme) => ({
   badges: {
