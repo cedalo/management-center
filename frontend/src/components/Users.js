@@ -180,7 +180,11 @@ const Users = (props) => {
                 <TableRow
                   hover
                   key={user.username}
-                  onClick={() => onSelectUser(user.username)}
+                  onClick={(event) => {
+					  if (event.target.nodeName?.toLowerCase() === "td") {
+						onSelectUser(user.username);
+					  }
+				  }}
                   style={{ cursor: "pointer" }}
                 >
                   <TableCell>
