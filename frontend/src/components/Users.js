@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import { connect, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
+import { useConfirm } from 'material-ui-confirm';
 import Chip from "@material-ui/core/Chip";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
@@ -30,8 +31,9 @@ import GroupIcon from "@material-ui/icons/Group";
 import UserIcon from "@material-ui/icons/Person";
 import { Link as RouterLink } from "react-router-dom";
 
+import AutoSuggest from './AutoSuggest';
 import { WebSocketContext } from '../websockets/WebSocket';
-import { updateUser, updateUsers } from '../actions/actions';
+import { updateUser, updateUsers, updateGroups } from '../actions/actions';
 
 const useStyles = makeStyles((theme) => ({
   badges: {
@@ -77,7 +79,26 @@ const Users = (props) => {
   const context = useContext(WebSocketContext);
   const dispatch = useDispatch();
   const history = useHistory();
+  const confirm = useConfirm();
   const { client } = context;
+
+  const onUpdateUserGroups = async (user, groups = []) => {
+	if (!groups) {
+		groups = [];
+	}
+	if (groups.length === 0) {
+		await confirm({
+			title: 'Confirm remove user from all groups',
+			description: `Do you really want to remove user "${user.username}" from all groups?`
+		});
+	}
+	const groupNames = groups.map(group => group.value);
+	await client.updateUserGroups(user, groupNames);
+	const users = await client.listUsers();
+	dispatch(updateUsers(users));
+	const groupsUpdated = await client.listGroups();
+	dispatch(updateGroups(groupsUpdated));
+  }
 
   const onSelectUser = async (userName) => {
 	const user = await client.getUser(userName);
@@ -96,25 +117,40 @@ const Users = (props) => {
   }
 
   const onDeleteUser = async (username) => {
-	  await client.deleteUser(username);
-	  const users = await client.listUsers();
-	  dispatch(updateUsers(users));
+	await confirm({
+		title: 'Confirm user deletion',
+		description: `Do you really want to delete user "${username}"?`
+	});
+	await client.deleteUser(username);
+	const users = await client.listUsers();
+	dispatch(updateUsers(users));
   }
 
 	const onDeleteUserFromGroup = async (user, group) => {
+		await confirm({
+			title: 'Remove user from group',
+			description: `Do you really want to remove user "${user.username}" from group "${group}"?`
+		});
 		await client.deleteUserFromGroup(user, group);
 		const users = await client.listUsers();
 		dispatch(updateUsers(users));
 	};
 
   const {
+	groups = [],
 	users = [],
     onSort,
     sortBy,
     sortDirection,
   } = props;
 
-
+  const groupSuggestions = groups
+	  .map(group => group.groupName)
+	  .sort()
+	  .map(groupName => ({
+		label: groupName,
+		value: groupName,
+	  }));
 
   return (
     <div>
@@ -154,7 +190,11 @@ const Users = (props) => {
                 <TableRow
                   hover
                   key={user.username}
-                  onClick={() => onSelectUser(user.username)}
+                  onClick={(event) => {
+					  if (event.target.nodeName?.toLowerCase() === "td") {
+						onSelectUser(user.username);
+					  }
+				  }}
                   style={{ cursor: "pointer" }}
                 >
                   <TableCell>
@@ -172,7 +212,17 @@ const Users = (props) => {
                   {/* <TableCell>{user.firstName}</TableCell>
                   <TableCell>{user.lastName}</TableCell> */}
                   <TableCell className={classes.badges}>
-                    {user.groups && user.groups.map((group) => (
+					<AutoSuggest 
+						suggestions={groupSuggestions}
+						values={user.groups.map((group) => ({
+							label: group.groupName,
+							value: group.groupName
+						}))}
+						handleChange={(value) => {
+							onUpdateUserGroups(user, value);
+						}}
+					/>
+                    {/* {user.groups && user.groups.map((group) => (
                       <Chip
 					    size="small"
                         icon={<GroupIcon />}
@@ -184,7 +234,7 @@ const Users = (props) => {
 						color="secondary"
 						// variant="outlined"
                       />
-                    ))}
+                    ))} */}
                   </TableCell>
                   {/* <TableCell>{moment(user.lastModified).fromNow()}</TableCell> */}
                   <TableCell align="right">
@@ -323,7 +373,7 @@ Users.defaultProps = {
 
 const mapStateToProps = (state) => {
   return {
-	  // TODO: check object hierarchy
+	  groups: state.groups?.groups,
 	  users: state.users?.users,
   };
 };
