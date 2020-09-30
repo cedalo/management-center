@@ -7,6 +7,7 @@ const NodeMosquittoClient = require("./src/client/NodeMosquittoClient");
 const MOSQUITTO_UI_PROXY_CONFIG_DIR = process.env.MOSQUITTO_UI_PROXY_CONFIG_DIR || "../config/config.json";
 const MOSQUITTO_UI_PROXY_PORT = process.env.MOSQUITTO_UI_PROXY_PORT || 8088;
 
+const globalSystem = {};
 
 // TODO: add error handling
 const config = require(MOSQUITTO_UI_PROXY_CONFIG_DIR);
@@ -73,6 +74,7 @@ const connections = initConnections(config);
 connections.forEach(async (connection) => {
 	const system = {};
 	const topicTree = {};
+	globalSystem[connection.name] = system;
 	const brokerClient = new NodeMosquittoClient({ /* logger: console */ });
 	console.log(`Connecting to "${connection.name}" on ${connection.url}`);
 	try {
