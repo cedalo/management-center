@@ -122,7 +122,7 @@ const GroupDetail = (props) => {
       <Breadcrumbs maxItems={2} aria-label="breadcrumb">
         <RouterLink className={classes.breadcrumbLink} to="/">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
-        <RouterLink className={classes.breadcrumbLink} to="/security/Groups">Groups</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/security/groups">Groups</RouterLink>
   		<Typography className={classes.breadcrumbItem} color="textPrimary">{group.groupname}</Typography>
       </Breadcrumbs>
       <br />
