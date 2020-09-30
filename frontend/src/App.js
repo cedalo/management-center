@@ -216,7 +216,7 @@ export default function App(props) {
     <div>
       <Divider />
       <List>
-        <ListItemLink classes={classes} to="/" primary="Home" icon={<HomeIcon />} />
+        <ListItemLink classes={classes} to="/home" primary="Home" icon={<HomeIcon />} />
         <Divider />
       </List>
       <List>
