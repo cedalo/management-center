@@ -30,6 +30,7 @@ import GroupIcon from "@material-ui/icons/Group";
 import UserIcon from "@material-ui/icons/Person";
 import { Link as RouterLink } from "react-router-dom";
 
+import AutoSuggest from './AutoSuggest';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { updateUser, updateUsers } from '../actions/actions';
 
@@ -108,13 +109,20 @@ const Users = (props) => {
 	};
 
   const {
+	groups = [],
 	users = [],
     onSort,
     sortBy,
     sortDirection,
   } = props;
 
-
+  const groupSuggestions = groups
+	  .map(group => group.groupName)
+	  .sort()
+	  .map(groupName => ({
+		label: groupName,
+		value: groupName,
+	  }));
 
   return (
     <div>
@@ -172,7 +180,23 @@ const Users = (props) => {
                   {/* <TableCell>{user.firstName}</TableCell>
                   <TableCell>{user.lastName}</TableCell> */}
                   <TableCell className={classes.badges}>
-                    {user.groups && user.groups.map((group) => (
+				  {/* <ChipInput
+					value={user.groups.map((group) => group.groupName)}
+					dataSource={["software", "tests"]}
+					// onAdd={(chip) => handleAddChip(chip)}
+					onDelete={(groupName, index) => onDeleteUserFromGroup(user.username, groupName)}
+					/> */}
+					<AutoSuggest 
+						suggestions={groupSuggestions}
+						values={user.groups.map((group) => ({
+							label: group.groupName,
+							value: group.groupName
+						}))}
+						handleChange={(value) => {
+							onUpdateUserGroups(user, value);
+						}}
+					/>
+                    {/* {user.groups && user.groups.map((group) => (
                       <Chip
 					    size="small"
                         icon={<GroupIcon />}
@@ -184,7 +208,7 @@ const Users = (props) => {
 						color="secondary"
 						// variant="outlined"
                       />
-                    ))}
+                    ))} */}
                   </TableCell>
                   {/* <TableCell>{moment(user.lastModified).fromNow()}</TableCell> */}
                   <TableCell align="right">
@@ -323,7 +347,7 @@ Users.defaultProps = {
 
 const mapStateToProps = (state) => {
   return {
-	  // TODO: check object hierarchy
+	  groups: state.groups?.groups,
 	  users: state.users?.users,
   };
 };
