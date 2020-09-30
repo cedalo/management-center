@@ -17,7 +17,7 @@ const MOSQUITTO_PROXY_PORT = process.env.MOSQUITTO_PROXY_PORT || 8088;
 		// process.exit(0)
 
 		try {
-			const response = await client.addUser('streamsheets', 'secret', 'streamsheets', '', 'Cedalo Sheets', '🚀 The best software for integrating things.');
+			const response = await client.addUser('streamsheets', 'secret', 'streamsheets', '', 'Cedalo Sheets', 'The best software for integrating things.');
 			console.log(response);
 			console.log("connected");
 		} catch (error) {
@@ -29,11 +29,11 @@ const MOSQUITTO_PROXY_PORT = process.env.MOSQUITTO_PROXY_PORT || 8088;
 		await client.addGroup('hall2', '', 'Factory hall 2', 'Sensors in factory hall two.');
 		await client.addGroup('hall3', '', 'Factory hall 3', 'Sensors in factory hall three.');
 
-		await client.addUser('node-red', 'secret', 'nodered', '', 'Node-RED', '🔴 A software for integrating things.');
-		await client.addUser('n8n', 'secret', 'n8n', '', 'n8n.io', '👀 A software for integrating things.');
-		await client.addUser('temp-1', 'secret', 'sensor_1', '', ' Temperature Sensor', '🌡️ A sensor for temperature.');
-		await client.addUser('hum-1', 'secret', 'sensor_2', '', 'Humidity Sensor', '💧 A sensor for humidity.');;
-		await client.addUser('temp-2', 'secret', 'sensor_3', '', 'Temperature Sensor', '🌡️ Another sensor for temperature.');
+		await client.addUser('node-red', 'secret', 'nodered', '', 'Node-RED', 'A software for integrating things.');
+		await client.addUser('n8n', 'secret', 'n8n', '', 'n8n.io', 'A software for integrating things.');
+		await client.addUser('temp-1', 'secret', 'sensor_1', '', ' Temperature Sensor', 'A sensor for temperature.');
+		await client.addUser('hum-1', 'secret', 'sensor_2', '', 'Humidity Sensor', 'A sensor for humidity.');;
+		await client.addUser('temp-2', 'secret', 'sensor_3', '', 'Temperature Sensor', 'Another sensor for temperature.');
 
 		await client.addUserToGroup('streamsheets', 'software');
 		await client.addUserToGroup('node-red', 'software');
