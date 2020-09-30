@@ -162,8 +162,12 @@ const Groups = (props) => {
               {groups && groups.map((group) => (
                 <TableRow
                   hover
-                  key={group.groupName}
-                  onClick={() => onSelectGroup(group.groupName)}
+				  key={group.groupName}
+                  onClick={(event) => {
+					if (event.target.nodeName?.toLowerCase() === "td") {
+						onSelectGroup(group.groupName);
+					}
+				  }}
                   style={{ cursor: "pointer" }}
                 >
                   <TableCell>
