@@ -410,6 +410,14 @@ module.exports = class BaseMosquittoProxyClient {
 		return groups.length;
 	}
 
+	async addUserToGroups(username, groups) {
+		if (groups) {
+			for (const group of groups) {
+				await this.addUserToGroup(username, group);
+			}
+		}
+	}
+
 	async deleteGroup(groupname) {
 		return this.sendCommand({
 			command: 'deleteGroup',
