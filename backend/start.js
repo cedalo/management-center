@@ -2,11 +2,13 @@ const http = require("http");
 const express = require("express");
 const WebSocket = require("ws");
 const mqtt = require("mqtt");
+const LicenseManager = require("./src/LicenseManager");
 const NodeMosquittoClient = require("./src/client/NodeMosquittoClient");
 
 const MOSQUITTO_UI_PROXY_CONFIG_DIR = process.env.MOSQUITTO_UI_PROXY_CONFIG_DIR || "../config/config.json";
 const MOSQUITTO_UI_PROXY_PORT = process.env.MOSQUITTO_UI_PROXY_PORT || 8088;
 
+const licenseManager = new LicenseManager();
 const globalSystem = {};
 const globalTopicTree = {};
 const app = express();
@@ -307,6 +309,10 @@ app.get("/api/version", (request, response) => {
 	});
 });
 
+app.get("/api/license", (request, response) => {
+	response.json(licenseManager.license);
+});
+  
 app.get("/api/system/status", (request, response) => {
 	response.json(globalSystem);
 });
