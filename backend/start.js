@@ -71,7 +71,7 @@ connections.forEach(async (connection) => {
 	const system = {};
 	const topicTree = {};
 	const brokerClient = new NodeMosquittoClient({ /* logger: console */ });
-	console.log(`Connecting to ${connection.url}`);
+	console.log(`Connecting to "${connection.name}" on ${connection.url}`);
 	try {
 		await brokerClient.connect({
 		  mqttEndpointURL: connection.url,
@@ -107,7 +107,7 @@ connections.forEach(async (connection) => {
 			// TODO: change topic
 			topic.startsWith("$CONTROL/v1/response")
 		) {
-			// TODO: handle broker response message
+			// TODO: this is already handle by the Mosquitto client
 			console.log("topic")
 			console.log(topic)
 			console.log(message.toString());
@@ -154,6 +154,8 @@ const handleCommandMessage = async (message, client) => {
 	console.log(JSON.stringify(command))
 	console.log(JSON.stringify(result))
 	const response = {
+		// TODO: remove users and groups properties when Mosquitto supports that API
+		// data: result.data || result.users || result.groups,
 		data: result.data,
 		done: true,
 	};
