@@ -374,6 +374,22 @@ module.exports = class BaseMosquittoProxyClient {
 		  	await this.addUserToGroup(user.username, groupToAdd);
 	  }
 	}
+
+	async updateGroupUsers(group, userNames = []) {
+		if (!userNames) {
+			userNames = [];
+		}
+		const groupUserNames = group.users.map(user => user.username);
+		const usersToRemove = groupUserNames.filter(username => !userNames.includes(username));
+		const usersToAdd = userNames.filter(username => !groupUserNames.includes(username));
+		for (const userToRemove of usersToRemove) {
+			await this.deleteUserFromGroup(userToRemove, group.groupName);
+		}
+		for (const userToAdd of usersToAdd) {
+		  	await this.addUserToGroup(userToAdd, group.groupName);
+	  }
+	}
+
 	async getUser(username) {
 		const users = await this.listUsers();
 		return users.find((user) => user.username === username);
