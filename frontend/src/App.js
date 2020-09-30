@@ -443,8 +443,11 @@ export default function App(props) {
                     <Route path="/system">
                       <System />
                     </Route>
-                    <Route path="/">
+                    <Route path="/home">
                       <Home />
+                    </Route>
+                    <Route path="/">
+					  <Redirect to="/system/status" />
                     </Route>
                   </Switch>
                 </Container>

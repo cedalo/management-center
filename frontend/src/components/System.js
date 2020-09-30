@@ -30,7 +30,7 @@ function Security() {
   return (
     <div>
 	  <Breadcrumbs aria-label="breadcrumb">
-        <RouterLink className={classes.breadcrumbLink} to="/">Home</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
         <Typography className={classes.breadcrumbItem} color="textPrimary">System</Typography>
       </Breadcrumbs>
 	  <br />

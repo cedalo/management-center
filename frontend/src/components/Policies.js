@@ -92,7 +92,7 @@ const Policies = (props) => {
   return (
     <div>
       <Breadcrumbs aria-label="breadcrumb">
-        <RouterLink className={classes.breadcrumbLink} to="/">Home</RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
         <Typography className={classes.breadcrumbItem} color="textPrimary">Policies</Typography>
       </Breadcrumbs>
@@ -202,14 +202,14 @@ const Policies = (props) => {
 				  	edge="end" 
 					size="small"
 					aria-label="edit"
-				>
+				  >
                     <EditIcon fontSize="small" />
                   </IconButton>
                   <IconButton
 				  	edge="end" 
 					size="small"
 					aria-label="delete"
-				>
+				  >
                     <DeleteIcon fontSize="small"/>
                   </IconButton>
                 </ListItemSecondaryAction>
