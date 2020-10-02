@@ -345,6 +345,7 @@ export default function App(props) {
             			>
 							<ThemeModeIcon />
 						</IconButton>
+					  <InfoButton />
 					  {/* <IconButton
 						edge="end"
 						aria-label="Notifications"
