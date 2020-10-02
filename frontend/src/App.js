@@ -7,6 +7,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
+import Badge from '@material-ui/core/Badge';
 import Button from "@material-ui/core/Button";
 import MenuIcon from "@material-ui/icons/Menu";
 import Drawer from "@material-ui/core/Drawer";
@@ -44,11 +45,13 @@ import Hidden from "@material-ui/core/Hidden";
 import Logo from "./components/Logo";
 import Groups from "./components/Groups";
 import BrokerSelect from "./components/BrokerSelect";
+import InfoButton from "./components/InfoButton";
 import customTheme from './theme';
 import darkTheme from './theme-dark';
 import Home from "./components/Home";
 import Security from "./components/Security";
 import System from "./components/System";
+import InfoPage from "./components/InfoPage";
 import Login from "./components/Login";
 import Policies from "./components/Policies";
 import Configurations from "./components/Configurations";
@@ -282,9 +285,9 @@ export default function App(props) {
 	<ThemeProvider theme={appliedTheme}>
 	  <CssBaseline />
     <Router>
-      <Provider store={store}>
+      <Provider store={store} >
         <WebSocketProvider>
-          <div className={classes.root}>
+          <div className={classes.root} >
             <Switch>
               <Route path="/login">
 
@@ -345,6 +348,7 @@ export default function App(props) {
             			>
 							<ThemeModeIcon />
 						</IconButton>
+					  <InfoButton />
 					  {/* <IconButton
 						edge="end"
 						aria-label="Notifications"
@@ -450,6 +454,9 @@ export default function App(props) {
                     </Route>
                     <Route path="/home">
                       <Home />
+                    </Route>
+                    <Route path="/info">
+                      <InfoPage />
                     </Route>
                     <Route path="/">
 					  <Redirect to="/system/status" />
