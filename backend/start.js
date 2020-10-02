@@ -307,6 +307,14 @@ const notifyWebSocketClients = (message, brokerClient) => {
 
 wss.on("connection", (ws) => {
 	clientConnections.set(ws, ws);
+	const messageObject = {
+		type: 'event',
+		event: {
+		  type: "license",
+		  payload: licenseContainer.license,
+		}
+	};
+	ws.send(JSON.stringify(messageObject));
   ws.on("message", (message) => {
     try {
       const messageObject = JSON.parse(message);
