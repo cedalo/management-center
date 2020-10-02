@@ -7,6 +7,23 @@ const NodeMosquittoClient = require("./src/client/NodeMosquittoClient");
 const MOSQUITTO_UI_PROXY_CONFIG_DIR = process.env.MOSQUITTO_UI_PROXY_CONFIG_DIR || "../config/config.json";
 const MOSQUITTO_UI_PROXY_PORT = process.env.MOSQUITTO_UI_PROXY_PORT || 8088;
 
+// const LicenseManager = require("../src/LicenseManager");
+const LicenseChecker = require("./src/license/LicenseChecker");
+// const licenseManager = new LicenseManager();
+// await licenseManager.loadLicense();
+// const license = licenseManager.getLicenseAsJSON();
+
+const licenseContainer = {};
+
+const checker = new LicenseChecker();
+checker.check((license) => {
+	licenseContainer.license = license;
+	if (!license.isValid) {
+		licenseContainer.valid = false;
+		console.log("License not valid");
+	};
+});
+
 const globalSystem = {};
 const globalTopicTree = {};
 const app = express();
@@ -290,6 +307,14 @@ const notifyWebSocketClients = (message, brokerClient) => {
 
 wss.on("connection", (ws) => {
 	clientConnections.set(ws, ws);
+	const messageObject = {
+		type: 'event',
+		event: {
+		  type: "license",
+		  payload: licenseContainer.license,
+		}
+	};
+	ws.send(JSON.stringify(messageObject));
   ws.on("message", (message) => {
     try {
       const messageObject = JSON.parse(message);
@@ -300,7 +325,17 @@ wss.on("connection", (ws) => {
   });
 });
 
+app.get("/api/version", (request, response) => {
+	response.json({
+		version: '2.0',
+		buildNumber: '1',
+	});
+});
 
+app.get("/api/license", (request, response) => {
+	response.json(licenseContainer.license);
+});
+  
 app.get("/api/system/status", (request, response) => {
 	response.json(globalSystem);
 });

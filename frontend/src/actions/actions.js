@@ -43,6 +43,13 @@ export function updateBrokerConnections(update) {
 }
 
 
+export function updateLicense(update) {
+    return {
+        type: ActionTypes.UPDATE_LICENSE,
+        update
+    }
+}
+
 export function updateSystemStatus(update) {
     return {
         type: ActionTypes.UPDATE_SYSTEM_STATUS,

@@ -11,7 +11,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 			const brokerClient = mqtt.connect(url);
 			this._client = brokerClient;
 			brokerClient.on("connect", () => {
-			  this.logger.log(`Connected to ${url}`);
+				this.logger.log(`Connected to ${url}`);
 			  brokerClient.subscribe("$CONTROL/#", (error) => {
 				this.logger.log(`Subscribed to control topics `);
 				if (error) {
