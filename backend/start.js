@@ -2,13 +2,28 @@ const http = require("http");
 const express = require("express");
 const WebSocket = require("ws");
 const mqtt = require("mqtt");
-const LicenseManager = require("./src/LicenseManager");
 const NodeMosquittoClient = require("./src/client/NodeMosquittoClient");
 
 const MOSQUITTO_UI_PROXY_CONFIG_DIR = process.env.MOSQUITTO_UI_PROXY_CONFIG_DIR || "../config/config.json";
 const MOSQUITTO_UI_PROXY_PORT = process.env.MOSQUITTO_UI_PROXY_PORT || 8088;
 
-const licenseManager = new LicenseManager();
+// const LicenseManager = require("../src/LicenseManager");
+const LicenseChecker = require("./src/license/LicenseChecker");
+// const licenseManager = new LicenseManager();
+// await licenseManager.loadLicense();
+// const license = licenseManager.getLicenseAsJSON();
+
+const licenseContainer = {};
+
+const checker = new LicenseChecker();
+checker.check((license) => {
+	licenseContainer.license = license;
+	if (!license.isValid) {
+		licenseContainer.valid = false;
+		console.log("License not valid");
+	};
+});
+
 const globalSystem = {};
 const globalTopicTree = {};
 const app = express();
