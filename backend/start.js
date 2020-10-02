@@ -333,7 +333,7 @@ app.get("/api/version", (request, response) => {
 });
 
 app.get("/api/license", (request, response) => {
-	response.json(licenseManager.license);
+	response.json(licenseContainer.license);
 });
   
 app.get("/api/system/status", (request, response) => {
