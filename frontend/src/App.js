@@ -451,6 +451,9 @@ export default function App(props) {
                     <Route path="/home">
                       <Home />
                     </Route>
+                    <Route path="/info">
+                      <InfoPage />
+                    </Route>
                     <Route path="/">
 					  <Redirect to="/system/status" />
                     </Route>
