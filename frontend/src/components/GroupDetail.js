@@ -111,7 +111,7 @@ const GroupDetail = (props) => {
   // TODO: get current group
   const group = {
 	"groupname": "admins",
-	"policyName": "",
+	"roleName": "",
 	"users": [
 		"maxmustermann", "maxmustermann2"
 	]
