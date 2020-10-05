@@ -64,8 +64,8 @@ function a11yProps(index) {
   };
 }
 
-const policyShape = PropTypes.shape({
-  policyName: PropTypes.string,
+const roleShape = PropTypes.shape({
+  roleName: PropTypes.string,
 });
 
 const useStyles = makeStyles((theme) => ({
@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
   breadcrumbLink: theme.palette.breadcrumbLink,
 }));
 
-const PolicyDetail = (props) => {
+const RoleDetail = (props) => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
   const [state, setState] = React.useState({
@@ -104,10 +104,10 @@ const PolicyDetail = (props) => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  //   const { policy } = props;
-  // TODO: get current policy
-  const policy = {
-    policyName: "",
+  //   const { role } = props;
+  // TODO: get current role
+  const role = {
+    roleName: "",
     features: [
       {
         name: "user-management",
@@ -135,8 +135,8 @@ const PolicyDetail = (props) => {
       <Breadcrumbs maxItems={2} aria-label="breadcrumb">
         <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
-        <RouterLink className={classes.breadcrumbLink} to="/security/policies">Policies</RouterLink>
-        <Typography className={classes.breadcrumbItem} color="textPrimary">{policy.policyName}</Typography>
+        <RouterLink className={classes.breadcrumbLink} to="/security/roles">Roles</RouterLink>
+        <Typography className={classes.breadcrumbItem} color="textPrimary">{role.roleName}</Typography>
       </Breadcrumbs>
       <br />
       <Tabs
@@ -144,7 +144,7 @@ const PolicyDetail = (props) => {
         onChange={handleChange}
         variant="scrollable"
         scrollButtons="off"
-        aria-label="Policy"
+        aria-label="Role"
       >
         <Tab
           label="Details"
@@ -177,9 +177,9 @@ const PolicyDetail = (props) => {
           {...a11yProps(2)}
         />
         {/* <Tab
-          label="Policy"
+          label="Role"
           icon={<GroupsIcon />}
-          aria-label="policy"
+          aria-label="role"
           {...a11yProps(3)}
         /> */}
       </Tabs>
@@ -190,9 +190,9 @@ const PolicyDetail = (props) => {
               <Grid item xs={12}>
                 <TextField
                   required
-                  id="policy-name"
+                  id="role-name"
                   label="Name"
-                  value={policy.policyName}
+                  value={role.roleName}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -210,7 +210,7 @@ const PolicyDetail = (props) => {
           </div>
         </form>
         <List className={classes.root}>
-          {policy.features?.map((feature) => (
+          {role.features?.map((feature) => (
             <React.Fragment>
               <ListItem button>
                 <ListItemText
@@ -228,7 +228,7 @@ const PolicyDetail = (props) => {
           ))}
         </List>
         <List className={classes.root}>
-          {policy.topics?.map((topic) => (
+          {role.topics?.map((topic) => (
             <React.Fragment>
               <ListItem button>
                 <ListItemText
@@ -266,12 +266,12 @@ const PolicyDetail = (props) => {
   );
 };
 
-PolicyDetail.propTypes = {
-  policy: policyShape.isRequired,
+RoleDetail.propTypes = {
+  role: roleShape.isRequired,
 };
 
 const mapStateToProps = (state) => {
   return {};
 };
 
-export default connect(mapStateToProps)(PolicyDetail);
+export default connect(mapStateToProps)(RoleDetail);
