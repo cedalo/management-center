@@ -1,7 +1,7 @@
 import React, { createContext } from 'react'
 import WS_BASE from './config';
 import { useDispatch } from 'react-redux';
-import { updateGroups, updateUsers, updateBrokerConfigurations, updateBrokerConnections, updateSystemStatus, updateTopicTree } from '../actions/actions';
+import { updateGroups, updateUsers, updateBrokerConfigurations, updateBrokerConnections, updateLicense, updateSystemStatus, updateTopicTree } from '../actions/actions';
 import WebMosquittoProxyClient from '../client/WebMosquittoProxyClient';
 
 const WebSocketContext = createContext(null)
@@ -24,9 +24,21 @@ export default ({ children }) => {
     if (!client) {
 		// TOOD: integrate Mosquitto client
 		client = new WebMosquittoProxyClient({ logger: console });
+
+		client.on('system_status', (message) => {
+			console.log(message);
+			dispatch(updateSystemStatus(message.payload));
+		});
+		client.on('topic_tree', (message) => {
+			dispatch(updateTopicTree(message.payload));
+		});
+		client.on('license', (message) => {
+			console.log(message);
+			dispatch(updateLicense(message.payload));
+		})
 		// TODO: merge with code from BrokerSelect
 		client.connect({ socketEndpointURL: WS_BASE.url })
-			.then(() => client.connectToBroker('Mosquitto 2.0 Mock API'))
+			.then(() => client.connectToBroker('Mosquitto 2.0 Preview'))
 			.then(() => console.log('connected to broker'))
 			.then(() => client.getBrokerConnections())
 			.then(brokerConnections => {
@@ -44,14 +56,6 @@ export default ({ children }) => {
 			.then(groups => {
 				dispatch(updateGroups(groups));
 			});
-
-		client.on('system_status', (message) => {
-			console.log(message);
-			dispatch(updateSystemStatus(message.payload));
-		});
-		client.on('topic_tree', (message) => {
-			dispatch(updateTopicTree(message.payload));
-		})
 
         ws = {
             client: client,

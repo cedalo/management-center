@@ -126,12 +126,12 @@ const Users = (props) => {
 	dispatch(updateUsers(users));
   }
 
-	const onDeleteUserFromGroup = async (user, group) => {
+	const onRemoveUserFromGroup = async (user, group) => {
 		await confirm({
 			title: 'Remove user from group',
 			description: `Do you really want to remove user "${user.username}" from group "${group}"?`
 		});
-		await client.deleteUserFromGroup(user, group);
+		await client.removeUserFromGroup(user, group);
 		const users = await client.listUsers();
 		dispatch(updateUsers(users));
 	};
@@ -229,7 +229,7 @@ const Users = (props) => {
                         label={group.groupName}
                         onDelete={(event) => {
                           event.stopPropagation();
-                          onDeleteUserFromGroup(user.username, group.groupName);
+                          onRemoveUserFromGroup(user.username, group.groupName);
                         }}
 						color="secondary"
 						// variant="outlined"
@@ -298,7 +298,7 @@ const Users = (props) => {
                             label={group}
                             onDelete={(event) => {
                               event.stopPropagation();
-                              onDeleteUserFromGroup(user, group);
+                              onRemoveUserFromGroup(user, group);
                             }}
                             color="secondary"
                           />

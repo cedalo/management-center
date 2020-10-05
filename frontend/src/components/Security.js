@@ -48,10 +48,10 @@ function Security() {
         </Grid>
         <Grid item lg={4} sm={6} xl={4} xs={12}>
           <HomeCard
-            title="Policies"
-            description="Manage policies"
-            image={"policies.png"}
-            link="/security/policies"
+            title="Roles"
+            description="Manage roles"
+            image={"roles.png"}
+            link="/security/roles"
           />
         </Grid>
       </Grid>

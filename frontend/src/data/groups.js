@@ -1,21 +1,21 @@
 export default [
 	{
 		"groupname": "admins",
-		"policyName": "",
+		"roleName": "",
 		"users": [
 			"maxmustermann", "maxmustermann2"
 		]
 	},
 	{
 		"groupname": "example1",
-		"policyName": "",
+		"roleName": "",
 		"users": [
 			"maxmustermann", "maxmustermann2"
 		]
 	},
 	{
 		"groupname": "example2",
-		"policyName": "",
+		"roleName": "",
 		"users": [
 			"maxmustermann", "maxmustermann2"
 		]

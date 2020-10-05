@@ -1,6 +1,6 @@
 export default [
 	{
-		"policyName":"admins",
+		"roleName":"admins",
 		"features":[
 			{
 				"name": "user-management",
@@ -23,7 +23,7 @@ export default [
 		]
 	},
 	{
-		"policyName":"example1",
+		"roleName":"example1",
 		"features":[
 			{
 				"name": "user-management",
@@ -46,7 +46,7 @@ export default [
 		]
 	},
 	{
-		"policyName":"example2",
+		"roleName":"example2",
 		"features":[
 			{
 				"name": "user-management",

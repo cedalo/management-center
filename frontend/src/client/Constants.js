@@ -7,8 +7,8 @@ export default {
 	GET_USER_GROUP: 'read_user',
 	UPDATE_USER_GROUP: 'update_user_group',
 	DELETE_USER_GROUP: 'delete_user_group',
-	CREATE_POLICY: 'create_policy',
-	GET_POLICY: 'read_user',
-	UPDATE_POLICY: 'update_policy',
-	DELETE_POLICY: 'delete_policy'
+	CREATE_ROLE: 'create_role',
+	GET_ROLE: 'get_role',
+	UPDATE_ROLE: 'update_role',
+	DELETE_ROLE: 'delete_role'
 }

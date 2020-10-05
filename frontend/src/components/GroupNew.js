@@ -69,7 +69,7 @@ const GroupNew = (props) => {
   const { client } = context;
 
   const onSaveGroup = async () => {
-	await client.addGroup(groupname, "", textName, textDescription);
+	await client.createGroup(groupname, "", textName, textDescription);
 	const groups = await client.listGroups();
 	dispatch(updateGroups(groups));
 	history.push(`/security/groups`);
