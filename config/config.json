@@ -11,41 +11,16 @@
 					"main": "#19857b"
 				}
 			}
-		},
+		}
+	],
 	"connections": [
 		{
-			"name": "Mosquitto 1",
-			"url": "mqtt://localhost:1885",
-			"credentials": {
-				"username": "cedalo",
-				"password": "cedalo"
-			}
-		},
-		{
-			"name": "Mosquitto 2",
-			"url": "mqtt://localhost:1886",
-			"credentials": {
-				"username": "cedalo",
-				"password": "cedalo"
-			}
-		},
-		{
-			"name": "Mosquitto 3",
-			"url": "mqtt://localhost:1887",
-			"credentials": {
-				"username": "cedalo",
-				"password": "cedalo"
-			}
-		},
-		{
+			"id": "mosquitto-2-preview",
 			"name": "Mosquitto 2.0 Preview",
-			"url": "mqtt://localhost:1888",
-			"credentials": {
-				"username": "cedalo",
-				"password": "cedalo"
-			}
+			"url": "mqtt://localhost:1883"
 		},
 		{
+			"id": "mosquitto-mock-api",
 			"name": "Mosquitto 2.0 Mock API",
 			"url": "mqtt://localhost:1889"
 		}

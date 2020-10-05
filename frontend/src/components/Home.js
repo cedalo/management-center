@@ -17,7 +17,7 @@ function Home() {
 		<Grid item lg={4} sm={6} xl={4} xs={12}>
 		  <HomeCard
 			title="Security"
-			description="Manage users, user groups and policies"
+			description="Manage users, user groups and roles"
 			image={"security.png"}
 			link="/security"
 		  />

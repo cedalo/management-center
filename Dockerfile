@@ -14,9 +14,9 @@ COPY mosquitto-ui.sh mosquitto-ui.sh
 COPY package.json package.json
 COPY yarn.lock yarn.lock
 
-VOLUME backend/config
-
 RUN yarn install
+
+VOLUME /mosquitto-ui/backend/config
 
 EXPOSE 8088
 EXPOSE 9000

@@ -8,7 +8,7 @@ export default [
 		"banned": false,
 		"connectionRate": 0,
 		"messageRate": 0,
-		"policyName": "",
+		"roleName": "",
 		"groups": [
 			{
 				"name": "admins",
@@ -29,7 +29,7 @@ export default [
 		"banned": false,
 		"connectionRate": 0,
 		"messageRate": 0,
-		"policyName": "",
+		"roleName": "",
 		"groups": [
 			{
 				"name": "admins",
@@ -54,7 +54,7 @@ export default [
 		"banned": false,
 		"connectionRate": 0,
 		"messageRate": 0,
-		"policyName": "",
+		"roleName": "",
 		"groups": [
 			{
 				"name": "example",

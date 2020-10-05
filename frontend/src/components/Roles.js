@@ -22,7 +22,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import Divider from "@material-ui/core/Divider";
 import ListItemText from "@material-ui/core/ListItemText";
-import PolicyIcon from "@material-ui/icons/Policy";
+import RoleIcon from "@material-ui/icons/Policy";
 import SecurityIcon from '@material-ui/icons/Security';
 import UserManagementIcon from '@material-ui/icons/SupervisedUserCircle';
 import { Link as RouterLink } from "react-router-dom";
@@ -31,7 +31,7 @@ import moment from "moment";
 import PropTypes from "prop-types";
 import React from "react";
 
-import policies from "../data/policies";
+import roles from "../data/roles";
 
 const getIconForFeature = (feature) => {
 	switch (feature) {
@@ -61,12 +61,12 @@ const useStyles = makeStyles((theme) => ({
   breadcrumbLink: theme.palette.breadcrumbLink,
 }));
 
-const Policieshape = PropTypes.shape({
+const RolesShape = PropTypes.shape({
   groupname: PropTypes.string,
 });
 
-const POLICY_TABLE_COLUMNS = [
-  { id: "policyname", key: "Name" },
+const ROLE_TABLE_COLUMNS = [
+  { id: "roleName", key: "Name" },
   { id: "features", key: "Features" },
 ];
 
@@ -79,11 +79,11 @@ const FormattedGroupType = (props) => {
   }
 };
 
-const Policies = (props) => {
+const Roles = (props) => {
   const classes = useStyles();
   const {
-    /* policies, */ onDeletePolicy,
-    onSelectPolicy,
+    /* roles, */ onDeleteRole,
+    onSelectRole,
     onSort,
     sortBy,
     sortDirection,
@@ -94,17 +94,17 @@ const Policies = (props) => {
       <Breadcrumbs aria-label="breadcrumb">
         <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
-        <Typography className={classes.breadcrumbItem} color="textPrimary">Policies</Typography>
+        <Typography className={classes.breadcrumbItem} color="textPrimary">Roles</Typography>
       </Breadcrumbs>
       <br />
-	  { policies && policies.length > 0 ? 
+	  { roles && roles.length > 0 ? 
 	  <div>
       <Hidden xsDown implementation="css">
 	  <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
-              {POLICY_TABLE_COLUMNS.map((column) => (
+              {ROLE_TABLE_COLUMNS.map((column) => (
                 <TableCell
                   key={column.id}
                   sortDirection={sortBy === column.id ? sortDirection : false}
@@ -122,19 +122,19 @@ const Policies = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {policies.map((policy) => (
+            {roles.map((role) => (
               <TableRow
                 hover
-                key={policy.policyName}
-                onClick={() => onSelectPolicy(policy.policyName)}
+                key={role.roleName}
+                onClick={() => onSelectRole(role.roleName)}
                 style={{ cursor: "pointer" }}
               >
                 <TableCell>
-                  {policy.policyName}
+                  {role.roleName}
                 </TableCell>
                 {/* <TableCell>{moment(group.lastModified).fromNow()}</TableCell> */}
                 <TableCell className={classes.badges}>
-                  {policy.features.map((feature) => (
+                  {role.features.map((feature) => (
                     <Chip
 					  size="small"
                       icon={ getIconForFeature(feature.name) }
@@ -151,7 +151,7 @@ const Policies = (props) => {
 						size="small"
                         onClick={(event) => {
                           event.stopPropagation();
-                          onDeletePolicy(policy.policyName);
+                          onDeleteRole(role.roleName);
                         }}
                       >
                         <EditIcon fontSize="small" />
@@ -160,7 +160,7 @@ const Policies = (props) => {
 						size="small"
                         onClick={(event) => {
                           event.stopPropagation();
-                          onDeletePolicy(policy.policyName);
+                          onDeleteRole(role.roleName);
                         }}
                       >
                         <DeleteIcon fontSize="small" />
@@ -175,13 +175,13 @@ const Policies = (props) => {
       <Hidden smUp implementation="css">
 		  <Paper>
         <List className={classes.root}>
-          {policies.map((policy) => (
+          {roles.map((role) => (
             <React.Fragment>
               <ListItem alignItems="flex-start">
                 <ListItemText
                   primary={
                     <span>
-                      {policy.policyName}
+                      {role.roleName}
                     </span>
                   }
                   //   secondary={
@@ -192,7 +192,7 @@ const Policies = (props) => {
                   //         className={classes.inline}
                   //         color="textPrimary"
                   //       >
-                  //         Policy details
+                  //         Role details
                   //       </Typography>
                   //     </React.Fragment>
                   //   }
@@ -222,7 +222,7 @@ const Policies = (props) => {
       </Hidden>
 	  </div>
 		:
-		<div>No policies found</div>
+		<div>No roles found</div>
 		}
 	  <Fab color="primary" aria-label="add" className={classes.fab}>
         <AddIcon />
@@ -231,16 +231,16 @@ const Policies = (props) => {
   );
 };
 
-Policies.propTypes = {
-  Policies: PropTypes.arrayOf(Policieshape).isRequired,
+Roles.propTypes = {
+  Roles: PropTypes.arrayOf(RolesShape).isRequired,
   sortBy: PropTypes.string,
   sortDirection: PropTypes.string,
-  onDeletePolicy: PropTypes.func.isRequired,
-  onSelectPolicy: PropTypes.func.isRequired,
+  onDeleteRole: PropTypes.func.isRequired,
+  onSelectRole: PropTypes.func.isRequired,
   onSort: PropTypes.func.isRequired,
 };
 
-Policies.defaultProps = {
+Roles.defaultProps = {
   sortBy: undefined,
   sortDirection: undefined,
 };
@@ -249,4 +249,4 @@ const mapStateToProps = (state) => {
   return {};
 };
 
-export default connect(mapStateToProps)(Policies);
+export default connect(mapStateToProps)(Roles);

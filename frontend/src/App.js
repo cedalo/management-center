@@ -23,7 +23,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import GroupIcon from "@material-ui/icons/Group";
 import HomeIcon from "@material-ui/icons/Home";
 import PersonIcon from "@material-ui/icons/Person";
-import PolicyIcon from "@material-ui/icons/Policy";
+import RoleIcon from "@material-ui/icons/Policy";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
 import SettingsIcon from "@material-ui/icons/Settings";
 import ThemeModeIcon from '@material-ui/icons/Brightness4';
@@ -53,14 +53,14 @@ import Security from "./components/Security";
 import System from "./components/System";
 import InfoPage from "./components/InfoPage";
 import Login from "./components/Login";
-import Policies from "./components/Policies";
+import Roles from "./components/Roles";
 import Configurations from "./components/Configurations";
 import Settings from "./components/Settings";
 import Streams from "./components/Streams";
 import Status from "./components/Status";
 import TopicTree from "./components/TopicTree";
 import GroupDetail from "./components/GroupDetail";
-import PolicyDetail from "./components/PolicyDetail";
+import RoleDetail from "./components/RoleDetail";
 import UserDetail from "./components/UserDetail";
 import GroupNew from "./components/GroupNew";
 import UserNew from "./components/UserNew";
@@ -237,9 +237,9 @@ export default function App(props) {
         />
         <ListItemLink
 		  classes={classes} 
-          to="/security/policies"
-          primary="🚧 Policies"
-          icon={<PolicyIcon />}
+          to="/security/roles"
+          primary="🚧 Roles"
+          icon={<RoleIcon />}
         />
       </List>
       <Divider />
@@ -427,9 +427,9 @@ export default function App(props) {
                     <Route path="/security/groups">
                       <Groups />
                     </Route>
-                    <Route path="/security/policies/detail/:policyId" component={PolicyDetail} />
-                    <Route path="/security/policies">
-                      <Policies />
+                    <Route path="/security/roles/detail/:roleId" component={RoleDetail} />
+                    <Route path="/security/roles">
+                      <Roles />
                     </Route>
                     <Route path="/security">
                       <Security />

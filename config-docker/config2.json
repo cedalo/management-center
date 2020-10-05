@@ -1,0 +1,78 @@
+{
+	"themes": [
+		{
+			"name": "Cedalo AG",
+			"logo": "https://cedalo.com/images/logo.png",
+			"palette": {
+				"primary": {
+					"main": "#556cd6"
+				},
+				"secondary": {
+					"main": "#19857b"
+				}
+			}
+		},
+		{
+			"name": "Siemens",
+			"logo": "https://www.pngjoy.com/pngm/303/5723462_siemens-siemens-logo-in-black-transparent-png.png",
+			"palette": {
+				"primary": {
+					"main": "#009688"
+				},
+				"secondary": {
+					"main": "#f50057"
+				}
+			}
+		},
+		{
+			"name": "Yello Strom",
+			"logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Yello_Strom_GmbH.svg/2000px-Yello_Strom_GmbH.svg.png",
+			"palette": {
+				"primary": {
+					"main": "#ffc107"
+				},
+				"secondary": {
+					"main": "#f50057"
+				}
+			}
+		}
+	],
+	"connections": [
+		{
+			"name": "Mosquitto 1",
+			"url": "mqtt://localhost:1885",
+			"credentials": {
+				"username": "cedalo",
+				"password": "cedalo"
+			}
+		},
+		{
+			"name": "Mosquitto 2",
+			"url": "mqtt://localhost:1886",
+			"credentials": {
+				"username": "cedalo",
+				"password": "cedalo"
+			}
+		},
+		{
+			"name": "Mosquitto 3",
+			"url": "mqtt://localhost:1887",
+			"credentials": {
+				"username": "cedalo",
+				"password": "cedalo"
+			}
+		},
+		{
+			"name": "Mosquitto 2.0 Preview",
+			"url": "mqtt://localhost:1888",
+			"credentials": {
+				"username": "cedalo",
+				"password": "cedalo"
+			}
+		},
+		{
+			"name": "Mosquitto 2.0 Mock API",
+			"url": "mqtt://localhost:1889"
+		}
+	]
+}

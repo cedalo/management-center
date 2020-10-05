@@ -1,7 +1,7 @@
 const NodeMosquittoClient = require("../src/client/NodeMosquittoClient");
 
 const MOSQUITTO_URL = process.env.MOSQUITTO_URL || "mqtt://localhost";
-const MOSQUITTO_PORT = process.env.MOSQUITTO_PORT || 1889;
+const MOSQUITTO_PORT = process.env.MOSQUITTO_PORT || 1888;
 
 (async () => {
   const client = new NodeMosquittoClient({ /* logger: console */ });
@@ -11,11 +11,15 @@ const MOSQUITTO_PORT = process.env.MOSQUITTO_PORT || 1889;
     });
     const feature = "user-management";
     const commandMessage = {
-      command: "addUser",
+      command: "createUser",
       username: "user_one",
       password: "password",
       clientid: "cid",
-      policyName: "",
+	  roleName: "",
+	  groups: [{
+		"name": "admins",
+		"priority": 0
+	  }]
     };
     const result = await client.sendCommandMessage(feature, commandMessage);
 	console.log(result);
