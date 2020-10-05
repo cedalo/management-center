@@ -74,7 +74,7 @@ const UserNew = (props) => {
   const { client } = context;
 
   const onSaveUser = async () => {
-	await client.addUser(username, password, clientID, "", textName, textDescription);
+	await client.createUser(username, password, clientID, "", textName, textDescription);
 	const users = await client.listUsers();
 	dispatch(updateUsers(users));
 	history.push(`/security/users`);
