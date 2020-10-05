@@ -112,8 +112,8 @@ const Groups = (props) => {
 	  dispatch(updateUsers(users));
   }
 
-  const onDeleteUserFromGroup = async (username, group) => {
-	await client.deleteUserFromGroup(username, group);
+  const onRemoveUserFromGroup = async (username, group) => {
+	await client.removeUserFromGroup(username, group);
 	const groups = await client.listGroups();
 	dispatch(updateGroups(groups));
 };
@@ -206,7 +206,7 @@ const Groups = (props) => {
                         label={user.username}
                         onDelete={(event) => {
                           event.stopPropagation();
-                          onDeleteUserFromGroup(user.username, group.groupName);
+                          onRemoveUserFromGroup(user.username, group.groupName);
                         }}
                         color="secondary"
                       />
