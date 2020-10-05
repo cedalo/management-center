@@ -2,29 +2,42 @@ version: '3.7'
 
 services:
   mosquitto:
-    image: ralight/mosquitto-dynsec
+    image: ralight/mosquitto-dynsec:new
     container_name: mosquitto
     ports:
-      - 1890:1883
-      - 9009:9001
+      - 1883:1883
+      - 9002:9001
     expose:
-      - 1890
-      - 9009
+      - 1883
+      - 9002
     # volumes:
     #   - ./conf:/mosquitto/config
+    networks:
+      - mosquitto
   mosquitto-ui:
     image: cedalo/mosquitto-ui
     container_name: mosquitto-ui
     environment:
+      # Do not change for the moment!
       MOSQUITTO_UI_BROKER_NAME: Mosquitto 2.0 Preview
-      MOSQUITTO_UI_BROKER_URL: mosquitto:1890
+      MOSQUITTO_UI_BROKER_URL: mqtt://mosquitto:1883
       # MOSQUITTO_UI_BROKER_USERNAME: cedalo
       # MOSQUITTO_UI_BROKER_PASSWORD: cedalo
+      # MOSQUITTO_UI_PROXY_CONFIG_DIR: /mosquitto-ui/backend/config/config.json
+      MOSQUITTO_UI_LICENSE_PATH: /mosquitto-ui/backend/config/license.lic
     ports:
-      - 8089:8088
-      - 9010:9000
+      - 8088:8088
+      - 9003:9000
     expose:
-      - 8089
-      - 9010
-    # volumes:
-    #   - ./config-docker:/mosquitto-ui/config
+      - 8088
+      - 9003
+    depends_on:
+      - mosquitto
+    volumes:
+      - ./config:/mosquitto-ui/backend/config
+    networks:
+      - mosquitto
+networks:
+  mosquitto:
+    name: mosquitto
+    driver: bridge
