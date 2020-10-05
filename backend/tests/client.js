@@ -1,7 +1,7 @@
 const NodeMosquittoClient = require("../src/client/NodeMosquittoClient");
 
 const MOSQUITTO_URL = process.env.MOSQUITTO_URL || "mqtt://localhost";
-const MOSQUITTO_PORT = process.env.MOSQUITTO_PORT || 1889;
+const MOSQUITTO_PORT = process.env.MOSQUITTO_PORT || 1888;
 
 (async () => {
   const client = new NodeMosquittoClient({ /* logger: console */ });
