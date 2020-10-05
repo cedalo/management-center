@@ -5,8 +5,7 @@ const createError = (code, message) => ({
 	message
 });
 
-const API_USER_MANAGEMENT = 'user-management';
-const API_SECURITY_POLICY = 'security-policy';
+const API_DYNAMIC_SECURITY = 'dynamic-security';
 
 // TODO: merge with method deletePendingRequest()
 const deletePendingRequest = (requestId, requests) => {
@@ -130,139 +129,131 @@ export default class BaseMosquittoProxyClient {
 
 	/**
 	 * ******************************************************************************************
-	 * Methods for security policy management
+	 * Methods for role management
 	 * ******************************************************************************************
 	 */
 
-	async addPolicy(policyName, policy, users, groups) {
+	async createRole(roleName, role, users, groups) {
 		return this.sendCommand({
-			command: 'addPolicy',
-			policyName,
-			policy,
+			command: 'createRole',
+			roleName,
+			role,
 			users,
 			groups
-		}, API_SECURITY_POLICY);
+		}, API_DYNAMIC_SECURITY);
 	}
 
-	async deletePolicy(policyName) {
+	async deleteRole(roleName) {
 		return this.sendCommand({
-			command: 'deletePolicy',
-			policyName
-		}, API_SECURITY_POLICY);
+			command: 'deleteRole',
+			roleName
+		}, API_DYNAMIC_SECURITY);
 	}
 
-	async replacePolicy(policyName, policy, users, groups) {
+	async getRole(roleName) {
 		return this.sendCommand({
-			command: 'replacePolicy',
-			policyName,
-			policy,
-			users,
-			groups
-		}, API_SECURITY_POLICY);
+			command: 'getRole',
+			roleName
+		}, API_DYNAMIC_SECURITY);
 	}
 
-	async getPolicy(policyName) {
+	async listRoles() {
 		return this.sendCommand({
-			command: 'getPolicy',
-			policyName
-		}, API_SECURITY_POLICY);
+			command: 'listRoles'
+		}, API_DYNAMIC_SECURITY);
 	}
 
-	// TODO: should include user as parameter
-	async setUserPolicy(policyName) {
-		return this.sendCommand({
-			command: 'setUserPolicy',
-			policyName
-		}, API_SECURITY_POLICY);
-	}
+	// TODO: check deprecated methods
 
-	// TODO: should include user group as parameter
-	async setGroupPolicy(policyName) {
-		return this.sendCommand({
-			command: 'setGroupPolicy',
-			policyName
-		}, API_SECURITY_POLICY);
-	}
+	// // TODO: should include user as parameter
+	// async setUserPolicy(policyName) {
+	// 	return this.sendCommand({
+	// 		command: 'setUserPolicy',
+	// 		policyName
+	// 	}, API_DYNAMIC_SECURITY);
+	// }
 
-	async listPolicies() {
-		return this.sendCommand({
-			command: 'listPolicies'
-		}, API_SECURITY_POLICY);
-	}
+	// // TODO: should include user group as parameter
+	// async setGroupPolicy(policyName) {
+	// 	return this.sendCommand({
+	// 		command: 'setGroupPolicy',
+	// 		policyName
+	// 	}, API_DYNAMIC_SECURITY);
+	// }
 
-	async setUserDefaultPolicy(policyName) {
-		return this.sendCommand({
-			command: 'setUserDefaultPolicy',
-			policyName
-		}, API_SECURITY_POLICY);
-	}
+	// async setUserDefaultPolicy(policyName) {
+	// 	return this.sendCommand({
+	// 		command: 'setUserDefaultPolicy',
+	// 		policyName
+	// 	}, API_DYNAMIC_SECURITY);
+	// }
 
-	async setGroupDefaultPolicy(policyName) {
-		return this.sendCommand({
-			command: 'setGroupDefaultPolicy',
-			policyName
-		}, API_SECURITY_POLICY);
-	}
+	// async setGroupDefaultPolicy(policyName) {
+	// 	return this.sendCommand({
+	// 		command: 'setGroupDefaultPolicy',
+	// 		policyName
+	// 	}, API_DYNAMIC_SECURITY);
+	// }
 
-	async addPolicyFeature(policyName, featureName) {
-		return this.sendCommand({
-			command: 'addPolicyFeature',
-			policyName,
-			featureName
-		}, API_SECURITY_POLICY);
-	}
+	// async addPolicyFeature(policyName, featureName) {
+	// 	return this.sendCommand({
+	// 		command: 'addPolicyFeature',
+	// 		policyName,
+	// 		featureName
+	// 	}, API_DYNAMIC_SECURITY);
+	// }
 
-	async removePolicyFeature(policyName, featureName) {
-		return this.sendCommand({
-			command: 'removePolicyFeature',
-			policyName,
-			featureName
-		}, API_SECURITY_POLICY);
-	}
+	// async removePolicyFeature(policyName, featureName) {
+	// 	return this.sendCommand({
+	// 		command: 'removePolicyFeature',
+	// 		policyName,
+	// 		featureName
+	// 	}, API_DYNAMIC_SECURITY);
+	// }
 
-	async addTopicAccessControlPublishWrite(policyName, topicFilter, maxQos = 2, allowRetain = true, maxPayloadSize = 1000, allow = false) {
-		return this.sendCommand({
-			command: 'addTopicAccessControl',
-			type: 'publish-write',
-			policyName,
-			topicFilter,
-			maxQos,
-			allowRetain,
-			maxPayloadSize,
-			allow
-		}, API_SECURITY_POLICY);
-	}
+	// async addTopicAccessControlPublishWrite(policyName, topicFilter, maxQos = 2, allowRetain = true, maxPayloadSize = 1000, allow = false) {
+	// 	return this.sendCommand({
+	// 		command: 'addTopicAccessControl',
+	// 		type: 'publish-write',
+	// 		policyName,
+	// 		topicFilter,
+	// 		maxQos,
+	// 		allowRetain,
+	// 		maxPayloadSize,
+	// 		allow
+	// 	}, API_DYNAMIC_SECURITY);
+	// }
 
-	async addTopicAccessControlPublishRead(policyName, topicFilter) {
-		return this.sendCommand({
-			command: 'addTopicAccessControl',
-			type: 'publish-read',
-			policyName,
-			topicFilter
-		}, API_SECURITY_POLICY);
-	}
+	// async addTopicAccessControlPublishRead(policyName, topicFilter) {
+	// 	return this.sendCommand({
+	// 		command: 'addTopicAccessControl',
+	// 		type: 'publish-read',
+	// 		policyName,
+	// 		topicFilter
+	// 	}, API_DYNAMIC_SECURITY);
+	// }
 
-	async addTopicAccessControlSubscribe(policyName, topicFilter, maxQos = 2, allow = true) {
-		return this.sendCommand({
-			command: 'addTopicAccessControl',
-			type: 'subscribe-',
-			policyName,
-			topicFilter,
-			maxQos,
-			allow
-		}, API_SECURITY_POLICY);
-	}
+	// async addTopicAccessControlSubscribe(policyName, topicFilter, maxQos = 2, allow = true) {
+	// 	return this.sendCommand({
+	// 		command: 'addTopicAccessControl',
+	// 		type: 'subscribe-',
+	// 		policyName,
+	// 		topicFilter,
+	// 		maxQos,
+	// 		allow
+	// 	}, API_DYNAMIC_SECURITY);
+	// }
 
-	async addTopicAccessControlSubscribeFixed(policyName, topicFilter, maxQos = 2, allow = true) {
-		return this.sendCommand({
-			command: 'addTopicAccessControl',
-			type: 'subscribe-fixed',
-			policyName,
-			topicFilter,
-			maxQos,
-			allow
-		}, API_SECURITY_POLICY);
-	}
+	// async addTopicAccessControlSubscribeFixed(policyName, topicFilter, maxQos = 2, allow = true) {
+	// 	return this.sendCommand({
+	// 		command: 'addTopicAccessControl',
+	// 		type: 'subscribe-fixed',
+	// 		policyName,
+	// 		topicFilter,
+	// 		maxQos,
+	// 		allow
+	// 	}, API_DYNAMIC_SECURITY);
+	// }
 
 	/**
 	 * ******************************************************************************************
@@ -270,23 +261,39 @@ export default class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	async addUser(username, password, clientid, policyName = "", textName, textDescription) {
+	async createUser(username, password, clientid, roleName = "", textName, textDescription) {
 		return this.sendCommand({
-			command: 'addUser',
+			command: 'createUser',
 			username,
 			password,
 			clientid,
-			policyName,
+			roleName,
 			textName,
 			textDescription
-		}, API_USER_MANAGEMENT);
+		}, API_DYNAMIC_SECURITY);
 	}
 
 	async deleteUser(username) {
 		return this.sendCommand({
 			command: 'deleteUser',
 			username
-		}, API_USER_MANAGEMENT);
+		}, API_DYNAMIC_SECURITY);
+	}
+
+	async addUserRole(username, roleName) {
+		return this.sendCommand({
+			command: 'addUserRole',
+			username,
+			roleName
+		}, API_DYNAMIC_SECURITY);
+	}
+
+	async removeUserRole(username, roleName) {
+		return this.sendCommand({
+			command: 'removeUserRole',
+			username,
+			roleName
+		}, API_DYNAMIC_SECURITY);
 	}
 
 	async setUserPassword(username, password) {
@@ -294,17 +301,33 @@ export default class BaseMosquittoProxyClient {
 			command: 'setUserPassword',
 			username,
 			password
-		}, API_USER_MANAGEMENT);
+		}, API_DYNAMIC_SECURITY);
 	}
 
-	async addGroup(groupName, policyName = "", textName, textDescription) {
+	async createGroup(groupName, roleName = "", textName, textDescription) {
 		return this.sendCommand({
-			command: 'addGroup',
+			command: 'createGroup',
 			groupName,
-			policyName,
+			roleName,
 			textName,
 			textDescription
-		}, API_USER_MANAGEMENT);
+		}, API_DYNAMIC_SECURITY);
+	}
+
+	async addGroupRole(groupName, roleName) {
+		return this.sendCommand({
+			command: 'addGroupRole',
+			groupName,
+			roleName
+		}, API_DYNAMIC_SECURITY);
+	}
+
+	async removeGroupRole(groupName, roleName) {
+		return this.sendCommand({
+			command: 'removeGroupRole',
+			groupName,
+			roleName
+		}, API_DYNAMIC_SECURITY);
 	}
 
 	async addUserToGroup(username, groupName) {
@@ -312,30 +335,50 @@ export default class BaseMosquittoProxyClient {
 			command: 'addUserToGroup',
 			username,
 			groupName
-		}, API_USER_MANAGEMENT);
+		}, API_DYNAMIC_SECURITY);
 	}
 
-	async deleteUserFromGroup(username, groupName) {
+	async removeUserFromGroup(username, groupName) {
 		return this.sendCommand({
-			command: 'deleteUserFromGroup',
+			command: 'removeUserFromGroup',
 			username,
 			groupName
-		}, API_USER_MANAGEMENT);
+		}, API_DYNAMIC_SECURITY);
+	}
+
+	async getUser(username) {
+		// const users = await this.listUsers();
+		// return users.find((user) => user.username === username);
+		const data = await this.sendCommand({
+			command: 'getUser',
+			username
+		}, API_DYNAMIC_SECURITY);
+		return data.user;
 	}
 
 	async listUsers(verbose = true) {
 		const data = await this.sendCommand({
 			command: 'listUsers',
 			verbose
-		}, API_USER_MANAGEMENT);
+		}, API_DYNAMIC_SECURITY);
 		return data.users;
+	}
+
+	async getGroup(groupname) {
+		// const groups = await this.listGroups();
+		// return groups.find((group) => group.groupname === groupname);
+		const data = await this.sendCommand({
+			command: 'getGroup',
+			groupname
+		}, API_DYNAMIC_SECURITY);
+		return data.group;
 	}
 
 	async listGroups(verbose = true) {
 		const data = await this.sendCommand({
 			command: 'listGroups',
 			verbose
-		}, API_USER_MANAGEMENT);
+		}, API_DYNAMIC_SECURITY);
 		return data.groups;
 	}
 
@@ -343,7 +386,7 @@ export default class BaseMosquittoProxyClient {
 		return this.sendCommand({
 			command: 'listGroupUsers',
 			group
-		}, API_USER_MANAGEMENT);
+		}, API_DYNAMIC_SECURITY);
 	}
 
 	async kickClient(username, clientid) {
@@ -351,7 +394,69 @@ export default class BaseMosquittoProxyClient {
 			command: 'kickClient',
 			username,
 			clientid
-		}, API_USER_MANAGEMENT);
+		}, API_DYNAMIC_SECURITY);
+	}
+
+	/**
+	 * ******************************************************************************************
+	 * Methods for role management
+	 * ******************************************************************************************
+	 */
+
+	async createRole(roleName, acls) {
+		return this.sendCommand({
+			command: 'createRole',
+			roleName,
+			acls,
+		}, API_DYNAMIC_SECURITY);
+	}
+
+	async deleteRole(roleName) {
+		return this.sendCommand({
+			command: 'deleteRole',
+			roleName,
+		}, API_DYNAMIC_SECURITY);
+	}
+
+	async getRole(roleName) {
+		return this.sendCommand({
+			command: 'getRole',
+			roleName,
+		}, API_DYNAMIC_SECURITY);
+	}
+
+	async listRoles(verbose = true) {
+		return this.sendCommand({
+			command: 'listRoles',
+			verbose,
+		}, API_DYNAMIC_SECURITY);
+	}
+
+	/**
+	 * 
+	 * @param {*} roleName 
+	 * @param {*} aclType   Can be one of publishSend, publishReceive, subscribeLiteral, subscribePattern, unsubscribeLiteral, unsubscribePattern.
+	 * @param {*} priority 
+	 * @param {*} topic 
+	 * @param {*} allow 
+	 */
+	async addACLToRole(roleName, aclType, priority, topic, allow) {
+		return this.sendCommand({
+			command: 'addACLToRole',
+			roleName,
+			aclType,
+			priority,
+			topic,
+			allow,
+		}, API_DYNAMIC_SECURITY);
+	}
+	
+	async removeACLFromRole(roleName, acl) {
+		return this.sendCommand({
+			command: 'removeACLFromRole',
+			roleName,
+			acl,
+		}, API_DYNAMIC_SECURITY);
 	}
 
 	/**
@@ -368,7 +473,7 @@ export default class BaseMosquittoProxyClient {
 		const groupsToRemove = userGroupNames.filter(groupName => !groupNames.includes(groupName));
 		const groupsToAdd = groupNames.filter(groupName => !userGroupNames.includes(groupName));
 		for (const groupToRemove of groupsToRemove) {
-			await this.deleteUserFromGroup(user.username, groupToRemove);
+			await this.removeUserFromGroup(user.username, groupToRemove);
 		}
 		for (const groupToAdd of groupsToAdd) {
 		  	await this.addUserToGroup(user.username, groupToAdd);
@@ -383,26 +488,16 @@ export default class BaseMosquittoProxyClient {
 		const usersToRemove = groupUserNames.filter(username => !userNames.includes(username));
 		const usersToAdd = userNames.filter(username => !groupUserNames.includes(username));
 		for (const userToRemove of usersToRemove) {
-			await this.deleteUserFromGroup(userToRemove, group.groupName);
+			await this.removeUserFromGroup(userToRemove, group.groupName);
 		}
 		for (const userToAdd of usersToAdd) {
 		  	await this.addUserToGroup(userToAdd, group.groupName);
 	  }
 	}
 
-	async getUser(username) {
-		const users = await this.listUsers();
-		return users.find((user) => user.username === username);
-	}
-
 	async getUserCount() {
 		const users = await this.listUsers();
 		return users.length;
-	}
-
-	async getGroup(groupname) {
-		const groups = await this.listGroups();
-		return groups.find((group) => group.groupname === groupname);
 	}
 
 	async getGroupCount() {
@@ -422,7 +517,7 @@ export default class BaseMosquittoProxyClient {
 		return this.sendCommand({
 			command: 'deleteGroup',
 			groupname
-		}, API_USER_MANAGEMENT);
+		}, API_DYNAMIC_SECURITY);
 	}
 
 	async deleteAllUsers() {
