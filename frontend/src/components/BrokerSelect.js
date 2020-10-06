@@ -8,7 +8,9 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import InputBase from '@material-ui/core/InputBase';
-import { updateGroups, updateUsers, updateBrokerConfigurations, updateBrokerConnections, updateSystemStatus, updateTopicTree } from '../actions/actions';
+import DisconnectedIcon from '@material-ui/icons/Cancel';
+import ConnectedIcon from '@material-ui/icons/CheckCircle';
+import { updateGroups, updateRoles, updateClients, updateBrokerConfigurations, updateBrokerConnected, updateBrokerConnections, updateSystemStatus, updateTopicTree } from '../actions/actions';
 
 // import {
 // 	colors,
@@ -48,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const BrokerSelect = ({ brokerConnections, sendMessage }) => {
+const BrokerSelect = ({ brokerConnections, connected, sendMessage }) => {
   const classes = useStyles();
   const theme = useTheme();
   const context = useContext(WebSocketContext);
@@ -57,19 +59,33 @@ const BrokerSelect = ({ brokerConnections, sendMessage }) => {
 
   const handleConnectionChange = async (event) => {
 	  console.log("handleConnectionChange");
+	  const connectionID = event.target.value;
 	  console.log(event.target.value);
 	  const { client } = context;
 	  await client.disconnectFromBroker(connection);
-	  await client.connectToBroker(event.target.value);
-	  const brokerConnections = await client.getBrokerConnections();
-	  dispatch(updateBrokerConnections(brokerConnections));
-	  const brokerConfigurations = await client.getBrokerConfigurations();
-	  dispatch(updateBrokerConfigurations(brokerConfigurations));
-	  const users = await client.listUsers();
-	  dispatch(updateUsers(users));
-	  const groups = await client.listGroups();
-	  dispatch(updateGroups(groups));
-	  setConnection(event.target.value);
+	  dispatch(updateBrokerConnected(false));
+	  if (connectionID && connectionID !== '') {
+		try {
+		  await client.connectToBroker(connectionID);
+		  dispatch(updateBrokerConnected(true));
+			} catch(error) {
+			dispatch(updateBrokerConnected(false));
+			return;
+		}
+		  const brokerConnections = await client.getBrokerConnections();
+		  dispatch(updateBrokerConnections(brokerConnections));
+		  const brokerConfigurations = await client.getBrokerConfigurations();
+		  dispatch(updateBrokerConfigurations(brokerConfigurations));
+		  const clients = await client.listClients();
+		  dispatch(updateClients(clients));
+		  const groups = await client.listGroups();
+		  dispatch(updateGroups(groups));
+		  const roles = await client.listRoles();
+		  dispatch(updateRoles(roles));
+		  setConnection(event.target.value);
+	  } else {
+
+	  }
   };
 
   return (
@@ -82,6 +98,7 @@ const BrokerSelect = ({ brokerConnections, sendMessage }) => {
 		Connection
 	  </InputLabel>
       <Select
+	  	defaultValue="Mosquitto 2.0 Preview"
         labelId="broker-select-outlined-label"
         id="connection"
         value={connection}
@@ -93,9 +110,6 @@ const BrokerSelect = ({ brokerConnections, sendMessage }) => {
 		}}
 		input={<CustomInput />}
       >
-        <MenuItem value="">
-          <em>None</em>
-        </MenuItem>
         {brokerConnections && Array.isArray(brokerConnections)
           ? brokerConnections.map((brokerConnection) => (
               <MenuItem value={brokerConnection} >{brokerConnection}</MenuItem>
@@ -108,8 +122,8 @@ const BrokerSelect = ({ brokerConnections, sendMessage }) => {
 
 const mapStateToProps = (state) => {
   return {
-    // TODO: check object hierarchy
     brokerConnections: state.brokerConnections.brokerConnections,
+    connected: state.brokerConnections.connected,
   };
 };
 
