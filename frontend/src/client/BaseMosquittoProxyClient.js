@@ -494,6 +494,20 @@ export default class BaseMosquittoProxyClient {
 				  await this.addClientRole(client.username, roleToAdd);
 		  }
 		}
+	}
+
+	async updateGroupClients(group, usernames = []) {
+		if (!usernames) {
+			usernames = [];
+		}
+		const groupusernames = group.clients.map(client => client.username);
+		const clientsToRemove = groupusernames.filter(username => !usernames.includes(username));
+		const clientsToAdd = usernames.filter(username => !groupusernames.includes(username));
+		for (const clientToRemove of clientsToRemove) {
+			await this.removeClientFromGroup(clientToRemove, group.groupName);
+		}
+		for (const clientToAdd of clientsToAdd) {
+		  	await this.addClientToGroup(clientToAdd, group.groupName);
 	  }
 	}
 
