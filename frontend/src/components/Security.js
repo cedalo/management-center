@@ -32,16 +32,16 @@ function Security() {
       <Grid container spacing={3}>
         <Grid item lg={4} sm={6} xl={4} xs={12}>
           <HomeCard
-            title="Users"
-            description="Manage users"
-            image={"users.png"}
-            link="/security/users"
+            title="Clients"
+            description="Manage clients"
+            image={"clients.png"}
+            link="/security/clients"
           />
         </Grid>
         <Grid item lg={4} sm={6} xl={4} xs={12}>
           <HomeCard
-            title="User Groups"
-            description="Manage user groups"
+            title="Groups"
+            description="Manage groups"
             image={"groups.png"}
             link="/security/groups"
           />
