@@ -430,6 +430,7 @@ export default class BaseMosquittoProxyClient {
 	}
 
 	async listRoles(verbose = true) {
+		const data = await this.sendCommand({
 			command: 'listRoles',
 			verbose
 		}, API_DYNAMIC_SECURITY);
