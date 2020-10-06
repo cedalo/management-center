@@ -55,6 +55,10 @@ export default ({ children }) => {
 			.then(() => client.listGroups())
 			.then(groups => {
 				dispatch(updateGroups(groups));
+			})
+			.then(() => client.listRoles())
+			.then(roles => {
+				dispatch(updateRoles(roles));
 			});
 
         ws = {
