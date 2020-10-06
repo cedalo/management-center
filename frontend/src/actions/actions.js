@@ -35,6 +35,13 @@ export function updateRole(update) {
     }
 }
 
+export function updateRoles(update) {
+    return {
+        type: ActionTypes.UPDATE_ROLES,
+        update
+    }
+}
+
 export function updateBrokerConfigurations(update) {
     return {
         type: ActionTypes.UPDATE_BROKER_CONFIGURATIONS,
