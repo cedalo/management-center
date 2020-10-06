@@ -234,7 +234,6 @@ const Groups = (props) => {
 							onUpdateGroupRoles(group, value);
 						}}
 					/>
-                    {/* {group.users && group.users.map((user) => (
                   </TableCell>
                   <TableCell align="right">
                         <IconButton
