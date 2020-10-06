@@ -61,10 +61,10 @@ import Status from "./components/Status";
 import TopicTree from "./components/TopicTree";
 import GroupDetail from "./components/GroupDetail";
 import RoleDetail from "./components/RoleDetail";
-import UserDetail from "./components/UserDetail";
+import ClientDetail from "./components/ClientDetail";
 import GroupNew from "./components/GroupNew";
-import UserNew from "./components/UserNew";
-import Users from "./components/Users";
+import ClientNew from "./components/ClientNew";
+import Clients from "./components/Clients";
 import store from "./store";
 import WebSocketProvider, { WebSocketContext } from "./websockets/WebSocket";
 import NewsDrawer from "./components/NewsDrawer";
@@ -230,8 +230,8 @@ export default function App(props) {
       <List>
         <ListItemLink
 		  classes={classes} 
-          to="/security/users"
-          primary="Users"
+          to="/security/clients"
+          primary="Clients"
           icon={<PersonIcon />}
         />
         <ListItemLink
@@ -418,12 +418,12 @@ export default function App(props) {
 			
                 <Container className={classes.container}>
                   <Switch>
-                    <Route path="/security/users/detail/:userId" component={UserDetail} />
-					<Route path="/security/users/new">
-                      <UserNew />
+                    <Route path="/security/clients/detail/:clientId" component={ClientDetail} />
+					<Route path="/security/clients/new">
+                      <ClientNew />
                     </Route>
-                    <Route path="/security/users">
-                      <Users />
+                    <Route path="/security/clients">
+                      <Clients />
                     </Route>
                     <Route path="/security/groups/detail/:groupId" component={GroupDetail} />
 					<Route path="/security/groups/new">
