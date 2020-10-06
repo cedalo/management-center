@@ -28,6 +28,13 @@ export function updateGroups(update) {
     }
 }
 
+export function updateRole(update) {
+    return {
+        type: ActionTypes.UPDATE_ROLE,
+        update
+    }
+}
+
 export function updateBrokerConfigurations(update) {
     return {
         type: ActionTypes.UPDATE_BROKER_CONFIGURATIONS,
