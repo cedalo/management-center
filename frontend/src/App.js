@@ -68,6 +68,7 @@ import Users from "./components/Users";
 import store from "./store";
 import WebSocketProvider, { WebSocketContext } from "./websockets/WebSocket";
 import NewsDrawer from "./components/NewsDrawer";
+import useLocalStorage from "./helpers/useLocalStorage";
 
 import {
   BrowserRouter as Router,
@@ -197,9 +198,13 @@ export default function App(props) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('recents');
-  const [currentTheme, setCurrentTheme] = useState(true);
+  const [darkMode, setDarkMode] = useLocalStorage('mosquitto-ui.darkMode');
 
-  const appliedTheme = currentTheme ? customTheme : darkTheme;
+  const appliedTheme = darkMode === 'true' ? darkTheme : customTheme;
+
+  const onChangeTheme = () => {
+	  setDarkMode(darkMode === 'true' ? 'false' : 'true');
+  }
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -342,7 +347,7 @@ export default function App(props) {
 						aria-label="Theme Mode"
 						aria-controls="theme-mode"
 						aria-haspopup="true"
-						onClick={() => setCurrentTheme(!currentTheme)}
+						onClick={() => onChangeTheme()}
 						color="inherit"
 						className={classes.toolbarButton}
             			>
@@ -354,7 +359,7 @@ export default function App(props) {
 						aria-label="Notifications"
 						aria-controls="notifications"
 						aria-haspopup="true"
-						// onClick={() => setCurrentTheme(!currentTheme)}
+						// onClick={() => setDarkMode(!darkMode)}
 						color="inherit"
 						className={classes.toolbarButton}
             			>
