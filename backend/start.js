@@ -101,6 +101,7 @@ connections.forEach(async (connection) => {
 	try {
 		await brokerClient.connect({
 		  mqttEndpointURL: connection.url,
+		  connectTimeout: process.env.MOSQUITTO_UI_TIMOUT_MOSQUITTO_CONNECT || 5000,
 		});
 	} catch (error) {
 		console.error(error);
