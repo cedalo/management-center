@@ -28,12 +28,12 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import Divider from "@material-ui/core/Divider";
 import ListItemText from "@material-ui/core/ListItemText";
 import GroupIcon from "@material-ui/icons/Group";
-import UserIcon from "@material-ui/icons/Person";
+import ClientIcon from "@material-ui/icons/Person";
 import { Link as RouterLink } from "react-router-dom";
 
 import AutoSuggest from './AutoSuggest';
 import { WebSocketContext } from '../websockets/WebSocket';
-import { updateGroup, updateGroups, updateUsers } from '../actions/actions';
+import { updateGroup, updateGroups, updateClients } from '../actions/actions';
 
 const useStyles = makeStyles((theme) => ({
   badges: {
@@ -58,7 +58,7 @@ const GROUP_TABLE_COLUMNS = [
   { id: "groupName", key: "Name" },
   { id: "textName", key: "Text name" },
   { id: "textDescription", key: "Description" },
-  { id: "users", key: "Users" },
+  { id: "clients", key: "Clients" },
 ];
 
 const FormattedGroupType = (props) => {
@@ -78,16 +78,26 @@ const Groups = (props) => {
   const confirm = useConfirm();
   const { client } = context;
 
-  const onUpdateGroupUsers = async (group, users = []) => {
-	if (!users) {
-		users = [];
+  const onUpdateGroupClients = async (group, clients = []) => {
+	if (!clients) {
+		clients = [];
 	}
-	const userNames = users.map(user => user.value);
-	await client.updateGroupUsers(group, userNames);
+	const clientNames = clients.map(client => client.value);
+	await client.updateGroupClients(group, clientNames);
 	const groups = await client.listGroups();
 	dispatch(updateGroups(groups));
-	const usersUpdated = await client.listUsers();
-	dispatch(updateUsers(usersUpdated));
+	const clientsUpdated = await client.listClients();
+	dispatch(updateClients(clientsUpdated));
+  }
+
+  const onUpdateGroupRoles = async (group, roles = []) => {
+	if (!roles) {
+		roles = [];
+	}
+	const roleNames = roles.map(role => role.value);
+	await client.updateGroupRoles(group, roleNames);
+	const groups = await client.listGroups();
+	dispatch(updateGroups(groups));
   }
 
   const onSelectGroup = async (groupName) => {
@@ -108,26 +118,28 @@ const Groups = (props) => {
 	  await client.deleteGroup(groupName);
 	  const groups = await client.listGroups();
 	  dispatch(updateGroups(groups));
-	  const users = await client.listUsers();
-	  dispatch(updateUsers(users));
+	  const clients = await client.listClients();
+	  dispatch(updateClients(clients));
   }
 
-  const onRemoveUserFromGroup = async (username, group) => {
-	await client.removeUserFromGroup(username, group);
+  const onRemoveClientFromGroup = async (username, group) => {
+	await client.removeClientFromGroup(username, group);
 	const groups = await client.listGroups();
 	dispatch(updateGroups(groups));
 };
 
   const {
 	groups = [],
-	users = [],
+	roles = [],
+	clients = [],
     onSort,
     sortBy,
     sortDirection,
   } = props;
 
-  const userSuggestions = users
-	.map(user => user.username)
+  // TODO: probably extract into reducer
+  const clientSuggestions = clients
+	.map(client => client.username)
 	.sort()
 	.map(username => ({
 		label: username,
@@ -147,7 +159,7 @@ const Groups = (props) => {
       <Breadcrumbs aria-label="breadcrumb">
         <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
-        <Typography className={classes.breadcrumbItem} color="textPrimary">User Groups</Typography>
+        <Typography className={classes.breadcrumbItem} color="textPrimary">Client Groups</Typography>
       </Breadcrumbs>
       <br />
 	  { groups && groups.length > 0 ? 
@@ -353,7 +365,8 @@ Groups.defaultProps = {
 const mapStateToProps = (state) => {
   return {
 		groups: state.groups?.groups,
-		users: state.users?.users,
+		roles: state.roles?.roles,
+		clients: state.clients?.clients,
   };
 };
 

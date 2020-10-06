@@ -7,7 +7,7 @@ import licenseReducer from './reducers/licenseReducer';
 import rolesReducer from './reducers/rolesReducer';
 import systemStatusReducer from './reducers/systemStatusReducer';
 import topicTreeReducer from './reducers/topicTreeReducer';
-import usersReducer from './reducers/usersReducer';
+import clientsReducer from './reducers/clientsReducer';
 
 const store = createStore(combineReducers({
 	brokerConfigurations: brokerConfigurationsReducer,
@@ -17,7 +17,7 @@ const store = createStore(combineReducers({
 	roles: rolesReducer,
 	systemStatus: systemStatusReducer,
 	topicTree: topicTreeReducer,
-	users: usersReducer,
+	clients: clientsReducer,
 }));
 
 export default store;
