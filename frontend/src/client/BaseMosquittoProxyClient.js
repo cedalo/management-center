@@ -133,12 +133,12 @@ export default class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	async createRole(roleName, role, users, groups) {
+	async createRole(roleName, role, clients, groups) {
 		return this.sendCommand({
 			command: 'createRole',
 			roleName,
 			role,
-			users,
+			clients,
 			groups
 		}, API_DYNAMIC_SECURITY);
 	}
@@ -165,15 +165,15 @@ export default class BaseMosquittoProxyClient {
 
 	// TODO: check deprecated methods
 
-	// // TODO: should include user as parameter
-	// async setUserPolicy(policyName) {
+	// // TODO: should include client as parameter
+	// async setClientPolicy(policyName) {
 	// 	return this.sendCommand({
-	// 		command: 'setUserPolicy',
+	// 		command: 'setClientPolicy',
 	// 		policyName
 	// 	}, API_DYNAMIC_SECURITY);
 	// }
 
-	// // TODO: should include user group as parameter
+	// // TODO: should include client group as parameter
 	// async setGroupPolicy(policyName) {
 	// 	return this.sendCommand({
 	// 		command: 'setGroupPolicy',
@@ -181,9 +181,9 @@ export default class BaseMosquittoProxyClient {
 	// 	}, API_DYNAMIC_SECURITY);
 	// }
 
-	// async setUserDefaultPolicy(policyName) {
+	// async setClientDefaultPolicy(policyName) {
 	// 	return this.sendCommand({
-	// 		command: 'setUserDefaultPolicy',
+	// 		command: 'setClientDefaultPolicy',
 	// 		policyName
 	// 	}, API_DYNAMIC_SECURITY);
 	// }
@@ -257,13 +257,13 @@ export default class BaseMosquittoProxyClient {
 
 	/**
 	 * ******************************************************************************************
-	 * Methods for user and user group management
+	 * Methods for client and client group management
 	 * ******************************************************************************************
 	 */
 
-	async createUser(username, password, clientid, roleName = "", textName, textDescription) {
+	async createClient(username, password, clientid, roleName = "", textName, textDescription) {
 		return this.sendCommand({
-			command: 'createUser',
+			command: 'createClient',
 			username,
 			password,
 			clientid,
@@ -273,32 +273,32 @@ export default class BaseMosquittoProxyClient {
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async deleteUser(username) {
+	async deleteClient(username) {
 		return this.sendCommand({
-			command: 'deleteUser',
+			command: 'deleteClient',
 			username
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async addUserRole(username, roleName) {
+	async addClientRole(username, roleName) {
 		return this.sendCommand({
-			command: 'addUserRole',
+			command: 'addClientRole',
 			username,
 			roleName
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async removeUserRole(username, roleName) {
+	async removeClientRole(username, roleName) {
 		return this.sendCommand({
-			command: 'removeUserRole',
+			command: 'removeClientRole',
 			username,
 			roleName
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async setUserPassword(username, password) {
+	async setClientPassword(username, password) {
 		return this.sendCommand({
-			command: 'setUserPassword',
+			command: 'setClientPassword',
 			username,
 			password
 		}, API_DYNAMIC_SECURITY);
@@ -330,38 +330,38 @@ export default class BaseMosquittoProxyClient {
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async addUserToGroup(username, groupName) {
+	async addClientToGroup(username, groupName) {
 		return this.sendCommand({
-			command: 'addUserToGroup',
+			command: 'addClientToGroup',
 			username,
 			groupName
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async removeUserFromGroup(username, groupName) {
+	async removeClientFromGroup(username, groupName) {
 		return this.sendCommand({
-			command: 'removeUserFromGroup',
+			command: 'removeClientFromGroup',
 			username,
 			groupName
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async getUser(username) {
-		// const users = await this.listUsers();
-		// return users.find((user) => user.username === username);
+	async getClient(username) {
+		// const clients = await this.listClients();
+		// return clients.find((client) => client.username === username);
 		const data = await this.sendCommand({
-			command: 'getUser',
+			command: 'getClient',
 			username
 		}, API_DYNAMIC_SECURITY);
-		return data.user;
+		return data.client;
 	}
 
-	async listUsers(verbose = true) {
+	async listClients(verbose = true) {
 		const data = await this.sendCommand({
-			command: 'listUsers',
+			command: 'listClients',
 			verbose
 		}, API_DYNAMIC_SECURITY);
-		return data.users;
+		return data.clients;
 	}
 
 	async getGroup(groupname) {
@@ -382,9 +382,9 @@ export default class BaseMosquittoProxyClient {
 		return data.groups;
 	}
 
-	async listGroupUsers(group) {
+	async listGroupClients(group) {
 		return this.sendCommand({
-			command: 'listGroupUsers',
+			command: 'listGroupClients',
 			group
 		}, API_DYNAMIC_SECURITY);
 	}
@@ -426,7 +426,6 @@ export default class BaseMosquittoProxyClient {
 	}
 
 	async listRoles(verbose = true) {
-		return this.sendCommand({
 			command: 'listRoles',
 			verbose,
 		}, API_DYNAMIC_SECURITY);
@@ -465,33 +464,36 @@ export default class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	async updateUserGroups(user, groupNames = []) {
+	async updateClientGroups(client, groupNames = []) {
 		if (!groupNames) {
 			groupNames = [];
 		}
-		const userGroupNames = user.groups.map(group => group.groupName);
-		const groupsToRemove = userGroupNames.filter(groupName => !groupNames.includes(groupName));
-		const groupsToAdd = groupNames.filter(groupName => !userGroupNames.includes(groupName));
+		const clientGroupNames = client.groups.map(group => group.groupName);
+		const groupsToRemove = clientGroupNames.filter(groupName => !groupNames.includes(groupName));
+		const groupsToAdd = groupNames.filter(groupName => !clientGroupNames.includes(groupName));
 		for (const groupToRemove of groupsToRemove) {
-			await this.removeUserFromGroup(user.username, groupToRemove);
+			await this.removeClientFromGroup(client.username, groupToRemove);
 		}
 		for (const groupToAdd of groupsToAdd) {
-		  	await this.addUserToGroup(user.username, groupToAdd);
+		  	await this.addClientToGroup(client.username, groupToAdd);
 	  }
 	}
 
-	async updateGroupUsers(group, userNames = []) {
-		if (!userNames) {
-			userNames = [];
+	async updateClientRoles(client, roleNames = []) {
+		if (!roleNames) {
+			roleNames = [];
 		}
-		const groupUserNames = group.users.map(user => user.username);
-		const usersToRemove = groupUserNames.filter(username => !userNames.includes(username));
-		const usersToAdd = userNames.filter(username => !groupUserNames.includes(username));
-		for (const userToRemove of usersToRemove) {
-			await this.removeUserFromGroup(userToRemove, group.groupName);
+		if (client.roles) {
+			const clientRoleNames = client.roles.map(role => role.roleName);
+			const rolesToRemove = clientRoleNames.filter(roleName => !roleNames.includes(roleName));
+			const rolesToAdd = roleNames.filter(roleName => !clientRoleNames.includes(roleName));
+			for (const roleToRemove of rolesToRemove) {
+				await this.removeClientRole(client.username, roleToRemove);
+			}
+			for (const roleToAdd of rolesToAdd) {
+				  await this.addClientRole(client.username, roleToAdd);
+		  }
 		}
-		for (const userToAdd of usersToAdd) {
-		  	await this.addUserToGroup(userToAdd, group.groupName);
 	  }
 	}
 
@@ -505,10 +507,10 @@ export default class BaseMosquittoProxyClient {
 		return groups.length;
 	}
 
-	async addUserToGroups(username, groups) {
+	async addClientToGroups(username, groups) {
 		if (groups) {
 			for (const group of groups) {
-				await this.addUserToGroup(username, group);
+				await this.addClientToGroup(username, group);
 			}
 		}
 	}
@@ -520,10 +522,10 @@ export default class BaseMosquittoProxyClient {
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async deleteAllUsers() {
-		const users = await this.listUsers();
-		for (const user of users) {
-			await this.deleteUser(user.username);
+	async deleteAllClients() {
+		const clients = await this.listClients();
+		for (const client of clients) {
+			await this.deleteClient(client.username);
 		}
 	}
 
@@ -535,7 +537,7 @@ export default class BaseMosquittoProxyClient {
 	}
 
 	async deleteAll() {
-		await this.deleteAllUsers();
+		await this.deleteAllClients();
 		await this.deleteAllGroups();
 	}
 

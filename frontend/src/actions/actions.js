@@ -1,15 +1,15 @@
 import * as ActionTypes from '../constants/ActionTypes';
 
-export function updateUser(update) {
+export function updateClient(update) {
     return {
-        type: ActionTypes.UPDATE_USER,
+        type: ActionTypes.UPDATE_CLIENT,
         update
     }
 }
 
-export function updateUsers(update) {
+export function updateClients(update) {
     return {
-        type: ActionTypes.UPDATE_USERS,
+        type: ActionTypes.UPDATE_CLIENTS,
         update
     }
 }
@@ -78,7 +78,7 @@ export function updateTopicTree(update) {
     }
 }
 
-export function deletedUser(update) {
+export function deletedClient(update) {
     return {
         type: ActionTypes.DELETED_USER,
         update
