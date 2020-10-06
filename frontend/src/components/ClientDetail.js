@@ -23,7 +23,7 @@ import Divider from "@material-ui/core/Divider";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import PasswordIcon from "@material-ui/icons/VpnKey";
-import UserIcon from "@material-ui/icons/Person";
+import ClientIcon from "@material-ui/icons/Person";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
@@ -65,7 +65,7 @@ function a11yProps(index) {
   };
 }
 
-const userShape = PropTypes.shape({
+const clientShape = PropTypes.shape({
   username: PropTypes.string,
   lastName: PropTypes.string,
   firstName: PropTypes.string,
@@ -92,50 +92,28 @@ const useStyles = makeStyles((theme) => ({
   breadcrumbLink: theme.palette.breadcrumbLink,
 }));
 
-const UserDetail = (props) => {
+const ClientDetail = (props) => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-	const { user = {} } = props;
+	const { client = {} } = props;
 	const { match: {
 		params: {
-			userId
+			clientId
 		}
 	}} = props;
-	// TODO: get user by id if current user is not defined
-	
-//   const user = {
-//     clientid: "mosquitto-client-1",
-//     username: "maxmustermann",
-//     firstName: "Max",
-//     lastName: "Mustermann",
-//     password: "secret",
-//     banned: false,
-//     connectionRate: 0,
-//     messageRate: 0,
-//     policyName: "",
-//     groups: [
-//       {
-//         name: "admins",
-//         priority: 0,
-//       },
-//       {
-//         name: "example",
-//         priority: 0,
-//       },
-//     ],
-//   };
+	// TODO: get client by id if current client is not defined
 
   return (
     <div>
       <Breadcrumbs aria-label="breadcrumb">
         <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
-        <RouterLink className={classes.breadcrumbLink} to="/security/users">Users</RouterLink>
-        <Typography className={classes.breadcrumbItem} color="textPrimary">{user.username}</Typography>
+        <RouterLink className={classes.breadcrumbLink} to="/security/clients">Clients</RouterLink>
+        <Typography className={classes.breadcrumbItem} color="textPrimary">{client.username}</Typography>
       </Breadcrumbs>
       <br />
     <Paper>
@@ -144,11 +122,11 @@ const UserDetail = (props) => {
         onChange={handleChange}
         variant="scrollable"
         scrollButtons="off"
-        aria-label="User"
+        aria-label="Client"
       >
         <Tab
           label="Details"
-          icon={<UserIcon />}
+          icon={<ClientIcon />}
           aria-label="details"
           {...a11yProps(0)}
         />
@@ -172,9 +150,10 @@ const UserDetail = (props) => {
               <Grid item xs={12}>
                 <TextField
                   required
+				  disabled
                   id="client-id"
                   label="Client ID"
-				  value={user.clientid}
+				  value={client.clientid}
                   defaultValue=""
                   variant="outlined"
 				  fullWidth
@@ -191,9 +170,10 @@ const UserDetail = (props) => {
               <Grid item xs={12}>
                 <TextField
                   required
+				  disabled
                   id="username"
-				  label="Username"
-				  value={user.username}
+				  label="username"
+				  value={client.username}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -207,45 +187,6 @@ const UserDetail = (props) => {
                   }}
                 />
               </Grid>
-              {/* <Grid item xs={12}>
-                <TextField
-                  required
-                  id="firstname"
-                  label="First name"
-				  value={user.firstName}
-                  defaultValue=""
-                  variant="outlined"
-                  fullWidth
-                  className={classes.textField}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  id="lastname"
-				  value={user.lastName}
-                  label="Last name"
-                  defaultValue=""
-                  variant="outlined"
-                  fullWidth
-                  className={classes.textField}
-                />
-              </Grid> */}
-              {/* <Grid item xs={12}>
-			<FormGroup row>
-      <FormControlLabel
-        control={
-          <Switch
-            checked={state.checkedB}
-            onChange={handleBannedChange}
-            name="banned"
-            color="primary"
-          />
-        }
-        label="Banned"
-      />
-    </FormGroup>
-            </Grid> */}
             </Grid>
           </div>
         </form>
@@ -257,9 +198,10 @@ const UserDetail = (props) => {
               <Grid item xs={12}>
                 <TextField
                   required
+				  disabled
                   id="password"
                   label="Password"
-				  value={user.password}
+				  value={client.password}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -277,9 +219,10 @@ const UserDetail = (props) => {
               <Grid item xs={12}>
                 <TextField
                   required
+				  disabled
                   id="password-confirm"
 				  label="Confirm password"
-				  value={user.password}
+				  value={client.password}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -300,7 +243,7 @@ const UserDetail = (props) => {
       </TabPanel>
       <TabPanel value={value} index={2}>
 	  <List className={classes.root}>
-          {user.groups?.map((group) => (
+          {client.groups?.map((group) => (
             <React.Fragment>
               <ListItem button>
                 <ListItemText
@@ -323,15 +266,15 @@ const UserDetail = (props) => {
   );
 };
 
-UserDetail.propTypes = {
-  user: userShape.isRequired,
+ClientDetail.propTypes = {
+  client: clientShape.isRequired,
 };
 
 const mapStateToProps = (state) => {
   return {
 	// TODO: check object hierarchy
-	user: state.users?.user,
+	client: state.clients?.client,
   };
 };
 
-export default connect(mapStateToProps)(UserDetail);
+export default connect(mapStateToProps)(ClientDetail);
