@@ -28,15 +28,18 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import Divider from "@material-ui/core/Divider";
 import ListItemText from "@material-ui/core/ListItemText";
 import GroupIcon from "@material-ui/icons/Group";
-import UserIcon from "@material-ui/icons/Person";
+import ClientIcon from "@material-ui/icons/Person";
 import { Link as RouterLink } from "react-router-dom";
 
 import AutoSuggest from './AutoSuggest';
 import { WebSocketContext } from '../websockets/WebSocket';
-import { updateUser, updateUsers, updateGroups } from '../actions/actions';
+import { updateClient, updateClients, updateGroups } from '../actions/actions';
 
 const useStyles = makeStyles((theme) => ({
-  badges: {
+	tableContainer: {
+		minHeight: '500px',
+	},
+	badges: {
     "& > *": {
       margin: theme.spacing(0.3),
     },
@@ -50,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
   breadcrumbLink: theme.palette.breadcrumbLink,
 }));
 
-const userShape = PropTypes.shape({
+const clientShape = PropTypes.shape({
   username: PropTypes.string,
 //   lastName: PropTypes.string,
 //   firstName: PropTypes.string,
@@ -59,13 +62,14 @@ const userShape = PropTypes.shape({
 
 const USER_TABLE_COLUMNS = [
   { id: "clientid", key: "Client ID" },
-  { id: "username", key: "Username" },
+  { id: "username", key: "username" },
   { id: "textName", key: "Text name" },
   { id: "textDescription", key: "Description" },
   { id: "groups", key: "Groups" },
+  { id: "roles", key: "Roles" },
 ];
 
-const FormattedUserType = (props) => {
+const FormattedClientType = (props) => {
   switch (props.provider) {
     case "local":
       return "Local";
@@ -74,71 +78,82 @@ const FormattedUserType = (props) => {
   }
 };
 
-const Users = (props) => {
+const Clients = (props) => {
   const classes = useStyles();
   const context = useContext(WebSocketContext);
   const dispatch = useDispatch();
   const history = useHistory();
   const confirm = useConfirm();
-  const { client } = context;
+  const { client: brokerClient } = context;
 
-  const onUpdateUserGroups = async (user, groups = []) => {
+  const onUpdateClientGroups = async (client, groups = []) => {
 	if (!groups) {
 		groups = [];
 	}
 	if (groups.length === 0) {
 		await confirm({
-			title: 'Confirm remove user from all groups',
-			description: `Do you really want to remove user "${user.username}" from all groups?`
+			title: 'Confirm remove client from all groups',
+			description: `Do you really want to remove client "${client.username}" from all groups?`
 		});
 	}
 	const groupNames = groups.map(group => group.value);
-	await client.updateUserGroups(user, groupNames);
-	const users = await client.listUsers();
-	dispatch(updateUsers(users));
-	const groupsUpdated = await client.listGroups();
+	await brokerClient.updateClientGroups(client, groupNames);
+	const clients = await brokerClient.listClients();
+	dispatch(updateClients(clients));
+	const groupsUpdated = await brokerClient.listGroups();
 	dispatch(updateGroups(groupsUpdated));
   }
 
-  const onSelectUser = async (userName) => {
-	const user = await client.getUser(userName);
-	dispatch(updateUser(user));
-	history.push(`/security/users/detail/${userName}`);
+  const onUpdateClientRoles = async (client, roles = []) => {
+	if (!roles) {
+		roles = [];
+	}
+	const roleNames = roles.map(role => role.value);
+	await brokerClient.updateClientRoles(client, roleNames);
+	const clients = await brokerClient.listClients();
+	dispatch(updateClients(clients));
   }
 
-  const onNewUser = () => {
-	history.push("/security/users/new");
+  const onSelectClient = async (username) => {
+	const client = await brokerClient.getClient(username);
+	dispatch(updateClient(client));
+	history.push(`/security/clients/detail/${username}`);
   }
 
-  const onEditUser = async (userName) => {
-	const user = await client.getUser(userName);
-	dispatch(updateUser(user));
-	history.push(`/security/users/detail/${userName}/?action=edit`);
+  const onNewClient = () => {
+	history.push("/security/clients/new");
   }
 
-  const onDeleteUser = async (username) => {
+  const onEditClient = async (username) => {
+	const client = await brokerClient.getClient(username);
+	dispatch(updateClient(client));
+	history.push(`/security/clients/detail/${username}/?action=edit`);
+  }
+
+  const onDeleteClient = async (username) => {
 	await confirm({
-		title: 'Confirm user deletion',
-		description: `Do you really want to delete user "${username}"?`
+		title: 'Confirm client deletion',
+		description: `Do you really want to delete client "${username}"?`
 	});
-	await client.deleteUser(username);
-	const users = await client.listUsers();
-	dispatch(updateUsers(users));
+	await brokerClient.deleteClient(username);
+	const clients = await brokerClient.listClients();
+	dispatch(updateClients(clients));
   }
 
-	const onRemoveUserFromGroup = async (user, group) => {
+	const onRemoveClientFromGroup = async (client, group) => {
 		await confirm({
-			title: 'Remove user from group',
-			description: `Do you really want to remove user "${user.username}" from group "${group}"?`
+			title: 'Remove client from group',
+			description: `Do you really want to remove client "${client.username}" from group "${group}"?`
 		});
-		await client.removeUserFromGroup(user, group);
-		const users = await client.listUsers();
-		dispatch(updateUsers(users));
+		await client.removeClientFromGroup(client, group);
+		const clients = await client.listClients();
+		dispatch(updateClients(clients));
 	};
 
   const {
 	groups = [],
-	users = [],
+	roles = [],
+	clients = [],
     onSort,
     sortBy,
     sortDirection,
@@ -152,19 +167,27 @@ const Users = (props) => {
 		value: groupName,
 	  }));
 
+	const roleSuggestions = roles
+	  .map(role => role.roleName)
+	  .sort()
+	  .map(roleName => ({
+		  label: roleName,
+		  value: roleName,
+	  }));
+
   return (
     <div>
       <Breadcrumbs aria-label="breadcrumb">
         <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} color="inherit" to="/security">Security</RouterLink>
-        <Typography className={classes.breadcrumbItem} color="textPrimary">Users</Typography>
+        <Typography className={classes.breadcrumbItem} color="textPrimary">Clients</Typography>
       </Breadcrumbs>
       <br />
 	  {
-		users && users.length > 0 ? 
+		clients && clients.length > 0 ? 
 		<div>
       <Hidden xsDown implementation="css">
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} className={classes.tableContainer}>
           <Table size="medium">
             <TableHead>
               <TableRow>
@@ -186,63 +209,59 @@ const Users = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {users && users.map((user) => (
+              {clients && clients.map((client) => (
                 <TableRow
                   hover
-                  key={user.username}
+                  key={client.username}
                   onClick={(event) => {
 					  if (event.target.nodeName?.toLowerCase() === "td") {
-						onSelectUser(user.username);
+						onSelectClient(client.username);
 					  }
 				  }}
                   style={{ cursor: "pointer" }}
                 >
                   <TableCell>
-                    {user.clientid}
+                    {client.clientid}
                   </TableCell>
                   <TableCell>
-                    {user.username}
+                    {client.username}
                   </TableCell>
                   <TableCell>
-                    {user.textName}
+                    {client.textName}
                   </TableCell>
                   <TableCell>
-                    {user.textDescription}
+                    {client.textDescription}
                   </TableCell>
-                  {/* <TableCell>{user.firstName}</TableCell>
-                  <TableCell>{user.lastName}</TableCell> */}
                   <TableCell className={classes.badges}>
 					<AutoSuggest 
 						suggestions={groupSuggestions}
-						values={user.groups.map((group) => ({
+						values={client.groups.map((group) => ({
 							label: group.groupName,
 							value: group.groupName
 						}))}
 						handleChange={(value) => {
-							onUpdateUserGroups(user, value);
+							onUpdateClientGroups(client, value);
 						}}
 					/>
-                    {/* {user.groups && user.groups.map((group) => (
-                      <Chip
-					    size="small"
-                        icon={<GroupIcon />}
-                        label={group.groupName}
-                        onDelete={(event) => {
-                          event.stopPropagation();
-                          onRemoveUserFromGroup(user.username, group.groupName);
-                        }}
-						color="secondary"
-						// variant="outlined"
-                      />
-                    ))} */}
                   </TableCell>
-                  {/* <TableCell>{moment(user.lastModified).fromNow()}</TableCell> */}
+                  <TableCell className={classes.badges}>
+					<AutoSuggest 
+						suggestions={roleSuggestions}
+						values={client.roles.map((role) => ({
+							label: role.roleName,
+							value: role.roleName
+						}))}
+						handleChange={(value) => {
+							onUpdateClientRoles(client, value);
+						}}
+					/>
+                  </TableCell>
                   <TableCell align="right">
                         <IconButton
 						  size="small"
                           onClick={(event) => {
                             event.stopPropagation();
-                            onEditUser(user.username);
+                            onEditClient(client.username);
                           }}
                         >
                           <EditIcon fontSize="small" />
@@ -251,7 +270,7 @@ const Users = (props) => {
 						  size="small"
                           onClick={(event) => {
                             event.stopPropagation();
-                            onDeleteUser(user.username);
+                            onDeleteClient(client.username);
                           }}
                         >
                           <DeleteIcon fontSize="small" />
@@ -266,16 +285,16 @@ const Users = (props) => {
       <Hidden smUp implementation="css">
 		  <Paper>
         <List className={classes.root}>
-          {users.map((user) => (
+          {clients.map((client) => (
             <React.Fragment>
               <ListItem
 			  	alignItems="flex-start" 
-          		onClick={(event) => onSelectUser(user.username)}
+          		onClick={(event) => onSelectClient(client.username)}
 			  >
                 <ListItemText
                   primary={
                     <span>
-                      {user.username}
+                      {client.username}
                     </span>
                   }
                   secondary={
@@ -286,19 +305,19 @@ const Users = (props) => {
                         className={classes.inline}
                         color="textPrimary"
                       >
-                        {user.textName}
+                        {client.textName}
                       </Typography>
-					  <span> —  {user.textDescription} </span>
+					  <span> —  {client.textDescription} </span>
 
                       {/* <div className={classes.badges}>
-                        {user.groups.map((group) => (
+                        {client.groups.map((group) => (
                           <Chip
                             // icon={<FaceIcon />}
                             size="small"
                             label={group}
                             onDelete={(event) => {
                               event.stopPropagation();
-                              onRemoveUserFromGroup(user, group);
+                              onRemoveClientFromGroup(client, group);
                             }}
                             color="secondary"
                           />
@@ -313,7 +332,7 @@ const Users = (props) => {
 							size="small"
 							onClick={(event) => {
 							event.stopPropagation();
-								onSelectUser(user.username);
+								onSelectClient(client.username);
 							}}
 							aria-label="edit"
 						>
@@ -325,7 +344,7 @@ const Users = (props) => {
 							size="small"
 							onClick={(event) => {
 							event.stopPropagation();
-								onDeleteUser(user.username);
+								onDeleteClient(client.username);
 							}}
 							aria-label="delete"
 						>
@@ -341,7 +360,7 @@ const Users = (props) => {
       </Hidden>
 	  </div>
 		:
-		<div>No users found</div>
+		<div>No clients found</div>
 		}
       <Fab
 		  color="primary"
@@ -349,7 +368,7 @@ const Users = (props) => {
 		  className={classes.fab}
 		  onClick={(event) => {
 			event.stopPropagation();
-			onNewUser();
+			onNewClient();
 		  }}
 		>
         <AddIcon />
@@ -358,15 +377,15 @@ const Users = (props) => {
   );
 };
 
-Users.propTypes = {
-  users: PropTypes.arrayOf(userShape).isRequired,
+Clients.propTypes = {
+  clients: PropTypes.arrayOf(clientShape).isRequired,
   sortBy: PropTypes.string,
   sortDirection: PropTypes.string,
-  onSelectUser: PropTypes.func.isRequired,
+  onSelectClient: PropTypes.func.isRequired,
   onSort: PropTypes.func.isRequired,
 };
 
-Users.defaultProps = {
+Clients.defaultProps = {
   sortBy: undefined,
   sortDirection: undefined,
 };
@@ -374,8 +393,9 @@ Users.defaultProps = {
 const mapStateToProps = (state) => {
   return {
 	  groups: state.groups?.groups,
-	  users: state.users?.users,
+	  roles: state.roles?.roles,
+	  clients: state.clients?.clients,
   };
 };
 
-export default connect(mapStateToProps)(Users);
+export default connect(mapStateToProps)(Clients);
