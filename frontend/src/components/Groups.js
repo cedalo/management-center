@@ -59,6 +59,7 @@ const GROUP_TABLE_COLUMNS = [
   { id: "textName", key: "Text name" },
   { id: "textDescription", key: "Description" },
   { id: "clients", key: "Clients" },
+  { id: "roles", key: "Roles" },
 ];
 
 const FormattedGroupType = (props) => {
@@ -165,7 +166,7 @@ const Groups = (props) => {
 	  { groups && groups.length > 0 ? 
 	  <div>
       <Hidden xsDown implementation="css">
-		<TableContainer component={Paper}>
+		<TableContainer component={Paper} className={classes.tableContainer}>
           <Table>
             <TableHead>
               <TableRow>
@@ -227,7 +228,7 @@ const Groups = (props) => {
 							value: role.roleName
 						}))}
 						handleChange={(value) => {
-							onUpdateGroupUsers(group, value);
+							onUpdateGroupRoles(group, value);
 						}}
 					/>
                     {/* {group.users && group.users.map((user) => (
