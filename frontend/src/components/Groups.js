@@ -134,6 +134,14 @@ const Groups = (props) => {
 		value: username,
 	}));
 
+	const roleSuggestions = roles
+	.map(role => role.roleName)
+	.sort()
+	.map(roleName => ({
+		label: roleName,
+		value: roleName,
+	}));
+
   return (
     <div>
       <Breadcrumbs aria-label="breadcrumb">
@@ -190,10 +198,22 @@ const Groups = (props) => {
                   {/* <TableCell>{moment(group.lastModified).fromNow()}</TableCell> */}
                   <TableCell className={classes.badges}>
 					<AutoSuggest 
-						suggestions={userSuggestions}
-						values={group.users.map((user) => ({
-							label: user.username,
-							value: user.username
+						suggestions={clientSuggestions}
+						values={group.clients.map((client) => ({
+							label: client.username,
+							value: client.username
+						}))}
+						handleChange={(value) => {
+							onUpdateGroupClients(group, value);
+						}}
+					/>
+                  </TableCell>
+                  <TableCell className={classes.badges}>
+					<AutoSuggest 
+						suggestions={roleSuggestions}
+						values={group.roles.map((role) => ({
+							label: role.roleName,
+							value: role.roleName
 						}))}
 						handleChange={(value) => {
 							onUpdateGroupUsers(group, value);
