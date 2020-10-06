@@ -497,9 +497,26 @@ export default class BaseMosquittoProxyClient {
 	  }
 	}
 
-	async getUserCount() {
-		const users = await this.listUsers();
-		return users.length;
+	async updateGroupRoles(group, roleNames = []) {
+		if (!roleNames) {
+			roleNames = [];
+		}
+		if (group.roles) {
+			const groupRoleNames = group.roles.map(role => role.roleName);
+			const rolesToRemove = groupRoleNames.filter(roleName => !roleNames.includes(roleName));
+			const rolesToAdd = roleNames.filter(roleName => !groupRoleNames.includes(roleName));
+			for (const roleToRemove of rolesToRemove) {
+				await this.removeGroupRole(group.groupName, roleToRemove);
+			}
+			for (const roleToAdd of rolesToAdd) {
+				  await this.addGroupRole(group.groupName, roleToAdd);
+		  }
+		}
+	}
+
+	async getClientCount() {
+		const clients = await this.listClients();
+		return clients.length;
 	}
 
 	async getGroupCount() {
