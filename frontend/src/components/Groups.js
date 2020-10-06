@@ -207,7 +207,6 @@ const Groups = (props) => {
                   <TableCell>
                     {group.textDescription}
                   </TableCell>
-                  {/* <TableCell>{moment(group.lastModified).fromNow()}</TableCell> */}
                   <TableCell className={classes.badges}>
 					<AutoSuggest 
 						suggestions={clientSuggestions}
@@ -232,17 +231,6 @@ const Groups = (props) => {
 						}}
 					/>
                     {/* {group.users && group.users.map((user) => (
-                      <Chip
-					    size="small"
-                        icon={<UserIcon />}
-                        label={user.username}
-                        onDelete={(event) => {
-                          event.stopPropagation();
-                          onRemoveUserFromGroup(user.username, group.groupName);
-                        }}
-                        color="secondary"
-                      />
-                    ))} */}
                   </TableCell>
                   <TableCell align="right">
                         <IconButton
