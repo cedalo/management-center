@@ -36,6 +36,9 @@ import { WebSocketContext } from '../websockets/WebSocket';
 import { updateGroup, updateGroups, updateClients } from '../actions/actions';
 
 const useStyles = makeStyles((theme) => ({
+	tableContainer: {
+		minHeight: '500px',
+	},
   badges: {
     "& > *": {
       margin: theme.spacing(0.5),
