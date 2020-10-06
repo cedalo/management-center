@@ -431,8 +431,9 @@ export default class BaseMosquittoProxyClient {
 
 	async listRoles(verbose = true) {
 			command: 'listRoles',
-			verbose,
+			verbose
 		}, API_DYNAMIC_SECURITY);
+		return data.roles;
 	}
 
 	/**
