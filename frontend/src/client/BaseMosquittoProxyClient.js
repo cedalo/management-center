@@ -419,10 +419,14 @@ export default class BaseMosquittoProxyClient {
 	}
 
 	async getRole(roleName) {
-		return this.sendCommand({
-			command: 'getRole',
-			roleName,
-		}, API_DYNAMIC_SECURITY);
+		const roles = await this.listRoles();
+		const fetchedRole = roles.find(role => role.roleName === roleName);
+		// TODO: activate when implemented at Mosquitto
+		// return this.sendCommand({
+		// 	command: 'getRole',
+		// 	roleName,
+		// }, API_DYNAMIC_SECURITY);
+		return fetchedRole;
 	}
 
 	async listRoles(verbose = true) {
