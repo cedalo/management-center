@@ -1,5 +1,11 @@
-import { connect } from "react-redux";
+import moment from "moment";
+import PropTypes from "prop-types";
+import React, { useContext } from "react";
+import { Link as RouterLink } from "react-router-dom";
+import { connect, useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
+import { useConfirm } from 'material-ui-confirm';
 import Chip from "@material-ui/core/Chip";
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
@@ -25,13 +31,9 @@ import ListItemText from "@material-ui/core/ListItemText";
 import RoleIcon from "@material-ui/icons/Policy";
 import SecurityIcon from '@material-ui/icons/Security';
 import UserManagementIcon from '@material-ui/icons/SupervisedUserCircle';
-import { Link as RouterLink } from "react-router-dom";
 
-import moment from "moment";
-import PropTypes from "prop-types";
-import React from "react";
-
-import roles from "../data/roles";
+import { WebSocketContext } from '../websockets/WebSocket';
+import { updateRole, updateRoles } from '../actions/actions';
 
 const getIconForFeature = (feature) => {
 	switch (feature) {
@@ -61,13 +63,15 @@ const useStyles = makeStyles((theme) => ({
   breadcrumbLink: theme.palette.breadcrumbLink,
 }));
 
-const RolesShape = PropTypes.shape({
-  groupname: PropTypes.string,
+const rolesShape = PropTypes.shape({
+  roleName: PropTypes.string,
 });
 
 const ROLE_TABLE_COLUMNS = [
   { id: "roleName", key: "Name" },
-  { id: "features", key: "Features" },
+  { id: "textName", key: "Text name" },
+  { id: "textDescription", key: "Description" },
+//   { id: "acls", key: "ACLs" },
 ];
 
 const FormattedGroupType = (props) => {
@@ -81,9 +85,31 @@ const FormattedGroupType = (props) => {
 
 const Roles = (props) => {
   const classes = useStyles();
+  const context = useContext(WebSocketContext);
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const confirm = useConfirm();
+  const { client } = context;
+
+
+  const onDeleteRole = async (roleName) => {
+	await confirm({
+		title: 'Confirm role deletion',
+		description: `Do you really want to delete the role "${roleName}"?`
+	});
+  await client.deleteRole(roleName);
+  const roles = await client.listRoles();
+  dispatch(updateRoles(roles));
+}
+
+const onSelectRole = async (roleName) => {
+	const role = await client.getRole(roleName);
+	dispatch(updateRole(role));
+	history.push(`/security/roles/detail/${roleName}`);
+  }
+
   const {
-    /* roles, */ onDeleteRole,
-    onSelectRole,
+	roles = [],
     onSort,
     sortBy,
     sortDirection,
@@ -132,22 +158,15 @@ const Roles = (props) => {
                 <TableCell>
                   {role.roleName}
                 </TableCell>
-                {/* <TableCell>{moment(group.lastModified).fromNow()}</TableCell> */}
-                <TableCell className={classes.badges}>
-                  {role.features.map((feature) => (
-                    <Chip
-					  size="small"
-                      icon={ getIconForFeature(feature.name) }
-                      label={feature.name}
-                      onDelete={(event) => {
-                        event.stopPropagation();
-                      }}
-                      color="secondary"
-                    />
-                  ))}
-                </TableCell>
+				<TableCell>
+                    {role.textName}
+                  </TableCell>
+                  <TableCell>
+                    {role.textDescription}
+                  </TableCell>
                 <TableCell align="right">
                       <IconButton
+					    disabled
 						size="small"
                         onClick={(event) => {
                           event.stopPropagation();
@@ -232,11 +251,9 @@ const Roles = (props) => {
 };
 
 Roles.propTypes = {
-  Roles: PropTypes.arrayOf(RolesShape).isRequired,
+  roles: PropTypes.arrayOf(rolesShape).isRequired,
   sortBy: PropTypes.string,
   sortDirection: PropTypes.string,
-  onDeleteRole: PropTypes.func.isRequired,
-  onSelectRole: PropTypes.func.isRequired,
   onSort: PropTypes.func.isRequired,
 };
 
@@ -246,7 +263,9 @@ Roles.defaultProps = {
 };
 
 const mapStateToProps = (state) => {
-  return {};
+	return {
+		roles: state.roles?.roles,
+  };
 };
 
 export default connect(mapStateToProps)(Roles);
