@@ -133,36 +133,6 @@ export default class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	async createRole(roleName, role, clients, groups) {
-		return this.sendCommand({
-			command: 'createRole',
-			roleName,
-			role,
-			clients,
-			groups
-		}, API_DYNAMIC_SECURITY);
-	}
-
-	async deleteRole(roleName) {
-		return this.sendCommand({
-			command: 'deleteRole',
-			roleName
-		}, API_DYNAMIC_SECURITY);
-	}
-
-	async getRole(roleName) {
-		return this.sendCommand({
-			command: 'getRole',
-			roleName
-		}, API_DYNAMIC_SECURITY);
-	}
-
-	async listRoles() {
-		return this.sendCommand({
-			command: 'listRoles'
-		}, API_DYNAMIC_SECURITY);
-	}
-
 	// TODO: check deprecated methods
 
 	// // TODO: should include client as parameter
