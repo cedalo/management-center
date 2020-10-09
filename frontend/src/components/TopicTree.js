@@ -3,6 +3,13 @@ import React from "react";
 import PropTypes from 'prop-types';
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import TableSortLabel from "@material-ui/core/TableSortLabel";
 import TreeView from "@material-ui/lab/TreeView";
 import Chip from '@material-ui/core/Chip';
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -209,13 +216,80 @@ const TopicTree = ({ topicTree }) => {
 	  <Typography className={classes.breadcrumbItem} color="textPrimary">Topic Tree</Typography>
 	</Breadcrumbs>
 	<br />
-      <TreeView
-        className={classes.root}
-        defaultCollapseIcon={<ExpandMoreIcon />}
-        defaultExpandIcon={<ChevronRightIcon />}
-      >
-        {renderTree(data)}
-      </TreeView>
+
+	<Grid container spacing={3}>
+	<Grid item xs={6}>
+          <Paper className={classes.paper}>
+		  <TreeView
+				className={classes.root}
+				defaultCollapseIcon={<ExpandMoreIcon />}
+				defaultExpandIcon={<ChevronRightIcon />}
+			>
+				{renderTree(data)}
+			</TreeView>
+		  </Paper>
+        </Grid>
+        <Grid item xs={6}>
+          <Paper className={classes.paper}>
+		  <TableContainer component={Paper} className={classes.table}>
+										<Table size="medium">
+											<TableBody>
+												{selectedNode?.name && <TableRow>
+													<TableCell><strong>Name</strong></TableCell>
+													<TableCell>{selectedNode?.name}</TableCell>
+												</TableRow>}
+												{selectedNode?._topic && <TableRow>
+													<TableCell><strong>Topic</strong></TableCell>
+													<TableCell>{selectedNode?._topic}</TableCell>
+												</TableRow>}
+												{selectedNode?._created && <TableRow>
+													<TableCell><strong>Created</strong></TableCell>
+													<TableCell>{moment(selectedNode?._created).format('LLLL')}</TableCell>
+												</TableRow>}
+												{selectedNode?._lastModified && <TableRow>
+													<TableCell><strong>Last modified</strong></TableCell>
+													<TableCell>{moment(selectedNode?._lastModified).format('LLLL')}</TableCell>
+												</TableRow>}
+												{typeof selectedNode?._qos === 'number' && <TableRow>
+													<TableCell><strong>QoS</strong></TableCell>
+													<TableCell>{selectedNode?._qos}</TableCell>
+												</TableRow>}
+												{(selectedNode?._retain === false || selectedNode?._retain === true) && <TableRow>
+													<TableCell><strong>Retain</strong></TableCell>
+													<TableCell>{selectedNode?._retain ? "yes" : "no"}</TableCell>
+												</TableRow>}
+												{selectedNode?._topicsCounter && <TableRow>
+													<TableCell><strong>Sub topics</strong></TableCell>
+													<TableCell>{selectedNode?._topicsCounter}</TableCell>
+												</TableRow>}
+												{selectedNode?._messagesCounter && <TableRow>
+													<TableCell><strong>Total messages</strong></TableCell>
+													<TableCell>{selectedNode?._messagesCounter}</TableCell>
+												</TableRow>}
+												{selectedNode?._message && selectedNode?._message.startsWith('{') && <TableRow>
+													<TableCell><strong>Payload</strong></TableCell>
+													<TableCell>
+													<TextareaAutosize
+														className={classes.payloadDetail}
+														rows={20}
+														value={selectedNode?._message}
+													/>
+													</TableCell>
+												</TableRow>}
+												{selectedNode?._message && !selectedNode?._message.startsWith('{') && <TableRow>
+													<TableCell><strong>Payload</strong></TableCell>
+													<TableCell>
+														{selectedNode?._message}
+													</TableCell>
+												</TableRow>}
+											</TableBody>
+										</Table>
+										</TableContainer>
+		  </Paper>
+        </Grid>
+	</Grid>
+     
+	  
     </div>
   );
 };
