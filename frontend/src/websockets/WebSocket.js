@@ -39,7 +39,10 @@ export default ({ children }) => {
 		// TODO: merge with code from BrokerSelect
 		client.connect({ socketEndpointURL: WS_BASE.url })
 			.then(() => client.connectToBroker('Mosquitto 2.0 Preview'))
-			.then(() => console.log('connected to broker'))
+			.then(() => {
+				console.log('connected to broker');
+				dispatch(updateBrokerConnected(true));
+			})
 			.then(() => client.getBrokerConnections())
 			.then(brokerConnections => {
 				dispatch(updateBrokerConnections(brokerConnections));
