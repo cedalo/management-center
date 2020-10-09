@@ -3,8 +3,18 @@ import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
+import Checkbox from '@material-ui/core/Checkbox';
+import Hidden from "@material-ui/core/Hidden";
+import Paper from "@material-ui/core/Paper";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Avatar from "@material-ui/core/Avatar";
 import GroupIcon from "@material-ui/icons/Group";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -22,7 +32,8 @@ import Divider from "@material-ui/core/Divider";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import PasswordIcon from "@material-ui/icons/VpnKey";
-import UserIcon from "@material-ui/icons/Person";
+import ACLIcon from '@material-ui/icons/Security';
+import RoleIcon from '@material-ui/icons/Policy';
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
@@ -30,6 +41,13 @@ import Grid from "@material-ui/core/Grid";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { Link as RouterLink } from "react-router-dom";
+
+const ACL_TABLE_COLUMNS = [
+	{ id: "type", key: "Type" },
+    { id: "topic", key: "Topic" },
+    { id: "priority", key: "Priority" },
+    { id: "allow", key: "Allow" },
+  ];
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -104,31 +122,46 @@ const RoleDetail = (props) => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  //   const { role } = props;
-  // TODO: get current role
-  const role = {
-    roleName: "",
-    features: [
-      {
-        name: "user-management",
-        allow: true,
-      },
-      {
-        name: "security-policy",
-        allow: true,
-      },
-    ],
-    topics: [
-      {
-        type: "publish-write",
-        topicFilter: "",
-        maxQos: 2,
-        allowRetain: true,
-        maxPayloadSize: 1000,
-        allow: false,
-      },
-    ],
-  };
+
+  const onDeleteACL = async (acl) => {
+// 	await confirm({
+// 		title: 'Confirm role deletion',
+// 		description: `Do you really want to delete the role "${roleName}"?`
+// 	});
+//   await client.deleteRole(roleName);
+//   const roles = await client.listRoles();
+//   dispatch(updateRoles(roles));
+}
+
+	const {
+		role = {},
+		onSort,
+		sortBy,
+		sortDirection,
+	  } = props;
+//   const role = {
+//     roleName: "",
+//     features: [
+//       {
+//         name: "user-management",
+//         allow: true,
+//       },
+//       {
+//         name: "security-policy",
+//         allow: true,
+//       },
+//     ],
+//     topics: [
+//       {
+//         type: "publish-write",
+//         topicFilter: "",
+//         maxQos: 2,
+//         allowRetain: true,
+//         maxPayloadSize: 1000,
+//         allow: false,
+//       },
+//     ],
+//   };
 
   return (
     <div className={classes.root}>
@@ -148,7 +181,7 @@ const RoleDetail = (props) => {
       >
         <Tab
           label="Details"
-          icon={<UserIcon />}
+          icon={<RoleIcon />}
           aria-label="details"
           {...a11yProps(0)}
         />
@@ -165,22 +198,16 @@ const RoleDetail = (props) => {
           {...a11yProps(2)}
         /> */}
         <Tab
-          label="Users"
-          icon={<UserIcon />}
-          aria-label="users"
+          label="ACLs"
+          icon={<ACLIcon />}
+          aria-label="acls"
           {...a11yProps(1)}
         />
-        <Tab
+        {/* <Tab
           label="Groups"
           icon={<GroupsIcon />}
           aria-label="groups"
           {...a11yProps(2)}
-        />
-        {/* <Tab
-          label="Role"
-          icon={<GroupsIcon />}
-          aria-label="role"
-          {...a11yProps(3)}
         /> */}
       </Tabs>
       <TabPanel value={value} index={0}>
@@ -190,6 +217,7 @@ const RoleDetail = (props) => {
               <Grid item xs={12}>
                 <TextField
                   required
+				  disabled
                   id="role-name"
                   label="Name"
                   value={role.roleName}
@@ -206,10 +234,36 @@ const RoleDetail = (props) => {
                   }}
                 />
               </Grid>
+              <Grid item xs={12}>
+                <TextField
+				  disabled
+                  id="textname"
+				  label="Text name"
+				  value={role.textName}
+				//   onChange={(event) => setTextName(event.target.value)}
+                  defaultValue=""
+                  variant="outlined"
+                  fullWidth
+                  className={classes.textField}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+				  disabled
+                  id="textdescription"
+				  label="Text description"
+				  value={role.textDescription}
+				//   onChange={(event) => setTextDescription(event.target.value)}
+                  defaultValue=""
+                  variant="outlined"
+                  fullWidth
+                  className={classes.textField}
+                />
+              </Grid>
             </Grid>
           </div>
         </form>
-        <List className={classes.root}>
+        {/* <List className={classes.root}>
           {role.features?.map((feature) => (
             <React.Fragment>
               <ListItem button>
@@ -226,42 +280,117 @@ const RoleDetail = (props) => {
               <Divider variant="inset" component="li" />
             </React.Fragment>
           ))}
-        </List>
-        <List className={classes.root}>
-          {role.topics?.map((topic) => (
-            <React.Fragment>
-              <ListItem button>
-                <ListItemText
-                  primary={topic.type}
-                  secondary={<span>{topic.allow}</span>}
-                />
-                <ListItemSecondaryAction>
-                  <IconButton edge="end" aria-label="delete">
-                    <DeleteIcon />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-              <Divider variant="inset" component="li" />
-            </React.Fragment>
-          ))}
-        </List>
+        </List> */}
       </TabPanel>
       <TabPanel value={value} index={1}>
         <form className={classes.form} noValidate autoComplete="off">
           <div className={classes.margin}>
             <Grid container spacing={1} alignItems="flex-end">
+		{ role && role.acls.length > 0 ? 
+	  <div>
+      <Hidden xsDown implementation="css">
+	  <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              {ACL_TABLE_COLUMNS.map((column) => (
+                <TableCell
+                  key={column.id}
+                  sortDirection={sortBy === column.id ? sortDirection : false}
+                >
+                  <TableSortLabel
+                    active={sortBy === column.id}
+                    direction={sortDirection}
+                    onClick={() => onSort(column.id)}
+                  >
+                    {column.key}
+                  </TableSortLabel>
+                </TableCell>
+              ))}
+              <TableCell />
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {role.acls.map((acl) => (
+              <TableRow
+				hover
+				// TODO: add key
+                // key={role.roleName}
+              >
+                <TableCell>
+                  {acl.aclType}
+                </TableCell>
+
+				<TableCell>
+					{acl.topic}
+				</TableCell>
+                
+				<TableCell>
+					{acl.priority}
+				</TableCell>
+
+				<TableCell>
+					<Checkbox
+						checked={acl.allow}
+						disabled
+					/>
+				</TableCell>
+
+                <TableCell align="right">
+                      <IconButton
+						size="small"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onDeleteACL(acl);
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      </Hidden>
+      <Hidden smUp implementation="css">
+		  <Paper>
+			<List className={classes.root}>
+			{role.acls.map((acl) => (
+				<React.Fragment>
+				<ListItem button>
+					<ListItemText
+					primary={acl.aclType}
+					//   secondary={<span>{topic.allow}</span>}
+					/>
+					<ListItemSecondaryAction>
+					<IconButton edge="end" aria-label="delete">
+						<DeleteIcon />
+					</IconButton>
+					</ListItemSecondaryAction>
+				</ListItem>
+				<Divider variant="inset" component="li" />
+				</React.Fragment>
+			))}
+			</List>
+		</Paper>
+      </Hidden>
+	  </div>
+		:
+		<div>No ACLs found</div>
+		}
             </Grid>
           </div>
         </form>
       </TabPanel>
-      <TabPanel value={value} index={2}>
+      {/* <TabPanel value={value} index={2}>
         <form className={classes.form} noValidate autoComplete="off">
           <div className={classes.margin}>
             <Grid container spacing={1} alignItems="flex-end">
             </Grid>
           </div>
         </form>
-      </TabPanel>
+      </TabPanel> */}
     </div>
   );
 };
@@ -271,7 +400,10 @@ RoleDetail.propTypes = {
 };
 
 const mapStateToProps = (state) => {
-  return {};
+	return {
+		role: state.roles?.role,
+		roles: state.roles?.roles,
+  };
 };
 
 export default connect(mapStateToProps)(RoleDetail);
