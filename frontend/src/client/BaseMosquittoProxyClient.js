@@ -385,7 +385,7 @@ export default class BaseMosquittoProxyClient {
 	async deleteRole(roleName) {
 		return this.sendCommand({
 			command: 'deleteRole',
-			roleName,
+			roleName
 		}, API_DYNAMIC_SECURITY);
 	}
 
@@ -398,6 +398,10 @@ export default class BaseMosquittoProxyClient {
 		// 	roleName,
 		// }, API_DYNAMIC_SECURITY);
 		return fetchedRole;
+		return this.sendCommand({
+			command: 'getRole',
+			roleName
+		}, API_DYNAMIC_SECURITY);
 	}
 
 	async listRoles(verbose = true) {
