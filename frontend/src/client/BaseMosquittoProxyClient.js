@@ -373,11 +373,12 @@ export default class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	async createRole(roleName, acls) {
+	async createRole(roleName, textName, textDescription) {
 		return this.sendCommand({
 			command: 'createRole',
 			roleName,
-			acls,
+			textName,
+			textDescription,
 		}, API_DYNAMIC_SECURITY);
 	}
 
