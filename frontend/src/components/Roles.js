@@ -91,6 +91,9 @@ const Roles = (props) => {
   const confirm = useConfirm();
   const { client } = context;
 
+  const onNewRole = () => {
+	history.push("/security/roles/new");
+  }
 
   const onDeleteRole = async (roleName) => {
 	await confirm({
@@ -243,7 +246,15 @@ const onSelectRole = async (roleName) => {
 		:
 		<div>No roles found</div>
 		}
-	  <Fab color="primary" aria-label="add" className={classes.fab}>
+      <Fab
+		  color="primary"
+		  aria-label="add"
+		  className={classes.fab}
+		  onClick={(event) => {
+			event.stopPropagation();
+			onNewRole();
+		  }}
+		>
         <AddIcon />
       </Fab>
     </div>
