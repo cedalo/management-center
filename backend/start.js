@@ -377,6 +377,10 @@ app.get("/api/version", (request, response) => {
 	});
 });
 
+app.get("/api/config", (request, response) => {
+	response.json(config);
+});
+
 app.get("/api/connections", (request, response) => {
 	response.json(config.connections);
 });
