@@ -42,6 +42,7 @@ import RestoreIcon from '@material-ui/icons/Restore';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import Hidden from "@material-ui/core/Hidden";
+import { ConfirmProvider } from 'material-ui-confirm';
 import Logo from "./components/Logo";
 import Groups from "./components/Groups";
 import BrokerSelect from "./components/BrokerSelect";
@@ -287,7 +288,9 @@ export default function App(props) {
   );
 
   return (
-	<ThemeProvider theme={appliedTheme}>
+
+		<ThemeProvider theme={appliedTheme} >
+	<ConfirmProvider>
 	  <CssBaseline />
     <Router>
       <Provider store={store} >
@@ -474,6 +477,7 @@ export default function App(props) {
         </WebSocketProvider>
       </Provider>
     </Router>
+	</ConfirmProvider>
   </ThemeProvider>
   );
 }
