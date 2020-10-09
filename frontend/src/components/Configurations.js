@@ -6,6 +6,7 @@ import Icon from "@material-ui/core/Icon";
 import Chip from "@material-ui/core/Chip";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
+import Popover from "@material-ui/core/Popover";
 import Button from "@material-ui/core/Button";
 import Hidden from "@material-ui/core/Hidden";
 import IconButton from "@material-ui/core/IconButton";
@@ -75,6 +76,18 @@ const Configurations = ({
   const theme = useTheme();
   const context = useContext(WebSocketContext);
   const [connection, setConnection] = React.useState("");
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [openedPopoverId, setOpenedPopoverId] = React.useState(null);
+
+  const handlePopoverOpen = (target, id) => {
+    setOpenedPopoverId(id);
+    setAnchorEl(target);
+  };
+
+  const handleClose = () => {
+    setOpenedPopoverId(null);
+    setAnchorEl(null);
+  };
 
   return (
     <div>
@@ -131,6 +144,52 @@ const Configurations = ({
                           <TableCell>{brokerConfiguration.name}</TableCell>
                           <TableCell>{brokerConfiguration.url}</TableCell>
                           <TableCell>
+                            <Popover
+                              id={brokerConfiguration.id}
+                              open={openedPopoverId === brokerConfiguration.id}
+                              anchorEl={anchorEl}
+                              onClose={handleClose}
+                              anchorOrigin={{
+                                vertical: "bottom",
+                                horizontal: "center",
+                              }}
+                              transformOrigin={{
+                                vertical: "top",
+                                horizontal: "center",
+                              }}
+                            >
+                              <Typography className={classes.typography}>
+								{
+									brokerConfiguration.status.connected
+									? <Paper>Broker successfully connected</Paper>
+									: <TableContainer component={Paper}>
+										<Table>
+											<TableBody>
+												<TableRow>
+													<TableCell><strong>Error number</strong></TableCell>
+													<TableCell>{brokerConfiguration.status?.error?.errno}</TableCell>
+												</TableRow>
+												<TableRow>
+													<TableCell><strong>Error code</strong></TableCell>
+													<TableCell>{brokerConfiguration.status?.error?.code}</TableCell>
+												</TableRow>
+												<TableRow>
+													<TableCell><strong>System call</strong></TableCell>
+													<TableCell>{brokerConfiguration.status?.error?.syscall}</TableCell>
+												</TableRow>
+												<TableRow>
+													<TableCell><strong>Address</strong></TableCell>
+													<TableCell>{brokerConfiguration.status?.error?.address}</TableCell>
+												</TableRow>
+												<TableRow>
+													<TableCell><strong>Port</strong></TableCell>
+													<TableCell>{brokerConfiguration.status?.error?.port}</TableCell>
+												</TableRow>
+											</TableBody>
+										</Table>
+										</TableContainer>
+									}
+                              </Typography>
                             </Popover>
                             <IconButton
                               size="small"
