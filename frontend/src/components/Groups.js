@@ -237,6 +237,7 @@ const Groups = (props) => {
                   </TableCell>
                   <TableCell align="right">
                         <IconButton
+						  disabled
 						  size="small"
                           onClick={(event) => {
                             event.stopPropagation();
