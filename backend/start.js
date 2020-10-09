@@ -136,8 +136,13 @@ connections.forEach(async (connection) => {
 		  mqttEndpointURL: connection.url,
 		  connectTimeout: process.env.MOSQUITTO_UI_TIMOUT_MOSQUITTO_CONNECT || 5000,
 		});
+		connectionConfiguration.status.connected = true;
 	} catch (error) {
 		console.error(error);
+		connectionConfiguration.status = {
+			connected: false,
+			error: error
+		};
 	}
 	console.log(`Connected to '${connection.name}' at ${connection.url}`);
 	// const brokerClient = mqtt.connect(connection.url, {
