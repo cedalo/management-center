@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
 const ClientNew = (props) => {
   const classes = useStyles();
 
-  const [username, setusername] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [clientID, setClientID] = useState('');
   const [textName, setTextName] = useState('');
@@ -125,7 +125,7 @@ const ClientNew = (props) => {
                   required
                   id="username"
 				  label="username"
-				  onChange={(event) => setusername(event.target.value)}
+				  onChange={(event) => setUsername(event.target.value)}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
