@@ -377,6 +377,10 @@ app.get("/api/version", (request, response) => {
 	});
 });
 
+app.get("/api/connections", (request, response) => {
+	response.json(config.connections);
+});
+
 app.get("/api/license", (request, response) => {
 	response.json(licenseContainer.license);
 });
