@@ -65,6 +65,7 @@ import RoleDetail from "./components/RoleDetail";
 import ClientDetail from "./components/ClientDetail";
 import GroupNew from "./components/GroupNew";
 import ClientNew from "./components/ClientNew";
+import RoleNew from "./components/RoleNew";
 import Clients from "./components/Clients";
 import store from "./store";
 import WebSocketProvider, { WebSocketContext } from "./websockets/WebSocket";
@@ -436,6 +437,9 @@ export default function App(props) {
                       <Groups />
                     </Route>
                     <Route path="/security/roles/detail/:roleId" component={RoleDetail} />
+					<Route path="/security/roles/new">
+                      <RoleNew />
+                    </Route>
                     <Route path="/security/roles">
                       <Roles />
                     </Route>
