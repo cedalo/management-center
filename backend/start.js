@@ -423,5 +423,5 @@ app.delete("/api/system/topictree", (request, response) => {
 });
 
 server.listen(MOSQUITTO_UI_PROXY_PORT, () => {
-    console.log(`Mosquitto proxy server started on port ${server.address().port} :)`);
+    console.log(`Mosquitto proxy server started on port ${server.address().port}`);
 });
