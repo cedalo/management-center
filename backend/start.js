@@ -185,10 +185,9 @@ connections.forEach(async (connection) => {
 			console.log(message.toString());
 		} else if (topic.startsWith("$CONTROL")) {
 			// Nothing to do
-		} else {
-		  updateTopicTree(topicTree, topic, message);
-		  sendTopicTreeUpdate(topicTree, brokerClient);
 		}
+		updateTopicTree(topicTree, topic, message, packet);
+		sendTopicTreeUpdate(topicTree, brokerClient);
 	  });
 	  brokerConnections.set(connection.name, {
 			broker: brokerClient,
