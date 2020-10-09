@@ -131,6 +131,13 @@ connections.forEach(async (connection) => {
 	globalTopicTree[connection.name] = topicTree;
 	const brokerClient = new NodeMosquittoClient({ /* logger: console */ });
 	console.log(`Connecting to "${connection.name}" on ${connection.url}`);
+	const connectionConfiguration = config.connections.find(connectionToSearch => connection.id === connectionToSearch.id);
+	if (connectionConfiguration) {
+		// TODO: handle disconnection
+		connectionConfiguration.status = {
+			connected: false
+		};
+	}
 	try {
 		await brokerClient.connect({
 		  mqttEndpointURL: connection.url,
