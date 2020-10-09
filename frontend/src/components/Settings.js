@@ -28,8 +28,12 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
 import GroupIcon from "@material-ui/icons/Group";
 import UserIcon from "@material-ui/icons/Person";
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 import { Link as RouterLink } from "react-router-dom";
 
+import useLocalStorage from "../helpers/useLocalStorage";
 import { WebSocketContext } from '../websockets/WebSocket';
 
 const useStyles = makeStyles((theme) => ({
@@ -41,7 +45,11 @@ const Settings = ({ settings, sendMessage }) => {
   const classes = useStyles();
   const theme = useTheme();
   const context = useContext(WebSocketContext);
-  const [connection, setConnection] = React.useState("");
+  const [darkMode, setDarkMode] = useLocalStorage('mosquitto-ui.darkMode');
+
+  const onChangeTheme = () => {
+	setDarkMode(darkMode === 'true' ? 'false' : 'true');
+}
 
   return (
 	  <div>
@@ -51,15 +59,27 @@ const Settings = ({ settings, sendMessage }) => {
 			<Typography className={classes.breadcrumbItem} color="textPrimary">Settings</Typography>
 		</Breadcrumbs>
 		<br />
-		Settings
+		<FormGroup row>
+		<FormControlLabel
+        control={
+          <Switch
+			checked={darkMode === 'true'}
+			disabled
+            onChange={onChangeTheme}
+            name="darkMode"
+            color="primary"
+          />
+        }
+        label="Dark Mode"
+      />
+	  </FormGroup>
 	  </div>
   );
 };
 
 const mapStateToProps = (state) => {
-  return {
-    settings: {},
+	return {
+	};
   };
-};
 
 export default connect(mapStateToProps)(Settings);
