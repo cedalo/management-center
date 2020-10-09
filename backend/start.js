@@ -388,6 +388,17 @@ app.get("/api/connections", (request, response) => {
 app.get("/api/license", (request, response) => {
 	response.json(licenseContainer.license);
 });
+
+app.get("/api/theme", (request, response) => {
+	response.json({
+		primary: {
+			main: "#00695f"
+		},
+		secondary: {
+			main: "#009688"
+		}
+	});
+});
   
 app.get("/api/system/status", (request, response) => {
 	response.json(globalSystem);
