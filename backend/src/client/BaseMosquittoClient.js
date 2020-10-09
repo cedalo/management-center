@@ -57,7 +57,8 @@ module.exports = class BaseMosquittoClient {
 	  this._isConnected = true;
     } catch (error) {
       this._isConnected = false;
-      this.logger.error(error);
+	  this.logger.error(error);
+	  throw error;
     }
   }
 
