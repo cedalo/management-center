@@ -159,9 +159,9 @@ connections.forEach(async (connection) => {
 		  }
 		});
 	//   });
-	  brokerClient.on("message", (topic, message) => {
+	  brokerClient.on("message", (topic, message, packet) => {
 		if (topic.startsWith("$SYS")) {
-		  updateSystemTopics(system, topic, message);
+		  updateSystemTopics(system, topic, message, packet);
 		  sendSystemStatusUpdate(system, brokerClient);
 		} else if (
 			// TODO: change topic
