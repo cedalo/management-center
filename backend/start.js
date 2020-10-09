@@ -54,15 +54,48 @@ const updateSystemTopics = (system, topic, message) => {
   };
   
   
-  const updateTopicTree = (topicTree, topic, message) => {
+  const updateTopicTree = (topicTree, topic, message, packet) => {
+	  if (!topicTree._messagesCounter) {
+		  topicTree._messagesCounter = 0;
+	  }
+	  topicTree._messagesCounter += 1;
 	const parts = topic.split("/");
 	let current = topicTree;
+	let newTopic = false;
 	parts.forEach((part, index) => {
 	  if (!current[part]) {
-		current[part] = {};
+		  // first time the topic was received
+		current[part] = {
+			_name: part,
+			_topic: topic,
+			_created: Date.now(),
+			_messagesCounter: 1,
+			_topicsCounter: 0,
+		};
+		newTopic = true;
+	  } else {
+		  // topic already existed in the topic tree
+		current[part]._lastModified = Date.now();
+		current[part]._messagesCounter += 1;
+	  }
+	  if (parts.length - 1 === index) {
+		  // last item is the node where the message should be saved
+		current[part]._message = message.toString();
+		current[part]._cmd = packet.cmd;
+		current[part]._dup = packet.dup;
+		current[part]._retain = packet.retain;
+		current[part]._qos = packet.qos;
 	  }
 	  current = current[part];
 	});
+
+	current = topicTree;
+	if (newTopic) {
+		parts.forEach((part, index) => {
+			current[part]._topicsCounter += 1;
+			current = current[part];
+		  });
+	}
 	return topicTree;
   };
 
