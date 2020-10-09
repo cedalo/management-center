@@ -187,6 +187,32 @@ const ClientDetail = (props) => {
                   }}
                 />
               </Grid>
+              <Grid item xs={12}>
+                <TextField
+				  disabled
+                  id="textname"
+				  label="Text name"
+				  value={client.textName}
+				//   onChange={(event) => setTextName(event.target.value)}
+                  defaultValue=""
+                  variant="outlined"
+                  fullWidth
+                  className={classes.textField}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+				  disabled
+                  id="textdescription"
+				  label="Text description"
+				  value={client.textDescription}
+				//   onChange={(event) => setTextDescription(event.target.value)}
+                  defaultValue=""
+                  variant="outlined"
+                  fullWidth
+                  className={classes.textField}
+                />
+              </Grid>
             </Grid>
           </div>
         </form>
