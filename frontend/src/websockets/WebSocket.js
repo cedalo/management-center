@@ -1,7 +1,7 @@
 import React, { createContext } from 'react'
 import WS_BASE from './config';
 import { useDispatch } from 'react-redux';
-import { updateGroups, updateUsers, updateBrokerConfigurations, updateBrokerConnections, updateLicense, updateSystemStatus, updateTopicTree } from '../actions/actions';
+import { updateGroups, updateRoles, updateClients, updateBrokerConfigurations, updateBrokerConnected, updateBrokerConnections, updateLicense, updateSystemStatus, updateTopicTree } from '../actions/actions';
 import WebMosquittoProxyClient from '../client/WebMosquittoProxyClient';
 
 const WebSocketContext = createContext(null)
@@ -18,7 +18,6 @@ export default ({ children }) => {
         const payload = {
             data: message
 		}
-		console.log('sendMessage()');
     }
 
     if (!client) {
@@ -26,20 +25,20 @@ export default ({ children }) => {
 		client = new WebMosquittoProxyClient({ logger: console });
 
 		client.on('system_status', (message) => {
-			console.log(message);
 			dispatch(updateSystemStatus(message.payload));
 		});
 		client.on('topic_tree', (message) => {
 			dispatch(updateTopicTree(message.payload));
 		});
 		client.on('license', (message) => {
-			console.log(message);
 			dispatch(updateLicense(message.payload));
 		})
 		// TODO: merge with code from BrokerSelect
 		client.connect({ socketEndpointURL: WS_BASE.url })
 			.then(() => client.connectToBroker('Mosquitto 2.0 Preview'))
-			.then(() => console.log('connected to broker'))
+			.then(() => {
+				dispatch(updateBrokerConnected(true));
+			})
 			.then(() => client.getBrokerConnections())
 			.then(brokerConnections => {
 				dispatch(updateBrokerConnections(brokerConnections));
@@ -48,13 +47,17 @@ export default ({ children }) => {
 			.then(brokerConfigurations => {
 				dispatch(updateBrokerConfigurations(brokerConfigurations));
 			})
-			.then(() => client.listUsers())
-			.then(users => {
-				dispatch(updateUsers(users));
+			.then(() => client.listClients())
+			.then(clients => {
+				dispatch(updateClients(clients));
 			})
 			.then(() => client.listGroups())
 			.then(groups => {
 				dispatch(updateGroups(groups));
+			})
+			.then(() => client.listRoles())
+			.then(roles => {
+				dispatch(updateRoles(roles));
 			});
 
         ws = {

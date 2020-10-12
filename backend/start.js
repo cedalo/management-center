@@ -1,5 +1,6 @@
 const http = require("http");
 const express = require("express");
+const cors = require('cors');
 const WebSocket = require("ws");
 const mqtt = require("mqtt");
 const NodeMosquittoClient = require("./src/client/NodeMosquittoClient");
@@ -27,6 +28,7 @@ checker.check((license) => {
 const globalSystem = {};
 const globalTopicTree = {};
 const app = express();
+app.use(cors());
 const server = http.createServer(app);
 
 // TODO: add error handling
@@ -54,15 +56,48 @@ const updateSystemTopics = (system, topic, message) => {
   };
   
   
-  const updateTopicTree = (topicTree, topic, message) => {
+  const updateTopicTree = (topicTree, topic, message, packet) => {
+	  if (!topicTree._messagesCounter) {
+		  topicTree._messagesCounter = 0;
+	  }
+	  topicTree._messagesCounter += 1;
 	const parts = topic.split("/");
 	let current = topicTree;
+	let newTopic = false;
 	parts.forEach((part, index) => {
 	  if (!current[part]) {
-		current[part] = {};
+		  // first time the topic was received
+		current[part] = {
+			_name: part,
+			_topic: topic,
+			_created: Date.now(),
+			_messagesCounter: 1,
+			_topicsCounter: 0,
+		};
+		newTopic = true;
+	  } else {
+		  // topic already existed in the topic tree
+		current[part]._lastModified = Date.now();
+		current[part]._messagesCounter += 1;
+	  }
+	  if (parts.length - 1 === index) {
+		  // last item is the node where the message should be saved
+		current[part]._message = message.toString();
+		current[part]._cmd = packet.cmd;
+		current[part]._dup = packet.dup;
+		current[part]._retain = packet.retain;
+		current[part]._qos = packet.qos;
 	  }
 	  current = current[part];
 	});
+
+	current = topicTree;
+	if (newTopic) {
+		parts.forEach((part, index) => {
+			current[part]._topicsCounter += 1;
+			current = current[part];
+		  });
+	}
 	return topicTree;
   };
 
@@ -98,12 +133,25 @@ connections.forEach(async (connection) => {
 	globalTopicTree[connection.name] = topicTree;
 	const brokerClient = new NodeMosquittoClient({ /* logger: console */ });
 	console.log(`Connecting to "${connection.name}" on ${connection.url}`);
+	const connectionConfiguration = config.connections.find(connectionToSearch => connection.id === connectionToSearch.id);
+	if (connectionConfiguration) {
+		// TODO: handle disconnection
+		connectionConfiguration.status = {
+			connected: false
+		};
+	}
 	try {
 		await brokerClient.connect({
 		  mqttEndpointURL: connection.url,
+		  connectTimeout: process.env.MOSQUITTO_UI_TIMOUT_MOSQUITTO_CONNECT || 5000,
 		});
+		connectionConfiguration.status.connected = true;
 	} catch (error) {
 		console.error(error);
+		connectionConfiguration.status = {
+			connected: false,
+			error: error
+		};
 	}
 	console.log(`Connected to '${connection.name}' at ${connection.url}`);
 	// const brokerClient = mqtt.connect(connection.url, {
@@ -125,9 +173,9 @@ connections.forEach(async (connection) => {
 		  }
 		});
 	//   });
-	  brokerClient.on("message", (topic, message) => {
+	  brokerClient.on("message", (topic, message, packet) => {
 		if (topic.startsWith("$SYS")) {
-		  updateSystemTopics(system, topic, message);
+		  updateSystemTopics(system, topic, message, packet);
 		  sendSystemStatusUpdate(system, brokerClient);
 		} else if (
 			// TODO: change topic
@@ -139,10 +187,9 @@ connections.forEach(async (connection) => {
 			console.log(message.toString());
 		} else if (topic.startsWith("$CONTROL")) {
 			// Nothing to do
-		} else {
-		  updateTopicTree(topicTree, topic, message);
-		  sendTopicTreeUpdate(topicTree, brokerClient);
 		}
+		updateTopicTree(topicTree, topic, message, packet);
+		sendTopicTreeUpdate(topicTree, brokerClient);
 	  });
 	  brokerConnections.set(connection.name, {
 			broker: brokerClient,
@@ -332,8 +379,27 @@ app.get("/api/version", (request, response) => {
 	});
 });
 
+app.get("/api/config", (request, response) => {
+	response.json(config);
+});
+
+app.get("/api/connections", (request, response) => {
+	response.json(config.connections);
+});
+
 app.get("/api/license", (request, response) => {
 	response.json(licenseContainer.license);
+});
+
+app.get("/api/theme", (request, response) => {
+	response.json({
+		primary: {
+			main: "#00695f"
+		},
+		secondary: {
+			main: "#009688"
+		}
+	});
 });
   
 app.get("/api/system/status", (request, response) => {
@@ -359,5 +425,5 @@ app.delete("/api/system/topictree", (request, response) => {
 });
 
 server.listen(MOSQUITTO_UI_PROXY_PORT, () => {
-    console.log(`Mosquitto proxy server started on port ${server.address().port} :)`);
+    console.log(`Mosquitto proxy server started on port ${server.address().port}`);
 });

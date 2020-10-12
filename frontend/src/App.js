@@ -42,7 +42,9 @@ import RestoreIcon from '@material-ui/icons/Restore';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import Hidden from "@material-ui/core/Hidden";
+import { ConfirmProvider } from 'material-ui-confirm';
 import Logo from "./components/Logo";
+import DisconnectedDialog from "./components/DisconnectedDialog";
 import Groups from "./components/Groups";
 import BrokerSelect from "./components/BrokerSelect";
 import InfoButton from "./components/InfoButton";
@@ -61,13 +63,16 @@ import Status from "./components/Status";
 import TopicTree from "./components/TopicTree";
 import GroupDetail from "./components/GroupDetail";
 import RoleDetail from "./components/RoleDetail";
-import UserDetail from "./components/UserDetail";
+import ClientDetail from "./components/ClientDetail";
 import GroupNew from "./components/GroupNew";
-import UserNew from "./components/UserNew";
-import Users from "./components/Users";
+import ClientNew from "./components/ClientNew";
+import RoleNew from "./components/RoleNew";
+import Clients from "./components/Clients";
 import store from "./store";
 import WebSocketProvider, { WebSocketContext } from "./websockets/WebSocket";
 import NewsDrawer from "./components/NewsDrawer";
+import useFetch from "./helpers/useFetch";
+import useLocalStorage from "./helpers/useLocalStorage";
 
 import {
   BrowserRouter as Router,
@@ -189,17 +194,38 @@ function ListItemLink(props) {
   );
 }
 
+// const useStateWithLocalStorage = localStorageKey => {
+// 	const [value, setValue] = React.useState(
+// 	  localStorage.getItem(localStorageKey) === 'true' || false
+// 	);
+   
+// 	React.useEffect(() => {
+// 	  localStorage.setItem(localStorageKey, value);
+// 	}, [value]);
+   
+// 	return [value, setValue];
+//   };
+
 export default function App(props) {
 
-	
 	const { window } = props;
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('recents');
-  const [currentTheme, setCurrentTheme] = useState(true);
+  const [darkMode, setDarkMode] = useLocalStorage('mosquitto-ui.darkMode');
+  const [response, loading, hasError] = useFetch("http://localhost:8088/api/theme");
 
-  const appliedTheme = currentTheme ? customTheme : darkTheme;
+  let appliedTheme = darkMode === 'true' ? darkTheme : customTheme;
+
+  const onChangeTheme = () => {
+	  setDarkMode(darkMode === 'true' ? 'false' : 'true');
+  }
+
+  if (response) {
+	appliedTheme.palette.primary.main = response?.primary?.main;
+	appliedTheme.palette.secondary.main = response?.secondary?.main;
+  }
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -213,7 +239,7 @@ export default function App(props) {
     setOpen(false);
   };
 
-  const container = window !== undefined ? () => window().document.body : undefined;
+//   const container = window !== undefined ? () => window().document.body : undefined;
 
   const drawer = (
     <div>
@@ -225,8 +251,8 @@ export default function App(props) {
       <List>
         <ListItemLink
 		  classes={classes} 
-          to="/security/users"
-          primary="Users"
+          to="/security/clients"
+          primary="Clients"
           icon={<PersonIcon />}
         />
         <ListItemLink
@@ -282,7 +308,9 @@ export default function App(props) {
   );
 
   return (
-	<ThemeProvider theme={appliedTheme}>
+
+		<ThemeProvider theme={appliedTheme} >
+	<ConfirmProvider>
 	  <CssBaseline />
     <Router>
       <Provider store={store} >
@@ -342,19 +370,20 @@ export default function App(props) {
 						aria-label="Theme Mode"
 						aria-controls="theme-mode"
 						aria-haspopup="true"
-						onClick={() => setCurrentTheme(!currentTheme)}
+						onClick={() => onChangeTheme()}
 						color="inherit"
 						className={classes.toolbarButton}
             			>
 							<ThemeModeIcon />
 						</IconButton>
 					  <InfoButton />
+
 					  {/* <IconButton
 						edge="end"
 						aria-label="Notifications"
 						aria-controls="notifications"
 						aria-haspopup="true"
-						// onClick={() => setCurrentTheme(!currentTheme)}
+						// onClick={() => setDarkMode(!darkMode)}
 						color="inherit"
 						className={classes.toolbarButton}
             			>
@@ -410,15 +439,16 @@ export default function App(props) {
                     </Drawer>
                   </Hidden> */}
                 </nav>
+		<DisconnectedDialog />
 			
                 <Container className={classes.container}>
                   <Switch>
-                    <Route path="/security/users/detail/:userId" component={UserDetail} />
-					<Route path="/security/users/new">
-                      <UserNew />
+                    <Route path="/security/clients/detail/:clientId" component={ClientDetail} />
+					<Route path="/security/clients/new">
+                      <ClientNew />
                     </Route>
-                    <Route path="/security/users">
-                      <Users />
+                    <Route path="/security/clients">
+                      <Clients />
                     </Route>
                     <Route path="/security/groups/detail/:groupId" component={GroupDetail} />
 					<Route path="/security/groups/new">
@@ -428,6 +458,9 @@ export default function App(props) {
                       <Groups />
                     </Route>
                     <Route path="/security/roles/detail/:roleId" component={RoleDetail} />
+					<Route path="/security/roles/new">
+                      <RoleNew />
+                    </Route>
                     <Route path="/security/roles">
                       <Roles />
                     </Route>
@@ -469,6 +502,7 @@ export default function App(props) {
         </WebSocketProvider>
       </Provider>
     </Router>
+	</ConfirmProvider>
   </ThemeProvider>
   );
 }
