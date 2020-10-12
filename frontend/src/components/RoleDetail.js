@@ -310,7 +310,7 @@ const RoleDetail = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {role.acls.map((acl) => (
+            {role && role.acls && role.acls.map((acl) => (
               <TableRow
 				hover
 				// TODO: add key
