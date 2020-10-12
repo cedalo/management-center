@@ -44,6 +44,7 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import Hidden from "@material-ui/core/Hidden";
 import { ConfirmProvider } from 'material-ui-confirm';
 import Logo from "./components/Logo";
+import DisconnectedDialog from "./components/DisconnectedDialog";
 import Groups from "./components/Groups";
 import BrokerSelect from "./components/BrokerSelect";
 import InfoButton from "./components/InfoButton";
@@ -438,6 +439,7 @@ export default function App(props) {
                     </Drawer>
                   </Hidden> */}
                 </nav>
+		<DisconnectedDialog />
 			
                 <Container className={classes.container}>
                   <Switch>
