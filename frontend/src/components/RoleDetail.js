@@ -422,7 +422,7 @@ const RoleDetail = (props) => {
       <Hidden smUp implementation="css">
 		  <Paper>
 			<List className={classes.root}>
-			{role.acls.map((acl) => (
+			{role && role.acls && role.acls.map((acl) => (
 				<React.Fragment>
 				<ListItem button>
 					<ListItemText
@@ -474,10 +474,6 @@ const RoleDetail = (props) => {
 			</List>
 		</Paper>
       </Hidden>
-	  </div>
-		:
-		<div>No ACLs found</div>
-		}
             </Grid>
           </div>
         </form>
