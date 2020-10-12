@@ -18,7 +18,6 @@ export default ({ children }) => {
         const payload = {
             data: message
 		}
-		console.log('sendMessage()');
     }
 
     if (!client) {
@@ -26,21 +25,18 @@ export default ({ children }) => {
 		client = new WebMosquittoProxyClient({ logger: console });
 
 		client.on('system_status', (message) => {
-			console.log(message);
 			dispatch(updateSystemStatus(message.payload));
 		});
 		client.on('topic_tree', (message) => {
 			dispatch(updateTopicTree(message.payload));
 		});
 		client.on('license', (message) => {
-			console.log(message);
 			dispatch(updateLicense(message.payload));
 		})
 		// TODO: merge with code from BrokerSelect
 		client.connect({ socketEndpointURL: WS_BASE.url })
 			.then(() => client.connectToBroker('Mosquitto 2.0 Preview'))
 			.then(() => {
-				console.log('connected to broker');
 				dispatch(updateBrokerConnected(true));
 			})
 			.then(() => client.getBrokerConnections())
