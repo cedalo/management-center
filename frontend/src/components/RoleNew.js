@@ -15,7 +15,7 @@ import Divider from "@material-ui/core/Divider";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import PasswordIcon from "@material-ui/icons/VpnKey";
-import UserIcon from "@material-ui/icons/Person";
+import ClientIcon from "@material-ui/icons/Person";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
@@ -25,7 +25,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { Link as RouterLink } from "react-router-dom";
 import { WebSocketContext } from '../websockets/WebSocket';
-import { updateUser, updateUsers } from '../actions/actions';
+import { updateRoles } from '../actions/actions';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -58,12 +58,10 @@ const useStyles = makeStyles((theme) => ({
   breadcrumbLink: theme.palette.breadcrumbLink,
 }));
 
-const UserNew = (props) => {
+const ClientNew = (props) => {
   const classes = useStyles();
 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [clientID, setClientID] = useState('');
+  const [roleName, setRoleName] = useState('');
   const [textName, setTextName] = useState('');
   const [textDescription, setTextDescription] = useState('');
 
@@ -73,17 +71,17 @@ const UserNew = (props) => {
   const confirm = useConfirm();
   const { client } = context;
 
-  const onSaveUser = async () => {
-	await client.createUser(username, password, clientID, "", textName, textDescription);
-	const users = await client.listUsers();
-	dispatch(updateUsers(users));
-	history.push(`/security/users`);
+  const onSaveRole = async () => {
+	await client.createRole(roleName, textName, textDescription);
+	const roles = await client.listRoles();
+	dispatch(updateRoles(roles));
+	history.push(`/security/roles`);
   }
 
   const onCancel = async () => {
 	await confirm({
-		title: 'Cancel user creation',
-		description: `Do you really want to cancel creating this user?`
+		title: 'Cancel role creation',
+		description: `Do you really want to cancel creating this role?`
 	});
 	history.goBack();
   }
@@ -93,7 +91,7 @@ const UserNew = (props) => {
       <Breadcrumbs aria-label="breadcrumb">
         <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
-        <Typography className={classes.breadcrumbItem} color="textPrimary">Users</Typography>
+        <Typography className={classes.breadcrumbItem} color="textPrimary">Clients</Typography>
       </Breadcrumbs>
       <br />
     <div className={classes.root}>
@@ -104,28 +102,9 @@ const UserNew = (props) => {
               <Grid item xs={12}>
                 <TextField
                   required
-                  id="client-id"
-                  label="Client ID"
-				  onChange={(event) => setClientID(event.target.value)}
-                  defaultValue=""
-                  variant="outlined"
-				  fullWidth
-                  className={classes.textField}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <ClientIDIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  id="username"
-				  label="Username"
-				  onChange={(event) => setUsername(event.target.value)}
+                  id="roleName"
+				  label="roleName"
+				  onChange={(event) => setRoleName(event.target.value)}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -134,26 +113,6 @@ const UserNew = (props) => {
                     startAdornment: (
                       <InputAdornment position="start">
                         <AccountCircle />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  id="password"
-                  label="Password"
-				  onChange={(event) => setPassword(event.target.value)}
-                  defaultValue=""
-                  variant="outlined"
-				  fullWidth
-                  type="password"
-                  className={classes.textField}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-					  	<PasswordIcon />
                       </InputAdornment>
                     ),
                   }}
@@ -190,7 +149,7 @@ const UserNew = (props) => {
 					startIcon={<SaveIcon />}
 					onClick={(event) => {
 					  event.stopPropagation();
-					  onSaveUser();
+					  onSaveRole();
 					}}
 				>
 					Save
@@ -220,4 +179,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(UserNew);
+export default connect(mapStateToProps)(ClientNew);

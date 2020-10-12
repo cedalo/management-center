@@ -107,15 +107,7 @@ const GroupDetail = (props) => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  //   const { group } = props;
-  // TODO: get current group
-  const group = {
-	"groupname": "admins",
-	"roleName": "",
-	"users": [
-		"maxmustermann", "maxmustermann2"
-	]
-};
+    const { group = {} } = props;
 
   return (
     <div className={classes.root}>
@@ -154,8 +146,9 @@ const GroupDetail = (props) => {
               <Grid item xs={12}>
                 <TextField
                   required
+				  disabled
                   id="groupname"
-				  value={group.groupname}
+				  value={group.groupName}
                   label="Groupname"
                   defaultValue=""
                   variant="outlined"
@@ -168,6 +161,32 @@ const GroupDetail = (props) => {
                       </InputAdornment>
                     ),
                   }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+				  disabled
+                  id="textname"
+				  label="Text name"
+				  value={group.textName}
+				//   onChange={(event) => setTextName(event.target.value)}
+                  defaultValue=""
+                  variant="outlined"
+                  fullWidth
+                  className={classes.textField}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+				  disabled
+                  id="textdescription"
+				  label="Text description"
+				  value={group.textDescription}
+				//   onChange={(event) => setTextDescription(event.target.value)}
+                  defaultValue=""
+                  variant="outlined"
+                  fullWidth
+                  className={classes.textField}
                 />
               </Grid>
             </Grid>
@@ -203,7 +222,10 @@ GroupDetail.propTypes = {
 };
 
 const mapStateToProps = (state) => {
-  return {};
+  return {
+		// TODO: check object hierarchy
+		group: state.groups?.group,
+	};
 };
 
 export default connect(mapStateToProps)(GroupDetail);

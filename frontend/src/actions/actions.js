@@ -1,15 +1,15 @@
 import * as ActionTypes from '../constants/ActionTypes';
 
-export function updateUser(update) {
+export function updateClient(update) {
     return {
-        type: ActionTypes.UPDATE_USER,
+        type: ActionTypes.UPDATE_CLIENT,
         update
     }
 }
 
-export function updateUsers(update) {
+export function updateClients(update) {
     return {
-        type: ActionTypes.UPDATE_USERS,
+        type: ActionTypes.UPDATE_CLIENTS,
         update
     }
 }
@@ -28,10 +28,31 @@ export function updateGroups(update) {
     }
 }
 
+export function updateRole(update) {
+    return {
+        type: ActionTypes.UPDATE_ROLE,
+        update
+    }
+}
+
+export function updateRoles(update) {
+    return {
+        type: ActionTypes.UPDATE_ROLES,
+        update
+    }
+}
+
 export function updateBrokerConfigurations(update) {
     return {
         type: ActionTypes.UPDATE_BROKER_CONFIGURATIONS,
         update
+    }
+}
+
+export function updateBrokerConnected(connected) {
+    return {
+        type: ActionTypes.UPDATE_BROKER_CONNECTED,
+        connected
     }
 }
 
@@ -64,7 +85,7 @@ export function updateTopicTree(update) {
     }
 }
 
-export function deletedUser(update) {
+export function deletedClient(update) {
     return {
         type: ActionTypes.DELETED_USER,
         update

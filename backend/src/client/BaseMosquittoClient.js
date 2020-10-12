@@ -41,7 +41,7 @@ module.exports = class BaseMosquittoClient {
     this._requests = new Map();
     // TODO: make timeout configurable
     // request timeout in ms:
-    this._timeout = 15000;
+    this._timeout = 3000;
   }
 
   // eslint-disable-next-line consistent-return
@@ -57,7 +57,8 @@ module.exports = class BaseMosquittoClient {
 	  this._isConnected = true;
     } catch (error) {
       this._isConnected = false;
-      this.logger.error(error);
+	  this.logger.error(error);
+	  throw error;
     }
   }
 
@@ -159,7 +160,7 @@ module.exports = class BaseMosquittoClient {
   }
 
   _isResponse(topic, message) {
-	  if (topic === "$CONTROL/user-management/v1/response") {
+	  if (topic === "$CONTROL/dynamic-security/v1/response") {
 		  return true;
 	  }
 	  try {
@@ -177,17 +178,19 @@ module.exports = class BaseMosquittoClient {
 		const parsedMessage = JSON.parse(message);
 		const isResponse = this._isResponse(topic, message);
 		if (isResponse) {
-		  const request = deletePendingRequest(
-			parsedMessage.correlationData,
-			this._requests
-		  );
-		  if (request) {
-			this.logger.debug("Got response from Mosquitto", parsedMessage);
-			if (parsedMessage.error) {
-				request.reject(parsedMessage);
-			}
-			request.resolve(parsedMessage);
-		  }
+			parsedMessage.responses.forEach((response) => {
+				const request = deletePendingRequest(
+					response.correlationData,
+					this._requests
+				  );
+				  if (request) {
+					this.logger.debug("Got response from Mosquitto", response);
+					if (response.error) {
+						request.reject(response);
+					}
+					request.resolve(response);
+				  }
+			})
 		} else if (parsedMessage.type === "event") {
 		  this._handleEvent(parsedMessage.event);
 		}
