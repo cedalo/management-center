@@ -3,9 +3,16 @@ import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
+import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 import Hidden from "@material-ui/core/Hidden";
 import Paper from "@material-ui/core/Paper";
+import SaveIcon from '@material-ui/icons/Save';
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Table from "@material-ui/core/Table";
@@ -349,6 +356,83 @@ const RoleDetail = (props) => {
                 </TableCell>
               </TableRow>
             ))}
+			<TableRow
+				// TODO: add key
+                // key={role.roleName}
+              >
+                <TableCell>
+					<FormControl>
+						<InputLabel id="new-acl-type-label">ACL Type</InputLabel>
+						<Select
+							labelId="new-acl-type-label"
+							id="new-acl-type"
+							value={newACL.aclType}
+							defaultValue="publishSend"
+							onChange={(event) => setNewACL({
+								...newACL,
+								aclType: event.target.value
+							})}
+						>
+							<MenuItem value={"publishSend"}>publishSend</MenuItem>
+							<MenuItem value={"subscribeLiteral"}>subscribeLiteral</MenuItem>
+							<MenuItem value={"subscribePattern"}>subscribePattern</MenuItem>
+							<MenuItem value={"unsubscribeLiteral"}>unsubscribeLiteral</MenuItem>
+							<MenuItem value={"unsubscribePattern"}>unsubscribePattern</MenuItem>
+						</Select>
+					</FormControl>
+                </TableCell>
+
+				<TableCell>
+					<TextField
+						required
+						id="new-acl-topic"
+						label="Topic"
+						value={newACL.topic}
+						onChange={(event) => setNewACL({
+							...newACL,
+							topic: event.target.value
+						})}
+					/>
+				</TableCell>
+                
+				<TableCell>
+					<TextField
+						required
+						id="new-acl-priority"
+						label="Priority"
+						value={newACL.priority}
+						type="number"
+						onChange={(event) => setNewACL({
+							...newACL,
+							priority: parseInt(event.target.value)
+						})}
+					/>
+				</TableCell>
+
+				<TableCell>
+					<Checkbox
+						checked={newACL.allow}
+						onChange={(event) => setNewACL({
+							...newACL,
+							allow: event.target.checked
+						})}
+					/>
+				</TableCell>
+
+                <TableCell align="right">
+					<Button
+						variant="contained"
+						color="primary"
+						startIcon={<SaveIcon />}
+						onClick={(event) => {
+							event.stopPropagation();
+							onAddACL(newACL);
+						}}
+					>
+						Add
+					</Button>
+                </TableCell>
+              </TableRow>
           </TableBody>
         </Table>
       </TableContainer>
