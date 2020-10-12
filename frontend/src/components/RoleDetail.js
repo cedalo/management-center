@@ -285,8 +285,6 @@ const RoleDetail = (props) => {
         <form className={classes.form} noValidate autoComplete="off">
           <div className={classes.margin}>
             <Grid container spacing={1} alignItems="flex-end">
-		{ role && role.acls.length > 0 ? 
-	  <div>
       <Hidden xsDown implementation="css">
 	  <TableContainer component={Paper}>
         <Table>
