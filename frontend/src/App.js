@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 import { Provider, useSelector, useDispatch } from "react-redux";
+import { ShepherdTour, ShepherdTourContext } from 'react-shepherd'
 import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -73,6 +74,9 @@ import WebSocketProvider, { WebSocketContext } from "./websockets/WebSocket";
 import NewsDrawer from "./components/NewsDrawer";
 import useFetch from "./helpers/useFetch";
 import useLocalStorage from "./helpers/useLocalStorage";
+import steps from "./tutorial/steps";
+import TourButton from "./tutorial/TourButton";
+import "./tutorial/tutorial.css";
 
 import {
   BrowserRouter as Router,
@@ -81,6 +85,15 @@ import {
   Link as RouterLink,
   Redirect,
 } from "react-router-dom";
+
+const tourOptions = {
+	defaultStepOptions: {
+	  cancelIcon: {
+		enabled: true
+	  }
+	},
+	useModalOverlay: true
+  };
 
 const drawerWidth = 240;
 
@@ -174,7 +187,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function ListItemLink(props) {
-  const { icon, primary, to, classes } = props;
+  const { id, icon, primary, to, classes } = props;
 
   const renderLink = React.useMemo(
     () =>
@@ -186,25 +199,13 @@ function ListItemLink(props) {
 
   return (
     <li>
-      <ListItem button component={renderLink} >
+      <ListItem id={id} button component={renderLink} >
         {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
         <ListItemText primary={primary} classes={{primary:classes.menuItem}} />
       </ListItem>
     </li>
   );
 }
-
-// const useStateWithLocalStorage = localStorageKey => {
-// 	const [value, setValue] = React.useState(
-// 	  localStorage.getItem(localStorageKey) === 'true' || false
-// 	);
-   
-// 	React.useEffect(() => {
-// 	  localStorage.setItem(localStorageKey, value);
-// 	}, [value]);
-   
-// 	return [value, setValue];
-//   };
 
 export default function App(props) {
 
@@ -245,23 +246,32 @@ export default function App(props) {
     <div>
       <Divider />
       <List>
-        <ListItemLink classes={classes} to="/home" primary="Home" icon={<HomeIcon />} />
+        <ListItemLink
+		  id="menu-item-home"
+		  classes={classes}
+		  to="/home"
+		  primary="Home"
+		  icon={<HomeIcon />
+		} />
         <Divider />
       </List>
       <List>
         <ListItemLink
+		  id="menu-item-clients" 
 		  classes={classes} 
           to="/security/clients"
           primary="Clients"
           icon={<PersonIcon />}
         />
         <ListItemLink
+		  id="menu-item-groups" 
 		  classes={classes} 
           to="/security/groups"
           primary="Groups"
           icon={<GroupIcon />}
         />
         <ListItemLink
+		  id="menu-item-roles" 
 		  classes={classes} 
           to="/security/roles"
           primary="🚧 Roles"
@@ -312,6 +322,7 @@ export default function App(props) {
 		<ThemeProvider theme={appliedTheme} >
 	<ConfirmProvider>
 	  <CssBaseline />
+	  <ShepherdTour steps={steps} tourOptions={tourOptions}>
     <Router>
       <Provider store={store} >
         <WebSocketProvider>
@@ -377,6 +388,7 @@ export default function App(props) {
 							<ThemeModeIcon />
 						</IconButton>
 					  <InfoButton />
+					  <TourButton />
 
 					  {/* <IconButton
 						edge="end"
@@ -420,24 +432,6 @@ export default function App(props) {
                       </div>
                       {drawer}
                     </Drawer>
-                  {/* </Hidden> */}
-                  {/* <Hidden smUp implementation="css">
-                    <Drawer
-                      container={container}
-                      variant="temporary"
-                      anchor={theme.direction === "rtl" ? "right" : "left"}
-                      open={mobileOpen}
-                    //   onClose={handleDrawerToggle}
-                      classes={{
-                        paper: classes.drawerPaper,
-                      }}
-                      ModalProps={{
-                        keepMounted: true,
-                      }}
-                    >
-                      {drawer}
-                    </Drawer>
-                  </Hidden> */}
                 </nav>
 		<DisconnectedDialog />
 			
@@ -502,6 +496,7 @@ export default function App(props) {
         </WebSocketProvider>
       </Provider>
     </Router>
+	</ShepherdTour>
 	</ConfirmProvider>
   </ThemeProvider>
   );
