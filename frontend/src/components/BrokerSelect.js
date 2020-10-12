@@ -58,9 +58,7 @@ const BrokerSelect = ({ brokerConnections, connected, sendMessage }) => {
   const [connection, setConnection] = React.useState("");
 
   const handleConnectionChange = async (event) => {
-	  console.log("handleConnectionChange");
 	  const connectionID = event.target.value;
-	  console.log(event.target.value);
 	  const { client } = context;
 	  await client.disconnectFromBroker(connection);
 	  dispatch(updateBrokerConnected(false));
