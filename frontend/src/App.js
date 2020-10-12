@@ -193,9 +193,20 @@ function ListItemLink(props) {
   );
 }
 
+// const useStateWithLocalStorage = localStorageKey => {
+// 	const [value, setValue] = React.useState(
+// 	  localStorage.getItem(localStorageKey) === 'true' || false
+// 	);
+   
+// 	React.useEffect(() => {
+// 	  localStorage.setItem(localStorageKey, value);
+// 	}, [value]);
+   
+// 	return [value, setValue];
+//   };
+
 export default function App(props) {
 
-	
 	const { window } = props;
   const classes = useStyles();
   const theme = useTheme();
@@ -227,7 +238,7 @@ export default function App(props) {
     setOpen(false);
   };
 
-  const container = window !== undefined ? () => window().document.body : undefined;
+//   const container = window !== undefined ? () => window().document.body : undefined;
 
   const drawer = (
     <div>
@@ -365,6 +376,7 @@ export default function App(props) {
 							<ThemeModeIcon />
 						</IconButton>
 					  <InfoButton />
+
 					  {/* <IconButton
 						edge="end"
 						aria-label="Notifications"
