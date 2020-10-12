@@ -412,15 +412,7 @@ export default class BaseMosquittoProxyClient {
 		return data.roles;
 	}
 
-	/**
-	 * 
-	 * @param {*} roleName 
-	 * @param {*} aclType   Can be one of publishSend, publishReceive, subscribeLiteral, subscribePattern, unsubscribeLiteral, unsubscribePattern.
-	 * @param {*} priority 
-	 * @param {*} topic 
-	 * @param {*} allow 
-	 */
-	async addACLToRole(roleName, aclType, priority, topic, allow) {
+	async addACLToRole(roleName, { aclType, priority, topic, allow }) {
 		return this.sendCommand({
 			command: 'addACLToRole',
 			roleName,
