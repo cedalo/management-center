@@ -427,7 +427,40 @@ const RoleDetail = (props) => {
 				<ListItem button>
 					<ListItemText
 					primary={acl.aclType}
-					//   secondary={<span>{topic.allow}</span>}
+
+					secondary={
+						<React.Fragment>
+						  <Typography
+							component="span"
+							variant="body2"
+							className={classes.inline}
+							color="textPrimary"
+						  >
+							Topic: {acl.topic}
+						  </Typography>
+						  <br />
+						  <Typography
+							component="span"
+							variant="body2"
+							className={classes.inline}
+							color="textPrimary"
+						  >
+							Priority: {acl.priority}
+						  </Typography>
+						  <br />
+						  <Typography
+							component="span"
+							variant="body2"
+							className={classes.inline}
+							color="textPrimary"
+						  >
+							Allow: <Checkbox
+								checked={acl.allow}
+								disabled
+							/>
+						  </Typography>
+						</React.Fragment>
+					  }
 					/>
 					<ListItemSecondaryAction>
 					<IconButton edge="end" aria-label="delete">
