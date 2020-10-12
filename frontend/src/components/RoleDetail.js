@@ -1,7 +1,8 @@
-import { connect } from "react-redux";
-import React from "react";
+import { connect, useDispatch } from "react-redux";
+import React, { useContext, useState } from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
+import { useConfirm } from 'material-ui-confirm';
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -48,6 +49,8 @@ import Grid from "@material-ui/core/Grid";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { Link as RouterLink } from "react-router-dom";
+import { WebSocketContext } from '../websockets/WebSocket';
+import { updateRole } from '../actions/actions';
 
 const ACL_TABLE_COLUMNS = [
 	{ id: "type", key: "Type" },
@@ -116,59 +119,38 @@ const useStyles = makeStyles((theme) => ({
 
 const RoleDetail = (props) => {
   const classes = useStyles();
-  const [value, setValue] = React.useState(0);
-  const [state, setState] = React.useState({
-    checkedA: true,
-    checkedB: true,
-  });
+  const context = useContext(WebSocketContext);
+  const dispatch = useDispatch();
+  const confirm = useConfirm();
+  const { client } = context;
 
-  const handleBannedChange = (event) => {
-    setState({ ...state, [event.target.name]: event.target.checked });
-  };
+  const [value, setValue] = React.useState(0);
+  const [newACL, setNewACL] = React.useState({
+	aclType: "publishSend",
+	allow: false,
+  });
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
-  const onDeleteACL = async (acl) => {
-// 	await confirm({
-// 		title: 'Confirm role deletion',
-// 		description: `Do you really want to delete the role "${roleName}"?`
-// 	});
-//   await client.deleteRole(roleName);
-//   const roles = await client.listRoles();
-//   dispatch(updateRoles(roles));
-}
 
 	const {
 		role = {},
 		onSort,
 		sortBy,
 		sortDirection,
-	  } = props;
-//   const role = {
-//     roleName: "",
-//     features: [
-//       {
-//         name: "user-management",
-//         allow: true,
-//       },
-//       {
-//         name: "security-policy",
-//         allow: true,
-//       },
-//     ],
-//     topics: [
-//       {
-//         type: "publish-write",
-//         topicFilter: "",
-//         maxQos: 2,
-//         allowRetain: true,
-//         maxPayloadSize: 1000,
-//         allow: false,
-//       },
-//     ],
-//   };
+	} = props;
+
+
+	const onAddACL = async (acl) => {
+		await client.addACLToRole(role.roleName, acl);
+		const updatedRole = await client.getRole(role.roleName);
+		dispatch(updateRole(updatedRole));
+		setNewACL({
+			aclType: "publishSend",
+			allow: false,
+		});
+	}
 
   return (
     <div className={classes.root}>
