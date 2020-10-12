@@ -1,5 +1,6 @@
 const http = require("http");
 const express = require("express");
+const cors = require('cors');
 const WebSocket = require("ws");
 const mqtt = require("mqtt");
 const NodeMosquittoClient = require("./src/client/NodeMosquittoClient");
@@ -27,6 +28,7 @@ checker.check((license) => {
 const globalSystem = {};
 const globalTopicTree = {};
 const app = express();
+app.use(cors());
 const server = http.createServer(app);
 
 // TODO: add error handling
