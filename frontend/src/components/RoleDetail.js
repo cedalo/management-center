@@ -152,6 +152,16 @@ const RoleDetail = (props) => {
 		});
 	}
 
+	const onRemoveACL = async (acl) => {
+		await confirm({
+			title: 'Confirm ACL deletion',
+			description: `Do you really want to delete the ACL "${acl.topic}"?`
+		});
+	  	await client.removeACLFromRole(role.roleName, acl);
+	  	const updatedRole = await client.getRole(role.roleName);
+	  	dispatch(updateRole(updatedRole));
+	}
+
   return (
     <div className={classes.root}>
       <Breadcrumbs maxItems={2} aria-label="breadcrumb">
@@ -330,7 +340,7 @@ const RoleDetail = (props) => {
 						size="small"
                         onClick={(event) => {
                           event.stopPropagation();
-                          onDeleteACL(acl);
+                          onRemoveACL(acl);
                         }}
                       >
                         <DeleteIcon fontSize="small" />
