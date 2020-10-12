@@ -70,6 +70,7 @@ import Clients from "./components/Clients";
 import store from "./store";
 import WebSocketProvider, { WebSocketContext } from "./websockets/WebSocket";
 import NewsDrawer from "./components/NewsDrawer";
+import useFetch from "./helpers/useFetch";
 import useLocalStorage from "./helpers/useLocalStorage";
 
 import {
@@ -201,11 +202,17 @@ export default function App(props) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('recents');
   const [darkMode, setDarkMode] = useLocalStorage('mosquitto-ui.darkMode');
+  const [response, loading, hasError] = useFetch("http://localhost:8088/api/theme");
 
-  const appliedTheme = darkMode === 'true' ? darkTheme : customTheme;
+  let appliedTheme = darkMode === 'true' ? darkTheme : customTheme;
 
   const onChangeTheme = () => {
 	  setDarkMode(darkMode === 'true' ? 'false' : 'true');
+  }
+
+  if (response) {
+	appliedTheme.palette.primary.main = response?.primary?.main;
+	appliedTheme.palette.secondary.main = response?.secondary?.main;
   }
 
   const handleChange = (event, newValue) => {
