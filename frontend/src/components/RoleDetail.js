@@ -13,7 +13,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Hidden from "@material-ui/core/Hidden";
 import Paper from "@material-ui/core/Paper";
-import SaveIcon from '@material-ui/icons/Save';
+import SaveIcon from '@material-ui/icons/AddCircle';
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Table from "@material-ui/core/Table";
@@ -393,6 +393,7 @@ const RoleDetail = (props) => {
 						label="Priority"
 						value={newACL.priority}
 						type="number"
+						defaultValue="0"
 						onChange={(event) => setNewACL({
 							...newACL,
 							priority: parseInt(event.target.value)
