@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@popperjs/core@^2.5.2":
+  version "2.5.3"
+  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.5.3.tgz#4982b0b66b7a4cf949b86f5d25a8cf757d3cfd9d"
+  integrity sha512-RFwCobxsvZ6j7twS7dHIZQZituMIDJJNHS/qY6iuthVebxS3zhRY+jaC2roEKiAYaVuTcGmX6Luc6YBcf6zJVg==
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
@@ -597,6 +602,11 @@ deepcopy@^0.6.1:
   version "0.6.3"
   resolved "https://registry.yarnpkg.com/deepcopy/-/deepcopy-0.6.3.tgz#634780f2f8656ab771af8fa8431ed1ccee55c7b0"
   integrity sha1-Y0eA8vhlardxr4+oQx7RzO5Vx7A=
+
+deepmerge@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-4.2.2.tgz#44d2ea3679b8f4d4ffba33f03d865fc1e7bf4955"
+  integrity sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==
 
 deferred-leveldown@~0.2.0:
   version "0.2.0"
@@ -2589,6 +2599,13 @@ rc@^1.0.3:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-shepherd@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/react-shepherd/-/react-shepherd-3.3.0.tgz#7b231fea26db1104be92e54921af838e16cd56f0"
+  integrity sha512-w9ulB7ILt+uNJpRQmLsdBZSS600UkquDcToOsWGg2xv52FgcbMkGAIFtHAx7beXha/Pu6FFHy0SM67ZqUGWAxA==
+  dependencies:
+    shepherd.js "^8.0.0"
+
 readable-stream@1.0.31:
   version "1.0.31"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-1.0.31.tgz#8f2502e0bc9e3b0da1b94520aabb4e2603ecafae"
@@ -2829,6 +2846,15 @@ shallow-copy@~0.0.1:
   resolved "https://registry.yarnpkg.com/shallow-copy/-/shallow-copy-0.0.1.tgz#415f42702d73d810330292cc5ee86eae1a11a170"
   integrity sha1-QV9CcC1z2BAzApLMXuhurhoRoXA=
 
+shepherd.js@^8.0.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/shepherd.js/-/shepherd.js-8.1.0.tgz#810b72a6ddf16f6e953126a1315108cc5709f7ce"
+  integrity sha512-mWab5hn2cdSdv5XF3IbBYyT2wPejAjK0flycbkRxqS1c+4epkKRMhpW9Eco6swDCu65wUP7PcecdjayokwI+Vg==
+  dependencies:
+    "@popperjs/core" "^2.5.2"
+    deepmerge "^4.2.2"
+    smoothscroll-polyfill "^0.4.4"
+
 signal-exit@^3.0.0:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.3.tgz#a1410c2edd8f077b08b4e253c8eacfcaf057461c"
@@ -2847,6 +2873,11 @@ simple-mime@~0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/simple-mime/-/simple-mime-0.1.0.tgz#95f517c4f466d7cff561a71fc9dab2596ea9ef2e"
   integrity sha1-lfUXxPRm18/1YacfydqyWW6p7y4=
+
+smoothscroll-polyfill@^0.4.4:
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/smoothscroll-polyfill/-/smoothscroll-polyfill-0.4.4.tgz#3a259131dc6930e6ca80003e1cb03b603b69abf8"
+  integrity sha512-TK5ZA9U5RqCwMpfoMq/l1mrH0JAR7y7KRvOBx0n2869aLxch+gT9GhN3yUfjiw+d/DiF1mKo14+hd62JyMmoBg==
 
 snappy@^5.0.5:
   version "5.0.5"

@@ -13,7 +13,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Hidden from "@material-ui/core/Hidden";
 import Paper from "@material-ui/core/Paper";
-import SaveIcon from '@material-ui/icons/Save';
+import SaveIcon from '@material-ui/icons/AddCircle';
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Table from "@material-ui/core/Table";
@@ -126,7 +126,7 @@ const RoleDetail = (props) => {
 
   const [value, setValue] = React.useState(0);
   const [newACL, setNewACL] = React.useState({
-	aclType: "publishSend",
+	aclType: "publishReceive",
 	allow: false,
   });
 
@@ -147,7 +147,7 @@ const RoleDetail = (props) => {
 		const updatedRole = await client.getRole(role.roleName);
 		dispatch(updateRole(updatedRole));
 		setNewACL({
-			aclType: "publishSend",
+			aclType: "publishReceive",
 			allow: false,
 		});
 	}
@@ -364,6 +364,7 @@ const RoleDetail = (props) => {
 							})}
 						>
 							<MenuItem value={"publishSend"}>publishSend</MenuItem>
+							<MenuItem value={"publishReceive"}>publishReceive</MenuItem>
 							<MenuItem value={"subscribeLiteral"}>subscribeLiteral</MenuItem>
 							<MenuItem value={"subscribePattern"}>subscribePattern</MenuItem>
 							<MenuItem value={"unsubscribeLiteral"}>unsubscribeLiteral</MenuItem>
@@ -392,6 +393,7 @@ const RoleDetail = (props) => {
 						label="Priority"
 						value={newACL.priority}
 						type="number"
+						defaultValue="0"
 						onChange={(event) => setNewACL({
 							...newACL,
 							priority: parseInt(event.target.value)

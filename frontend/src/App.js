@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 import { Provider, useSelector, useDispatch } from "react-redux";
+import Joyride from 'react-joyride';
 import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -26,6 +27,7 @@ import PersonIcon from "@material-ui/icons/Person";
 import RoleIcon from "@material-ui/icons/Policy";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
 import SettingsIcon from "@material-ui/icons/Settings";
+import TourIcon from '@material-ui/icons/Slideshow';
 import ThemeModeIcon from '@material-ui/icons/Brightness4';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import SvgIcon from "@material-ui/core/SvgIcon";
@@ -73,6 +75,10 @@ import WebSocketProvider, { WebSocketContext } from "./websockets/WebSocket";
 import NewsDrawer from "./components/NewsDrawer";
 import useFetch from "./helpers/useFetch";
 import useLocalStorage from "./helpers/useLocalStorage";
+import OnBoardingDialog from "./components/OnBoardingDialog";
+import steps from "./tutorial/steps";
+import TourButton from "./tutorial/TourButton";
+import "./tutorial/tutorial.css";
 
 import {
   BrowserRouter as Router,
@@ -81,6 +87,15 @@ import {
   Link as RouterLink,
   Redirect,
 } from "react-router-dom";
+
+const tourOptions = {
+	defaultStepOptions: {
+	  cancelIcon: {
+		enabled: true
+	  }
+	},
+	useModalOverlay: true
+  };
 
 const drawerWidth = 240;
 
@@ -162,7 +177,8 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 120,
   },
   toolbarButton: {
-    margin: theme.spacing(1),
+    marginTop: theme.spacing(0.8),
+    marginBottom: theme.spacing(0.2),
   },
   content: {
     flexGrow: 1,
@@ -174,7 +190,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function ListItemLink(props) {
-  const { icon, primary, to, classes } = props;
+  const { id, icon, primary, to, classes } = props;
 
   const renderLink = React.useMemo(
     () =>
@@ -185,7 +201,7 @@ function ListItemLink(props) {
   );
 
   return (
-    <li>
+    <li id={id} >
       <ListItem button component={renderLink} >
         {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
         <ListItemText primary={primary} classes={{primary:classes.menuItem}} />
@@ -194,24 +210,13 @@ function ListItemLink(props) {
   );
 }
 
-// const useStateWithLocalStorage = localStorageKey => {
-// 	const [value, setValue] = React.useState(
-// 	  localStorage.getItem(localStorageKey) === 'true' || false
-// 	);
-   
-// 	React.useEffect(() => {
-// 	  localStorage.setItem(localStorageKey, value);
-// 	}, [value]);
-   
-// 	return [value, setValue];
-//   };
-
 export default function App(props) {
 
-	const { window } = props;
+	// const { window } = props;
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [showTour, setShowTour] = React.useState(false);
   const [value, setValue] = React.useState('recents');
   const [darkMode, setDarkMode] = useLocalStorage('mosquitto-ui.darkMode');
   const [response, loading, hasError] = useFetch("http://localhost:8088/api/theme");
@@ -222,9 +227,24 @@ export default function App(props) {
 	  setDarkMode(darkMode === 'true' ? 'false' : 'true');
   }
 
+  const handleStartTour = () => {
+	  setOpen(true);
+	  setShowTour(true);
+  }
+
   if (response) {
-	appliedTheme.palette.primary.main = response?.primary?.main;
-	appliedTheme.palette.secondary.main = response?.secondary?.main;
+	// appliedTheme.palette.primary.main = response?.primary?.main;
+	// appliedTheme.palette.secondary.main = response?.secondary?.main;
+  }
+
+  const onTourStateChange = (event) => {
+	  console.log(event)
+	  if (event.action === 'close' || event.action === 'reset') {
+		  // TODO: this is a hack to prevent the 
+		  // strange main menu behavior when the 
+		  // in app tour selects the menu items
+		  window.location.reload();
+	  }
   }
 
   const handleChange = (event, newValue) => {
@@ -245,23 +265,32 @@ export default function App(props) {
     <div>
       <Divider />
       <List>
-        <ListItemLink classes={classes} to="/home" primary="Home" icon={<HomeIcon />} />
+        <ListItemLink
+		  id="menu-item-home"
+		  classes={classes}
+		  to="/home"
+		  primary="Home"
+		  icon={<HomeIcon />
+		} />
         <Divider />
       </List>
       <List>
         <ListItemLink
+		  id="menu-item-clients" 
 		  classes={classes} 
           to="/security/clients"
           primary="Clients"
           icon={<PersonIcon />}
         />
         <ListItemLink
+		  id="menu-item-groups" 
 		  classes={classes} 
           to="/security/groups"
           primary="Groups"
           icon={<GroupIcon />}
         />
         <ListItemLink
+		  id="menu-item-roles" 
 		  classes={classes} 
           to="/security/roles"
           primary="🚧 Roles"
@@ -280,12 +309,14 @@ export default function App(props) {
       <Divider />
       <List>
         <ListItemLink
+		  id="menu-item-status"
 		  classes={classes} 
           to="/system/status"
           primary="System Status"
           icon={<EqualizerIcon />}
         />
         <ListItemLink
+		  id="menu-item-topics" 
 		  classes={classes} 
           to="/system/topics"
           primary="🚧 Topic Tree"
@@ -310,12 +341,28 @@ export default function App(props) {
   return (
 
 		<ThemeProvider theme={appliedTheme} >
+		<Joyride
+		run={showTour}
+		continuous={true}
+	  //   getHelpers={this.getHelpers}
+		scrollToFirstStep={true}
+		showProgress={true}
+		showSkipButton={true}
+		steps={steps}
+		callback={onTourStateChange}
+		styles={{
+		  options: {
+			zIndex: 5000,
+		  },
+		}}
+	  />
 	<ConfirmProvider>
 	  <CssBaseline />
     <Router>
       <Provider store={store} >
         <WebSocketProvider>
           <div className={classes.root} >
+			  <OnBoardingDialog />
             <Switch>
               <Route path="/login">
 
@@ -357,7 +404,8 @@ export default function App(props) {
                     <Typography variant="h6" noWrap>
 					  <img
 					  	className={clsx(classes.logo)} 
-					  	src="https://cedalo.com/images/logo.png" 
+					  	src="/logo.png" 
+					  	// src="https://cedalo.com/images/logo.png" 
 					  	// src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Siemens_Energy_logo_white.svg/1200px-Siemens_Energy_logo_white.svg.png"
 					  	// style={{height: '35px', width: '35px'}} src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Yello_Strom_GmbH.svg/2000px-Yello_Strom_GmbH.svg.png" 
 					  />
@@ -377,6 +425,18 @@ export default function App(props) {
 							<ThemeModeIcon />
 						</IconButton>
 					  <InfoButton />
+					  <IconButton
+						edge="end"
+						aria-label="Tour"
+						aria-controls="tour"
+						aria-haspopup="true"
+						onClick={() => handleStartTour()}
+						color="inherit"
+						className={classes.toolbarButton}
+            			>
+							<TourIcon />
+						</IconButton>
+					  {/* <TourButton /> */}
 
 					  {/* <IconButton
 						edge="end"
@@ -420,24 +480,6 @@ export default function App(props) {
                       </div>
                       {drawer}
                     </Drawer>
-                  {/* </Hidden> */}
-                  {/* <Hidden smUp implementation="css">
-                    <Drawer
-                      container={container}
-                      variant="temporary"
-                      anchor={theme.direction === "rtl" ? "right" : "left"}
-                      open={mobileOpen}
-                    //   onClose={handleDrawerToggle}
-                      classes={{
-                        paper: classes.drawerPaper,
-                      }}
-                      ModalProps={{
-                        keepMounted: true,
-                      }}
-                    >
-                      {drawer}
-                    </Drawer>
-                  </Hidden> */}
                 </nav>
 		<DisconnectedDialog />
 			
