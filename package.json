@@ -19,9 +19,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
-    "material-ui-confirm": "^2.1.1",
-    "node-cron": "^2.0.3",
-    "react-joyride": "^2.2.1",
+    "node-cron": "^2.0.3"
   },
   "devDependencies": {
     "mosca": "^2.8.3",
