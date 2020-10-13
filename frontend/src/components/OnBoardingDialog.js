@@ -28,6 +28,8 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 
+import useLocalStorage from "../helpers/useLocalStorage";
+
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
@@ -142,17 +144,11 @@ export default function OnBoardingDialog(props) {
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
   const steps = getSteps();
-  const [open, setOpen] = React.useState(true);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  const [showOnBoardingDialog, setShowOnBoardingDialog] = useLocalStorage('mosquitto-ui.showOnBoardingDialog');
 
   const handleClose = () => {
-    setOpen(false);
+    setShowOnBoardingDialog('false');
   };
-
-
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -168,7 +164,7 @@ export default function OnBoardingDialog(props) {
 
   return (
     <Dialog
-        open={open}
+        open={showOnBoardingDialog === '' || showOnBoardingDialog === 'true'}
         // onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
