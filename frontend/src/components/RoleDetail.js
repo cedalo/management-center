@@ -126,7 +126,7 @@ const RoleDetail = (props) => {
 
   const [value, setValue] = React.useState(0);
   const [newACL, setNewACL] = React.useState({
-	aclType: "publishSend",
+	aclType: "publishReceive",
 	allow: false,
   });
 
@@ -147,7 +147,7 @@ const RoleDetail = (props) => {
 		const updatedRole = await client.getRole(role.roleName);
 		dispatch(updateRole(updatedRole));
 		setNewACL({
-			aclType: "publishSend",
+			aclType: "publishReceive",
 			allow: false,
 		});
 	}
@@ -364,6 +364,7 @@ const RoleDetail = (props) => {
 							})}
 						>
 							<MenuItem value={"publishSend"}>publishSend</MenuItem>
+							<MenuItem value={"publishReceive"}>publishReceive</MenuItem>
 							<MenuItem value={"subscribeLiteral"}>subscribeLiteral</MenuItem>
 							<MenuItem value={"subscribePattern"}>subscribePattern</MenuItem>
 							<MenuItem value={"unsubscribeLiteral"}>unsubscribeLiteral</MenuItem>
