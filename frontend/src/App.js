@@ -76,6 +76,7 @@ import WebSocketProvider, { WebSocketContext } from "./websockets/WebSocket";
 import NewsDrawer from "./components/NewsDrawer";
 import useFetch from "./helpers/useFetch";
 import useLocalStorage from "./helpers/useLocalStorage";
+import OnBoardingDialog from "./components/OnBoardingDialog";
 import steps from "./tutorial/steps";
 import steps2 from "./tutorial/steps2";
 import TourButton from "./tutorial/TourButton";
@@ -310,12 +311,14 @@ export default function App(props) {
       <Divider />
       <List>
         <ListItemLink
+		  id="menu-item-status"
 		  classes={classes} 
           to="/system/status"
           primary="System Status"
           icon={<EqualizerIcon />}
         />
         <ListItemLink
+		  id="menu-item-topics" 
 		  classes={classes} 
           to="/system/topics"
           primary="🚧 Topic Tree"
@@ -340,9 +343,24 @@ export default function App(props) {
   return (
 
 		<ThemeProvider theme={appliedTheme} >
+		<Joyride
+		run={showTour}
+		continuous={true}
+	  //   getHelpers={this.getHelpers}
+		scrollToFirstStep={true}
+		showProgress={true}
+		showSkipButton={true}
+		steps={steps2}
+		callback={onTourStateChange}
+		styles={{
+		  options: {
+			zIndex: 5000,
+		  },
+		}}
+	  />
 	<ConfirmProvider>
 	  <CssBaseline />
-	  <ShepherdTour steps={steps} tourOptions={tourOptions}>
+	  {/* <ShepherdTour steps={steps} tourOptions={tourOptions}> */}
     <Router>
       <Provider store={store} >
         <WebSocketProvider>
@@ -409,6 +427,18 @@ export default function App(props) {
 						</IconButton>
 					  <InfoButton />
 					  <TourButton />
+					  <IconButton
+						edge="end"
+						aria-label="Tour"
+						aria-controls="tour"
+						aria-haspopup="true"
+						onClick={() => handleStartTour()}
+						color="inherit"
+						className={classes.toolbarButton}
+            			>
+							<TourIcon />
+						</IconButton>
+					  {/* <TourButton /> */}
 
 					  {/* <IconButton
 						edge="end"
@@ -516,7 +546,7 @@ export default function App(props) {
         </WebSocketProvider>
       </Provider>
     </Router>
-	</ShepherdTour>
+	{/* </ShepherdTour> */}
 	</ConfirmProvider>
   </ThemeProvider>
   );
