@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import clsx from "clsx";
 import { Provider, useSelector, useDispatch } from "react-redux";
 import { ShepherdTour, ShepherdTourContext } from 'react-shepherd'
+import Joyride from 'react-joyride';
 import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -27,6 +28,7 @@ import PersonIcon from "@material-ui/icons/Person";
 import RoleIcon from "@material-ui/icons/Policy";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
 import SettingsIcon from "@material-ui/icons/Settings";
+import TourIcon from '@material-ui/icons/Slideshow';
 import ThemeModeIcon from '@material-ui/icons/Brightness4';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import SvgIcon from "@material-ui/core/SvgIcon";
@@ -75,6 +77,7 @@ import NewsDrawer from "./components/NewsDrawer";
 import useFetch from "./helpers/useFetch";
 import useLocalStorage from "./helpers/useLocalStorage";
 import steps from "./tutorial/steps";
+import steps2 from "./tutorial/steps2";
 import TourButton from "./tutorial/TourButton";
 import "./tutorial/tutorial.css";
 
@@ -175,7 +178,8 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 120,
   },
   toolbarButton: {
-    margin: theme.spacing(1),
+    marginTop: theme.spacing(0.8),
+    marginBottom: theme.spacing(0.2),
   },
   content: {
     flexGrow: 1,
@@ -198,8 +202,8 @@ function ListItemLink(props) {
   );
 
   return (
-    <li>
-      <ListItem id={id} button component={renderLink} >
+    <li id={id} >
+      <ListItem button component={renderLink} >
         {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
         <ListItemText primary={primary} classes={{primary:classes.menuItem}} />
       </ListItem>
@@ -209,10 +213,11 @@ function ListItemLink(props) {
 
 export default function App(props) {
 
-	const { window } = props;
+	// const { window } = props;
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [showTour, setShowTour] = React.useState(false);
   const [value, setValue] = React.useState('recents');
   const [darkMode, setDarkMode] = useLocalStorage('mosquitto-ui.darkMode');
   const [response, loading, hasError] = useFetch("http://localhost:8088/api/theme");
@@ -223,9 +228,24 @@ export default function App(props) {
 	  setDarkMode(darkMode === 'true' ? 'false' : 'true');
   }
 
+  const handleStartTour = () => {
+	  setOpen(true);
+	  setShowTour(true);
+  }
+
   if (response) {
-	appliedTheme.palette.primary.main = response?.primary?.main;
-	appliedTheme.palette.secondary.main = response?.secondary?.main;
+	// appliedTheme.palette.primary.main = response?.primary?.main;
+	// appliedTheme.palette.secondary.main = response?.secondary?.main;
+  }
+
+  const onTourStateChange = (event) => {
+	  console.log(event)
+	  if (event.action === 'close' || event.action === 'reset') {
+		  // TODO: this is a hack to prevent the 
+		  // strange main menu behavior when the 
+		  // in app tour selects the menu items
+		  window.location.reload();
+	  }
   }
 
   const handleChange = (event, newValue) => {
