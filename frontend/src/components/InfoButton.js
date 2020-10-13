@@ -6,11 +6,14 @@ import InfoIcon from '@material-ui/icons/Info';
 import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles((theme) => ({
-
+	toolbarButton: {
+		marginTop: theme.spacing(0.8),
+		marginBottom: theme.spacing(0.2),
+	  },
 }));
 
 const InfoButton = () => {
-//   const classes = useStyles();
+  const classes = useStyles();
   const history = useHistory();
   
   const onClickInfo = () => {
@@ -25,7 +28,7 @@ const InfoButton = () => {
 		aria-haspopup="true"
 		onClick={onClickInfo}
 		color="inherit"
-		// className={classes.toolbarButton}
+		className={classes.toolbarButton}
 		>
 		<InfoIcon />
 	</IconButton>
