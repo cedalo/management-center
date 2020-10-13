@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 import { Provider, useSelector, useDispatch } from "react-redux";
-import { ShepherdTour, ShepherdTourContext } from 'react-shepherd'
 import Joyride from 'react-joyride';
 import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -78,7 +77,6 @@ import useFetch from "./helpers/useFetch";
 import useLocalStorage from "./helpers/useLocalStorage";
 import OnBoardingDialog from "./components/OnBoardingDialog";
 import steps from "./tutorial/steps";
-import steps2 from "./tutorial/steps2";
 import TourButton from "./tutorial/TourButton";
 import "./tutorial/tutorial.css";
 
@@ -350,7 +348,7 @@ export default function App(props) {
 		scrollToFirstStep={true}
 		showProgress={true}
 		showSkipButton={true}
-		steps={steps2}
+		steps={steps}
 		callback={onTourStateChange}
 		styles={{
 		  options: {
@@ -360,7 +358,6 @@ export default function App(props) {
 	  />
 	<ConfirmProvider>
 	  <CssBaseline />
-	  {/* <ShepherdTour steps={steps} tourOptions={tourOptions}> */}
     <Router>
       <Provider store={store} >
         <WebSocketProvider>
@@ -547,7 +544,6 @@ export default function App(props) {
         </WebSocketProvider>
       </Provider>
     </Router>
-	{/* </ShepherdTour> */}
 	</ConfirmProvider>
   </ThemeProvider>
   );
