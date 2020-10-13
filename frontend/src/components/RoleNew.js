@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
   breadcrumbLink: theme.palette.breadcrumbLink,
 }));
 
-const ClientNew = (props) => {
+const RoleNew = (props) => {
   const classes = useStyles();
 
   const [roleName, setRoleName] = useState('');
@@ -91,7 +91,7 @@ const ClientNew = (props) => {
       <Breadcrumbs aria-label="breadcrumb">
         <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
-        <Typography className={classes.breadcrumbItem} color="textPrimary">Clients</Typography>
+        <Typography className={classes.breadcrumbItem} color="textPrimary">Roles</Typography>
       </Breadcrumbs>
       <br />
     <div className={classes.root}>
@@ -179,4 +179,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(ClientNew);
+export default connect(mapStateToProps)(RoleNew);
