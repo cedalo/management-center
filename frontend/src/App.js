@@ -365,6 +365,7 @@ export default function App(props) {
       <Provider store={store} >
         <WebSocketProvider>
           <div className={classes.root} >
+			  <OnBoardingDialog />
             <Switch>
               <Route path="/login">
 
