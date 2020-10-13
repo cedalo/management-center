@@ -406,7 +406,8 @@ export default function App(props) {
                     <Typography variant="h6" noWrap>
 					  <img
 					  	className={clsx(classes.logo)} 
-					  	src="https://cedalo.com/images/logo.png" 
+					  	src="/logo.png" 
+					  	// src="https://cedalo.com/images/logo.png" 
 					  	// src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Siemens_Energy_logo_white.svg/1200px-Siemens_Energy_logo_white.svg.png"
 					  	// style={{height: '35px', width: '35px'}} src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Yello_Strom_GmbH.svg/2000px-Yello_Strom_GmbH.svg.png" 
 					  />
@@ -426,7 +427,6 @@ export default function App(props) {
 							<ThemeModeIcon />
 						</IconButton>
 					  <InfoButton />
-					  <TourButton />
 					  <IconButton
 						edge="end"
 						aria-label="Tour"
