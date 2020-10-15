@@ -77,8 +77,6 @@ import useFetch from "./helpers/useFetch";
 import useLocalStorage from "./helpers/useLocalStorage";
 import OnBoardingDialog from "./components/OnBoardingDialog";
 import steps from "./tutorial/steps";
-import TourButton from "./tutorial/TourButton";
-import "./tutorial/tutorial.css";
 
 import {
   BrowserRouter as Router,
