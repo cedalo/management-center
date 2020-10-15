@@ -231,8 +231,19 @@ export default function App(props) {
   }
 
   if (response) {
-	// appliedTheme.palette.primary.main = response?.primary?.main;
-	// appliedTheme.palette.secondary.main = response?.secondary?.main;
+	customTheme.palette.primary.main = response?.light?.palette?.primary?.main;
+	customTheme.palette.secondary.main = response?.light?.palette?.secondary?.main;
+	darkTheme.palette.primary.main = response?.dark?.palette?.primary?.main;
+	darkTheme.palette.secondary.main = response?.dark?.palette?.secondary?.main;
+	if (response?.dark?.palette?.background?.default) {
+		darkTheme.palette.background.default = response?.dark?.palette?.background?.default;
+	}
+	if (response?.dark?.palette?.background?.paper) {
+		darkTheme.palette.background.paper = response?.dark?.palette?.background?.paper;
+	}
+	if (response?.dark?.palette?.text) {
+		darkTheme.palette.text.primary = response?.dark?.palette?.text?.primary;
+	}
   }
 
   const onTourStateChange = (event) => {
