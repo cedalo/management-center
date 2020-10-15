@@ -543,10 +543,10 @@ export default class BaseMosquittoProxyClient {
 		}
 	}
 
-	async deleteGroup(groupname) {
+	async deleteGroup(groupName) {
 		return this.sendCommand({
 			command: 'deleteGroup',
-			groupname
+			groupName
 		}, API_DYNAMIC_SECURITY);
 	}
 
