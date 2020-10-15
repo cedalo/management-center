@@ -1,6 +1,8 @@
-import { connect } from "react-redux";
-import React from "react";
+import { connect, useDispatch } from "react-redux";
+import React, { useContext, useState } from "react";
 import PropTypes from "prop-types";
+import qs from "qs";
+import { useConfirm } from 'material-ui-confirm';
 import { makeStyles } from "@material-ui/core/styles";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Tabs from "@material-ui/core/Tabs";
@@ -9,6 +11,9 @@ import Avatar from "@material-ui/core/Avatar";
 import GroupIcon from "@material-ui/icons/Group";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
+import Button from '@material-ui/core/Button';
+import EditIcon from '@material-ui/icons/Edit';
+import SaveIcon from '@material-ui/icons/Save';
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
@@ -31,6 +36,9 @@ import Grid from "@material-ui/core/Grid";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { Link as RouterLink } from "react-router-dom";
+
+import { WebSocketContext } from '../websockets/WebSocket';
+import { updateClient, updateClients } from '../actions/actions';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -85,6 +93,11 @@ const useStyles = makeStyles((theme) => ({
     // marginRight: theme.spacing(1),
     // width: 200,
   },
+  buttons: {
+	'& > *': {
+		margin: theme.spacing(1),
+	  },
+  },
   margin: {
     margin: theme.spacing(1),
   },
@@ -95,11 +108,50 @@ const useStyles = makeStyles((theme) => ({
 const ClientDetail = (props) => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
+  const [editMode, setEditMode] = React.useState(false);
+
+  const { client = {} } = props;
+  const [updatedClient, setUpdatedClient] = React.useState({
+	...client
+  });
+
+  const context = useContext(WebSocketContext);
+  const dispatch = useDispatch();
+  const confirm = useConfirm();
+  const { client: brokerClient } = context;
+
+  const validate = () => {
+	const valid = (updatedClient.clientid !== '')
+		&& (updatedClient.username !== '');
+		return valid;
+}
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-	const { client = {} } = props;
+
+  const onUpdateClient = async () => {
+	// TODO: quick hack
+	delete updatedClient.groups;
+	delete updatedClient.roles;
+	await brokerClient.modifyClient(updatedClient);
+	const clientObject = await brokerClient.getClient(client.clientid);
+	dispatch(updateClient(clientObject));
+	const clients = await brokerClient.listClients();
+	dispatch(updateClients(clients));
+	setEditMode(false);
+  }
+
+  const onCancelEdit = async () => {
+	await confirm({
+		title: 'Cancel client editing',
+		description: `Do you really want to cancel editing this client?`
+	});
+	setUpdatedClient({
+		...client
+	});
+	setEditMode(false);
+  }
 	const { match: {
 		params: {
 			clientId
@@ -116,7 +168,7 @@ const ClientDetail = (props) => {
         <Typography className={classes.breadcrumbItem} color="textPrimary">{client.username}</Typography>
       </Breadcrumbs>
       <br />
-    <Paper>
+    <Paper className={classes.paper}>
       <Tabs
         value={value}
         onChange={handleChange}
@@ -131,16 +183,10 @@ const ClientDetail = (props) => {
           {...a11yProps(0)}
         />
         <Tab
-          label="Credentials"
-          icon={<CredentialsIcon />}
-          aria-label="credentials"
-          {...a11yProps(1)}
-        />
-        <Tab
           label="Groups"
           icon={<GroupsIcon />}
           aria-label="groups"
-          {...a11yProps(2)}
+          {...a11yProps(1)}
         />
       </Tabs>
       <TabPanel value={value} index={0}>
@@ -153,7 +199,7 @@ const ClientDetail = (props) => {
 				  disabled
                   id="client-id"
                   label="Client ID"
-				  value={client.clientid}
+				  value={updatedClient.clientid}
                   defaultValue=""
                   variant="outlined"
 				  fullWidth
@@ -170,10 +216,18 @@ const ClientDetail = (props) => {
               <Grid item xs={12}>
                 <TextField
                   required
-				  disabled
+				  disabled={!editMode}
+				  onChange={(event) => {
+					  if (editMode) {
+						setUpdatedClient({
+							...updatedClient,
+							username: event.target.value
+						})
+					  }
+				  }}
                   id="username"
 				  label="username"
-				  value={client.username}
+				  value={updatedClient.username}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -187,12 +241,49 @@ const ClientDetail = (props) => {
                   }}
                 />
               </Grid>
+			  <Grid item xs={12}>
+                <TextField
+                  required
+				  disabled
+				//   onChange={(event) => {
+				// 	  if (editMode) {
+				// 		setUpdatedClient({
+				// 			...updatedClient,
+				// 			password: event.target.value
+				// 		})
+				// 	  }
+				//   }}
+                  id="password"
+                  label="Password"
+				//   value={client.password}
+                  defaultValue="*****"
+                  variant="outlined"
+                  fullWidth
+                  type="password"
+                  className={classes.textField}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <PasswordIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
               <Grid item xs={12}>
                 <TextField
-				  disabled
+				  disabled={!editMode}
+				  onChange={(event) => {
+					  if (editMode) {
+						setUpdatedClient({
+							...updatedClient,
+							textName: event.target.value
+						})
+					  }
+				  }}
                   id="textname"
 				  label="Text name"
-				  value={client.textName}
+				  value={updatedClient.textName}
 				//   onChange={(event) => setTextName(event.target.value)}
                   defaultValue=""
                   variant="outlined"
@@ -202,10 +293,18 @@ const ClientDetail = (props) => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-				  disabled
+				  disabled={!editMode}
+				  onChange={(event) => {
+					  if (editMode) {
+						setUpdatedClient({
+							...updatedClient,
+							textDescription: event.target.value
+						})
+					  }
+				  }}
                   id="textdescription"
 				  label="Text description"
-				  value={client.textDescription}
+				  value={updatedClient.textDescription}
 				//   onChange={(event) => setTextDescription(event.target.value)}
                   defaultValue=""
                   variant="outlined"
@@ -218,56 +317,6 @@ const ClientDetail = (props) => {
         </form>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <form className={classes.form} noValidate autoComplete="off">
-          <div className={classes.margin}>
-            <Grid container spacing={1} alignItems="flex-end">
-              <Grid item xs={12}>
-                <TextField
-                  required
-				  disabled
-                  id="password"
-                  label="Password"
-				  value={client.password}
-                  defaultValue=""
-                  variant="outlined"
-                  fullWidth
-                  type="password"
-                  className={classes.textField}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <PasswordIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-				  disabled
-                  id="password-confirm"
-				  label="Confirm password"
-				  value={client.password}
-                  defaultValue=""
-                  variant="outlined"
-                  fullWidth
-                  type="password"
-                  className={classes.textField}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <PasswordIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-            </Grid>
-          </div>
-        </form>
-      </TabPanel>
-      <TabPanel value={value} index={2}>
 	  <List className={classes.root}>
           {client.groups?.map((group) => (
             <React.Fragment>
@@ -287,6 +336,43 @@ const ClientDetail = (props) => {
           ))}
         </List>
       </TabPanel>
+			  { !editMode && <Grid item xs={12} className={classes.buttons} >
+				<Button
+					variant="contained"
+					color="primary"
+					className={classes.button}
+					startIcon={<EditIcon />}
+					onClick={() => setEditMode(true)}
+				>
+					Edit
+				</Button>
+				</Grid>
+			}
+			  { editMode && <Grid item xs={12} className={classes.buttons} >
+				<Button
+					variant="contained"
+					disabled={!validate()}
+					color="primary"
+					className={classes.button}
+					startIcon={<SaveIcon />}
+					onClick={(event) => {
+					  event.stopPropagation();
+					  onUpdateClient();
+					}}
+				>
+					Save
+				</Button>
+				<Button
+					variant="contained"
+					onClick={(event) => {
+					  event.stopPropagation();
+					  onCancelEdit();
+					}}
+				>
+					Cancel
+				</Button>
+				</Grid>
+			}
 	  </Paper>
     </div>
   );
