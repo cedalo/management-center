@@ -3,6 +3,7 @@ import React, { useContext, useState } from "react";
 import PropTypes from "prop-types";
 import Button from '@material-ui/core/Button';
 import { makeStyles } from "@material-ui/core/styles";
+import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from "react-router-dom";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Paper from '@material-ui/core/Paper';
@@ -66,7 +67,13 @@ const GroupNew = (props) => {
   const context = useContext(WebSocketContext);
   const dispatch = useDispatch();
   const history = useHistory();
+  const confirm = useConfirm();
   const { client } = context;
+
+  const validate = () => {
+	const valid = (groupname !== '');
+	return valid;
+}
 
   const onSaveGroup = async () => {
 	await client.createGroup(groupname, "", textName, textDescription);
@@ -137,6 +144,7 @@ const GroupNew = (props) => {
               <Grid item xs={12} className={classes.buttons} >
 				<Button
 					variant="contained"
+					disabled={!validate()}
 					color="primary"
 					className={classes.button}
 					startIcon={<SaveIcon />}
