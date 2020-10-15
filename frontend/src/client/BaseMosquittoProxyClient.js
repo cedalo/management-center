@@ -357,12 +357,12 @@ export default class BaseMosquittoProxyClient {
 		return data.clients;
 	}
 
-	async getGroup(groupname) {
+	async getGroup(groupName) {
 		// const groups = await this.listGroups();
-		// return groups.find((group) => group.groupname === groupname);
+		// return groups.find((group) => group.groupName === groupName);
 		const data = await this.sendCommand({
 			command: 'getGroup',
-			groupname
+			groupName
 		}, API_DYNAMIC_SECURITY);
 		return data.group;
 	}
