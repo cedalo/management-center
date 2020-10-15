@@ -404,10 +404,11 @@ export default function App(props) {
                     <Typography variant="h6" noWrap>
 					  <img
 					  	className={clsx(classes.logo)} 
-					  	src="/logo.png" 
-					  	// src="https://cedalo.com/images/logo.png" 
-					  	// src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Siemens_Energy_logo_white.svg/1200px-Siemens_Energy_logo_white.svg.png"
-					  	// style={{height: '35px', width: '35px'}} src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Yello_Strom_GmbH.svg/2000px-Yello_Strom_GmbH.svg.png" 
+					  	src={darkMode === 'true' ? response?.dark?.logo?.path : response?.light?.logo?.path} 
+					  	style={response?.light?.logo?.height && response?.light?.logo?.width && {
+							  height: response?.light?.logo?.height, 
+							  width: response?.light?.logo?.width
+						}} 
 					  />
 					   {/* Mosquitto UI */}
                     </Typography>
