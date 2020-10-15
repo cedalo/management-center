@@ -82,7 +82,11 @@ const GroupNew = (props) => {
 	history.push(`/security/groups`);
   }
 
-  const onCancel = () => {
+  const onCancel = async () => {
+	await confirm({
+		title: 'Cancel group creation',
+		description: `Do you really want to cancel creating this group?`
+	});
 	history.goBack();
   }
 
