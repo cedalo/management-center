@@ -1,10 +1,14 @@
-import { connect } from "react-redux";
-import React from "react";
+import { connect, useDispatch } from "react-redux";
+import React, { useContext, useState } from "react";
 import PropTypes from "prop-types";
+import { useConfirm } from 'material-ui-confirm';
 import { makeStyles } from "@material-ui/core/styles";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
+import Button from '@material-ui/core/Button';
+import EditIcon from '@material-ui/icons/Edit';
+import SaveIcon from '@material-ui/icons/Save';
 import Avatar from "@material-ui/core/Avatar";
 import GroupIcon from "@material-ui/icons/Group";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -31,6 +35,9 @@ import Grid from "@material-ui/core/Grid";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { Link as RouterLink } from "react-router-dom";
+
+import { WebSocketContext } from '../websockets/WebSocket';
+import { updateGroup, updateGroups } from '../actions/actions';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -85,6 +92,11 @@ const useStyles = makeStyles((theme) => ({
     // marginRight: theme.spacing(1),
     // width: 200,
   },
+  buttons: {
+	'& > *': {
+		margin: theme.spacing(1),
+	  },
+  },
   margin: {
     margin: theme.spacing(1),
   },
@@ -94,20 +106,53 @@ const useStyles = makeStyles((theme) => ({
 
 const GroupDetail = (props) => {
   const classes = useStyles();
+  const context = useContext(WebSocketContext);
+  const dispatch = useDispatch();
+  const confirm = useConfirm();
+  const { client: brokerClient } = context;
+
   const [value, setValue] = React.useState(0);
   const [state, setState] = React.useState({
     checkedA: true,
     checkedB: true,
   });
+  const { group = {} } = props;
+  const [editMode, setEditMode] = React.useState(false);
+  const [updatedGroup, setUpdatedGroup] = React.useState({
+	...group
+  });
 
-  const handleBannedChange = (event) => {
-    setState({ ...state, [event.target.name]: event.target.checked });
-  };
+  const validate = () => {
+	const valid = (updatedGroup.groupName !== '');
+	return valid;
+  }
+
+
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-    const { group = {} } = props;
+
+  const onUpdateGroup = async () => {
+	console.log(updatedGroup);
+	await brokerClient.modifyGroup(updatedGroup);
+	const groupObject = await brokerClient.getGroup(group.groupName);
+	dispatch(updateGroup(groupObject));
+	const groups = await brokerClient.listGroups();
+	dispatch(updateGroups(groups));
+	setEditMode(false);
+  }
+
+const onCancelEdit = async () => {
+  await confirm({
+	  title: 'Cancel group editing',
+	  description: `Do you really want to cancel editing this group?`
+  });
+  setUpdatedGroup({
+	  ...group
+  });
+  setEditMode(false);
+}
 
   return (
     <div className={classes.root}>
@@ -115,7 +160,7 @@ const GroupDetail = (props) => {
         <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security/groups">Groups</RouterLink>
-  		<Typography className={classes.breadcrumbItem} color="textPrimary">{group.groupname}</Typography>
+  		<Typography className={classes.breadcrumbItem} color="textPrimary">{group.groupName}</Typography>
       </Breadcrumbs>
       <br />
 	  <Paper>
@@ -147,8 +192,16 @@ const GroupDetail = (props) => {
                 <TextField
                   required
 				  disabled
-                  id="groupname"
-				  value={group.groupName}
+				  onChange={(event) => {
+					  if (editMode) {
+						setUpdatedGroup({
+							...updatedGroup,
+							groupName: event.target.value
+						})
+					  }
+				  }}
+                  id="groupName"
+				  value={updatedGroup.groupName}
                   label="Groupname"
                   defaultValue=""
                   variant="outlined"
@@ -165,10 +218,18 @@ const GroupDetail = (props) => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-				  disabled
+				  disabled={!editMode}
+				  onChange={(event) => {
+					  if (editMode) {
+						setUpdatedGroup({
+							...updatedGroup,
+							textName: event.target.value
+						})
+					  }
+				  }}
                   id="textname"
 				  label="Text name"
-				  value={group.textName}
+				  value={updatedGroup.textName}
 				//   onChange={(event) => setTextName(event.target.value)}
                   defaultValue=""
                   variant="outlined"
@@ -178,10 +239,18 @@ const GroupDetail = (props) => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-				  disabled
+				  disabled={!editMode}
+				  onChange={(event) => {
+					  if (editMode) {
+						setUpdatedGroup({
+							...updatedGroup,
+							textDescription: event.target.value
+						})
+					  }
+				  }}
                   id="textdescription"
 				  label="Text description"
-				  value={group.textDescription}
+				  value={updatedGroup.textDescription}
 				//   onChange={(event) => setTextDescription(event.target.value)}
                   defaultValue=""
                   variant="outlined"
@@ -212,6 +281,43 @@ const GroupDetail = (props) => {
           ))}
         </List>
       </TabPanel>
+	  { !editMode && <Grid item xs={12} className={classes.buttons} >
+				<Button
+					variant="contained"
+					color="primary"
+					className={classes.button}
+					startIcon={<EditIcon />}
+					onClick={() => setEditMode(true)}
+				>
+					Edit
+				</Button>
+				</Grid>
+			}
+			  { editMode && <Grid item xs={12} className={classes.buttons} >
+				<Button
+					variant="contained"
+					disabled={!validate()}
+					color="primary"
+					className={classes.button}
+					startIcon={<SaveIcon />}
+					onClick={(event) => {
+					  event.stopPropagation();
+					  onUpdateGroup();
+					}}
+				>
+					Save
+				</Button>
+				<Button
+					variant="contained"
+					onClick={(event) => {
+					  event.stopPropagation();
+					  onCancelEdit();
+					}}
+				>
+					Cancel
+				</Button>
+				</Grid>
+			}
 	  </Paper>
     </div>
   );
