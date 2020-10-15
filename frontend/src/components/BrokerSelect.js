@@ -87,7 +87,7 @@ const BrokerSelect = ({ brokerConnections, connected, sendMessage }) => {
   };
 
   return (
-    <FormControl variant="outlined" className={classes.formControl}>
+    <FormControl id="connection-select" variant="outlined" className={classes.formControl}>
       <InputLabel
 	    id="broker-select-outlined-label" 
 		classes={{
