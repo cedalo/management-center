@@ -88,6 +88,21 @@ const wss = new WebSocket.Server({
   server
 });
 
+const deletePendingRequest = (requestId, requests) => {
+	const request = requests.get(requestId);
+	if (request) {
+		clearTimeout(request.timeoutId);
+		requests.delete(requestId);
+	}
+	return request;
+};
+const timeoutHandler = (requestId, requests) => {
+	const { reject } = deletePendingRequest(requestId, requests);
+	reject({
+		message: 'Mosquitto Proxy: Timeout',
+		requestId
+	});
+};
 
 const updateSystemTopics = (system, topic, message) => {
 	const parts = topic.split("/");
