@@ -71,6 +71,11 @@ const RoleNew = (props) => {
   const confirm = useConfirm();
   const { client } = context;
 
+  const validate = () => {
+	const valid = (roleName !== '');
+	return valid;
+}
+
   const onSaveRole = async () => {
 	await client.createRole(roleName, textName, textDescription);
 	const roles = await client.listRoles();
@@ -103,7 +108,7 @@ const RoleNew = (props) => {
                 <TextField
                   required
                   id="roleName"
-				  label="roleName"
+				  label="Role name"
 				  onChange={(event) => setRoleName(event.target.value)}
                   defaultValue=""
                   variant="outlined"
@@ -144,6 +149,7 @@ const RoleNew = (props) => {
               <Grid item xs={12} className={classes.buttons} >
 				<Button
 					variant="contained"
+					disabled={!validate()}
 					color="primary"
 					className={classes.button}
 					startIcon={<SaveIcon />}
