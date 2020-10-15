@@ -296,6 +296,17 @@ export default class BaseMosquittoProxyClient {
 		}, API_DYNAMIC_SECURITY);
 	}
 
+	async modifyGroup({ groupName, textName, textDescription, clients, roles }) {
+		return this.sendCommand({
+			command: 'modifyGroup',
+			groupName,
+			textName,
+			textDescription,
+			clients,
+			roles
+		}, API_DYNAMIC_SECURITY);
+	}
+
 	async addGroupRole(groupName, roleName) {
 		return this.sendCommand({
 			command: 'addGroupRole',
