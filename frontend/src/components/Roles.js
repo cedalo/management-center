@@ -168,8 +168,7 @@ const onSelectRole = async (roleName) => {
                     {role.textDescription}
                   </TableCell>
                 <TableCell align="right">
-                      <IconButton
-					    disabled
+                      {/* <IconButton
 						size="small"
                         onClick={(event) => {
                           event.stopPropagation();
@@ -177,7 +176,7 @@ const onSelectRole = async (roleName) => {
                         }}
                       >
                         <EditIcon fontSize="small" />
-                      </IconButton>
+                      </IconButton> */}
                       <IconButton
 						size="small"
                         onClick={(event) => {
