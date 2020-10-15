@@ -405,6 +405,15 @@ export default class BaseMosquittoProxyClient {
 		}, API_DYNAMIC_SECURITY);
 	}
 
+	async modifyRole({ roleName, textName, textDescription }) {
+		return this.sendCommand({
+			command: 'modifyRole',
+			roleName,
+			textName,
+			textDescription
+		}, API_DYNAMIC_SECURITY);
+	}
+
 	async deleteRole(roleName) {
 		return this.sendCommand({
 			command: 'deleteRole',
