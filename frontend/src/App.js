@@ -293,12 +293,12 @@ export default function App(props) {
 		  id="menu-item-roles" 
 		  classes={classes} 
           to="/security/roles"
-          primary="🚧 Roles"
+          primary="Roles"
           icon={<RoleIcon />}
         />
       </List>
       <Divider />
-      <List>
+      {/* <List>
         <ListItemLink 
 		  classes={classes}
 		  to="/streams"
@@ -306,7 +306,7 @@ export default function App(props) {
 		  icon={<StreamsIcon />}
 		/>
       </List>
-      <Divider />
+      <Divider /> */}
       <List>
         <ListItemLink
 		  id="menu-item-status"
@@ -319,7 +319,7 @@ export default function App(props) {
 		  id="menu-item-topics" 
 		  classes={classes} 
           to="/system/topics"
-          primary="🚧 Topic Tree"
+          primary="Topic Tree"
           icon={<TopicTreeIcon />}
         />
         <ListItemLink
@@ -331,7 +331,7 @@ export default function App(props) {
         <ListItemLink
 		  classes={classes} 
           to="/system/settings"
-          primary="🚧 Settings"
+          primary="Settings"
           icon={<SettingsIcon />}
         />
       </List>
@@ -437,7 +437,6 @@ export default function App(props) {
             			>
 							<TourIcon />
 						</IconButton>
-					  {/* <TourButton /> */}
 
 					  {/* <IconButton
 						edge="end"
