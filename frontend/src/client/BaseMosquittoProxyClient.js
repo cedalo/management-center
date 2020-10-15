@@ -243,6 +243,18 @@ export default class BaseMosquittoProxyClient {
 		}, API_DYNAMIC_SECURITY);
 	}
 
+	async modifyClient({ username, password, textName, textDescription, groups, roles }) {
+		return this.sendCommand({
+			command: 'modifyClient',
+			username,
+			password,
+			textName,
+			textDescription,
+			groups,
+			roles
+		}, API_DYNAMIC_SECURITY);
+	}
+
 	async deleteClient(username) {
 		return this.sendCommand({
 			command: 'deleteClient',
