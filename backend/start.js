@@ -4,6 +4,55 @@ const cors = require('cors');
 const WebSocket = require("ws");
 const mqtt = require("mqtt");
 const NodeMosquittoClient = require("./src/client/NodeMosquittoClient");
+const defaultTheme = {
+	"id": "cedalo",
+	"name": "Cedalo AG",
+	"logo": {
+		"path": "/logo.png"
+	},
+	"light": {
+		"palette": {
+			"primary": {
+				"main": "#556cd6"
+			},
+			"secondary": {
+				"main": "#19857b"
+			}
+		}
+	},
+	"dark": {
+		"palette": {
+			"primary": {
+				"main": "rgb(16, 30, 38)"
+			},
+			"secondary": {
+				"main": "#ffc107"
+			},
+			"text": {
+				"primary": "rgb(156, 215, 247)"
+			},
+			"background": {
+				"default": "rgb(6, 31, 47)",
+				"paper": "rgb(16, 30, 38)"
+			 }
+		}
+	}
+	// "dark": {
+	// 	"palette": {
+	// 		"primary": {
+	// 			"main": "#556cd6"
+	// 		},
+	// 		"secondary": {
+	// 			"main": "#33c9dc"
+	// 		}
+	// 	}
+	// }
+}
+
+const version = {
+	version: '2.0',
+	buildNumber: '1',
+};
 
 const MOSQUITTO_UI_PROXY_CONFIG_DIR = process.env.MOSQUITTO_UI_PROXY_CONFIG_DIR || "../config/config.json";
 const MOSQUITTO_UI_PROXY_PORT = process.env.MOSQUITTO_UI_PROXY_PORT || 8088;
