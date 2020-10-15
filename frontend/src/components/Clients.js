@@ -257,8 +257,7 @@ const Clients = (props) => {
 					/>
                   </TableCell>
                   <TableCell align="right">
-                        <IconButton
-						  disabled
+                        {/* <IconButton
 						  size="small"
                           onClick={(event) => {
                             event.stopPropagation();
@@ -266,7 +265,7 @@ const Clients = (props) => {
                           }}
                         >
                           <EditIcon fontSize="small" />
-                        </IconButton>
+                        </IconButton> */}
                         <IconButton
 						  size="small"
                           onClick={(event) => {
