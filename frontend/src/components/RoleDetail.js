@@ -13,6 +13,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Hidden from "@material-ui/core/Hidden";
 import Paper from "@material-ui/core/Paper";
+import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/AddCircle';
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
@@ -50,7 +51,7 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { Link as RouterLink } from "react-router-dom";
 import { WebSocketContext } from '../websockets/WebSocket';
-import { updateRole } from '../actions/actions';
+import { updateRole, updateRoles } from '../actions/actions';
 
 const ACL_TABLE_COLUMNS = [
 	{ id: "type", key: "Type" },
@@ -110,6 +111,11 @@ const useStyles = makeStyles((theme) => ({
     // marginRight: theme.spacing(1),
     // width: 200,
   },
+  buttons: {
+	'& > *': {
+		margin: theme.spacing(1),
+	  },
+  },
   margin: {
     margin: theme.spacing(1),
   },
@@ -122,29 +128,61 @@ const RoleDetail = (props) => {
   const context = useContext(WebSocketContext);
   const dispatch = useDispatch();
   const confirm = useConfirm();
-  const { client } = context;
+  const { client: brokerClient } = context;
 
-  const [value, setValue] = React.useState(0);
-  const [newACL, setNewACL] = React.useState({
-	aclType: "publishReceive",
-	allow: false,
+  const {
+	role = {},
+	onSort,
+	sortBy,
+	sortDirection,
+} = props;
+
+	const [value, setValue] = React.useState(0);
+	const [newACL, setNewACL] = React.useState({
+		aclType: "publishReceive",
+		allow: false,
+	});
+
+  const [editMode, setEditMode] = React.useState(false);
+  const [updatedRole, setUpdatedRole] = React.useState({
+	...role
   });
+
+  const validate = () => {
+	const valid = (updatedRole.roleName !== '');
+	return valid;
+  }
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-	const {
-		role = {},
-		onSort,
-		sortBy,
-		sortDirection,
-	} = props;
-
+	const onUpdateRole = async () => {
+		// TODO: quick hack
+		delete updatedRole.groups;
+		delete updatedRole.roles;
+		await brokerClient.modifyRole(updatedRole);
+		const roleObject = await brokerClient.getRole(role.roleName);
+		dispatch(updateRole(roleObject));
+		const roles = await brokerClient.listRoles();
+		dispatch(updateRoles(roles));
+		setEditMode(false);
+	  }
+	
+	const onCancelEdit = async () => {
+	  await confirm({
+		  title: 'Cancel role editing',
+		  description: `Do you really want to cancel editing this role?`
+	  });
+	  setUpdatedRole({
+		  ...role
+	  });
+	  setEditMode(false);
+	}
 
 	const onAddACL = async (acl) => {
-		await client.addACLToRole(role.roleName, acl);
-		const updatedRole = await client.getRole(role.roleName);
+		await brokerClient.addACLToRole(role.roleName, acl);
+		const updatedRole = await brokerClient.getRole(role.roleName);
 		dispatch(updateRole(updatedRole));
 		setNewACL({
 			aclType: "publishReceive",
@@ -157,8 +195,8 @@ const RoleDetail = (props) => {
 			title: 'Confirm ACL deletion',
 			description: `Do you really want to delete the ACL "${acl.topic}"?`
 		});
-	  	await client.removeACLFromRole(role.roleName, acl);
-	  	const updatedRole = await client.getRole(role.roleName);
+	  	await brokerClient.removeACLFromRole(role.roleName, acl);
+	  	const updatedRole = await brokerClient.getRole(role.roleName);
 	  	dispatch(updateRole(updatedRole));
 	}
 
@@ -219,7 +257,7 @@ const RoleDetail = (props) => {
 				  disabled
                   id="role-name"
                   label="Name"
-                  value={role.roleName}
+                  value={updatedRole.roleName}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -235,11 +273,18 @@ const RoleDetail = (props) => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-				  disabled
+				  disabled={!editMode}
+				  onChange={(event) => {
+					  if (editMode) {
+						setUpdatedRole({
+							...updatedRole,
+							textName: event.target.value
+						})
+					  }
+				  }}
                   id="textname"
 				  label="Text name"
-				  value={role.textName}
-				//   onChange={(event) => setTextName(event.target.value)}
+				  value={updatedRole.textName}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -248,11 +293,18 @@ const RoleDetail = (props) => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-				  disabled
+				  disabled={!editMode}
+				  onChange={(event) => {
+					  if (editMode) {
+						setUpdatedRole({
+							...updatedRole,
+							textDescription: event.target.value
+						})
+					  }
+				  }}
                   id="textdescription"
 				  label="Text description"
-				  value={role.textDescription}
-				//   onChange={(event) => setTextDescription(event.target.value)}
+				  value={updatedRole.textDescription}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -488,6 +540,43 @@ const RoleDetail = (props) => {
           </div>
         </form>
       </TabPanel>
+	  { !editMode && <Grid item xs={12} className={classes.buttons} >
+			<Button
+				variant="contained"
+				color="primary"
+				className={classes.button}
+				startIcon={<EditIcon />}
+				onClick={() => setEditMode(true)}
+			>
+				Edit
+			</Button>
+			</Grid>
+		}
+			{ editMode && <Grid item xs={12} className={classes.buttons} >
+			<Button
+				variant="contained"
+				disabled={!validate()}
+				color="primary"
+				className={classes.button}
+				startIcon={<SaveIcon />}
+				onClick={(event) => {
+					event.stopPropagation();
+					onUpdateRole();
+				}}
+			>
+				Save
+			</Button>
+			<Button
+				variant="contained"
+				onClick={(event) => {
+					event.stopPropagation();
+					onCancelEdit();
+				}}
+			>
+				Cancel
+			</Button>
+			</Grid>
+		}
       {/* <TabPanel value={value} index={2}>
         <form className={classes.form} noValidate autoComplete="off">
           <div className={classes.margin}>
