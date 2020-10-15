@@ -66,6 +66,12 @@ const ClientNew = (props) => {
   const [clientID, setClientID] = useState('');
   const [textName, setTextName] = useState('');
   const [textDescription, setTextDescription] = useState('');
+  const validate = () => {
+	  const valid = (clientID !== '')
+		  && (username !== '')
+		  && (password !== '');
+		  return valid;
+  }
 
   const context = useContext(WebSocketContext);
   const dispatch = useDispatch();
@@ -185,6 +191,7 @@ const ClientNew = (props) => {
               <Grid item xs={12} className={classes.buttons} >
 				<Button
 					variant="contained"
+					disabled={!validate()}
 					color="primary"
 					className={classes.button}
 					startIcon={<SaveIcon />}
