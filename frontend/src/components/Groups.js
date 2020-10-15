@@ -236,8 +236,7 @@ const Groups = (props) => {
 					/>
                   </TableCell>
                   <TableCell align="right">
-                        <IconButton
-						  disabled
+                        {/* <IconButton
 						  size="small"
                           onClick={(event) => {
                             event.stopPropagation();
@@ -245,7 +244,7 @@ const Groups = (props) => {
                           }}
                         >
                           <EditIcon fontSize="small" />
-                        </IconButton>
+                        </IconButton> */}
                         <IconButton
 						  size="small"
                           onClick={(event) => {
