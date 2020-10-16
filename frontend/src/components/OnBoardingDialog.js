@@ -151,7 +151,11 @@ export default function OnBoardingDialog(props) {
   };
 
   const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+	  if (activeStep + 1 < steps.length) {
+		setActiveStep((prevActiveStep) => prevActiveStep + 1);
+	  } else {
+		  handleClose();
+	  }
   };
 
   const handleBack = () => {
@@ -201,7 +205,7 @@ export default function OnBoardingDialog(props) {
 	position="static"
 	className={classes.root}
 	nextButton={
-	  <Button size="small" onClick={handleNext} disabled={activeStep === 5}>
+		<Button size="small" onClick={handleNext} disabled={activeStep + 1 >= steps.length}>
 		Next
 		{theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
 	  </Button>
