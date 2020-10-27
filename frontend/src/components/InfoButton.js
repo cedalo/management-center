@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import InfoIcon from '@material-ui/icons/Info';
 import IconButton from "@material-ui/core/IconButton";
+import Tooltip from '@material-ui/core/Tooltip';
 
 const useStyles = makeStyles((theme) => ({
 	toolbarButton: {
@@ -21,17 +22,20 @@ const InfoButton = () => {
   }
 
   return (
-    <IconButton
-		edge="end"
-		aria-label="Theme Mode"
-		aria-controls="theme-mode"
-		aria-haspopup="true"
-		onClick={onClickInfo}
-		color="inherit"
-		className={classes.toolbarButton}
-		>
-		<InfoIcon />
-	</IconButton>
+	<Tooltip title="Show info">
+		<IconButton
+			edge="end"
+			aria-label="Theme Mode"
+			aria-controls="theme-mode"
+			aria-haspopup="true"
+			onClick={onClickInfo}
+			color="inherit"
+			className={classes.toolbarButton}
+			>
+
+			<InfoIcon />
+		</IconButton>
+	</Tooltip>
   );
 };
 
