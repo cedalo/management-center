@@ -86,7 +86,14 @@ const RoleNew = (props) => {
   const onCancel = async () => {
 	await confirm({
 		title: 'Cancel role creation',
-		description: `Do you really want to cancel creating this role?`
+		description: `Do you really want to cancel creating this role?`,
+		cancellationButtonProps: {
+			variant: 'contained',
+		},
+		confirmationButtonProps: {
+			color: 'primary',
+			variant: 'contained',
+		}
 	});
 	history.goBack();
   }

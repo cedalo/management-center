@@ -145,7 +145,14 @@ const ClientDetail = (props) => {
   const onCancelEdit = async () => {
 	await confirm({
 		title: 'Cancel client editing',
-		description: `Do you really want to cancel editing this client?`
+		description: `Do you really want to cancel editing this client?`,
+		cancellationButtonProps: {
+			variant: 'contained',
+		},
+		confirmationButtonProps: {
+			color: 'primary',
+			variant: 'contained',
+		}
 	});
 	setUpdatedClient({
 		...client

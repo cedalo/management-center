@@ -172,7 +172,14 @@ const RoleDetail = (props) => {
 	const onCancelEdit = async () => {
 	  await confirm({
 		  title: 'Cancel role editing',
-		  description: `Do you really want to cancel editing this role?`
+		  description: `Do you really want to cancel editing this role?`,
+		  cancellationButtonProps: {
+			  variant: 'contained',
+		  },
+		  confirmationButtonProps: {
+			  color: 'primary',
+			  variant: 'contained',
+		  }
 	  });
 	  setUpdatedRole({
 		  ...role
@@ -193,7 +200,14 @@ const RoleDetail = (props) => {
 	const onRemoveACL = async (acl) => {
 		await confirm({
 			title: 'Confirm ACL deletion',
-			description: `Do you really want to delete the ACL "${acl.topic}"?`
+			description: `Do you really want to delete the ACL "${acl.topic}"?`,
+			cancellationButtonProps: {
+				variant: 'contained',
+			},
+			confirmationButtonProps: {
+				color: 'primary',
+				variant: 'contained',
+			}
 		});
 	  	await brokerClient.removeACLFromRole(role.roleName, acl);
 	  	const updatedRole = await brokerClient.getRole(role.roleName);

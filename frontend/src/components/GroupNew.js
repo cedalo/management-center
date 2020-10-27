@@ -85,7 +85,14 @@ const GroupNew = (props) => {
   const onCancel = async () => {
 	await confirm({
 		title: 'Cancel group creation',
-		description: `Do you really want to cancel creating this group?`
+		description: `Do you really want to cancel creating this group?`,
+		cancellationButtonProps: {
+			variant: 'contained',
+		},
+		confirmationButtonProps: {
+			color: 'primary',
+			variant: 'contained',
+		}
 	});
 	history.goBack();
   }
