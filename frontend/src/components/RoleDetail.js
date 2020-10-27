@@ -94,7 +94,7 @@ function a11yProps(index) {
 }
 
 const roleShape = PropTypes.shape({
-  roleName: PropTypes.string,
+  rolename: PropTypes.string,
 });
 
 const useStyles = makeStyles((theme) => ({
@@ -139,7 +139,7 @@ const RoleDetail = (props) => {
 
 	const [value, setValue] = React.useState(0);
 	const [newACL, setNewACL] = React.useState({
-		aclType: "publishReceive",
+		acltype: "publishBrokerToClient",
 		allow: false,
 	});
 
@@ -149,7 +149,7 @@ const RoleDetail = (props) => {
   });
 
   const validate = () => {
-	const valid = (updatedRole.roleName !== '');
+	const valid = (updatedRole.rolename !== '');
 	return valid;
   }
 
@@ -162,7 +162,7 @@ const RoleDetail = (props) => {
 		delete updatedRole.groups;
 		delete updatedRole.roles;
 		await brokerClient.modifyRole(updatedRole);
-		const roleObject = await brokerClient.getRole(role.roleName);
+		const roleObject = await brokerClient.getRole(role.rolename);
 		dispatch(updateRole(roleObject));
 		const roles = await brokerClient.listRoles();
 		dispatch(updateRoles(roles));
@@ -188,11 +188,11 @@ const RoleDetail = (props) => {
 	}
 
 	const onAddACL = async (acl) => {
-		await brokerClient.addACLToRole(role.roleName, acl);
-		const updatedRole = await brokerClient.getRole(role.roleName);
+		await brokerClient.addRoleACL(role.rolename, acl);
+		const updatedRole = await brokerClient.getRole(role.rolename);
 		dispatch(updateRole(updatedRole));
 		setNewACL({
-			aclType: "publishReceive",
+			acltype: "publishBrokerToClient",
 			allow: false,
 		});
 	}
@@ -209,8 +209,8 @@ const RoleDetail = (props) => {
 				variant: 'contained',
 			}
 		});
-	  	await brokerClient.removeACLFromRole(role.roleName, acl);
-	  	const updatedRole = await brokerClient.getRole(role.roleName);
+	  	await brokerClient.removeACLFromRole(role.rolename, acl);
+	  	const updatedRole = await brokerClient.getRole(role.rolename);
 	  	dispatch(updateRole(updatedRole));
 	}
 
@@ -220,7 +220,7 @@ const RoleDetail = (props) => {
         <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security/roles">Roles</RouterLink>
-        <Typography className={classes.breadcrumbItem} color="textPrimary">{role.roleName}</Typography>
+        <Typography className={classes.breadcrumbItem} color="textPrimary">{role.rolename}</Typography>
       </Breadcrumbs>
       <br />
       <Tabs
@@ -271,7 +271,7 @@ const RoleDetail = (props) => {
 				  disabled
                   id="role-name"
                   label="Name"
-                  value={updatedRole.roleName}
+                  value={updatedRole.rolename}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -292,13 +292,13 @@ const RoleDetail = (props) => {
 					  if (editMode) {
 						setUpdatedRole({
 							...updatedRole,
-							textName: event.target.value
+							textname: event.target.value
 						})
 					  }
 				  }}
                   id="textname"
 				  label="Text name"
-				  value={updatedRole.textName}
+				  value={updatedRole.textname}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -312,13 +312,13 @@ const RoleDetail = (props) => {
 					  if (editMode) {
 						setUpdatedRole({
 							...updatedRole,
-							textDescription: event.target.value
+							textdescription: event.target.value
 						})
 					  }
 				  }}
                   id="textdescription"
 				  label="Text description"
-				  value={updatedRole.textDescription}
+				  value={updatedRole.textdescription}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -378,10 +378,10 @@ const RoleDetail = (props) => {
               <TableRow
 				hover
 				// TODO: add key
-                // key={role.roleName}
+                // key={role.rolename}
               >
                 <TableCell>
-                  {acl.aclType}
+                  {acl.acltype}
                 </TableCell>
 
 				<TableCell>
@@ -414,7 +414,7 @@ const RoleDetail = (props) => {
             ))}
 			<TableRow
 				// TODO: add key
-                // key={role.roleName}
+                // key={role.rolename}
               >
                 <TableCell>
 					<FormControl>
@@ -422,15 +422,15 @@ const RoleDetail = (props) => {
 						<Select
 							labelId="new-acl-type-label"
 							id="new-acl-type"
-							value={newACL.aclType}
-							defaultValue="publishSend"
+							value={newACL.acltype}
+							defaultValue="publishClientToBroker"
 							onChange={(event) => setNewACL({
 								...newACL,
-								aclType: event.target.value
+								acltype: event.target.value
 							})}
 						>
-							<MenuItem value={"publishSend"}>publishSend</MenuItem>
-							<MenuItem value={"publishReceive"}>publishReceive</MenuItem>
+							<MenuItem value={"publishClientToBroker"}>publishClientToBroker</MenuItem>
+							<MenuItem value={"publishBrokerToClient"}>publishBrokerToClient</MenuItem>
 							<MenuItem value={"subscribeLiteral"}>subscribeLiteral</MenuItem>
 							<MenuItem value={"subscribePattern"}>subscribePattern</MenuItem>
 							<MenuItem value={"unsubscribeLiteral"}>unsubscribeLiteral</MenuItem>
@@ -502,7 +502,7 @@ const RoleDetail = (props) => {
 				<React.Fragment>
 				<ListItem button>
 					<ListItemText
-					primary={acl.aclType}
+					primary={acl.acltype}
 
 					secondary={
 						<React.Fragment>
