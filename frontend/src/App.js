@@ -218,343 +218,357 @@ export default function App(props) {
   const [showTour, setShowTour] = React.useState(false);
   const [value, setValue] = React.useState('recents');
   const [darkMode, setDarkMode] = useLocalStorage('mosquitto-ui.darkMode');
+  // TODO: make URL relative
   const [response, loading, hasError] = useFetch("http://localhost:8088/api/theme");
 
-  let appliedTheme = darkMode === 'true' ? darkTheme : customTheme;
-
-  const onChangeTheme = () => {
-	  setDarkMode(darkMode === 'true' ? 'false' : 'true');
-  }
-
-  const handleStartTour = () => {
-	  setOpen(true);
-	  setShowTour(true);
-  }
-
   if (response) {
-	customTheme.palette.primary.main = response?.light?.palette?.primary?.main;
-	customTheme.palette.secondary.main = response?.light?.palette?.secondary?.main;
-	darkTheme.palette.primary.main = response?.dark?.palette?.primary?.main;
-	darkTheme.palette.secondary.main = response?.dark?.palette?.secondary?.main;
-	if (response?.dark?.palette?.background?.default) {
-		darkTheme.palette.background.default = response?.dark?.palette?.background?.default;
-	}
-	if (response?.dark?.palette?.background?.paper) {
-		darkTheme.palette.background.paper = response?.dark?.palette?.background?.paper;
-	}
-	if (response?.dark?.palette?.text) {
-		darkTheme.palette.text.primary = response?.dark?.palette?.text?.primary;
-	}
-  }
 
-  const onTourStateChange = (event) => {
-	  console.log(event)
-	  if (event.action === 'close' || event.action === 'reset') {
-		  // TODO: this is a hack to prevent the 
-		  // strange main menu behavior when the 
-		  // in app tour selects the menu items
-		  window.location.reload();
+	let appliedTheme = darkMode === 'true' ? darkTheme : customTheme;
+
+	const onChangeTheme = () => {
+		setDarkMode(darkMode === 'true' ? 'false' : 'true');
+	}
+  
+	const handleStartTour = () => {
+		setOpen(true);
+		setShowTour(true);
+	}
+  
+	if (response) {
+	  customTheme.palette.primary.main = response?.light?.palette?.primary?.main;
+	  customTheme.palette.secondary.main = response?.light?.palette?.secondary?.main;
+	  darkTheme.palette.primary.main = response?.dark?.palette?.primary?.main;
+	  darkTheme.palette.secondary.main = response?.dark?.palette?.secondary?.main;
+	  if (response?.dark?.palette?.background?.default) {
+		  darkTheme.palette.background.default = response?.dark?.palette?.background?.default;
 	  }
+	  if (response?.dark?.palette?.background?.paper) {
+		  darkTheme.palette.background.paper = response?.dark?.palette?.background?.paper;
+	  }
+	  if (response?.dark?.palette?.text) {
+		  darkTheme.palette.text.primary = response?.dark?.palette?.text?.primary;
+	  }
+	}
+  
+	const onTourStateChange = (event) => {
+		console.log(event)
+		if (event.action === 'close' || event.action === 'reset') {
+			// TODO: this is a hack to prevent the 
+			// strange main menu behavior when the 
+			// in app tour selects the menu items
+			window.location.reload();
+		}
+	}
+  
+	const handleChange = (event, newValue) => {
+	  setValue(newValue);
+	};
+  
+	const handleDrawerOpen = () => {
+	  setOpen(true);
+	};
+  
+	const handleDrawerClose = () => {
+	  setOpen(false);
+	};
+  
+  //   const container = window !== undefined ? () => window().document.body : undefined;
+  
+	const drawer = (
+	  <div>
+		<Divider />
+		<List>
+		  <ListItemLink
+			id="menu-item-home"
+			classes={classes}
+			to="/home"
+			primary="Home"
+			icon={<HomeIcon />
+		  } />
+		</List>
+		<Divider />
+		<List>
+		  <ListItemLink
+			id="menu-item-status"
+			classes={classes} 
+			to="/system/status"
+			primary="System Status"
+			icon={<EqualizerIcon />}
+		  />
+		  <ListItemLink
+			id="menu-item-topics" 
+			classes={classes} 
+			to="/system/topics"
+			primary="Topic Tree"
+			icon={<TopicTreeIcon />}
+		  />
+		</List>
+		<Divider />
+		<List>
+		  <ListItemLink
+			id="menu-item-clients" 
+			classes={classes} 
+			to="/security/clients"
+			primary="Clients"
+			icon={<PersonIcon />}
+		  />
+		  <ListItemLink
+			id="menu-item-groups" 
+			classes={classes} 
+			to="/security/groups"
+			primary="Groups"
+			icon={<GroupIcon />}
+		  />
+		  <ListItemLink
+			id="menu-item-roles" 
+			classes={classes} 
+			to="/security/roles"
+			primary="Roles"
+			icon={<RoleIcon />}
+		  />
+		</List>
+		<Divider />
+		{/* <List>
+		  <ListItemLink 
+			classes={classes}
+			to="/streams"
+			primary="🚧 Streams"
+			icon={<StreamsIcon />}
+		  />
+		</List>
+		<Divider /> */}
+		<List>
+		  <ListItemLink
+			classes={classes} 
+			to="/system/configurations"
+			primary="Configurations"
+			icon={<ConfigurationIcon />}
+		  />
+		  <ListItemLink
+			classes={classes} 
+			to="/system/settings"
+			primary="Settings"
+			icon={<SettingsIcon />}
+		  />
+		</List>
+	  </div>
+	);
+  
+	return (
+  
+		  <ThemeProvider theme={appliedTheme} >
+		  <Joyride
+		  run={showTour}
+		  continuous={true}
+		//   getHelpers={this.getHelpers}
+		  scrollToFirstStep={true}
+		  showProgress={true}
+		  showSkipButton={true}
+		  steps={steps}
+		  callback={onTourStateChange}
+		  styles={{
+			options: {
+			  zIndex: 5000,
+			},
+		  }}
+		/>
+	  <ConfirmProvider>
+		<CssBaseline />
+	  <Router>
+		<Provider store={store} >
+		  <WebSocketProvider>
+			<div className={classes.root} >
+				<OnBoardingDialog />
+			  <Switch>
+				<Route path="/login">
+  
+				<AppBar
+					position="fixed"
+					className={clsx(classes.appBar, {
+					  [classes.appBarShift]: open,
+					})}
+				  >
+					<Toolbar>
+					  <Typography variant="h6" noWrap>
+						   {/* Mosquitto UI */}
+					  </Typography>
+					</Toolbar>
+				  </AppBar>
+				  <Container className={classes.container}>
+					<Login />
+				  </Container>
+				</Route>
+				<Route path="/">
+				  <AppBar
+					position="fixed"
+					className={clsx(classes.appBar, {
+					  [classes.appBarShift]: open,
+					})}
+				  >
+					<Toolbar>
+					  <IconButton
+						color="inherit"
+						aria-label="open drawer"
+						onClick={handleDrawerOpen}
+						edge="start"
+						className={clsx(classes.menuButton, {
+						  [classes.hide]: open,
+						})}
+					  >
+						<MenuIcon />
+					  </IconButton>
+					  <Typography variant="h6" noWrap>
+						<img
+							className={clsx(classes.logo)} 
+							src={darkMode === 'true' ? response?.dark?.logo?.path : response?.light?.logo?.path} 
+							style={response?.light?.logo?.height && response?.light?.logo?.width && {
+								height: response?.light?.logo?.height, 
+								width: response?.light?.logo?.width
+						  }} 
+						/>
+						 {/* Mosquitto UI */}
+					  </Typography>
+					  <section className={classes.rightToolbar}>
+						<BrokerSelect />
+						<Tooltip title="Switch mode">
+							<IconButton
+								edge="end"
+								aria-label="Theme Mode"
+								aria-controls="theme-mode"
+								aria-haspopup="true"
+								onClick={() => onChangeTheme()}
+								color="inherit"
+								className={classes.toolbarButton}
+							>
+								<ThemeModeIcon />
+							</IconButton>
+							</Tooltip>
+							<InfoButton />
+						<Tooltip title="Start tour">
+							<IconButton
+								edge="end"
+								aria-label="Tour"
+								aria-controls="tour"
+								aria-haspopup="true"
+								onClick={() => handleStartTour()}
+								color="inherit"
+								className={classes.toolbarButton}
+							>
+								<TourIcon />
+							</IconButton>
+						</Tooltip>
+  
+						{/* <IconButton
+						  edge="end"
+						  aria-label="Notifications"
+						  aria-controls="notifications"
+						  aria-haspopup="true"
+						  // onClick={() => setDarkMode(!darkMode)}
+						  color="inherit"
+						  className={classes.toolbarButton}
+						  >
+							  <NotificationsIcon />
+						  </IconButton> */}
+					  </section>
+					</Toolbar>
+				  </AppBar>
+				  {/* <NewsDrawer /> */}
+  
+				  <nav>
+					{/* <Hidden xsDown implementation="css"> */}
+					  <Drawer
+						variant="permanent"
+						className={clsx(classes.drawer, {
+						  [classes.drawerOpen]: open,
+						  [classes.drawerClose]: !open,
+						})}
+						classes={{
+						  paper: clsx({
+							[classes.drawerOpen]: open,
+							[classes.drawerClose]: !open,
+						  }),
+						}}
+					  >
+						<div className={classes.toolbar}>
+						  <IconButton onClick={handleDrawerClose}>
+							{theme.direction === "rtl" ? (
+							  <ChevronRightIcon />
+							) : (
+							  <ChevronLeftIcon />
+							)}
+						  </IconButton>
+						</div>
+						{drawer}
+					  </Drawer>
+				  </nav>
+		  <DisconnectedDialog />
+			  
+				  <Container className={classes.container}>
+					<Switch>
+					  <Route path="/security/clients/detail/:clientId" component={ClientDetail} />
+					  <Route path="/security/clients/new">
+						<ClientNew />
+					  </Route>
+					  <Route path="/security/clients">
+						<Clients />
+					  </Route>
+					  <Route path="/security/groups/detail/:groupId" component={GroupDetail} />
+					  <Route path="/security/groups/new">
+						<GroupNew />
+					  </Route>
+					  <Route path="/security/groups">
+						<Groups />
+					  </Route>
+					  <Route path="/security/roles/detail/:roleId" component={RoleDetail} />
+					  <Route path="/security/roles/new">
+						<RoleNew />
+					  </Route>
+					  <Route path="/security/roles">
+						<Roles />
+					  </Route>
+					  <Route path="/security">
+						<Security />
+					  </Route>
+					  <Route path="/streams">
+						<Streams />
+					  </Route>
+					  <Route path="/system/status">
+						<Status />
+					  </Route>
+					  <Route path="/system/topics">
+						<TopicTree />
+					  </Route>
+					  <Route path="/system/configurations">
+						<Configurations />
+					  </Route>
+					  <Route path="/system/settings">
+						<Settings />
+					  </Route>
+					  <Route path="/system">
+						<System />
+					  </Route>
+					  <Route path="/home">
+						<Home />
+					  </Route>
+					  <Route path="/info">
+						<InfoPage />
+					  </Route>
+					  <Route path="/">
+						<Redirect to="/system/status" />
+					  </Route>
+					</Switch>
+				  </Container>
+				</Route>
+			  </Switch>
+			</div>
+		  </WebSocketProvider>
+		</Provider>
+	  </Router>
+	  </ConfirmProvider>
+	</ThemeProvider>
+	);
+  } else {
+	  return null;
   }
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
-//   const container = window !== undefined ? () => window().document.body : undefined;
-
-  const drawer = (
-    <div>
-      <Divider />
-      <List>
-        <ListItemLink
-		  id="menu-item-home"
-		  classes={classes}
-		  to="/home"
-		  primary="Home"
-		  icon={<HomeIcon />
-		} />
-        <Divider />
-      </List>
-      <List>
-        <ListItemLink
-		  id="menu-item-clients" 
-		  classes={classes} 
-          to="/security/clients"
-          primary="Clients"
-          icon={<PersonIcon />}
-        />
-        <ListItemLink
-		  id="menu-item-groups" 
-		  classes={classes} 
-          to="/security/groups"
-          primary="Groups"
-          icon={<GroupIcon />}
-        />
-        <ListItemLink
-		  id="menu-item-roles" 
-		  classes={classes} 
-          to="/security/roles"
-          primary="Roles"
-          icon={<RoleIcon />}
-        />
-      </List>
-      <Divider />
-      {/* <List>
-        <ListItemLink 
-		  classes={classes}
-		  to="/streams"
-		  primary="🚧 Streams"
-		  icon={<StreamsIcon />}
-		/>
-      </List>
-      <Divider /> */}
-      <List>
-        <ListItemLink
-		  id="menu-item-status"
-		  classes={classes} 
-          to="/system/status"
-          primary="System Status"
-          icon={<EqualizerIcon />}
-        />
-        <ListItemLink
-		  id="menu-item-topics" 
-		  classes={classes} 
-          to="/system/topics"
-          primary="Topic Tree"
-          icon={<TopicTreeIcon />}
-        />
-        <ListItemLink
-		  classes={classes} 
-          to="/system/configurations"
-          primary="Configurations"
-          icon={<ConfigurationIcon />}
-        />
-        <ListItemLink
-		  classes={classes} 
-          to="/system/settings"
-          primary="Settings"
-          icon={<SettingsIcon />}
-        />
-      </List>
-    </div>
-  );
-
-  return (
-
-		<ThemeProvider theme={appliedTheme} >
-		<Joyride
-		run={showTour}
-		continuous={true}
-	  //   getHelpers={this.getHelpers}
-		scrollToFirstStep={true}
-		showProgress={true}
-		showSkipButton={true}
-		steps={steps}
-		callback={onTourStateChange}
-		styles={{
-		  options: {
-			zIndex: 5000,
-		  },
-		}}
-	  />
-	<ConfirmProvider>
-	  <CssBaseline />
-    <Router>
-      <Provider store={store} >
-        <WebSocketProvider>
-          <div className={classes.root} >
-			  <OnBoardingDialog />
-            <Switch>
-              <Route path="/login">
-
-			  <AppBar
-                  position="fixed"
-                  className={clsx(classes.appBar, {
-                    [classes.appBarShift]: open,
-                  })}
-                >
-                  <Toolbar>
-                    <Typography variant="h6" noWrap>
-					 	{/* Mosquitto UI */}
-                    </Typography>
-                  </Toolbar>
-                </AppBar>
-                <Container className={classes.container}>
-                  <Login />
-                </Container>
-              </Route>
-              <Route path="/">
-                <AppBar
-                  position="fixed"
-                  className={clsx(classes.appBar, {
-                    [classes.appBarShift]: open,
-                  })}
-                >
-                  <Toolbar>
-                    <IconButton
-                      color="inherit"
-                      aria-label="open drawer"
-                      onClick={handleDrawerOpen}
-                      edge="start"
-                      className={clsx(classes.menuButton, {
-                        [classes.hide]: open,
-                      })}
-                    >
-                      <MenuIcon />
-                    </IconButton>
-                    <Typography variant="h6" noWrap>
-					  <img
-					  	className={clsx(classes.logo)} 
-					  	src={darkMode === 'true' ? response?.dark?.logo?.path : response?.light?.logo?.path} 
-					  	style={response?.light?.logo?.height && response?.light?.logo?.width && {
-							  height: response?.light?.logo?.height, 
-							  width: response?.light?.logo?.width
-						}} 
-					  />
-					   {/* Mosquitto UI */}
-                    </Typography>
-                    <section className={classes.rightToolbar}>
-                      <BrokerSelect />
-					  <IconButton
-						edge="end"
-						aria-label="Theme Mode"
-						aria-controls="theme-mode"
-						aria-haspopup="true"
-						onClick={() => onChangeTheme()}
-						color="inherit"
-						className={classes.toolbarButton}
-            			>
-							<ThemeModeIcon />
-						</IconButton>
-					  <InfoButton />
-					  <IconButton
-						edge="end"
-						aria-label="Tour"
-						aria-controls="tour"
-						aria-haspopup="true"
-						onClick={() => handleStartTour()}
-						color="inherit"
-						className={classes.toolbarButton}
-            			>
-							<TourIcon />
-						</IconButton>
-
-					  {/* <IconButton
-						edge="end"
-						aria-label="Notifications"
-						aria-controls="notifications"
-						aria-haspopup="true"
-						// onClick={() => setDarkMode(!darkMode)}
-						color="inherit"
-						className={classes.toolbarButton}
-            			>
-							<NotificationsIcon />
-						</IconButton> */}
-                    </section>
-                  </Toolbar>
-                </AppBar>
-                {/* <NewsDrawer /> */}
-
-                <nav>
-                  {/* <Hidden xsDown implementation="css"> */}
-                    <Drawer
-                      variant="permanent"
-                      className={clsx(classes.drawer, {
-                        [classes.drawerOpen]: open,
-                        [classes.drawerClose]: !open,
-                      })}
-                      classes={{
-                        paper: clsx({
-                          [classes.drawerOpen]: open,
-                          [classes.drawerClose]: !open,
-                        }),
-                      }}
-                    >
-                      <div className={classes.toolbar}>
-                        <IconButton onClick={handleDrawerClose}>
-                          {theme.direction === "rtl" ? (
-                            <ChevronRightIcon />
-                          ) : (
-                            <ChevronLeftIcon />
-                          )}
-                        </IconButton>
-                      </div>
-                      {drawer}
-                    </Drawer>
-                </nav>
-		<DisconnectedDialog />
-			
-                <Container className={classes.container}>
-                  <Switch>
-                    <Route path="/security/clients/detail/:clientId" component={ClientDetail} />
-					<Route path="/security/clients/new">
-                      <ClientNew />
-                    </Route>
-                    <Route path="/security/clients">
-                      <Clients />
-                    </Route>
-                    <Route path="/security/groups/detail/:groupId" component={GroupDetail} />
-					<Route path="/security/groups/new">
-                      <GroupNew />
-                    </Route>
-                    <Route path="/security/groups">
-                      <Groups />
-                    </Route>
-                    <Route path="/security/roles/detail/:roleId" component={RoleDetail} />
-					<Route path="/security/roles/new">
-                      <RoleNew />
-                    </Route>
-                    <Route path="/security/roles">
-                      <Roles />
-                    </Route>
-                    <Route path="/security">
-                      <Security />
-                    </Route>
-                    <Route path="/streams">
-                      <Streams />
-                    </Route>
-                    <Route path="/system/status">
-                      <Status />
-                    </Route>
-                    <Route path="/system/topics">
-                      <TopicTree />
-                    </Route>
-                    <Route path="/system/configurations">
-                      <Configurations />
-                    </Route>
-                    <Route path="/system/settings">
-                      <Settings />
-                    </Route>
-                    <Route path="/system">
-                      <System />
-                    </Route>
-                    <Route path="/home">
-                      <Home />
-                    </Route>
-                    <Route path="/info">
-                      <InfoPage />
-                    </Route>
-                    <Route path="/">
-					  <Redirect to="/system/status" />
-                    </Route>
-                  </Switch>
-                </Container>
-              </Route>
-            </Switch>
-          </div>
-        </WebSocketProvider>
-      </Provider>
-    </Router>
-	</ConfirmProvider>
-  </ThemeProvider>
-  );
 }
