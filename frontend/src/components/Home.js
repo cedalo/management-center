@@ -14,28 +14,28 @@ function Home() {
   return (
 	  <div>
 	  <Grid container spacing={3}>
-		<Grid item lg={4} sm={6} xl={4} xs={12}>
-		  <HomeCard
-			title="Security"
-			description="Manage clients, groups and roles"
-			image={"security.png"}
-			link="/security"
-		  />
-		</Grid>
-		<Grid item lg={4} sm={6} xl={4} xs={12}>
+		{/* <Grid item lg={4} sm={6} xl={4} xs={12}>
 		  <HomeCard
 			title="Streams"
 			description="Manage streams"
 			image={"streams.png"}
 			link="/streams"
 		  />
-		</Grid>
-		<Grid item lg={4} sm={6} xl={4} xs={12}>
+		</Grid> */}
+		<Grid item lg={6} sm={6} xl={6} xs={12}>
 		  <HomeCard
 			title="System"
 			description="Analyse the system status of Mosquitto"
 			image={"system.png"}
 			link="/system"
+		  />
+		</Grid>
+		<Grid item lg={6} sm={6} xl={6} xs={12}>
+		  <HomeCard
+			title="Security"
+			description="Manage clients, groups and roles"
+			image={"security.png"}
+			link="/security"
 		  />
 		</Grid>
 	  </Grid>
