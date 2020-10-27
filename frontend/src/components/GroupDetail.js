@@ -123,7 +123,7 @@ const GroupDetail = (props) => {
   });
 
   const validate = () => {
-	const valid = (updatedGroup.groupName !== '');
+	const valid = (updatedGroup.groupname !== '');
 	return valid;
   }
 
@@ -136,7 +136,7 @@ const GroupDetail = (props) => {
   const onUpdateGroup = async () => {
 	console.log(updatedGroup);
 	await brokerClient.modifyGroup(updatedGroup);
-	const groupObject = await brokerClient.getGroup(group.groupName);
+	const groupObject = await brokerClient.getGroup(group.groupname);
 	dispatch(updateGroup(groupObject));
 	const groups = await brokerClient.listGroups();
 	dispatch(updateGroups(groups));
@@ -167,7 +167,7 @@ const onCancelEdit = async () => {
         <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security/groups">Groups</RouterLink>
-  		<Typography className={classes.breadcrumbItem} color="textPrimary">{group.groupName}</Typography>
+  		<Typography className={classes.breadcrumbItem} color="textPrimary">{group.groupname}</Typography>
       </Breadcrumbs>
       <br />
 	  <Paper>
@@ -203,12 +203,12 @@ const onCancelEdit = async () => {
 					  if (editMode) {
 						setUpdatedGroup({
 							...updatedGroup,
-							groupName: event.target.value
+							groupname: event.target.value
 						})
 					  }
 				  }}
-                  id="groupName"
-				  value={updatedGroup.groupName}
+                  id="groupname"
+				  value={updatedGroup.groupname}
                   label="Groupname"
                   defaultValue=""
                   variant="outlined"
@@ -230,13 +230,13 @@ const onCancelEdit = async () => {
 					  if (editMode) {
 						setUpdatedGroup({
 							...updatedGroup,
-							textName: event.target.value
+							textname: event.target.value
 						})
 					  }
 				  }}
                   id="textname"
 				  label="Text name"
-				  value={updatedGroup.textName}
+				  value={updatedGroup.textname}
 				//   onChange={(event) => setTextName(event.target.value)}
                   defaultValue=""
                   variant="outlined"
@@ -251,13 +251,13 @@ const onCancelEdit = async () => {
 					  if (editMode) {
 						setUpdatedGroup({
 							...updatedGroup,
-							textDescription: event.target.value
+							textdescription: event.target.value
 						})
 					  }
 				  }}
                   id="textdescription"
 				  label="Text description"
-				  value={updatedGroup.textDescription}
+				  value={updatedGroup.textdescription}
 				//   onChange={(event) => setTextDescription(event.target.value)}
                   defaultValue=""
                   variant="outlined"

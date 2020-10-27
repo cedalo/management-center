@@ -61,9 +61,9 @@ const useStyles = makeStyles((theme) => ({
 const RoleNew = (props) => {
   const classes = useStyles();
 
-  const [roleName, setRoleName] = useState('');
-  const [textName, setTextName] = useState('');
-  const [textDescription, setTextDescription] = useState('');
+  const [rolename, setRolename] = useState('');
+  const [textname, setTextname] = useState('');
+  const [textdescription, setTextdescription] = useState('');
 
   const context = useContext(WebSocketContext);
   const dispatch = useDispatch();
@@ -72,12 +72,12 @@ const RoleNew = (props) => {
   const { client } = context;
 
   const validate = () => {
-	const valid = (roleName !== '');
+	const valid = (rolename !== '');
 	return valid;
 }
 
   const onSaveRole = async () => {
-	await client.createRole(roleName, textName, textDescription);
+	await client.createRole(rolename, textname, textdescription);
 	const roles = await client.listRoles();
 	dispatch(updateRoles(roles));
 	history.push(`/security/roles`);
@@ -114,9 +114,9 @@ const RoleNew = (props) => {
               <Grid item xs={12}>
                 <TextField
                   required
-                  id="roleName"
+                  id="rolename"
 				  label="Role name"
-				  onChange={(event) => setRoleName(event.target.value)}
+				  onChange={(event) => setRolename(event.target.value)}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -134,7 +134,7 @@ const RoleNew = (props) => {
                 <TextField
                   id="textname"
 				  label="Text name"
-				  onChange={(event) => setTextName(event.target.value)}
+				  onChange={(event) => setTextname(event.target.value)}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -145,7 +145,7 @@ const RoleNew = (props) => {
                 <TextField
                   id="textdescription"
 				  label="Text description"
-				  onChange={(event) => setTextDescription(event.target.value)}
+				  onChange={(event) => setTextdescription(event.target.value)}
                   defaultValue=""
                   variant="outlined"
                   fullWidth

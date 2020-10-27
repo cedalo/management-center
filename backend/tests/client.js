@@ -15,7 +15,7 @@ const MOSQUITTO_PORT = process.env.MOSQUITTO_PORT || 1888;
       username: "user_one",
       password: "password",
       clientid: "cid",
-	  roleName: "",
+	  rolename: "",
 	  groups: [{
 		"name": "admins",
 		"priority": 0

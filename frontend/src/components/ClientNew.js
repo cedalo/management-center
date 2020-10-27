@@ -64,8 +64,8 @@ const ClientNew = (props) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [clientID, setClientID] = useState('');
-  const [textName, setTextName] = useState('');
-  const [textDescription, setTextDescription] = useState('');
+  const [textname, setTextname] = useState('');
+  const [textdescription, setTextdescription] = useState('');
   const validate = () => {
 	  const valid = (clientID !== '')
 		  && (username !== '')
@@ -80,7 +80,7 @@ const ClientNew = (props) => {
   const { client } = context;
 
   const onSaveClient = async () => {
-	await client.createClient(username, password, clientID, "", textName, textDescription);
+	await client.createClient(username, password, clientID, "", textname, textdescription);
 	const clients = await client.listClients();
 	dispatch(updateClients(clients));
 	history.push(`/security/clients`);
@@ -176,7 +176,7 @@ const ClientNew = (props) => {
                 <TextField
                   id="textname"
 				  label="Text name"
-				  onChange={(event) => setTextName(event.target.value)}
+				  onChange={(event) => setTextname(event.target.value)}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -187,7 +187,7 @@ const ClientNew = (props) => {
                 <TextField
                   id="textdescription"
 				  label="Text description"
-				  onChange={(event) => setTextDescription(event.target.value)}
+				  onChange={(event) => setTextdescription(event.target.value)}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
