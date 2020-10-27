@@ -226,7 +226,7 @@ function MultiValue(props) {
 		size="small"
 		// icon={<GroupIcon />}
       	label={props.children}
-		color="secondary"
+		color="primary"
 		onDelete={props.removeProps.onClick}
 		deleteIcon={<CancelIcon {...props.removeProps} />}
 	/>
