@@ -117,7 +117,14 @@ const Groups = (props) => {
   const onDeleteGroup = async (groupName) => {
 		await confirm({
 			title: 'Confirm group deletion',
-			description: `Do you really want to delete the group "${groupName}"?`
+			description: `Do you really want to delete the group "${groupName}"?`,
+			cancellationButtonProps: {
+				variant: 'contained',
+			},
+			confirmationButtonProps: {
+				color: 'primary',
+				variant: 'contained',
+			}
 		});
 	  await client.deleteGroup(groupName);
 	  const groups = await client.listGroups();

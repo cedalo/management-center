@@ -146,7 +146,14 @@ const GroupDetail = (props) => {
 const onCancelEdit = async () => {
   await confirm({
 	  title: 'Cancel group editing',
-	  description: `Do you really want to cancel editing this group?`
+	  description: `Do you really want to cancel editing this group?`,
+	  cancellationButtonProps: {
+		  variant: 'contained',
+	  },
+	  confirmationButtonProps: {
+		  color: 'primary',
+		  variant: 'contained',
+	  }
   });
   setUpdatedGroup({
 	  ...group

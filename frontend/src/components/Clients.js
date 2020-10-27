@@ -93,7 +93,14 @@ const Clients = (props) => {
 	if (groups.length === 0) {
 		await confirm({
 			title: 'Confirm remove client from all groups',
-			description: `Do you really want to remove client "${client.username}" from all groups?`
+			description: `Do you really want to remove client "${client.username}" from all groups?`,
+			cancellationButtonProps: {
+				variant: 'contained',
+			},
+			confirmationButtonProps: {
+				color: 'primary',
+				variant: 'contained',
+			}
 		});
 	}
 	const groupNames = groups.map(group => group.value);
@@ -133,7 +140,14 @@ const Clients = (props) => {
   const onDeleteClient = async (username) => {
 	await confirm({
 		title: 'Confirm client deletion',
-		description: `Do you really want to delete client "${username}"?`
+		description: `Do you really want to delete client "${username}"?`,
+		cancellationButtonProps: {
+			variant: 'contained',
+		},
+		confirmationButtonProps: {
+			color: 'primary',
+			variant: 'contained',
+		}
 	});
 	await brokerClient.deleteClient(username);
 	const clients = await brokerClient.listClients();

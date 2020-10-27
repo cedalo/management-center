@@ -98,7 +98,14 @@ const Roles = (props) => {
   const onDeleteRole = async (roleName) => {
 	await confirm({
 		title: 'Confirm role deletion',
-		description: `Do you really want to delete the role "${roleName}"?`
+		description: `Do you really want to delete the role "${roleName}"?`,
+		cancellationButtonProps: {
+			variant: 'contained',
+		},
+		confirmationButtonProps: {
+			color: 'primary',
+			variant: 'contained',
+		}
 	});
   await client.deleteRole(roleName);
   const roles = await client.listRoles();

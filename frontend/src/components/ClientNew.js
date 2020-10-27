@@ -89,7 +89,14 @@ const ClientNew = (props) => {
   const onCancel = async () => {
 	await confirm({
 		title: 'Cancel client creation',
-		description: `Do you really want to cancel creating this client?`
+		description: `Do you really want to cancel creating this client?`,
+		cancellationButtonProps: {
+			variant: 'contained',
+		},
+		confirmationButtonProps: {
+			color: 'primary',
+			variant: 'contained',
+		}
 	});
 	history.goBack();
   }
