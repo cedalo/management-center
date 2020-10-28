@@ -5,6 +5,14 @@ export default
 		  content: 'Select your Mosquitto broker here',
 		},
 		{
+		  target: '#menu-item-status',
+		  content: 'Monitor the status of your Mosquitto broker.',
+		},
+		{
+		  target: '#menu-item-topics',
+		  content: 'Analyse all topics with this topic tree.',
+		},
+		{
 		  target: '#menu-item-clients',
 		  content: 'Create and manage clients.',
 		},
@@ -15,13 +23,5 @@ export default
 		{
 		  target: '#menu-item-roles',
 		  content: 'Create and manage roles and add them to clients and groups.',
-		},
-		{
-		  target: '#menu-item-status',
-		  content: 'Monitor the status of your Mosquitto broker.',
-		},
-		{
-		  target: '#menu-item-topics',
-		  content: 'Analyse all topics with this awesome topic tree.',
 		},
 	];
