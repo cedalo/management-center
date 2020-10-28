@@ -149,6 +149,19 @@ const Clients = (props) => {
 			variant: 'contained',
 		}
 	});
+	if (username === 'cedalo') {
+		await confirm({
+			title: 'Confirm default client deletion',
+			description: `Are you sure? You are about to delete the default client for the current Mosquitto instance.`,
+			cancellationButtonProps: {
+				variant: 'contained',
+			},
+			confirmationButtonProps: {
+				color: 'primary',
+				variant: 'contained',
+			}
+		});
+	}
 	await brokerClient.deleteClient(username);
 	const clients = await brokerClient.listClients();
 	dispatch(updateClients(clients));
