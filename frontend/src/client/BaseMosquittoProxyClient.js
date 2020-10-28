@@ -457,9 +457,9 @@ export default class BaseMosquittoProxyClient {
 		}, API_DYNAMIC_SECURITY);
 	}
 	
-	async removeACLFromRole(rolename, { acltype, priority, topic, allow }) {
+	async removeRoleACL(rolename, { acltype, priority, topic, allow }) {
 		return this.sendCommand({
-			command: 'removeACLFromRole',
+			command: 'removeRoleACL',
 			rolename,
 			acltype,
 			topic,
