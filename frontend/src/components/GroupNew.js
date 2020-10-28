@@ -70,6 +70,10 @@ const GroupNew = (props) => {
   const confirm = useConfirm();
   const { client } = context;
 
+  const groupnameExists = props?.groups?.find((searchGroup) => {
+	return searchGroup.groupname === groupname;
+  });
+
   const validate = () => {
 	const valid = (groupname !== '');
 	return valid;
@@ -112,6 +116,8 @@ const GroupNew = (props) => {
             <Grid container spacing={1} alignItems="flex-end">
               <Grid item xs={12}>
                 <TextField
+					error={groupnameExists}
+					helperText={groupnameExists && "A group with this name already exists."}
                   required
                   id="groupname"
 				  label="Groupname"
@@ -188,6 +194,7 @@ const GroupNew = (props) => {
 
 const mapStateToProps = (state) => {
   return {
+	groups: state.groups?.groups,
   };
 };
 
