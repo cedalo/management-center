@@ -152,6 +152,8 @@ const Clients = (props) => {
 	await brokerClient.deleteClient(username);
 	const clients = await brokerClient.listClients();
 	dispatch(updateClients(clients));
+	const groups = await brokerClient.listGroups();
+	dispatch(updateGroups(groups));
   }
 
 	const onRemoveClientFromGroup = async (client, group) => {
