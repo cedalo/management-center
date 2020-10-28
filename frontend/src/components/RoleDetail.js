@@ -139,7 +139,7 @@ const RoleDetail = (props) => {
 
 	const [value, setValue] = React.useState(0);
 	const [newACL, setNewACL] = React.useState({
-		acltype: "publishBrokerToClient",
+		acltype: "publishClientReceive",
 		allow: false,
 	});
 
@@ -192,7 +192,7 @@ const RoleDetail = (props) => {
 		const updatedRole = await brokerClient.getRole(role.rolename);
 		dispatch(updateRole(updatedRole));
 		setNewACL({
-			acltype: "publishBrokerToClient",
+			acltype: "publishClientReceive",
 			allow: false,
 		});
 	}
@@ -209,7 +209,7 @@ const RoleDetail = (props) => {
 				variant: 'contained',
 			}
 		});
-	  	await brokerClient.removeACLFromRole(role.rolename, acl);
+	  	await brokerClient.removeRoleACL(role.rolename, acl);
 	  	const updatedRole = await brokerClient.getRole(role.rolename);
 	  	dispatch(updateRole(updatedRole));
 	}
@@ -429,8 +429,8 @@ const RoleDetail = (props) => {
 								acltype: event.target.value
 							})}
 						>
-							<MenuItem value={"publishClientToBroker"}>publishClientToBroker</MenuItem>
-							<MenuItem value={"publishBrokerToClient"}>publishBrokerToClient</MenuItem>
+							<MenuItem value={"publishClientSend"}>publishClientSend</MenuItem>
+							<MenuItem value={"publishClientReceive"}>publishClientReceive</MenuItem>
 							<MenuItem value={"subscribeLiteral"}>subscribeLiteral</MenuItem>
 							<MenuItem value={"subscribePattern"}>subscribePattern</MenuItem>
 							<MenuItem value={"unsubscribeLiteral"}>unsubscribeLiteral</MenuItem>
