@@ -107,6 +107,19 @@ const Roles = (props) => {
 			variant: 'contained',
 		}
 	});
+	if (rolename === 'admin') {
+		await confirm({
+			title: 'Confirm default role deletion',
+			description: `Are you sure? You are about to delete the default role for the current Mosquitto instance.`,
+			cancellationButtonProps: {
+				variant: 'contained',
+			},
+			confirmationButtonProps: {
+				color: 'primary',
+				variant: 'contained',
+			}
+		});
+	}
 	await client.deleteRole(rolename);
 	const roles = await client.listRoles();
 	dispatch(updateRoles(roles));
