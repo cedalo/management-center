@@ -117,25 +117,6 @@ const ClientNew = (props) => {
               <Grid item xs={12}>
                 <TextField
                   required
-                  id="client-id"
-                  label="Client ID"
-				  onChange={(event) => setClientID(event.target.value)}
-                  defaultValue=""
-                  variant="outlined"
-				  fullWidth
-                  className={classes.textField}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <ClientIDIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
                   id="username"
 				  label="username"
 				  onChange={(event) => setUsername(event.target.value)}
@@ -167,6 +148,24 @@ const ClientNew = (props) => {
                     startAdornment: (
                       <InputAdornment position="start">
 					  	<PasswordIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  id="client-id"
+                  label="Client ID"
+				  onChange={(event) => setClientID(event.target.value)}
+                  defaultValue=""
+                  variant="outlined"
+				  fullWidth
+                  className={classes.textField}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <ClientIDIcon />
                       </InputAdornment>
                     ),
                   }}
