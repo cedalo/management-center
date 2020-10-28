@@ -33,7 +33,7 @@ import SecurityIcon from '@material-ui/icons/Security';
 import UserManagementIcon from '@material-ui/icons/SupervisedUserCircle';
 
 import { WebSocketContext } from '../websockets/WebSocket';
-import { updateRole, updateRoles } from '../actions/actions';
+import { updateClients, updateGroups, updateRole, updateRoles } from '../actions/actions';
 
 const getIconForFeature = (feature) => {
 	switch (feature) {
@@ -107,9 +107,13 @@ const Roles = (props) => {
 			variant: 'contained',
 		}
 	});
-  await client.deleteRole(rolename);
-  const roles = await client.listRoles();
-  dispatch(updateRoles(roles));
+	await client.deleteRole(rolename);
+	const roles = await client.listRoles();
+	dispatch(updateRoles(roles));
+	const clients = await client.listClients();
+	dispatch(updateClients(clients));
+	const groups = await client.listGroups();
+	dispatch(updateGroups(groups));
 }
 
 const onSelectRole = async (rolename) => {
