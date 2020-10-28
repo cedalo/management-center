@@ -66,9 +66,13 @@ const ClientNew = (props) => {
   const [clientID, setClientID] = useState('');
   const [textname, setTextname] = useState('');
   const [textdescription, setTextdescription] = useState('');
+
+	const usernameExists = props?.clients?.find((searchClient) => {
+		return searchClient.username === username;
+	});
+
   const validate = () => {
-	  const valid = (clientID !== '')
-		  && (username !== '')
+	  const valid = (!usernameExists)
 		  && (password !== '');
 		  return valid;
   }
@@ -116,6 +120,8 @@ const ClientNew = (props) => {
             <Grid container spacing={1} alignItems="flex-end">
               <Grid item xs={12}>
                 <TextField
+				  error={usernameExists}
+				  helperText={usernameExists && "A client with this username already exists."}
                   required
                   id="username"
 				  label="username"
@@ -230,6 +236,7 @@ const ClientNew = (props) => {
 
 const mapStateToProps = (state) => {
   return {
+	clients: state.clients?.clients,
   };
 };
 
