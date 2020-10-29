@@ -8,9 +8,9 @@ import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import Hidden from "@material-ui/core/Hidden";
 import Paper from "@material-ui/core/Paper";
 import EditIcon from '@material-ui/icons/Edit';
@@ -57,7 +57,7 @@ const ACL_TABLE_COLUMNS = [
 	{ id: "type", key: "Type" },
     { id: "topic", key: "Topic" },
     { id: "priority", key: "Priority" },
-    { id: "allow", key: "Allow" },
+    { id: "allow", key: "Allow / Deny" },
   ];
 
 function TabPanel(props) {
@@ -140,7 +140,7 @@ const RoleDetail = (props) => {
 	const [value, setValue] = React.useState(0);
 	const [newACL, setNewACL] = React.useState({
 		acltype: "publishClientReceive",
-		allow: false,
+		allow: true,
 	});
 
   const [editMode, setEditMode] = React.useState(false);
@@ -193,7 +193,8 @@ const RoleDetail = (props) => {
 		dispatch(updateRole(updatedRole));
 		setNewACL({
 			acltype: "publishClientReceive",
-			allow: false,
+			allow: true,
+			topic: '',
 		});
 	}
 
@@ -215,7 +216,7 @@ const RoleDetail = (props) => {
 	}
 
   return (
-    <div className={classes.root}>
+    <div>
       <Breadcrumbs maxItems={2} aria-label="breadcrumb">
         <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
@@ -223,6 +224,7 @@ const RoleDetail = (props) => {
         <Typography className={classes.breadcrumbItem} color="textPrimary">{role.rolename}</Typography>
       </Breadcrumbs>
       <br />
+    <Paper className={classes.paper}>
       <Tabs
         value={value}
         onChange={handleChange}
@@ -393,10 +395,17 @@ const RoleDetail = (props) => {
 				</TableCell>
 
 				<TableCell>
-					<Checkbox
+					{/* <Checkbox
 						checked={acl.allow}
 						disabled
-					/>
+					/> */}
+					<Select
+						disabled
+						value={acl.allow ? "allow" : "deny"}
+					>
+						<MenuItem value="allow">allow</MenuItem>
+						<MenuItem value="deny">deny</MenuItem>
+					</Select>
 				</TableCell>
 
                 <TableCell align="right">
@@ -468,13 +477,25 @@ const RoleDetail = (props) => {
 				</TableCell>
 
 				<TableCell>
-					<Checkbox
+					{/* <Checkbox
 						checked={newACL.allow}
 						onChange={(event) => setNewACL({
 							...newACL,
 							allow: event.target.checked
 						})}
-					/>
+					/> */}
+					<Select
+						value={newACL.allow ? "allow" : "deny"}
+						onChange={(event) => {
+							setNewACL({
+								...newACL,
+								allow: event.target.value === "allow"
+							})
+						}}
+					>
+						<MenuItem value="allow">allow</MenuItem>
+						<MenuItem value="deny">deny</MenuItem>
+					</Select>
 				</TableCell>
 
                 <TableCell align="right">
@@ -591,14 +612,7 @@ const RoleDetail = (props) => {
 			</Button>
 			</Grid>
 		}
-      {/* <TabPanel value={value} index={2}>
-        <form className={classes.form} noValidate autoComplete="off">
-          <div className={classes.margin}>
-            <Grid container spacing={1} alignItems="flex-end">
-            </Grid>
-          </div>
-        </form>
-      </TabPanel> */}
+		</Paper>
     </div>
   );
 };
