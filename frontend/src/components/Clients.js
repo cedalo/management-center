@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import React, { useContext } from "react";
 import { connect, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useConfirm } from 'material-ui-confirm';
 import Chip from "@material-ui/core/Chip";
 import Fab from "@material-ui/core/Fab";
@@ -35,6 +35,14 @@ import AutoSuggest from './AutoSuggest';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { updateClient, updateClients, updateGroups } from '../actions/actions';
 
+const StyledTableRow = withStyles((theme) => ({
+	root: {
+	  '&:nth-of-type(odd)': {
+		backgroundColor: theme.palette.tables?.odd,
+	  },
+	},
+  }))(TableRow);
+
 const useStyles = makeStyles((theme) => ({
 	tableContainer: {
 		minHeight: '500px',
@@ -61,8 +69,8 @@ const clientShape = PropTypes.shape({
 });
 
 const USER_TABLE_COLUMNS = [
-  { id: "clientid", key: "Client ID" },
   { id: "username", key: "username" },
+  { id: "clientid", key: "Client ID" },
   { id: "textname", key: "Text name" },
   { id: "textdescription", key: "Description" },
   { id: "groups", key: "Groups" },
@@ -239,7 +247,7 @@ const Clients = (props) => {
             </TableHead>
             <TableBody>
               {clients && clients.map((client) => (
-                <TableRow
+                <StyledTableRow
                   hover
                   key={client.username}
                   onClick={(event) => {
@@ -305,7 +313,7 @@ const Clients = (props) => {
                           <DeleteIcon fontSize="small" />
                         </IconButton>
                   </TableCell>
-                </TableRow>
+                </StyledTableRow>
               ))}
             </TableBody>
           </Table>
