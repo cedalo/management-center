@@ -54,13 +54,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const groupShape = PropTypes.shape({
-  groupName: PropTypes.string,
+  groupname: PropTypes.string,
 });
 
 const GROUP_TABLE_COLUMNS = [
-  { id: "groupName", key: "Name" },
-  { id: "textName", key: "Text name" },
-  { id: "textDescription", key: "Description" },
+  { id: "groupname", key: "Name" },
+  { id: "textname", key: "Text name" },
+  { id: "textdescription", key: "Description" },
   { id: "clients", key: "Clients" },
   { id: "roles", key: "Roles" },
 ];
@@ -98,26 +98,26 @@ const Groups = (props) => {
 	if (!roles) {
 		roles = [];
 	}
-	const roleNames = roles.map(role => role.value);
-	await client.updateGroupRoles(group, roleNames);
+	const rolenames = roles.map(role => role.value);
+	await client.updateGroupRoles(group, rolenames);
 	const groups = await client.listGroups();
 	dispatch(updateGroups(groups));
   }
 
-  const onSelectGroup = async (groupName) => {
-	const group = await client.getGroup(groupName);
+  const onSelectGroup = async (groupname) => {
+	const group = await client.getGroup(groupname);
 	dispatch(updateGroup(group));
-	history.push(`/security/groups/detail/${groupName}`);
+	history.push(`/security/groups/detail/${groupname}`);
   }
 
   const onNewGroup = () => {
 	history.push("/security/groups/new");
   }
   
-  const onDeleteGroup = async (groupName) => {
+  const onDeleteGroup = async (groupname) => {
 		await confirm({
 			title: 'Confirm group deletion',
-			description: `Do you really want to delete the group "${groupName}"?`,
+			description: `Do you really want to delete the group "${groupname}"?`,
 			cancellationButtonProps: {
 				variant: 'contained',
 			},
@@ -126,7 +126,7 @@ const Groups = (props) => {
 				variant: 'contained',
 			}
 		});
-	  await client.deleteGroup(groupName);
+	  await client.deleteGroup(groupname);
 	  const groups = await client.listGroups();
 	  dispatch(updateGroups(groups));
 	  const clients = await client.listClients();
@@ -134,7 +134,7 @@ const Groups = (props) => {
   }
 
   const onRemoveClientFromGroup = async (username, group) => {
-	await client.removeClientFromGroup(username, group);
+	await client.removeGroupClient(username, group);
 	const groups = await client.listGroups();
 	dispatch(updateGroups(groups));
 };
@@ -158,11 +158,11 @@ const Groups = (props) => {
 	}));
 
 	const roleSuggestions = roles
-	.map(role => role.roleName)
+	.map(role => role.rolename)
 	.sort()
-	.map(roleName => ({
-		label: roleName,
-		value: roleName,
+	.map(rolename => ({
+		label: rolename,
+		value: rolename,
 	}));
 
   return (
@@ -201,22 +201,22 @@ const Groups = (props) => {
               {groups && groups.map((group) => (
                 <TableRow
                   hover
-				  key={group.groupName}
+				  key={group.groupname}
                   onClick={(event) => {
 					if (event.target.nodeName?.toLowerCase() === "td") {
-						onSelectGroup(group.groupName);
+						onSelectGroup(group.groupname);
 					}
 				  }}
                   style={{ cursor: "pointer" }}
                 >
                   <TableCell>
-                    {group.groupName}
+                    {group.groupname}
                   </TableCell>
                   <TableCell>
-                    {group.textName}
+                    {group.textname}
                   </TableCell>
                   <TableCell>
-                    {group.textDescription}
+                    {group.textdescription}
                   </TableCell>
                   <TableCell className={classes.badges}>
 					<AutoSuggest 
@@ -234,8 +234,8 @@ const Groups = (props) => {
 					<AutoSuggest 
 						suggestions={roleSuggestions}
 						values={group.roles.map((role) => ({
-							label: role.roleName,
-							value: role.roleName
+							label: role.rolename,
+							value: role.rolename
 						}))}
 						handleChange={(value) => {
 							onUpdateGroupRoles(group, value);
@@ -247,7 +247,7 @@ const Groups = (props) => {
 						  size="small"
                           onClick={(event) => {
                             event.stopPropagation();
-                            onSelectGroup(group.groupName);
+                            onSelectGroup(group.groupname);
                           }}
                         >
                           <EditIcon fontSize="small" />
@@ -256,7 +256,7 @@ const Groups = (props) => {
 						  size="small"
                           onClick={(event) => {
                             event.stopPropagation();
-                            onDeleteGroup(group.groupName);
+                            onDeleteGroup(group.groupname);
                           }}
                         >
                           <DeleteIcon fontSize="small" />
@@ -280,7 +280,7 @@ const Groups = (props) => {
                 <ListItemText
                   primary={
                     <span>
-                      {group.groupName}
+                      {group.groupname}
                     </span>
                   }
                     secondary={
@@ -291,9 +291,9 @@ const Groups = (props) => {
                           className={classes.inline}
                           color="textPrimary"
                         >
-                        {group.textName}
+                        {group.textname}
                       </Typography>
-					  <span> —  {group.textDescription} </span>
+					  <span> —  {group.textdescription} </span>
                       </React.Fragment>
                     }
                 />
@@ -303,7 +303,7 @@ const Groups = (props) => {
 							size="small"
 							onClick={(event) => {
 							event.stopPropagation();
-								onSelectGroup(group.groupName);
+								onSelectGroup(group.groupname);
 							}}
 							aria-label="edit"
 						>
@@ -315,7 +315,7 @@ const Groups = (props) => {
 							size="small"
 							onClick={(event) => {
 							event.stopPropagation();
-								onDeleteGroup(group.groupName);
+								onDeleteGroup(group.groupname);
 							}}
 							aria-label="delete"
 						>

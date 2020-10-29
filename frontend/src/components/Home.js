@@ -24,16 +24,16 @@ function Home() {
 		</Grid> */}
 		<Grid item lg={6} sm={6} xl={6} xs={12}>
 		  <HomeCard
-			title="System"
-			description="Analyse the system status of Mosquitto"
+			title="System Monitoring"
+			description="Monitor and analyse the system status of Mosquitto"
 			image={"system.png"}
 			link="/system"
 		  />
 		</Grid>
 		<Grid item lg={6} sm={6} xl={6} xs={12}>
 		  <HomeCard
-			title="Security"
-			description="Manage clients, groups and roles"
+			title="Dynamic Security"
+			description="Manage the security using clients, groups, roles and ACLs"
 			image={"security.png"}
 			link="/security"
 		  />

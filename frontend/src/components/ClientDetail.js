@@ -284,13 +284,13 @@ const ClientDetail = (props) => {
 					  if (editMode) {
 						setUpdatedClient({
 							...updatedClient,
-							textName: event.target.value
+							textname: event.target.value
 						})
 					  }
 				  }}
                   id="textname"
 				  label="Text name"
-				  value={updatedClient.textName}
+				  value={updatedClient.textname}
 				//   onChange={(event) => setTextName(event.target.value)}
                   defaultValue=""
                   variant="outlined"
@@ -305,13 +305,13 @@ const ClientDetail = (props) => {
 					  if (editMode) {
 						setUpdatedClient({
 							...updatedClient,
-							textDescription: event.target.value
+							textdescription: event.target.value
 						})
 					  }
 				  }}
                   id="textdescription"
 				  label="Text description"
-				  value={updatedClient.textDescription}
+				  value={updatedClient.textdescription}
 				//   onChange={(event) => setTextDescription(event.target.value)}
                   defaultValue=""
                   variant="outlined"
@@ -329,8 +329,8 @@ const ClientDetail = (props) => {
             <React.Fragment>
               <ListItem button>
                 <ListItemText
-                  primary={group.groupName}
-                  secondary={group.textDescription}
+                  primary={group.groupname}
+                  secondary={group.textdescription}
                 />
                 <ListItemSecondaryAction>
                   <IconButton edge="end" aria-label="delete">

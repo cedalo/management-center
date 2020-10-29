@@ -61,8 +61,8 @@ const GroupNew = (props) => {
   const classes = useStyles();
 
   const [groupname, setGroupname] = useState('');
-  const [textName, setTextName] = useState('');
-  const [textDescription, setTextDescription] = useState('');
+  const [textname, setTextname] = useState('');
+  const [textdescription, setTextdescription] = useState('');
 
   const context = useContext(WebSocketContext);
   const dispatch = useDispatch();
@@ -70,13 +70,17 @@ const GroupNew = (props) => {
   const confirm = useConfirm();
   const { client } = context;
 
+  const groupnameExists = props?.groups?.find((searchGroup) => {
+	return searchGroup.groupname === groupname;
+  });
+
   const validate = () => {
 	const valid = (groupname !== '');
 	return valid;
 }
 
   const onSaveGroup = async () => {
-	await client.createGroup(groupname, "", textName, textDescription);
+	await client.createGroup(groupname, "", textname, textdescription);
 	const groups = await client.listGroups();
 	dispatch(updateGroups(groups));
 	history.push(`/security/groups`);
@@ -112,6 +116,8 @@ const GroupNew = (props) => {
             <Grid container spacing={1} alignItems="flex-end">
               <Grid item xs={12}>
                 <TextField
+					error={groupnameExists}
+					helperText={groupnameExists && "A group with this name already exists."}
                   required
                   id="groupname"
 				  label="Groupname"
@@ -133,7 +139,7 @@ const GroupNew = (props) => {
                 <TextField
                   id="textname"
 				  label="Text name"
-				  onChange={(event) => setTextName(event.target.value)}
+				  onChange={(event) => setTextname(event.target.value)}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -144,7 +150,7 @@ const GroupNew = (props) => {
                 <TextField
                   id="textdescription"
 				  label="Text description"
-				  onChange={(event) => setTextDescription(event.target.value)}
+				  onChange={(event) => setTextdescription(event.target.value)}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -188,6 +194,7 @@ const GroupNew = (props) => {
 
 const mapStateToProps = (state) => {
   return {
+	groups: state.groups?.groups,
   };
 };
 

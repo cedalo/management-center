@@ -8,9 +8,9 @@ import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import Hidden from "@material-ui/core/Hidden";
 import Paper from "@material-ui/core/Paper";
 import EditIcon from '@material-ui/icons/Edit';
@@ -57,7 +57,7 @@ const ACL_TABLE_COLUMNS = [
 	{ id: "type", key: "Type" },
     { id: "topic", key: "Topic" },
     { id: "priority", key: "Priority" },
-    { id: "allow", key: "Allow" },
+    { id: "allow", key: "Allow / Deny" },
   ];
 
 function TabPanel(props) {
@@ -94,7 +94,7 @@ function a11yProps(index) {
 }
 
 const roleShape = PropTypes.shape({
-  roleName: PropTypes.string,
+  rolename: PropTypes.string,
 });
 
 const useStyles = makeStyles((theme) => ({
@@ -139,8 +139,8 @@ const RoleDetail = (props) => {
 
 	const [value, setValue] = React.useState(0);
 	const [newACL, setNewACL] = React.useState({
-		aclType: "publishReceive",
-		allow: false,
+		acltype: "publishClientReceive",
+		allow: true,
 	});
 
   const [editMode, setEditMode] = React.useState(false);
@@ -149,7 +149,7 @@ const RoleDetail = (props) => {
   });
 
   const validate = () => {
-	const valid = (updatedRole.roleName !== '');
+	const valid = (updatedRole.rolename !== '');
 	return valid;
   }
 
@@ -162,7 +162,7 @@ const RoleDetail = (props) => {
 		delete updatedRole.groups;
 		delete updatedRole.roles;
 		await brokerClient.modifyRole(updatedRole);
-		const roleObject = await brokerClient.getRole(role.roleName);
+		const roleObject = await brokerClient.getRole(role.rolename);
 		dispatch(updateRole(roleObject));
 		const roles = await brokerClient.listRoles();
 		dispatch(updateRoles(roles));
@@ -188,12 +188,13 @@ const RoleDetail = (props) => {
 	}
 
 	const onAddACL = async (acl) => {
-		await brokerClient.addACLToRole(role.roleName, acl);
-		const updatedRole = await brokerClient.getRole(role.roleName);
+		await brokerClient.addRoleACL(role.rolename, acl);
+		const updatedRole = await brokerClient.getRole(role.rolename);
 		dispatch(updateRole(updatedRole));
 		setNewACL({
-			aclType: "publishReceive",
-			allow: false,
+			acltype: "publishClientReceive",
+			allow: true,
+			topic: '',
 		});
 	}
 
@@ -209,20 +210,21 @@ const RoleDetail = (props) => {
 				variant: 'contained',
 			}
 		});
-	  	await brokerClient.removeACLFromRole(role.roleName, acl);
-	  	const updatedRole = await brokerClient.getRole(role.roleName);
+	  	await brokerClient.removeRoleACL(role.rolename, acl);
+	  	const updatedRole = await brokerClient.getRole(role.rolename);
 	  	dispatch(updateRole(updatedRole));
 	}
 
   return (
-    <div className={classes.root}>
+    <div>
       <Breadcrumbs maxItems={2} aria-label="breadcrumb">
         <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security/roles">Roles</RouterLink>
-        <Typography className={classes.breadcrumbItem} color="textPrimary">{role.roleName}</Typography>
+        <Typography className={classes.breadcrumbItem} color="textPrimary">{role.rolename}</Typography>
       </Breadcrumbs>
       <br />
+    <Paper className={classes.paper}>
       <Tabs
         value={value}
         onChange={handleChange}
@@ -271,7 +273,7 @@ const RoleDetail = (props) => {
 				  disabled
                   id="role-name"
                   label="Name"
-                  value={updatedRole.roleName}
+                  value={updatedRole.rolename}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -292,13 +294,13 @@ const RoleDetail = (props) => {
 					  if (editMode) {
 						setUpdatedRole({
 							...updatedRole,
-							textName: event.target.value
+							textname: event.target.value
 						})
 					  }
 				  }}
                   id="textname"
 				  label="Text name"
-				  value={updatedRole.textName}
+				  value={updatedRole.textname}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -312,13 +314,13 @@ const RoleDetail = (props) => {
 					  if (editMode) {
 						setUpdatedRole({
 							...updatedRole,
-							textDescription: event.target.value
+							textdescription: event.target.value
 						})
 					  }
 				  }}
                   id="textdescription"
 				  label="Text description"
-				  value={updatedRole.textDescription}
+				  value={updatedRole.textdescription}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -378,10 +380,10 @@ const RoleDetail = (props) => {
               <TableRow
 				hover
 				// TODO: add key
-                // key={role.roleName}
+                // key={role.rolename}
               >
                 <TableCell>
-                  {acl.aclType}
+                  {acl.acltype}
                 </TableCell>
 
 				<TableCell>
@@ -393,10 +395,17 @@ const RoleDetail = (props) => {
 				</TableCell>
 
 				<TableCell>
-					<Checkbox
+					{/* <Checkbox
 						checked={acl.allow}
 						disabled
-					/>
+					/> */}
+					<Select
+						disabled
+						value={acl.allow ? "allow" : "deny"}
+					>
+						<MenuItem value="allow">allow</MenuItem>
+						<MenuItem value="deny">deny</MenuItem>
+					</Select>
 				</TableCell>
 
                 <TableCell align="right">
@@ -414,7 +423,7 @@ const RoleDetail = (props) => {
             ))}
 			<TableRow
 				// TODO: add key
-                // key={role.roleName}
+                // key={role.rolename}
               >
                 <TableCell>
 					<FormControl>
@@ -422,15 +431,15 @@ const RoleDetail = (props) => {
 						<Select
 							labelId="new-acl-type-label"
 							id="new-acl-type"
-							value={newACL.aclType}
-							defaultValue="publishSend"
+							value={newACL.acltype}
+							defaultValue="publishClientToBroker"
 							onChange={(event) => setNewACL({
 								...newACL,
-								aclType: event.target.value
+								acltype: event.target.value
 							})}
 						>
-							<MenuItem value={"publishSend"}>publishSend</MenuItem>
-							<MenuItem value={"publishReceive"}>publishReceive</MenuItem>
+							<MenuItem value={"publishClientSend"}>publishClientSend</MenuItem>
+							<MenuItem value={"publishClientReceive"}>publishClientReceive</MenuItem>
 							<MenuItem value={"subscribeLiteral"}>subscribeLiteral</MenuItem>
 							<MenuItem value={"subscribePattern"}>subscribePattern</MenuItem>
 							<MenuItem value={"unsubscribeLiteral"}>unsubscribeLiteral</MenuItem>
@@ -468,13 +477,25 @@ const RoleDetail = (props) => {
 				</TableCell>
 
 				<TableCell>
-					<Checkbox
+					{/* <Checkbox
 						checked={newACL.allow}
 						onChange={(event) => setNewACL({
 							...newACL,
 							allow: event.target.checked
 						})}
-					/>
+					/> */}
+					<Select
+						value={newACL.allow ? "allow" : "deny"}
+						onChange={(event) => {
+							setNewACL({
+								...newACL,
+								allow: event.target.value === "allow"
+							})
+						}}
+					>
+						<MenuItem value="allow">allow</MenuItem>
+						<MenuItem value="deny">deny</MenuItem>
+					</Select>
 				</TableCell>
 
                 <TableCell align="right">
@@ -502,7 +523,7 @@ const RoleDetail = (props) => {
 				<React.Fragment>
 				<ListItem button>
 					<ListItemText
-					primary={acl.aclType}
+					primary={acl.acltype}
 
 					secondary={
 						<React.Fragment>
@@ -591,14 +612,7 @@ const RoleDetail = (props) => {
 			</Button>
 			</Grid>
 		}
-      {/* <TabPanel value={value} index={2}>
-        <form className={classes.form} noValidate autoComplete="off">
-          <div className={classes.margin}>
-            <Grid container spacing={1} alignItems="flex-end">
-            </Grid>
-          </div>
-        </form>
-      </TabPanel> */}
+		</Paper>
     </div>
   );
 };

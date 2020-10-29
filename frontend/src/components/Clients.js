@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import React, { useContext } from "react";
 import { connect, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useConfirm } from 'material-ui-confirm';
 import Chip from "@material-ui/core/Chip";
 import Fab from "@material-ui/core/Fab";
@@ -35,6 +35,14 @@ import AutoSuggest from './AutoSuggest';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { updateClient, updateClients, updateGroups } from '../actions/actions';
 
+const StyledTableRow = withStyles((theme) => ({
+	root: {
+	  '&:nth-of-type(odd)': {
+		backgroundColor: theme.palette.tables?.odd,
+	  },
+	},
+  }))(TableRow);
+
 const useStyles = makeStyles((theme) => ({
 	tableContainer: {
 		minHeight: '500px',
@@ -61,10 +69,10 @@ const clientShape = PropTypes.shape({
 });
 
 const USER_TABLE_COLUMNS = [
-  { id: "clientid", key: "Client ID" },
   { id: "username", key: "username" },
-  { id: "textName", key: "Text name" },
-  { id: "textDescription", key: "Description" },
+  { id: "clientid", key: "Client ID" },
+  { id: "textname", key: "Text name" },
+  { id: "textdescription", key: "Description" },
   { id: "groups", key: "Groups" },
   { id: "roles", key: "Roles" },
 ];
@@ -103,8 +111,8 @@ const Clients = (props) => {
 			}
 		});
 	}
-	const groupNames = groups.map(group => group.value);
-	await brokerClient.updateClientGroups(client, groupNames);
+	const groupnames = groups.map(group => group.value);
+	await brokerClient.updateClientGroups(client, groupnames);
 	const clients = await brokerClient.listClients();
 	dispatch(updateClients(clients));
 	const groupsUpdated = await brokerClient.listGroups();
@@ -115,8 +123,8 @@ const Clients = (props) => {
 	if (!roles) {
 		roles = [];
 	}
-	const roleNames = roles.map(role => role.value);
-	await brokerClient.updateClientRoles(client, roleNames);
+	const rolenames = roles.map(role => role.value);
+	await brokerClient.updateClientRoles(client, rolenames);
 	const clients = await brokerClient.listClients();
 	dispatch(updateClients(clients));
   }
@@ -149,9 +157,24 @@ const Clients = (props) => {
 			variant: 'contained',
 		}
 	});
+	if (username === 'cedalo') {
+		await confirm({
+			title: 'Confirm default client deletion',
+			description: `Are you sure? You are about to delete the default client for the current Mosquitto instance.`,
+			cancellationButtonProps: {
+				variant: 'contained',
+			},
+			confirmationButtonProps: {
+				color: 'primary',
+				variant: 'contained',
+			}
+		});
+	}
 	await brokerClient.deleteClient(username);
 	const clients = await brokerClient.listClients();
 	dispatch(updateClients(clients));
+	const groups = await brokerClient.listGroups();
+	dispatch(updateGroups(groups));
   }
 
 	const onRemoveClientFromGroup = async (client, group) => {
@@ -159,7 +182,7 @@ const Clients = (props) => {
 			title: 'Remove client from group',
 			description: `Do you really want to remove client "${client.username}" from group "${group}"?`
 		});
-		await client.removeClientFromGroup(client, group);
+		await client.removeGroupClient(client, group);
 		const clients = await client.listClients();
 		dispatch(updateClients(clients));
 	};
@@ -174,19 +197,19 @@ const Clients = (props) => {
   } = props;
 
   const groupSuggestions = groups
-	  .map(group => group.groupName)
+	  .map(group => group.groupname)
 	  .sort()
-	  .map(groupName => ({
-		label: groupName,
-		value: groupName,
+	  .map(groupname => ({
+		label: groupname,
+		value: groupname,
 	  }));
 
 	const roleSuggestions = roles
-	  .map(role => role.roleName)
+	  .map(role => role.rolename)
 	  .sort()
-	  .map(roleName => ({
-		  label: roleName,
-		  value: roleName,
+	  .map(rolename => ({
+		  label: rolename,
+		  value: rolename,
 	  }));
 
   return (
@@ -224,7 +247,7 @@ const Clients = (props) => {
             </TableHead>
             <TableBody>
               {clients && clients.map((client) => (
-                <TableRow
+                <StyledTableRow
                   hover
                   key={client.username}
                   onClick={(event) => {
@@ -235,23 +258,23 @@ const Clients = (props) => {
                   style={{ cursor: "pointer" }}
                 >
                   <TableCell>
-                    {client.clientid}
-                  </TableCell>
-                  <TableCell>
                     {client.username}
                   </TableCell>
                   <TableCell>
-                    {client.textName}
+                    {client.clientid}
                   </TableCell>
                   <TableCell>
-                    {client.textDescription}
+                    {client.textname}
+                  </TableCell>
+                  <TableCell>
+                    {client.textdescription}
                   </TableCell>
                   <TableCell className={classes.badges}>
 					<AutoSuggest 
 						suggestions={groupSuggestions}
 						values={client.groups.map((group) => ({
-							label: group.groupName,
-							value: group.groupName
+							label: group.groupname,
+							value: group.groupname
 						}))}
 						handleChange={(value) => {
 							onUpdateClientGroups(client, value);
@@ -262,8 +285,8 @@ const Clients = (props) => {
 					<AutoSuggest 
 						suggestions={roleSuggestions}
 						values={client.roles.map((role) => ({
-							label: role.roleName,
-							value: role.roleName
+							label: role.rolename,
+							value: role.rolename
 						}))}
 						handleChange={(value) => {
 							onUpdateClientRoles(client, value);
@@ -290,7 +313,7 @@ const Clients = (props) => {
                           <DeleteIcon fontSize="small" />
                         </IconButton>
                   </TableCell>
-                </TableRow>
+                </StyledTableRow>
               ))}
             </TableBody>
           </Table>
@@ -319,9 +342,9 @@ const Clients = (props) => {
                         className={classes.inline}
                         color="textPrimary"
                       >
-                        {client.textName}
+                        {client.textname}
                       </Typography>
-					  <span> —  {client.textDescription} </span>
+					  <span> —  {client.textdescription} </span>
 
                       {/* <div className={classes.badges}>
                         {client.groups.map((group) => (
