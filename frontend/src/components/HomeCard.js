@@ -11,7 +11,7 @@ import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles({
   root: {
-    maxWidth: 345,
+    // maxWidth: 500,
   },
 });
 
@@ -28,7 +28,7 @@ const HomeCard = ({ title, description, image, link, ...rest }) => {
         <CardMedia
           component="img"
           alt={title}
-          height="210"
+        //   height="210"
           image={image}
           title={title}
         />
