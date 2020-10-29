@@ -14,7 +14,7 @@ import CancelIcon from '@material-ui/icons/Cancel';
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
-    minWidth: 290,
+    minWidth: 250,
   },
   input: {
     display: 'flex',
@@ -44,13 +44,13 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(1, 2),
   },
   singleValue: {
-    fontSize: 16,
+    fontSize: 14,
   },
   placeholder: {
     position: 'absolute',
     left: 2,
     bottom: 6,
-    fontSize: 16,
+    fontSize: 14,
   },
   paper: {
     position: 'absolute',
@@ -60,7 +60,7 @@ const useStyles = makeStyles(theme => ({
     right: 0,
   },
   divider: {
-    height: theme.spacing(2),
+    height: theme.spacing(1),
   },
 }));
 
@@ -291,7 +291,6 @@ export default function AutoSuggest({ handleDelete, handleChange, suggestions, v
           styles={selectStyles}
           inputId="react-select-multiple"
           TextFieldProps={{
-            // label: 'Countries',
             InputLabelProps: {
               htmlFor: 'react-select-multiple',
               shrink: true,
