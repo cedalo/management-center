@@ -250,10 +250,10 @@ const Clients = (props) => {
                   style={{ cursor: "pointer" }}
                 >
                   <TableCell>
-                    {client.clientid}
+                    {client.username}
                   </TableCell>
                   <TableCell>
-                    {client.username}
+                    {client.clientid}
                   </TableCell>
                   <TableCell>
                     {client.textname}
