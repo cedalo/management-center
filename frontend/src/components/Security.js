@@ -30,7 +30,7 @@ function Security() {
       </Breadcrumbs>
       <br />
       <Grid container spacing={3}>
-        <Grid item lg={4} sm={6} xl={4} xs={12}>
+        <Grid item lg={4} sm={4} xl={4} xs={12}>
           <HomeCard
             title="Clients"
             description="Manage clients"
@@ -38,7 +38,7 @@ function Security() {
             link="/security/clients"
           />
         </Grid>
-        <Grid item lg={4} sm={6} xl={4} xs={12}>
+        <Grid item lg={4} sm={4} xl={4} xs={12}>
           <HomeCard
             title="Groups"
             description="Manage groups"
@@ -46,7 +46,7 @@ function Security() {
             link="/security/groups"
           />
         </Grid>
-        <Grid item lg={4} sm={6} xl={4} xs={12}>
+        <Grid item lg={4} sm={4} xl={4} xs={12}>
           <HomeCard
             title="Roles"
             description="Manage roles"

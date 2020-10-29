@@ -33,7 +33,7 @@ import SecurityIcon from '@material-ui/icons/Security';
 import UserManagementIcon from '@material-ui/icons/SupervisedUserCircle';
 
 import { WebSocketContext } from '../websockets/WebSocket';
-import { updateRole, updateRoles } from '../actions/actions';
+import { updateClients, updateGroups, updateRole, updateRoles } from '../actions/actions';
 
 const getIconForFeature = (feature) => {
 	switch (feature) {
@@ -64,13 +64,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const rolesShape = PropTypes.shape({
-  roleName: PropTypes.string,
+  rolename: PropTypes.string,
 });
 
 const ROLE_TABLE_COLUMNS = [
-  { id: "roleName", key: "Name" },
-  { id: "textName", key: "Text name" },
-  { id: "textDescription", key: "Description" },
+  { id: "rolename", key: "Name" },
+  { id: "textname", key: "Text name" },
+  { id: "textdescription", key: "Description" },
 //   { id: "acls", key: "ACLs" },
 ];
 
@@ -95,10 +95,10 @@ const Roles = (props) => {
 	history.push("/security/roles/new");
   }
 
-  const onDeleteRole = async (roleName) => {
+  const onDeleteRole = async (rolename) => {
 	await confirm({
 		title: 'Confirm role deletion',
-		description: `Do you really want to delete the role "${roleName}"?`,
+		description: `Do you really want to delete the role "${rolename}"?`,
 		cancellationButtonProps: {
 			variant: 'contained',
 		},
@@ -107,15 +107,32 @@ const Roles = (props) => {
 			variant: 'contained',
 		}
 	});
-  await client.deleteRole(roleName);
-  const roles = await client.listRoles();
-  dispatch(updateRoles(roles));
+	if (rolename === 'admin') {
+		await confirm({
+			title: 'Confirm default role deletion',
+			description: `Are you sure? You are about to delete the default role for the current Mosquitto instance.`,
+			cancellationButtonProps: {
+				variant: 'contained',
+			},
+			confirmationButtonProps: {
+				color: 'primary',
+				variant: 'contained',
+			}
+		});
+	}
+	await client.deleteRole(rolename);
+	const roles = await client.listRoles();
+	dispatch(updateRoles(roles));
+	const clients = await client.listClients();
+	dispatch(updateClients(clients));
+	const groups = await client.listGroups();
+	dispatch(updateGroups(groups));
 }
 
-const onSelectRole = async (roleName) => {
-	const role = await client.getRole(roleName);
+const onSelectRole = async (rolename) => {
+	const role = await client.getRole(rolename);
 	dispatch(updateRole(role));
-	history.push(`/security/roles/detail/${roleName}`);
+	history.push(`/security/roles/detail/${rolename}`);
   }
 
   const {
@@ -161,25 +178,25 @@ const onSelectRole = async (roleName) => {
             {roles.map((role) => (
               <TableRow
                 hover
-                key={role.roleName}
-                onClick={() => onSelectRole(role.roleName)}
+                key={role.rolename}
+                onClick={() => onSelectRole(role.rolename)}
                 style={{ cursor: "pointer" }}
               >
                 <TableCell>
-                  {role.roleName}
+                  {role.rolename}
                 </TableCell>
 				<TableCell>
-                    {role.textName}
+                    {role.textname}
                   </TableCell>
                   <TableCell>
-                    {role.textDescription}
+                    {role.textdescription}
                   </TableCell>
                 <TableCell align="right">
                       {/* <IconButton
 						size="small"
                         onClick={(event) => {
                           event.stopPropagation();
-                          onDeleteRole(role.roleName);
+                          onDeleteRole(role.rolename);
                         }}
                       >
                         <EditIcon fontSize="small" />
@@ -188,7 +205,7 @@ const onSelectRole = async (roleName) => {
 						size="small"
                         onClick={(event) => {
                           event.stopPropagation();
-                          onDeleteRole(role.roleName);
+                          onDeleteRole(role.rolename);
                         }}
                       >
                         <DeleteIcon fontSize="small" />
@@ -209,7 +226,7 @@ const onSelectRole = async (roleName) => {
                 <ListItemText
                   primary={
                     <span>
-                      {role.roleName}
+                      {role.rolename}
                     </span>
                   }
                   //   secondary={

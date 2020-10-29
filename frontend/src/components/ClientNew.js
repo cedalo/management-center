@@ -64,11 +64,15 @@ const ClientNew = (props) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [clientID, setClientID] = useState('');
-  const [textName, setTextName] = useState('');
-  const [textDescription, setTextDescription] = useState('');
+  const [textname, setTextname] = useState('');
+  const [textdescription, setTextdescription] = useState('');
+
+	const usernameExists = props?.clients?.find((searchClient) => {
+		return searchClient.username === username;
+	});
+
   const validate = () => {
-	  const valid = (clientID !== '')
-		  && (username !== '')
+	  const valid = (!usernameExists)
 		  && (password !== '');
 		  return valid;
   }
@@ -80,7 +84,7 @@ const ClientNew = (props) => {
   const { client } = context;
 
   const onSaveClient = async () => {
-	await client.createClient(username, password, clientID, "", textName, textDescription);
+	await client.createClient(username, password, clientID, "", textname, textdescription);
 	const clients = await client.listClients();
 	dispatch(updateClients(clients));
 	history.push(`/security/clients`);
@@ -116,25 +120,8 @@ const ClientNew = (props) => {
             <Grid container spacing={1} alignItems="flex-end">
               <Grid item xs={12}>
                 <TextField
-                  required
-                  id="client-id"
-                  label="Client ID"
-				  onChange={(event) => setClientID(event.target.value)}
-                  defaultValue=""
-                  variant="outlined"
-				  fullWidth
-                  className={classes.textField}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <ClientIDIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
+				  error={usernameExists}
+				  helperText={usernameExists && "A client with this username already exists."}
                   required
                   id="username"
 				  label="username"
@@ -174,9 +161,27 @@ const ClientNew = (props) => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  id="client-id"
+                  label="Client ID"
+				  onChange={(event) => setClientID(event.target.value)}
+                  defaultValue=""
+                  variant="outlined"
+				  fullWidth
+                  className={classes.textField}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <ClientIDIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
                   id="textname"
 				  label="Text name"
-				  onChange={(event) => setTextName(event.target.value)}
+				  onChange={(event) => setTextname(event.target.value)}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -187,7 +192,7 @@ const ClientNew = (props) => {
                 <TextField
                   id="textdescription"
 				  label="Text description"
-				  onChange={(event) => setTextDescription(event.target.value)}
+				  onChange={(event) => setTextdescription(event.target.value)}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -231,6 +236,7 @@ const ClientNew = (props) => {
 
 const mapStateToProps = (state) => {
   return {
+	clients: state.clients?.clients,
   };
 };
 

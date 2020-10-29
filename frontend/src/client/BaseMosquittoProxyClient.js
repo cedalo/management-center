@@ -231,25 +231,25 @@ export default class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	async createClient(username, password, clientid, roleName = "", textName, textDescription) {
+	async createClient(username, password, clientid, rolename = "", textname, textdescription) {
 		return this.sendCommand({
 			command: 'createClient',
 			username,
 			password,
 			clientid,
-			roleName,
-			textName,
-			textDescription
+			rolename,
+			textname,
+			textdescription
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async modifyClient({ username, password, textName, textDescription, groups, roles }) {
+	async modifyClient({ username, password, textname, textdescription, groups, roles }) {
 		return this.sendCommand({
 			command: 'modifyClient',
 			username,
 			password,
-			textName,
-			textDescription,
+			textname,
+			textdescription,
 			groups,
 			roles
 		}, API_DYNAMIC_SECURITY);
@@ -262,19 +262,19 @@ export default class BaseMosquittoProxyClient {
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async addClientRole(username, roleName) {
+	async addClientRole(username, rolename) {
 		return this.sendCommand({
 			command: 'addClientRole',
 			username,
-			roleName
+			rolename
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async removeClientRole(username, roleName) {
+	async removeClientRole(username, rolename) {
 		return this.sendCommand({
 			command: 'removeClientRole',
 			username,
-			roleName
+			rolename
 		}, API_DYNAMIC_SECURITY);
 	}
 
@@ -286,56 +286,56 @@ export default class BaseMosquittoProxyClient {
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async createGroup(groupName, roleName = "", textName, textDescription) {
+	async createGroup(groupname, rolename = "", textname, textdescription) {
 		return this.sendCommand({
 			command: 'createGroup',
-			groupName,
-			roleName,
-			textName,
-			textDescription
+			groupname,
+			rolename,
+			textname,
+			textdescription
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async modifyGroup({ groupName, textName, textDescription, clients, roles }) {
+	async modifyGroup({ groupname, textname, textdescription, clients, roles }) {
 		return this.sendCommand({
 			command: 'modifyGroup',
-			groupName,
-			textName,
-			textDescription,
+			groupname,
+			textname,
+			textdescription,
 			clients,
 			roles
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async addGroupRole(groupName, roleName) {
+	async addGroupRole(groupname, rolename) {
 		return this.sendCommand({
 			command: 'addGroupRole',
-			groupName,
-			roleName
+			groupname,
+			rolename
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async removeGroupRole(groupName, roleName) {
+	async removeGroupRole(groupname, rolename) {
 		return this.sendCommand({
 			command: 'removeGroupRole',
-			groupName,
-			roleName
+			groupname,
+			rolename
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async addClientToGroup(username, groupName) {
+	async addGroupClient(username, groupname) {
 		return this.sendCommand({
-			command: 'addClientToGroup',
+			command: 'addGroupClient',
 			username,
-			groupName
+			groupname
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async removeClientFromGroup(username, groupName) {
+	async removeGroupClient(username, groupname) {
 		return this.sendCommand({
-			command: 'removeClientFromGroup',
+			command: 'removeGroupClient',
 			username,
-			groupName
+			groupname
 		}, API_DYNAMIC_SECURITY);
 	}
 
@@ -352,17 +352,19 @@ export default class BaseMosquittoProxyClient {
 	async listClients(verbose = true) {
 		const data = await this.sendCommand({
 			command: 'listClients',
-			verbose
+			verbose,
+			count: -1,
+			offset: 0,
 		}, API_DYNAMIC_SECURITY);
 		return data.clients;
 	}
 
-	async getGroup(groupName) {
+	async getGroup(groupname) {
 		// const groups = await this.listGroups();
-		// return groups.find((group) => group.groupName === groupName);
+		// return groups.find((group) => group.groupname === groupname);
 		const data = await this.sendCommand({
 			command: 'getGroup',
-			groupName
+			groupname
 		}, API_DYNAMIC_SECURITY);
 		return data.group;
 	}
@@ -396,43 +398,43 @@ export default class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	async createRole(roleName, textName, textDescription) {
+	async createRole(rolename, textname, textdescription) {
 		return this.sendCommand({
 			command: 'createRole',
-			roleName,
-			textName,
-			textDescription,
+			rolename,
+			textname,
+			textdescription,
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async modifyRole({ roleName, textName, textDescription }) {
+	async modifyRole({ rolename, textname, textdescription }) {
 		return this.sendCommand({
 			command: 'modifyRole',
-			roleName,
-			textName,
-			textDescription
+			rolename,
+			textname,
+			textdescription
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async deleteRole(roleName) {
+	async deleteRole(rolename) {
 		return this.sendCommand({
 			command: 'deleteRole',
-			roleName
+			rolename
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async getRole(roleName) {
+	async getRole(rolename) {
 		const roles = await this.listRoles();
-		const fetchedRole = roles.find(role => role.roleName === roleName);
+		const fetchedRole = roles.find(role => role.rolename === rolename);
 		// TODO: activate when implemented at Mosquitto
 		// return this.sendCommand({
 		// 	command: 'getRole',
-		// 	roleName,
+		// 	rolename,
 		// }, API_DYNAMIC_SECURITY);
 		return fetchedRole;
 		return this.sendCommand({
 			command: 'getRole',
-			roleName
+			rolename
 		}, API_DYNAMIC_SECURITY);
 	}
 
@@ -444,22 +446,22 @@ export default class BaseMosquittoProxyClient {
 		return data.roles;
 	}
 
-	async addACLToRole(roleName, { aclType, priority, topic, allow }) {
+	async addRoleACL(rolename, { acltype, priority, topic, allow }) {
 		return this.sendCommand({
-			command: 'addACLToRole',
-			roleName,
-			aclType,
+			command: 'addRoleACL',
+			rolename,
+			acltype,
 			priority,
 			topic,
 			allow,
 		}, API_DYNAMIC_SECURITY);
 	}
 	
-	async removeACLFromRole(roleName, { aclType, priority, topic, allow }) {
+	async removeRoleACL(rolename, { acltype, priority, topic, allow }) {
 		return this.sendCommand({
-			command: 'removeACLFromRole',
-			roleName,
-			aclType,
+			command: 'removeRoleACL',
+			rolename,
+			acltype,
 			topic,
 		}, API_DYNAMIC_SECURITY);
 	}
@@ -470,29 +472,29 @@ export default class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	async updateClientGroups(client, groupNames = []) {
-		if (!groupNames) {
-			groupNames = [];
+	async updateClientGroups(client, groupnames = []) {
+		if (!groupnames) {
+			groupnames = [];
 		}
-		const clientGroupNames = client.groups.map(group => group.groupName);
-		const groupsToRemove = clientGroupNames.filter(groupName => !groupNames.includes(groupName));
-		const groupsToAdd = groupNames.filter(groupName => !clientGroupNames.includes(groupName));
+		const clientGroupnames = client.groups.map(group => group.groupname);
+		const groupsToRemove = clientGroupnames.filter(groupname => !groupnames.includes(groupname));
+		const groupsToAdd = groupnames.filter(groupname => !clientGroupnames.includes(groupname));
 		for (const groupToRemove of groupsToRemove) {
-			await this.removeClientFromGroup(client.username, groupToRemove);
+			await this.removeGroupClient(client.username, groupToRemove);
 		}
 		for (const groupToAdd of groupsToAdd) {
-		  	await this.addClientToGroup(client.username, groupToAdd);
+		  	await this.addGroupClient(client.username, groupToAdd);
 	  }
 	}
 
-	async updateClientRoles(client, roleNames = []) {
-		if (!roleNames) {
-			roleNames = [];
+	async updateClientRoles(client, rolenames = []) {
+		if (!rolenames) {
+			rolenames = [];
 		}
 		if (client.roles) {
-			const clientRoleNames = client.roles.map(role => role.roleName);
-			const rolesToRemove = clientRoleNames.filter(roleName => !roleNames.includes(roleName));
-			const rolesToAdd = roleNames.filter(roleName => !clientRoleNames.includes(roleName));
+			const clientRolenames = client.roles.map(role => role.rolename);
+			const rolesToRemove = clientRolenames.filter(rolename => !rolenames.includes(rolename));
+			const rolesToAdd = rolenames.filter(rolename => !clientRolenames.includes(rolename));
 			for (const roleToRemove of rolesToRemove) {
 				await this.removeClientRole(client.username, roleToRemove);
 			}
@@ -510,26 +512,26 @@ export default class BaseMosquittoProxyClient {
 		const clientsToRemove = groupusernames.filter(username => !usernames.includes(username));
 		const clientsToAdd = usernames.filter(username => !groupusernames.includes(username));
 		for (const clientToRemove of clientsToRemove) {
-			await this.removeClientFromGroup(clientToRemove, group.groupName);
+			await this.removeGroupClient(clientToRemove, group.groupname);
 		}
 		for (const clientToAdd of clientsToAdd) {
-		  	await this.addClientToGroup(clientToAdd, group.groupName);
+		  	await this.addGroupClient(clientToAdd, group.groupname);
 	  }
 	}
 
-	async updateGroupRoles(group, roleNames = []) {
-		if (!roleNames) {
-			roleNames = [];
+	async updateGroupRoles(group, rolenames = []) {
+		if (!rolenames) {
+			rolenames = [];
 		}
 		if (group.roles) {
-			const groupRoleNames = group.roles.map(role => role.roleName);
-			const rolesToRemove = groupRoleNames.filter(roleName => !roleNames.includes(roleName));
-			const rolesToAdd = roleNames.filter(roleName => !groupRoleNames.includes(roleName));
+			const groupRolenames = group.roles.map(role => role.rolename);
+			const rolesToRemove = groupRolenames.filter(rolename => !rolenames.includes(rolename));
+			const rolesToAdd = rolenames.filter(rolename => !groupRolenames.includes(rolename));
 			for (const roleToRemove of rolesToRemove) {
-				await this.removeGroupRole(group.groupName, roleToRemove);
+				await this.removeGroupRole(group.groupname, roleToRemove);
 			}
 			for (const roleToAdd of rolesToAdd) {
-				  await this.addGroupRole(group.groupName, roleToAdd);
+				  await this.addGroupRole(group.groupname, roleToAdd);
 		  }
 		}
 	}
@@ -547,15 +549,15 @@ export default class BaseMosquittoProxyClient {
 	async addClientToGroups(username, groups) {
 		if (groups) {
 			for (const group of groups) {
-				await this.addClientToGroup(username, group);
+				await this.addGroupClient(username, group);
 			}
 		}
 	}
 
-	async deleteGroup(groupName) {
+	async deleteGroup(groupname) {
 		return this.sendCommand({
 			command: 'deleteGroup',
-			groupName
+			groupname
 		}, API_DYNAMIC_SECURITY);
 	}
 
@@ -569,7 +571,7 @@ export default class BaseMosquittoProxyClient {
 	async deleteAllGroups() {
 		const groups = await this.listGroups();
 		for (const group of groups) {
-			await this.deleteGroup(group.groupName);
+			await this.deleteGroup(group.groupname);
 		}
 	}
 
