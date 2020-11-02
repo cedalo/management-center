@@ -13,6 +13,7 @@ jobs:
     - cd frontend
     - yarn install
     - CI=false yarn build --verbose
+    - cd ..
     deploy:
     - provider: script
       script: bash -c "docker login -u $DOCKER_USER -p $DOCKER_PASSWORD && bash ./scripts/travis.dev.sh"
