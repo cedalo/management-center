@@ -7,6 +7,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useConfirm } from 'material-ui-confirm';
 import Chip from "@material-ui/core/Chip";
 import Fab from "@material-ui/core/Fab";
+import Tooltip from '@material-ui/core/Tooltip';
 import AddIcon from "@material-ui/icons/Add";
 import Hidden from "@material-ui/core/Hidden";
 import IconButton from "@material-ui/core/IconButton";
@@ -170,7 +171,7 @@ const Groups = (props) => {
       <Breadcrumbs aria-label="breadcrumb">
         <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
         <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
-        <Typography className={classes.breadcrumbItem} color="textPrimary">Client Groups</Typography>
+        <Typography className={classes.breadcrumbItem} color="textPrimary">Groups</Typography>
       </Breadcrumbs>
       <br />
 	  { groups && groups.length > 0 ? 
@@ -252,15 +253,18 @@ const Groups = (props) => {
                         >
                           <EditIcon fontSize="small" />
                         </IconButton> */}
-                        <IconButton
-						  size="small"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            onDeleteGroup(group.groupname);
-                          }}
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
+
+						<Tooltip title="Delete group">
+							<IconButton
+								size="small"
+								onClick={(event) => {
+									event.stopPropagation();
+									onDeleteGroup(group.groupname);
+								}}
+							>
+							<DeleteIcon fontSize="small" />
+							</IconButton>
+						</Tooltip>
                   </TableCell>
                 </TableRow>
               ))}
