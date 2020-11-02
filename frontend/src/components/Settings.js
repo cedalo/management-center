@@ -55,7 +55,7 @@ const Settings = ({ settings, sendMessage }) => {
 	  <div>
 		<Breadcrumbs aria-label="breadcrumb">
 			<RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
-			<RouterLink className={classes.breadcrumbLink} to="/system">System</RouterLink>
+			<RouterLink className={classes.breadcrumbLink} to="/config">Config</RouterLink>
 			<Typography className={classes.breadcrumbItem} color="textPrimary">Settings</Typography>
 		</Breadcrumbs>
 		<br />
@@ -64,7 +64,7 @@ const Settings = ({ settings, sendMessage }) => {
         control={
           <Switch
 			checked={darkMode === 'true'}
-			disabled
+			// disabled
             onChange={onChangeTheme}
             name="darkMode"
             color="primary"
