@@ -10,7 +10,9 @@ jobs:
     install:
     - yarn install --frozen-lockfile
     script:
+    - cd frontend
     - yarn build
+    - cd ..
     deploy:
       - provider: script
         script: bash -c "docker login -u $DOCKER_USER -p $DOCKER_PASSWORD && bash ./scripts/travis.dev.sh"
