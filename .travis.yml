@@ -12,7 +12,7 @@ jobs:
     script:
     - cd frontend
     - yarn install
-    - yarn build
+    - yarn build -verbose
     - cd ..
     deploy:
       - provider: script
