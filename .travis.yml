@@ -11,6 +11,7 @@ jobs:
     - yarn install
     script:
     - cd frontend
+    - yarn install
     - yarn build
     - cd ..
     deploy:
