@@ -384,11 +384,12 @@ export default class BaseMosquittoProxyClient {
 		}, API_DYNAMIC_SECURITY);
 	}
 
-	async kickClient(username, clientid) {
+	async disableClient(username) {
 		return this.sendCommand({
-			command: 'kickClient',
-			username,
-			clientid
+			command: 'disableClient',
+			username
+		}, API_DYNAMIC_SECURITY);
+	}
 		}, API_DYNAMIC_SECURITY);
 	}
 
