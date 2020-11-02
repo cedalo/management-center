@@ -1,6 +1,10 @@
 FROM node:14.9.0-alpine
 LABEL maintainer="philip.ackermann@cedalo.com"
 
+ARG MOSQUITTO_UI_BUILD_DATE
+ENV MOSQUITTO_UI_BUILD_DATE=${MOSQUITTO_UI_BUILD_DATE}
+ARG MOSQUITTO_UI_BUILD_NUMBER
+ENV MOSQUITTO_UI_BUILD_NUMBER=${MOSQUITTO_UI_BUILD_NUMBER}
 RUN apk --no-cache add g++ make bash curl nginx git gnupg python rsync unzip
 
 WORKDIR /mosquitto-ui
