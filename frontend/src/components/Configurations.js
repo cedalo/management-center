@@ -38,6 +38,7 @@ import ConnectedIcon from "@material-ui/icons/CheckCircle";
 import { WebSocketContext } from "../websockets/WebSocket";
 
 const GROUP_TABLE_COLUMNS = [
+  { id: "id", key: "ID" },
   { id: "configurationName", key: "Name" },
   { id: "URL", key: "URL" },
   { id: "status", key: "Status" },
@@ -95,8 +96,8 @@ const Configurations = ({
         <RouterLink className={classes.breadcrumbLink} to="/home">
           Home
         </RouterLink>
-        <RouterLink className={classes.breadcrumbLink} to="/system">
-          System
+        <RouterLink className={classes.breadcrumbLink} to="/config">
+          Config
         </RouterLink>
         <Typography className={classes.breadcrumbItem} color="textPrimary">
           Configurations
@@ -141,6 +142,7 @@ const Configurations = ({
                           //   onClick={() => onSelectConfiguration(brokerConfiguration.name)}
                           //   style={{ cursor: "pointer" }}
                         >
+                          <TableCell>{brokerConfiguration.id}</TableCell>
                           <TableCell>{brokerConfiguration.name}</TableCell>
                           <TableCell>{brokerConfiguration.url}</TableCell>
                           <TableCell>
