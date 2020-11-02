@@ -8,6 +8,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useConfirm } from 'material-ui-confirm';
 import Chip from "@material-ui/core/Chip";
 import Fab from '@material-ui/core/Fab';
+import Tooltip from '@material-ui/core/Tooltip';
 import AddIcon from '@material-ui/icons/Add';
 import Hidden from "@material-ui/core/Hidden";
 import IconButton from "@material-ui/core/IconButton";
@@ -201,15 +202,17 @@ const onSelectRole = async (rolename) => {
                       >
                         <EditIcon fontSize="small" />
                       </IconButton> */}
-                      <IconButton
-						size="small"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          onDeleteRole(role.rolename);
-                        }}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
+					  <Tooltip title="Delete role">
+						<IconButton
+							size="small"
+							onClick={(event) => {
+							event.stopPropagation();
+								onDeleteRole(role.rolename);
+							}}
+						>
+							<DeleteIcon fontSize="small" />
+						</IconButton>
+					  </Tooltip>
                 </TableCell>
               </TableRow>
             ))}
