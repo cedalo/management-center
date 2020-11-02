@@ -73,7 +73,7 @@ import RoleNew from "./components/RoleNew";
 import Clients from "./components/Clients";
 import store from "./store";
 import WebSocketProvider, { WebSocketContext } from "./websockets/WebSocket";
-import NewsDrawer from "./components/NewsDrawer";
+// import NewsDrawer from "./components/NewsDrawer";
 import useFetch from "./helpers/useFetch";
 import useLocalStorage from "./helpers/useLocalStorage";
 import OnBoardingDialog from "./components/OnBoardingDialog";
