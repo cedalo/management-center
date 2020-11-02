@@ -18,6 +18,11 @@ import FeatureEnabledIcon from '@material-ui/icons/CheckCircle';
 import { Link as RouterLink } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
+	tableContainer: {
+		"& td:first-child": {
+			width: "30%",
+		}
+	},
   badges: {
     "& > *": {
       margin: theme.spacing(0.3),
@@ -43,18 +48,53 @@ const InfoPage = (props) => {
 
   const {
 	license,
+	version,
   } = props;
 
   return (
     <div>
 	<Breadcrumbs aria-label="breadcrumb">
 	  <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
-	  <Typography className={classes.breadcrumbItem} color="textPrimary">License</Typography>
+	  <Typography className={classes.breadcrumbItem} color="textPrimary">Info</Typography>
 	</Breadcrumbs>
 	<br />
+	{
+		version && 
+        <TableContainer component={Paper} className={classes.tableContainer} >
+          <Table size="medium">
+            <TableBody>
+                <TableRow>
+                  <TableCell>
+                    <b>Version</b>
+                  </TableCell>
+                  <TableCell>
+                    {version.version}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>
+				  	<b>Build number</b>
+                  </TableCell>
+                  <TableCell>
+                    {version.buildNumber}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>
+				  	<b>Build date</b>
+                  </TableCell>
+                  <TableCell>
+                    {version.buildDate}
+                  </TableCell>
+                </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+		}
+		<br />
 	  {
 		license && 
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} className={classes.tableContainer} >
           <Table size="medium">
             <TableBody>
                 <TableRow>
@@ -134,7 +174,7 @@ const InfoPage = (props) => {
 					}
                   </TableCell>
                 </TableRow>
-                <TableRow>
+                {/* <TableRow>
                   <TableCell>
 				  	<b>🚧 Import / Export</b>
                   </TableCell>
@@ -143,7 +183,7 @@ const InfoPage = (props) => {
 						createFeatureIcon('import-export', license)
 					}
                   </TableCell>
-                </TableRow>
+                </TableRow> */}
                 <TableRow>
                   <TableCell>
 				  	<b>Topic Tree</b>
@@ -165,6 +205,7 @@ const InfoPage = (props) => {
 const mapStateToProps = (state) => {
   return {
 	  license: state.license?.license,
+	  version: state.version?.version,
   };
 };
 
