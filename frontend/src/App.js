@@ -57,7 +57,7 @@ import Home from "./components/Home";
 import Security from "./components/Security";
 import System from "./components/System";
 import InfoPage from "./components/InfoPage";
-import Login from "./components/Login";
+// import Login from "./components/Login";
 import Roles from "./components/Roles";
 import Configurations from "./components/Configurations";
 import Settings from "./components/Settings";
@@ -394,9 +394,9 @@ export default function App(props) {
 					  </Typography>
 					</Toolbar>
 				  </AppBar>
-				  <Container className={classes.container}>
+				  {/* <Container className={classes.container}>
 					<Login />
-				  </Container>
+				  </Container> */}
 				</Route>
 				<Route path="/">
 				  <AppBar
