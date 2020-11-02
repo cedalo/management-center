@@ -1,7 +1,7 @@
 import React, { createContext } from 'react'
 import WS_BASE from './config';
 import { useDispatch } from 'react-redux';
-import { updateGroups, updateRoles, updateClients, updateBrokerConfigurations, updateBrokerConnected, updateBrokerConnections, updateLicense, updateSystemStatus, updateTopicTree } from '../actions/actions';
+import { updateGroups, updateRoles, updateClients, updateBrokerConfigurations, updateBrokerConnected, updateBrokerConnections, updateLicense, updateVersion, updateSystemStatus, updateTopicTree } from '../actions/actions';
 import WebMosquittoProxyClient from '../client/WebMosquittoProxyClient';
 
 const WebSocketContext = createContext(null)
@@ -32,7 +32,10 @@ export default ({ children }) => {
 		});
 		client.on('license', (message) => {
 			dispatch(updateLicense(message.payload));
-		})
+		});
+		client.on('version', (message) => {
+			dispatch(updateVersion(message.payload));
+		});
 		// TODO: merge with code from BrokerSelect
 		client.connect({ socketEndpointURL: WS_BASE.url })
 			.then(() => client.connectToBroker('Mosquitto 2.0 Preview'))
