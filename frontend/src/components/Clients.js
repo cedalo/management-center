@@ -5,6 +5,7 @@ import { connect, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useConfirm } from 'material-ui-confirm';
+import Tooltip from '@material-ui/core/Tooltip';
 import Chip from "@material-ui/core/Chip";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
@@ -303,15 +304,18 @@ const Clients = (props) => {
                         >
                           <EditIcon fontSize="small" />
                         </IconButton> */}
-                        <IconButton
-						  size="small"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            onDeleteClient(client.username);
-                          }}
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
+
+						<Tooltip title="Delete client">
+							<IconButton
+								size="small"
+								onClick={(event) => {
+									event.stopPropagation();
+									onDeleteClient(client.username);
+								}}
+							>
+							<DeleteIcon fontSize="small" />
+							</IconButton>
+						</Tooltip>
                   </TableCell>
                 </StyledTableRow>
               ))}
