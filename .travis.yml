@@ -1,0 +1,26 @@
+jobs:
+  include:
+  - language: node_js
+    node_js:
+    - 10.15.0
+    services:
+    - docker
+    cache:
+      yarn: true
+    install:
+    - yarn install --frozen-lockfile
+    script:
+    - yarn build
+    deploy:
+      - provider: script
+        script: bash -c "docker login -u $DOCKER_USER -p $DOCKER_PASSWORD && bash ./scripts/travis.dev.sh"
+        on:
+          branch: master
+        skip_cleanup: true
+  
+      - provider: script
+        script: bash -c 'docker login -u $DOCKER_USER -p $DOCKER_PASSWORD && bash ./scripts/travis.release.sh'
+        on:
+          condition: "${TRAVIS_TAG} =~ ^[0-9]+\\.[0-9]+(\\.[0-9]+)?.*$"
+          tags: true
+        skip_cleanup: true
