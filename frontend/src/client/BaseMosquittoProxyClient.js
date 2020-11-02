@@ -390,6 +390,11 @@ export default class BaseMosquittoProxyClient {
 			username
 		}, API_DYNAMIC_SECURITY);
 	}
+
+	async enableClient(username) {
+		return this.sendCommand({
+			command: 'enableClient',
+			username
 		}, API_DYNAMIC_SECURITY);
 	}
 
