@@ -6,6 +6,7 @@ import { useHistory } from "react-router-dom";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useConfirm } from 'material-ui-confirm';
 import Tooltip from '@material-ui/core/Tooltip';
+import Switch from '@material-ui/core/Switch';
 import Chip from "@material-ui/core/Chip";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
@@ -70,7 +71,7 @@ const clientShape = PropTypes.shape({
 });
 
 const USER_TABLE_COLUMNS = [
-  { id: "username", key: "username" },
+  { id: "username", key: "Username" },
   { id: "clientid", key: "Client ID" },
   { id: "textname", key: "Text name" },
   { id: "textdescription", key: "Description" },
@@ -176,6 +177,29 @@ const Clients = (props) => {
 	dispatch(updateClients(clients));
 	const groups = await brokerClient.listGroups();
 	dispatch(updateGroups(groups));
+  }
+
+  const onDisableClient = async (username) => {
+	await confirm({
+		title: 'Confirm client disable',
+		description: `Do you really want to disable client "${username}"?`,
+		cancellationButtonProps: {
+			variant: 'contained',
+		},
+		confirmationButtonProps: {
+			color: 'primary',
+			variant: 'contained',
+		}
+	});
+	await brokerClient.disableClient(username);
+	const clients = await brokerClient.listClients();
+	dispatch(updateClients(clients));
+  }
+
+  const onEnableClient = async (username) => {
+	await brokerClient.enableClient(username);
+	const clients = await brokerClient.listClients();
+	dispatch(updateClients(clients));
   }
 
 	const onRemoveClientFromGroup = async (client, group) => {
@@ -315,6 +339,19 @@ const Clients = (props) => {
 							>
 							<DeleteIcon fontSize="small" />
 							</IconButton>
+						</Tooltip>
+						<Tooltip title="Enable / disable client">
+							<Switch
+								checked={typeof client.disabled === 'undefined' || client.disabled === false}
+								onClick={(event) => {
+								event.stopPropagation();
+								if (event.target.checked) {
+									onEnableClient(client.username);
+								} else {
+									onDisableClient(client.username);
+								}
+								}}
+							/>
 						</Tooltip>
                   </TableCell>
                 </StyledTableRow>
