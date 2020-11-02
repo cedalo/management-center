@@ -173,7 +173,8 @@ const Status = ({ systemStatus }) => {
                 </TableBody>
               </Table>
             </TableContainer>
-            <br />
+            </Grid>
+          	<Grid item lg={4} sm={4} xl={4} xs={12}>
             <TableContainer component={Paper}>
               <Table className={classes.table}>
                 <TableHead>
@@ -243,13 +244,13 @@ const Status = ({ systemStatus }) => {
               </Table>
             </TableContainer>
           </Grid>
-          <Grid item lg={4} sm={4} xl={4} xs={12}>
+          {/* <Grid item lg={4} sm={4} xl={4} xs={12}>
             <Chart
               title="Sent messages by type"
               data={data}
               dataDescriptions={dataDescriptions}
             />
-          </Grid>
+          </Grid> */}
         </Grid>
       </Container>
     </div>
