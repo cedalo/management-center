@@ -63,6 +63,12 @@ export function updateBrokerConnections(update) {
     }
 }
 
+export function updateVersion(update) {
+    return {
+        type: ActionTypes.UPDATE_VERSION,
+        update
+    }
+}
 
 export function updateLicense(update) {
     return {
