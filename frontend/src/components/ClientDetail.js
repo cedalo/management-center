@@ -179,7 +179,7 @@ const ClientDetail = (props) => {
       </Breadcrumbs>
       <br />
     <Paper className={classes.paper}>
-      <Tabs
+      {/* <Tabs
         value={value}
         onChange={handleChange}
         variant="scrollable"
@@ -198,14 +198,13 @@ const ClientDetail = (props) => {
           aria-label="groups"
           {...a11yProps(1)}
         />
-      </Tabs>
-      <TabPanel value={value} index={0}>
+      </Tabs> */}
+      {/* <TabPanel value={value} index={0}> */}
         <form className={classes.form} noValidate autoComplete="off">
           <div className={classes.margin}>
             <Grid container spacing={1} alignItems="flex-end">
               <Grid item xs={12}>
                 <TextField
-                  required
 				  disabled
                   id="client-id"
                   label="Client ID"
@@ -325,8 +324,8 @@ const ClientDetail = (props) => {
             </Grid>
           </div>
         </form>
-      </TabPanel>
-      <TabPanel value={value} index={1}>
+      {/* </TabPanel> */}
+      {/* <TabPanel value={value} index={1}>
 	  <List className={classes.root}>
           {client.groups?.map((group) => (
             <React.Fragment>
@@ -345,7 +344,7 @@ const ClientDetail = (props) => {
             </React.Fragment>
           ))}
         </List>
-      </TabPanel>
+      </TabPanel> */}
 			  { !editMode && <Grid item xs={12} className={classes.buttons} >
 				<Button
 					variant="contained"
