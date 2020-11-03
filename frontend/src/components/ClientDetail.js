@@ -135,7 +135,7 @@ const ClientDetail = (props) => {
 	delete updatedClient.groups;
 	delete updatedClient.roles;
 	await brokerClient.modifyClient(updatedClient);
-	const clientObject = await brokerClient.getClient(client.clientid);
+	const clientObject = await brokerClient.getClient(updatedClient.username);
 	dispatch(updateClient(clientObject));
 	const clients = await brokerClient.listClients();
 	dispatch(updateClients(clients));
