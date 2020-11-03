@@ -64,7 +64,7 @@ const Settings = ({ settings, sendMessage }) => {
         control={
           <Switch
 			checked={darkMode === 'true'}
-			// disabled
+			disabled
             onChange={onChangeTheme}
             name="darkMode"
             color="primary"
