@@ -273,11 +273,11 @@ const onCancelEdit = async () => {
       </TabPanel>
       <TabPanel value={value} index={1}>
 	  <List className={classes.root}>
-          {group.users?.map((user) => (
+          {group.clients?.map((client) => (
             <React.Fragment>
               <ListItem button>
                 <ListItemText
-                  primary={user}
+                  primary={client.username}
                 />
                 <ListItemSecondaryAction>
                   <IconButton edge="end" aria-label="delete">
