@@ -3,6 +3,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
+import Button from '@material-ui/core/Button';
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -17,11 +18,16 @@ import FeatureEnabledIcon from '@material-ui/icons/CheckCircle';
 
 import { Link as RouterLink } from "react-router-dom";
 
+import useFetch from "../helpers/useFetch";
+
 const useStyles = makeStyles((theme) => ({
 	tableContainer: {
 		"& td:first-child": {
 			width: "30%",
 		}
+	},
+	updateButton: {
+		marginLeft: "20px",
 	},
   badges: {
     "& > *": {
@@ -45,6 +51,9 @@ const getPremium = () => {
 
 const InfoPage = (props) => {
   const classes = useStyles();
+  const [response, loading, hasError] = useFetch("http://localhost:8088/api/update");
+
+  if (response) {
 
   const {
 	license,
@@ -85,6 +94,20 @@ const InfoPage = (props) => {
                   </TableCell>
                   <TableCell>
                     {moment(version.buildDate).format('LLLL')}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>
+				  	<b>Latest version</b>
+                  </TableCell>
+                  <TableCell>
+                    {moment.unix(response.lastUpdated).format('LLLL')}
+					{moment.unix(response.lastUpdated).isAfter(moment(version.buildDate))
+					? <Button className={classes.updateButton} size="small" variant="contained" color="secondary" href="https://hub.docker.com/repository/docker/cedalo/mosquitto-ui">
+					  Update available
+					</Button>
+					: <span className={classes.updateButton}>You are up to date!</span>
+				  }
                   </TableCell>
                 </TableRow>
             </TableBody>
@@ -200,6 +223,9 @@ const InfoPage = (props) => {
 		}
     </div>
   );
+  } else {
+	  return null;
+  }
 };
 
 const mapStateToProps = (state) => {
