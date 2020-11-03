@@ -81,7 +81,10 @@ const userShape = PropTypes.shape({
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
+	width: "100%",
+  },
+  paper: {
+	padding: "15px",
   },
   form: {
     display: "flex",
@@ -170,8 +173,7 @@ const onCancelEdit = async () => {
   		<Typography className={classes.breadcrumbItem} color="textPrimary">{group.groupname}</Typography>
       </Breadcrumbs>
       <br />
-	  <Paper>
-      <Tabs
+	  <Paper className={classes.paper}>
         value={value}
         onChange={handleChange}
         variant="scrollable"
