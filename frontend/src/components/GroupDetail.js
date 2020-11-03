@@ -187,13 +187,13 @@ const onCancelEdit = async () => {
           {...a11yProps(0)}
         />
         <Tab
-          label="Users"
+          label="Clients"
           icon={<UserIcon />}
-          aria-label="users"
+          aria-label="clients"
           {...a11yProps(1)}
         />
-      </Tabs>
-      <TabPanel value={value} index={0}>
+      </Tabs> */}
+      {/* <TabPanel value={value} index={0}> */}
         <form className={classes.form} noValidate autoComplete="off">
           <div className={classes.margin}>
             <Grid container spacing={1} alignItems="flex-end">
@@ -270,8 +270,8 @@ const onCancelEdit = async () => {
             </Grid>
           </div>
         </form>
-      </TabPanel>
-      <TabPanel value={value} index={1}>
+      {/* </TabPanel> */}
+      {/* <TabPanel value={value} index={1}>
 	  <List className={classes.root}>
           {group.clients?.map((client) => (
             <React.Fragment>
@@ -289,7 +289,7 @@ const onCancelEdit = async () => {
             </React.Fragment>
           ))}
         </List>
-      </TabPanel>
+      </TabPanel> */}
 	  { !editMode && <Grid item xs={12} className={classes.buttons} >
 				<Button
 					variant="contained"
