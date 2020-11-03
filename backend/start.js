@@ -6,6 +6,7 @@ const express = require("express");
 const cors = require('cors');
 const WebSocket = require("ws");
 const mqtt = require("mqtt");
+const axios = require("axios");
 const NodeMosquittoClient = require("./src/client/NodeMosquittoClient");
 // const UsageTracker = require("./src/usage/UsageTracker");
 
@@ -454,6 +455,11 @@ const init = (licenseContainer) => {
 
 	app.get("/api/version", (request, response) => {
 		response.json(version);
+	});
+
+	app.get("/api/update", async (request, response) => {
+		const update = await axios.get("https://api.cedalo.cloud/rest/request/mosquitto-ui/version");
+		response.json(update.data);
 	});
 
 	app.get("/api/config", (request, response) => {
