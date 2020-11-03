@@ -419,8 +419,15 @@ const init = (licenseContainer) => {
 			type: "license",
 			payload: licenseContainer.license,
 			}
-		};
-		ws.send(JSON.stringify(messageObject));
+		}));
+		// send version information
+		ws.send(JSON.stringify({
+			type: 'event',
+			event: {
+			type: "version",
+			payload: version,
+			}
+		}));
 	ws.on("message", (message) => {
 		try {
 		const messageObject = JSON.parse(message);
