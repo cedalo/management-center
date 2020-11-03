@@ -84,7 +84,7 @@ const InfoPage = (props) => {
 				  	<b>Build date</b>
                   </TableCell>
                   <TableCell>
-                    {version.buildDate}
+                    {moment(version.buildDate).format('LLLL')}
                   </TableCell>
                 </TableRow>
             </TableBody>
