@@ -72,10 +72,8 @@ function a11yProps(index) {
   };
 }
 
-const userShape = PropTypes.shape({
+const clientShape = PropTypes.shape({
   username: PropTypes.string,
-  lastName: PropTypes.string,
-  firstName: PropTypes.string,
   groups: PropTypes.array,
 });
 
@@ -174,11 +172,12 @@ const onCancelEdit = async () => {
       </Breadcrumbs>
       <br />
 	  <Paper className={classes.paper}>
+      {/* <Tabs
         value={value}
         onChange={handleChange}
         variant="scrollable"
         scrollButtons="off"
-        aria-label="User"
+        aria-label="Clients"
       >
         <Tab
           label="Details"
@@ -333,7 +332,7 @@ const onCancelEdit = async () => {
 };
 
 GroupDetail.propTypes = {
-  user: userShape.isRequired,
+  user: clientShape.isRequired,
 };
 
 const mapStateToProps = (state) => {
