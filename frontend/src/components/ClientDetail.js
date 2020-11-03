@@ -121,9 +121,12 @@ const ClientDetail = (props) => {
   const { client: brokerClient } = context;
 
   const validate = () => {
-	const valid = (updatedClient.clientid !== '')
-		&& (updatedClient.username !== '');
-		return valid;
+	  if (editMode) {
+		  return (updatedClient.username !== '');
+	  } else {
+		return (updatedClient.clientid !== '')
+			&& (updatedClient.username !== '');
+	  }
 }
 
   const handleChange = (event, newValue) => {
