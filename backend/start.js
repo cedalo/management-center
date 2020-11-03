@@ -4,6 +4,8 @@ const cors = require('cors');
 const WebSocket = require("ws");
 const mqtt = require("mqtt");
 const NodeMosquittoClient = require("./src/client/NodeMosquittoClient");
+// const UsageTracker = require("./src/usage/UsageTracker");
+
 const defaultTheme = {
 	"id": "cedalo",
 	"name": "Cedalo AG",
@@ -167,7 +169,7 @@ const clientBrokerMappings = new Map();
 
 const init = (licenseContainer) => {
 
-	const usageTracker = new UsageTracker({ license: licenseContainer, version });
+	// const usageTracker = new UsageTracker({ license: licenseContainer, version });
 	const globalSystem = {};
 	const globalTopicTree = {};
 	const app = express();
