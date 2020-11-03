@@ -9,10 +9,10 @@ const NodeMosquittoClient = require("./src/client/NodeMosquittoClient");
 const defaultTheme = {
 	"id": "cedalo",
 	"name": "Cedalo AG",
-	"logo": {
-		"path": "/logo.png"
-	},
 	"light": {
+		"logo": {
+			"path": "/logo.png"
+		},
 		"palette": {
 			"primary": {
 				"main": "#556cd6"
@@ -23,6 +23,9 @@ const defaultTheme = {
 		}
 	},
 	"dark": {
+		"logo": {
+			"path": "/logo.png"
+		},
 		"palette": {
 			"primary": {
 				"main": "rgb(16, 30, 38)"
