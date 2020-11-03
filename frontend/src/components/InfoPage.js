@@ -4,6 +4,11 @@ import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -51,7 +56,16 @@ const getPremium = () => {
 
 const InfoPage = (props) => {
   const classes = useStyles();
+  const [open, setOpen] = React.useState(false);
   const [response, loading, hasError] = useFetch("http://localhost:8088/api/update");
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   if (response) {
 
@@ -62,6 +76,39 @@ const InfoPage = (props) => {
 
   return (
     <div>
+		<Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"An update is available!"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+			<ul>
+			{
+				response.features.map((feature) => {
+					return <li>{feature.title}</li>
+				})
+			}
+			</ul>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+		<Button onClick={handleClose} color="secondary" autoFocus>
+            Cancel
+          </Button>
+		<Button
+			target="_href"
+			size="small"
+			variant="contained"
+			color="secondary" 
+			href={response.updateURL}
+		>
+			Download now
+		</Button>
+        </DialogActions>
+      </Dialog>
 	<Breadcrumbs aria-label="breadcrumb">
 	  <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
 	  <Typography className={classes.breadcrumbItem} color="textPrimary">Info</Typography>
@@ -103,7 +150,10 @@ const InfoPage = (props) => {
                   <TableCell>
                     {moment.unix(response.lastUpdated).format('LLLL')}
 					{moment.unix(response.lastUpdated).isAfter(moment(version.buildDate))
-					? <Button className={classes.updateButton} size="small" variant="contained" color="secondary" href="https://hub.docker.com/repository/docker/cedalo/mosquitto-ui">
+					? <Button className={classes.updateButton} size="small" variant="contained" color="secondary" 
+						// href="https://hub.docker.com/repository/docker/cedalo/mosquitto-ui"
+						onClick={handleClickOpen}
+					>
 					  Update available
 					</Button>
 					: <span className={classes.updateButton}>You are up to date!</span>
