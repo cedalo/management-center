@@ -228,6 +228,7 @@ const init = (licenseContainer) => {
 				connectTimeout: process.env.MOSQUITTO_UI_TIMOUT_MOSQUITTO_CONNECT || 5000,
 			});
 			connectionConfiguration.status.connected = true;
+			console.log(`Connected to '${connection.name}' at ${connection.url}`);
 		} catch (error) {
 			console.error(error);
 			connectionConfiguration.status = {
@@ -235,7 +236,6 @@ const init = (licenseContainer) => {
 				error: error
 			};
 		}
-		console.log(`Connected to '${connection.name}' at ${connection.url}`);
 		// const brokerClient = mqtt.connect(connection.url, {
 		// 	username: connection.credentials?.username,
 		// 	password: connection.credentials?.password
@@ -244,15 +244,16 @@ const init = (licenseContainer) => {
 		// 	console.log(`Connected to '${connection.name}' at ${connection.url}`);
 			brokerClient.subscribe("$SYS/#", (error) => {
 				console.log(`Subscribed to system topics for '${connection.name}'`);
-			if (error) {
-				console.error(error);
-			}
+				if (error) {
+					console.error(error);
+				}
 			});
 			brokerClient.subscribe("#", (error) => {
 				console.log(`Subscribed to all topics for '${connection.name}'`);
-			if (error) {
-				console.error(error);
-			}
+				if (error) {
+					console.error(error);
+				}
+			});
 			brokerClient.subscribe("$CONTROL/dynamic-security/v1/#", (error) => {
 				console.log(`Subscribed to all topics for '${connection.name}'`);
 				if (error) {
@@ -266,7 +267,7 @@ const init = (licenseContainer) => {
 			sendSystemStatusUpdate(system, brokerClient);
 			} else if (
 				// TODO: change topic
-				topic.startsWith("$CONTROL/v1/response")
+				topic.startsWith("$CONTROL/dynamic-security/v1/response")
 			) {
 				// TODO: this is already handle by the Mosquitto client
 				console.log("topic")
@@ -425,7 +426,8 @@ const init = (licenseContainer) => {
 
 	wss.on("connection", (ws) => {
 		clientConnections.set(ws, ws);
-		const messageObject = {
+		// send license information
+		ws.send(JSON.stringify({
 			type: 'event',
 			event: {
 			type: "license",
@@ -469,7 +471,7 @@ const init = (licenseContainer) => {
 	app.get("/api/theme", (request, response) => {
 		const themes = loadConfig().themes;
 		if (licenseContainer.license.isValid) {
-			response.json(config.themes.find(theme => theme.id === 'custom'));
+			response.json(themes.find(theme => theme.id === 'custom'));
 		} else {
 			response.json(defaultTheme);
 		}
