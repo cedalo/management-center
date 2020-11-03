@@ -151,6 +151,7 @@ const initConnections = (config) => {
 				name: process.env.MOSQUITTO_UI_BROKER_NAME,
 				url: process.env.MOSQUITTO_UI_BROKER_URL
 			}
+			connection.id = process.env.MOSQUITTO_UI_BROKER_ID || uuidv4();
 			if (process.env.MOSQUITTO_UI_BROKER_USERNAME
 				&& process.env.MOSQUITTO_UI_BROKER_PASSWORD) {
 				connection.credentials = {
