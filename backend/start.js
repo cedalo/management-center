@@ -167,6 +167,11 @@ const brokerConnections = new Map();
 const clientConnections = new Map();
 const clientBrokerMappings = new Map();
 
+const loadConfig = () => {
+	const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, MOSQUITTO_UI_PROXY_CONFIG_DIR)).toString());
+	return config;
+}
+
 const init = (licenseContainer) => {
 
 	// const usageTracker = new UsageTracker({ license: licenseContainer, version });
