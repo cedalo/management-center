@@ -84,6 +84,9 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
   },
+  paper: {
+	padding: "15px",
+  },
   form: {
     display: "flex",
     flexWrap: "wrap",
