@@ -182,7 +182,7 @@ const init = (licenseContainer) => {
 	const server = http.createServer(app);
 
 	// TODO: add error handling
-	const config = require(MOSQUITTO_UI_PROXY_CONFIG_DIR);
+	const config = loadConfig();
 
 	const wss = new WebSocket.Server({
 		//   port: MOSQUITTO_UI_PROXY_PORT,
@@ -455,6 +455,7 @@ const init = (licenseContainer) => {
 	});
 
 	app.get("/api/theme", (request, response) => {
+		const themes = loadConfig().themes;
 		if (licenseContainer.license.isValid) {
 			response.json(config.themes.find(theme => theme.id === 'custom'));
 		} else {
