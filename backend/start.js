@@ -52,8 +52,13 @@ const defaultTheme = {
 }
 
 const version = {
-	version: '2.0',
-	buildNumber: '1',
+	version: process.env.MOSQUITTO_UI_VERSION
+		|| '0.9-alpha',
+	buildNumber: process.env.TRAVIS_BUILD_NUMBER
+		|| process.env.MOSQUITTO_UI_BUILD_NUMBER
+		|| uuidv4(),
+	buildDate: process.env.MOSQUITTO_UI_BUILD_DATE
+		|| Date.now(),
 };
 
 const MOSQUITTO_UI_PROXY_CONFIG_DIR = process.env.MOSQUITTO_UI_PROXY_CONFIG_DIR || "../config/config.json";
