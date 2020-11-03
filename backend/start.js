@@ -241,6 +241,11 @@ const init = (licenseContainer) => {
 			if (error) {
 				console.error(error);
 			}
+			brokerClient.subscribe("$CONTROL/dynamic-security/v1/#", (error) => {
+				console.log(`Subscribed to all topics for '${connection.name}'`);
+				if (error) {
+					console.error(error);
+				}
 			});
 		//   });
 		brokerClient.on("message", (topic, message, packet) => {
