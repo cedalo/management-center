@@ -211,8 +211,9 @@ const init = (licenseContainer) => {
 		}
 		try {
 			await brokerClient.connect({
-			mqttEndpointURL: connection.url,
-			connectTimeout: process.env.MOSQUITTO_UI_TIMOUT_MOSQUITTO_CONNECT || 5000,
+				mqttEndpointURL: connection.url,
+				credentials: connection.credentials,
+				connectTimeout: process.env.MOSQUITTO_UI_TIMOUT_MOSQUITTO_CONNECT || 5000,
 			});
 			connectionConfiguration.status.connected = true;
 		} catch (error) {
