@@ -1,15 +1,15 @@
 {
-  "name": "@cedalo/mosquitto-ui-backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Cedalo AG",
-  "dependencies": {
-    "mqtt": "^4.2.0",
-    "uuid": "^8.3.0",
-    "ws": "^7.3.1"
-  }
+	"name": "@cedalo/mosquitto-ui-backend",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "Cedalo AG",
+	"dependencies": {
+		"mqtt": "^4.2.0",
+		"uuid": "^8.3.0",
+		"ws": "^7.3.1"
+	}
 }
