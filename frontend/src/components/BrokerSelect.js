@@ -96,7 +96,7 @@ const BrokerSelect = ({ brokerConnections, connected, sendMessage }) => {
 		Connection
 	  </InputLabel>
       <Select
-	  	defaultValue="Mosquitto 2.0 Preview"
+	  	defaultValue={connection}
         labelId="broker-select-outlined-label"
         id="connection"
         value={connection}
