@@ -9,6 +9,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import ListSubheader from '@material-ui/core/ListSubheader';
 import Badge from '@material-ui/core/Badge';
 import Button from '@material-ui/core/Button';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -167,6 +168,13 @@ const useStyles = makeStyles((theme) => ({
 	menuItem: {
 		fontSize: '14px'
 	},
+	menuSubHeader: {
+		// color: 'white',
+		fontWeight: 'bold',
+		fontSize: '12px',
+		textTransform: 'uppercase',
+		lineHeight: '24px'
+	},
 	formControl: {
 		margin: theme.spacing(1),
 		minWidth: 120
@@ -282,6 +290,8 @@ export default function App(props) {
 				</List>
 				<Divider />
 				<List>
+
+				{open ? <ListSubheader className={classes.menuSubHeader}>Monitoring</ListSubheader> : null}
 					<ListItemLink
 						id="menu-item-status"
 						classes={classes}
@@ -299,6 +309,7 @@ export default function App(props) {
 				</List>
 				<Divider />
 				<List>
+					{open ? <ListSubheader className={classes.menuSubHeader}>Dynamic Security</ListSubheader> : null}
 					<ListItemLink
 						id="menu-item-clients"
 						classes={classes}
@@ -332,6 +343,7 @@ export default function App(props) {
 		</List>
 		<Divider /> */}
 				<List>
+					{open ? <ListSubheader className={classes.menuSubHeader}>Settings</ListSubheader> : null}
 					<ListItemLink
 						classes={classes}
 						to="/config/configurations"
@@ -347,6 +359,7 @@ export default function App(props) {
 				</List>
 				<Divider />
 				<List>
+					{open ? <ListSubheader className={classes.menuSubHeader}>Tools</ListSubheader> : null}
 					<ListItemLink
 						classes={classes}
 						to="https://localhost:8090"
