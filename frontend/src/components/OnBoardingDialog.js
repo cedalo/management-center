@@ -101,7 +101,7 @@ const useStyles = makeStyles((theme) => ({
 function getSteps() {
 	return [
 		{
-			label: 'The UI for Mosquitto',
+			label: 'Management Center for Eclipse Mosquitto',
 			description: 'Manage everything in one central place',
 			imgPath: '/onboarding001.png'
 		},
@@ -116,7 +116,7 @@ function getSteps() {
 			imgPath: '/onboarding003.png'
 		},
 		{
-			label: 'Topic Tree',
+			label: 'Topic Tree Inspector',
 			description: 'Visualize MQTT topics',
 			imgPath: '/onboarding004.png'
 		}
@@ -181,7 +181,7 @@ export default function OnBoardingDialog(props) {
       </Paper> */}
 				<div style={{ textAlign: 'center' }}>
 					<img
-						style={{ width: '250px' }}
+						style={{ width: '555px' }}
 						className={classes.img}
 						src={steps[activeStep].imgPath}
 						alt={steps[activeStep].label}
@@ -254,7 +254,7 @@ export default function OnBoardingDialog(props) {
 				{/* <Button onClick={handleClose} color="primary">
             Disagree
           </Button> */}
-				<Button onClick={handleClose} color="primary" autoFocus>
+				<Button onClick={handleClose} color="secondary" autoFocus>
 					Get started!
 				</Button>
 			</DialogActions>
