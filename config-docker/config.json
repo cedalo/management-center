@@ -1,32 +1,171 @@
 {
 	"connections": [
 		{
-			"name": "Mosquitto 1 Host",
+			"id": "mosquitto-2-preview",
+			"name": "Mosquitto 2.0 Preview 2",
+			"url": "mqtt://localhost:1883"
+		},
+		{
+			"id": "mosquitto-mock-api",
+			"name": "Mosquitto 2.0 Mock API",
+			"url": "mqtt://localhost:1889"
+		},
+		{
+			"id": "mosquitto-host",
+			"name": "Mosquitto on host",
 			"url": "mqtt://docker.for.mac.localhost:1885",
 			"credentials": {
 				"username": "cedalo",
 				"password": "cedalo"
 			}
-		},
+		}
+	],
+	"themes": [
 		{
-			"name": "Mosquitto 2 Host",
-			"url": "mqtt://docker.for.mac.localhost:1886",
-			"credentials": {
-				"username": "cedalo",
-				"password": "cedalo"
+			"id": "custom",
+			"name": "Cedalo AG",
+			"light": {
+				"logo": {
+					"path": "/logo.png"
+				},
+				"palette": {
+					"primary": {
+						"main": "#556cd6"
+					},
+					"secondary": {
+						"main": "#19857b"
+					}
+				}
+			},
+			"dark": {
+				"logo": {
+					"path": "/logo.png"
+				},
+				"palette": {
+					"primary": {
+						"main": "rgb(16, 30, 38)"
+					},
+					"secondary": {
+						"main": "#ffc107"
+					},
+					"text": {
+						"primary": "rgb(156, 215, 247)"
+					},
+					"background": {
+						"default": "rgb(6, 31, 47)",
+						"paper": "rgb(16, 30, 38)"
+ 					}
+				}
 			}
 		},
 		{
-			"name": "Mosquitto 3 Host",
-			"url": "mqtt://docker.for.mac.localhost:1887",
-			"credentials": {
-				"username": "cedalo",
-				"password": "cedalo"
+			"id": "yellow-strom",
+			"name": "Yellow Strom",
+			"light": {
+				"logo": {
+					"path": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Yello_Strom_GmbH.svg/2000px-Yello_Strom_GmbH.svg.png",
+					"height": "35px",
+					"width": "35px"
+				},
+				"palette": {
+					"primary": {
+						"main": "#ffc107"
+					},
+					"secondary": {
+						"main": "#ffc107"
+					}
+				}
+			},
+			"dark": {
+				"logo": {
+					"path": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Yello_Strom_GmbH.svg/2000px-Yello_Strom_GmbH.svg.png",
+					"height": "35px",
+					"width": "35px"
+				},
+				"palette": {
+					"primary": {
+						"main": "#ffc107"
+					},
+					"secondary": {
+						"main": "#ffc107"
+					},
+					"background": {
+						"default": "#000000",
+						"paper": "#222222"
+ 					}
+				}
 			}
 		},
 		{
-			"name": "Mosquitto Mock API",
-			"url": "mqtt://docker.for.mac.localhost:1888"
+			"id": "docker",
+			"name": "Docker",
+			"light": {
+				"logo": {
+					"path": "https://www.docker.com/assets/logo-files/Docker-Logo-White-RGB_Horizontal.png"
+				},
+				"palette": {
+					"primary": {
+						"main": "#0db7ed"
+					},
+					"secondary": {
+						"main": "#7c88cc"
+					}
+				}
+			},
+			"dark": {
+				"logo": {
+					"path": "https://www.docker.com/sites/default/files/d8/2019-07/horizontal-logo-monochromatic-white.png"
+				},
+				"palette": {
+					"primary": {
+						"main": "rgb(16, 30, 38)"
+					},
+					"secondary": {
+						"main": "#ffc107"
+					},
+					"text": {
+						"primary": "rgb(156, 215, 247)"
+					},
+					"background": {
+						"default": "rgb(6, 31, 47)",
+						"paper": "rgb(16, 30, 38)"
+ 					}
+				}
+			}
+		},
+		{
+			"id": "siemens",
+			"name": "Siemens Energy",
+			"light": {
+				"logo": {
+					"path": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Siemens_Energy_logo_white.svg/1200px-Siemens_Energy_logo_white.svg.png"
+				},
+				"palette": {
+					"primary": {
+						"main": "#009688"
+					},
+					"secondary": {
+						"main": "#009688"
+					}
+				}
+			},
+			"dark": {
+				"logo": {
+					"path": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Siemens_Energy_logo_white.svg/1200px-Siemens_Energy_logo_white.svg.png"
+				},
+				"palette": {
+					"primary": {
+						"main": "#00695f"
+					},
+					"secondary": {
+						"main": "#00695f"
+					},
+					"background": {
+						"default": "#009688",
+						"paper": "#00695f"
+ 					}
+				}
+			}
 		}
 	]
 }
