@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     height: '100%'
   },
   avatar: {
-    backgroundColor: colors.green[600],
+    backgroundColor: theme.palette?.info?.icons || colors.green[600],
     height: 56,
     width: 56
   },
