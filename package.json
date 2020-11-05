@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "mosca": "^2.8.3",
-    "mqtt": "^4.2.1"
+    "mqtt": "^4.2.1",
+    "prettier": "2.1.2"
   }
 }
