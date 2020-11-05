@@ -4,9 +4,9 @@ import Typography from "@material-ui/core/Typography";
 
 function Logo() {
   return (
-      <Typography variant="h6" noWrap>
-        powered by Cedalo AG
-      </Typography>
+    <Typography variant="h6" noWrap>
+      powered by Cedalo AG
+    </Typography>
   );
 }
 

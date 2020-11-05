@@ -1,12 +1,12 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Card from "@material-ui/core/Card";
+import CardActionArea from "@material-ui/core/CardActionArea";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
+import CardMedia from "@material-ui/core/CardMedia";
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
 import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles({
@@ -20,21 +20,21 @@ const HomeCard = ({ title, description, image, link, ...rest }) => {
   const history = useHistory();
 
   const handleClick = () => {
-	history.push(link);
-  }
+    history.push(link);
+  };
   return (
     <Card className={classes.root} onClick={handleClick}>
       <CardActionArea>
         <CardMedia
           component="img"
           alt={title}
-        //   height="210"
+          //   height="210"
           image={image}
           title={title}
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">
-		    {title}
+            {title}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
             {description}
@@ -48,6 +48,6 @@ const HomeCard = ({ title, description, image, link, ...rest }) => {
       </CardActions> */}
     </Card>
   );
-}
+};
 
 export default HomeCard;

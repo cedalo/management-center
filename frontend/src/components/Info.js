@@ -1,6 +1,6 @@
-import React from 'react';
-import clsx from 'clsx';
-import PropTypes from 'prop-types';
+import React from "react";
+import clsx from "clsx";
+import PropTypes from "prop-types";
 import {
   Avatar,
   Box,
@@ -9,59 +9,44 @@ import {
   Grid,
   Typography,
   colors,
-  makeStyles
-} from '@material-ui/core';
+  makeStyles,
+} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: '100%'
+    height: "100%",
   },
   avatar: {
     backgroundColor: theme.palette?.info?.icons || colors.green[600],
     height: 56,
-    width: 56
+    width: 56,
   },
   differenceIcon: {
-    color: colors.red[900]
+    color: colors.red[900],
   },
   differenceValue: {
     color: colors.red[900],
-    marginRight: theme.spacing(1)
-  }
+    marginRight: theme.spacing(1),
+  },
 }));
 
 const Info = ({ className, label, value, icon, ...rest }) => {
   const classes = useStyles();
 
   return (
-    <Card
-      className={clsx(classes.root, className)}
-      {...rest}
-    >
+    <Card className={clsx(classes.root, className)} {...rest}>
       <CardContent>
-        <Grid
-          container
-          justify="space-between"
-          spacing={3}
-        >
+        <Grid container justify="space-between" spacing={3}>
           <Grid item>
-            <Typography
-              color="textSecondary"
-              gutterBottom
-            >
+            <Typography color="textSecondary" gutterBottom>
               {label}
             </Typography>
-            <Typography
-              color="textPrimary"
-              variant="h5"
-            >
+            <Typography color="textPrimary" variant="h5">
               {value}
             </Typography>
           </Grid>
           <Grid item>
-            <Avatar className={classes.avatar}>
-              {icon}
-            </Avatar>
+            <Avatar className={classes.avatar}>{icon}</Avatar>
           </Grid>
         </Grid>
         {/* <Box
@@ -89,7 +74,7 @@ const Info = ({ className, label, value, icon, ...rest }) => {
 };
 
 Info.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 export default Info;

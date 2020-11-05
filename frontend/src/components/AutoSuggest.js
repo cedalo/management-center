@@ -1,43 +1,45 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import clsx from 'clsx';
-import Select from 'react-select';
-import { emphasize, makeStyles, useTheme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import NoSsr from '@material-ui/core/NoSsr';
-import TextField from '@material-ui/core/TextField';
-import Paper from '@material-ui/core/Paper';
-import Chip from '@material-ui/core/Chip';
-import MenuItem from '@material-ui/core/MenuItem';
-import CancelIcon from '@material-ui/icons/Cancel';
+import React from "react";
+import PropTypes from "prop-types";
+import clsx from "clsx";
+import Select from "react-select";
+import { emphasize, makeStyles, useTheme } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
+import NoSsr from "@material-ui/core/NoSsr";
+import TextField from "@material-ui/core/TextField";
+import Paper from "@material-ui/core/Paper";
+import Chip from "@material-ui/core/Chip";
+import MenuItem from "@material-ui/core/MenuItem";
+import CancelIcon from "@material-ui/icons/Cancel";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
     minWidth: 250,
   },
   input: {
-    display: 'flex',
+    display: "flex",
     padding: 0,
-    height: 'auto',
+    height: "auto",
   },
   valueContainer: {
-    display: 'flex',
-    flexWrap: 'wrap',
+    display: "flex",
+    flexWrap: "wrap",
     flex: 1,
-    alignItems: 'center',
-	overflow: 'hidden',
-		"& > *": {
-		  margin: theme.spacing(0.3),
-		},
+    alignItems: "center",
+    overflow: "hidden",
+    "& > *": {
+      margin: theme.spacing(0.3),
+    },
   },
   chip: {
     margin: theme.spacing(1, 1),
   },
   chipFocused: {
     backgroundColor: emphasize(
-      theme.palette.type === 'light' ? theme.palette.grey[300] : theme.palette.grey[700],
-      0.08,
+      theme.palette.type === "light"
+        ? theme.palette.grey[300]
+        : theme.palette.grey[700],
+      0.08
     ),
   },
   noOptionsMessage: {
@@ -47,13 +49,13 @@ const useStyles = makeStyles(theme => ({
     fontSize: 14,
   },
   placeholder: {
-    position: 'absolute',
+    position: "absolute",
     left: 2,
     bottom: 6,
     fontSize: 14,
   },
   paper: {
-    position: 'absolute',
+    position: "absolute",
     zIndex: 1,
     marginTop: theme.spacing(1),
     left: 0,
@@ -175,7 +177,11 @@ Option.propTypes = {
 function Placeholder(props) {
   const { selectProps, innerProps = {}, children } = props;
   return (
-    <Typography color="textSecondary" className={selectProps.classes.placeholder} {...innerProps}>
+    <Typography
+      color="textSecondary"
+      className={selectProps.classes.placeholder}
+      {...innerProps}
+    >
       {children}
     </Typography>
   );
@@ -189,7 +195,10 @@ Placeholder.propTypes = {
 
 function SingleValue(props) {
   return (
-    <Typography className={props.selectProps.classes.singleValue} {...props.innerProps}>
+    <Typography
+      className={props.selectProps.classes.singleValue}
+      {...props.innerProps}
+    >
       {props.children}
     </Typography>
   );
@@ -202,7 +211,11 @@ SingleValue.propTypes = {
 };
 
 function ValueContainer(props) {
-  return <div className={props.selectProps.classes.valueContainer}>{props.children}</div>;
+  return (
+    <div className={props.selectProps.classes.valueContainer}>
+      {props.children}
+    </div>
+  );
 }
 
 ValueContainer.propTypes = {
@@ -221,15 +234,15 @@ function MultiValue(props) {
     //   onDelete={props.removeProps.onClick}
     //   deleteIcon={<CancelIcon {...props.removeProps} />}
     // />
-	<Chip
-		tabIndex={-1}
-		size="small"
-		// icon={<GroupIcon />}
-      	label={props.children}
-		color="primary"
-		onDelete={props.removeProps.onClick}
-		deleteIcon={<CancelIcon {...props.removeProps} />}
-	/>
+    <Chip
+      tabIndex={-1}
+      size="small"
+      // icon={<GroupIcon />}
+      label={props.children}
+      color="primary"
+      onDelete={props.removeProps.onClick}
+      deleteIcon={<CancelIcon {...props.removeProps} />}
+    />
   );
 }
 
@@ -246,7 +259,11 @@ MultiValue.propTypes = {
 
 function Menu(props) {
   return (
-    <Paper square className={props.selectProps.classes.paper} {...props.innerProps}>
+    <Paper
+      square
+      className={props.selectProps.classes.paper}
+      {...props.innerProps}
+    >
       {props.children}
     </Paper>
   );
@@ -269,16 +286,21 @@ const components = {
   ValueContainer,
 };
 
-export default function AutoSuggest({ handleDelete, handleChange, suggestions, values }) {
+export default function AutoSuggest({
+  handleDelete,
+  handleChange,
+  suggestions,
+  values,
+}) {
   const classes = useStyles();
   const theme = useTheme();
 
   const selectStyles = {
-    input: base => ({
+    input: (base) => ({
       ...base,
       color: theme.palette.text.primary,
-      '& input': {
-        font: 'inherit',
+      "& input": {
+        font: "inherit",
       },
     }),
   };
@@ -292,7 +314,7 @@ export default function AutoSuggest({ handleDelete, handleChange, suggestions, v
           inputId="react-select-multiple"
           TextFieldProps={{
             InputLabelProps: {
-              htmlFor: 'react-select-multiple',
+              htmlFor: "react-select-multiple",
               shrink: true,
             },
           }}
@@ -300,7 +322,7 @@ export default function AutoSuggest({ handleDelete, handleChange, suggestions, v
           options={suggestions}
           components={components}
           value={values}
-		  onChange={handleChange}
+          onChange={handleChange}
           isMulti
         />
       </NoSsr>

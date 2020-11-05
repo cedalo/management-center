@@ -1,14 +1,14 @@
 import { connect, useDispatch } from "react-redux";
 import React, { useContext, useState } from "react";
 import PropTypes from "prop-types";
-import { useConfirm } from 'material-ui-confirm';
+import { useConfirm } from "material-ui-confirm";
 import { makeStyles } from "@material-ui/core/styles";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import Button from '@material-ui/core/Button';
-import EditIcon from '@material-ui/icons/Edit';
-import SaveIcon from '@material-ui/icons/Save';
+import Button from "@material-ui/core/Button";
+import EditIcon from "@material-ui/icons/Edit";
+import SaveIcon from "@material-ui/icons/Save";
 import Avatar from "@material-ui/core/Avatar";
 import GroupIcon from "@material-ui/icons/Group";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -36,8 +36,8 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { Link as RouterLink } from "react-router-dom";
 
-import { WebSocketContext } from '../websockets/WebSocket';
-import { updateGroup, updateGroups } from '../actions/actions';
+import { WebSocketContext } from "../websockets/WebSocket";
+import { updateGroup, updateGroups } from "../actions/actions";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -79,10 +79,10 @@ const clientShape = PropTypes.shape({
 
 const useStyles = makeStyles((theme) => ({
   root: {
-	width: "100%",
+    width: "100%",
   },
   paper: {
-	padding: "15px",
+    padding: "15px",
   },
   form: {
     display: "flex",
@@ -94,9 +94,9 @@ const useStyles = makeStyles((theme) => ({
     // width: 200,
   },
   buttons: {
-	'& > *': {
-		margin: theme.spacing(1),
-	  },
+    "& > *": {
+      margin: theme.spacing(1),
+    },
   },
   margin: {
     margin: theme.spacing(1),
@@ -120,59 +120,65 @@ const GroupDetail = (props) => {
   const { group = {} } = props;
   const [editMode, setEditMode] = React.useState(false);
   const [updatedGroup, setUpdatedGroup] = React.useState({
-	...group
+    ...group,
   });
 
   const validate = () => {
-	const valid = (updatedGroup.groupname !== '');
-	return valid;
-  }
-
-
+    const valid = updatedGroup.groupname !== "";
+    return valid;
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   const onUpdateGroup = async () => {
-	console.log(updatedGroup);
-	await brokerClient.modifyGroup(updatedGroup);
-	const groupObject = await brokerClient.getGroup(group.groupname);
-	dispatch(updateGroup(groupObject));
-	const groups = await brokerClient.listGroups();
-	dispatch(updateGroups(groups));
-	setEditMode(false);
-  }
+    console.log(updatedGroup);
+    await brokerClient.modifyGroup(updatedGroup);
+    const groupObject = await brokerClient.getGroup(group.groupname);
+    dispatch(updateGroup(groupObject));
+    const groups = await brokerClient.listGroups();
+    dispatch(updateGroups(groups));
+    setEditMode(false);
+  };
 
-const onCancelEdit = async () => {
-  await confirm({
-	  title: 'Cancel group editing',
-	  description: `Do you really want to cancel editing this group?`,
-	  cancellationButtonProps: {
-		  variant: 'contained',
-	  },
-	  confirmationButtonProps: {
-		  color: 'primary',
-		  variant: 'contained',
-	  }
-  });
-  setUpdatedGroup({
-	  ...group
-  });
-  setEditMode(false);
-}
+  const onCancelEdit = async () => {
+    await confirm({
+      title: "Cancel group editing",
+      description: `Do you really want to cancel editing this group?`,
+      cancellationButtonProps: {
+        variant: "contained",
+      },
+      confirmationButtonProps: {
+        color: "primary",
+        variant: "contained",
+      },
+    });
+    setUpdatedGroup({
+      ...group,
+    });
+    setEditMode(false);
+  };
 
   return (
     <div className={classes.root}>
       <Breadcrumbs maxItems={2} aria-label="breadcrumb">
-        <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
-        <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
-        <RouterLink className={classes.breadcrumbLink} to="/security/groups">Groups</RouterLink>
-  		<Typography className={classes.breadcrumbItem} color="textPrimary">{group.groupname}</Typography>
+        <RouterLink className={classes.breadcrumbLink} to="/home">
+          Home
+        </RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/security">
+          Security
+        </RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/security/groups">
+          Groups
+        </RouterLink>
+        <Typography className={classes.breadcrumbItem} color="textPrimary">
+          {group.groupname}
+        </Typography>
       </Breadcrumbs>
       <br />
-	  <Paper className={classes.paper}>
-      {/* <Tabs
+      <Paper className={classes.paper}>
+        {/* <Tabs
         value={value}
         onChange={handleChange}
         variant="scrollable"
@@ -192,24 +198,24 @@ const onCancelEdit = async () => {
           {...a11yProps(1)}
         />
       </Tabs> */}
-      {/* <TabPanel value={value} index={0}> */}
+        {/* <TabPanel value={value} index={0}> */}
         <form className={classes.form} noValidate autoComplete="off">
           <div className={classes.margin}>
             <Grid container spacing={1} alignItems="flex-end">
               <Grid item xs={12}>
                 <TextField
                   required
-				  disabled
-				  onChange={(event) => {
-					  if (editMode) {
-						setUpdatedGroup({
-							...updatedGroup,
-							groupname: event.target.value
-						})
-					  }
-				  }}
+                  disabled
+                  onChange={(event) => {
+                    if (editMode) {
+                      setUpdatedGroup({
+                        ...updatedGroup,
+                        groupname: event.target.value,
+                      });
+                    }
+                  }}
                   id="groupname"
-				  value={updatedGroup.groupname}
+                  value={updatedGroup.groupname}
                   label="Groupname"
                   defaultValue=""
                   variant="outlined"
@@ -226,19 +232,19 @@ const onCancelEdit = async () => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-				  disabled={!editMode}
-				  onChange={(event) => {
-					  if (editMode) {
-						setUpdatedGroup({
-							...updatedGroup,
-							textname: event.target.value
-						})
-					  }
-				  }}
+                  disabled={!editMode}
+                  onChange={(event) => {
+                    if (editMode) {
+                      setUpdatedGroup({
+                        ...updatedGroup,
+                        textname: event.target.value,
+                      });
+                    }
+                  }}
                   id="textname"
-				  label="Text name"
-				  value={updatedGroup.textname}
-				//   onChange={(event) => setTextName(event.target.value)}
+                  label="Text name"
+                  value={updatedGroup.textname}
+                  //   onChange={(event) => setTextName(event.target.value)}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -247,19 +253,19 @@ const onCancelEdit = async () => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-				  disabled={!editMode}
-				  onChange={(event) => {
-					  if (editMode) {
-						setUpdatedGroup({
-							...updatedGroup,
-							textdescription: event.target.value
-						})
-					  }
-				  }}
+                  disabled={!editMode}
+                  onChange={(event) => {
+                    if (editMode) {
+                      setUpdatedGroup({
+                        ...updatedGroup,
+                        textdescription: event.target.value,
+                      });
+                    }
+                  }}
                   id="textdescription"
-				  label="Text description"
-				  value={updatedGroup.textdescription}
-				//   onChange={(event) => setTextDescription(event.target.value)}
+                  label="Text description"
+                  value={updatedGroup.textdescription}
+                  //   onChange={(event) => setTextDescription(event.target.value)}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -269,8 +275,8 @@ const onCancelEdit = async () => {
             </Grid>
           </div>
         </form>
-      {/* </TabPanel> */}
-      {/* <TabPanel value={value} index={1}>
+        {/* </TabPanel> */}
+        {/* <TabPanel value={value} index={1}>
 	  <List className={classes.root}>
           {group.clients?.map((client) => (
             <React.Fragment>
@@ -289,44 +295,46 @@ const onCancelEdit = async () => {
           ))}
         </List>
       </TabPanel> */}
-	  { !editMode && <Grid item xs={12} className={classes.buttons} >
-				<Button
-					variant="contained"
-					color="primary"
-					className={classes.button}
-					startIcon={<EditIcon />}
-					onClick={() => setEditMode(true)}
-				>
-					Edit
-				</Button>
-				</Grid>
-			}
-			  { editMode && <Grid item xs={12} className={classes.buttons} >
-				<Button
-					variant="contained"
-					disabled={!validate()}
-					color="primary"
-					className={classes.button}
-					startIcon={<SaveIcon />}
-					onClick={(event) => {
-					  event.stopPropagation();
-					  onUpdateGroup();
-					}}
-				>
-					Save
-				</Button>
-				<Button
-					variant="contained"
-					onClick={(event) => {
-					  event.stopPropagation();
-					  onCancelEdit();
-					}}
-				>
-					Cancel
-				</Button>
-				</Grid>
-			}
-	  </Paper>
+        {!editMode && (
+          <Grid item xs={12} className={classes.buttons}>
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.button}
+              startIcon={<EditIcon />}
+              onClick={() => setEditMode(true)}
+            >
+              Edit
+            </Button>
+          </Grid>
+        )}
+        {editMode && (
+          <Grid item xs={12} className={classes.buttons}>
+            <Button
+              variant="contained"
+              disabled={!validate()}
+              color="primary"
+              className={classes.button}
+              startIcon={<SaveIcon />}
+              onClick={(event) => {
+                event.stopPropagation();
+                onUpdateGroup();
+              }}
+            >
+              Save
+            </Button>
+            <Button
+              variant="contained"
+              onClick={(event) => {
+                event.stopPropagation();
+                onCancelEdit();
+              }}
+            >
+              Cancel
+            </Button>
+          </Grid>
+        )}
+      </Paper>
     </div>
   );
 };
@@ -337,9 +345,9 @@ GroupDetail.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-		// TODO: check object hierarchy
-		group: state.groups?.group,
-	};
+    // TODO: check object hierarchy
+    group: state.groups?.group,
+  };
 };
 
 export default connect(mapStateToProps)(GroupDetail);

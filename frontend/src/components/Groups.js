@@ -4,10 +4,10 @@ import React, { useContext } from "react";
 import { connect, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import { useConfirm } from 'material-ui-confirm';
+import { useConfirm } from "material-ui-confirm";
 import Chip from "@material-ui/core/Chip";
 import Fab from "@material-ui/core/Fab";
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from "@material-ui/core/Tooltip";
 import AddIcon from "@material-ui/icons/Add";
 import Hidden from "@material-ui/core/Hidden";
 import IconButton from "@material-ui/core/IconButton";
@@ -32,14 +32,14 @@ import GroupIcon from "@material-ui/icons/Group";
 import ClientIcon from "@material-ui/icons/Person";
 import { Link as RouterLink } from "react-router-dom";
 
-import AutoSuggest from './AutoSuggest';
-import { WebSocketContext } from '../websockets/WebSocket';
-import { updateGroup, updateGroups, updateClients } from '../actions/actions';
+import AutoSuggest from "./AutoSuggest";
+import { WebSocketContext } from "../websockets/WebSocket";
+import { updateGroup, updateGroups, updateClients } from "../actions/actions";
 
 const useStyles = makeStyles((theme) => ({
-	tableContainer: {
-		minHeight: '500px',
-	},
+  tableContainer: {
+    minHeight: "500px",
+  },
   badges: {
     "& > *": {
       margin: theme.spacing(0.5),
@@ -84,66 +84,66 @@ const Groups = (props) => {
   const { client } = context;
 
   const onUpdateGroupClients = async (group, clients = []) => {
-	if (!clients) {
-		clients = [];
-	}
-	const clientNames = clients.map(client => client.value);
-	await client.updateGroupClients(group, clientNames);
-	const groups = await client.listGroups();
-	dispatch(updateGroups(groups));
-	const clientsUpdated = await client.listClients();
-	dispatch(updateClients(clientsUpdated));
-  }
+    if (!clients) {
+      clients = [];
+    }
+    const clientNames = clients.map((client) => client.value);
+    await client.updateGroupClients(group, clientNames);
+    const groups = await client.listGroups();
+    dispatch(updateGroups(groups));
+    const clientsUpdated = await client.listClients();
+    dispatch(updateClients(clientsUpdated));
+  };
 
   const onUpdateGroupRoles = async (group, roles = []) => {
-	if (!roles) {
-		roles = [];
-	}
-	const rolenames = roles.map(role => role.value);
-	await client.updateGroupRoles(group, rolenames);
-	const groups = await client.listGroups();
-	dispatch(updateGroups(groups));
-  }
+    if (!roles) {
+      roles = [];
+    }
+    const rolenames = roles.map((role) => role.value);
+    await client.updateGroupRoles(group, rolenames);
+    const groups = await client.listGroups();
+    dispatch(updateGroups(groups));
+  };
 
   const onSelectGroup = async (groupname) => {
-	const group = await client.getGroup(groupname);
-	dispatch(updateGroup(group));
-	history.push(`/security/groups/detail/${groupname}`);
-  }
+    const group = await client.getGroup(groupname);
+    dispatch(updateGroup(group));
+    history.push(`/security/groups/detail/${groupname}`);
+  };
 
   const onNewGroup = () => {
-	history.push("/security/groups/new");
-  }
-  
+    history.push("/security/groups/new");
+  };
+
   const onDeleteGroup = async (groupname) => {
-		await confirm({
-			title: 'Confirm group deletion',
-			description: `Do you really want to delete the group "${groupname}"?`,
-			cancellationButtonProps: {
-				variant: 'contained',
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained',
-			}
-		});
-	  await client.deleteGroup(groupname);
-	  const groups = await client.listGroups();
-	  dispatch(updateGroups(groups));
-	  const clients = await client.listClients();
-	  dispatch(updateClients(clients));
-  }
+    await confirm({
+      title: "Confirm group deletion",
+      description: `Do you really want to delete the group "${groupname}"?`,
+      cancellationButtonProps: {
+        variant: "contained",
+      },
+      confirmationButtonProps: {
+        color: "primary",
+        variant: "contained",
+      },
+    });
+    await client.deleteGroup(groupname);
+    const groups = await client.listGroups();
+    dispatch(updateGroups(groups));
+    const clients = await client.listClients();
+    dispatch(updateClients(clients));
+  };
 
   const onRemoveClientFromGroup = async (username, group) => {
-	await client.removeGroupClient(username, group);
-	const groups = await client.listGroups();
-	dispatch(updateGroups(groups));
-};
+    await client.removeGroupClient(username, group);
+    const groups = await client.listGroups();
+    dispatch(updateGroups(groups));
+  };
 
   const {
-	groups = [],
-	roles = [],
-	clients = [],
+    groups = [],
+    roles = [],
+    clients = [],
     onSort,
     sortBy,
     sortDirection,
@@ -151,100 +151,106 @@ const Groups = (props) => {
 
   // TODO: probably extract into reducer
   const clientSuggestions = clients
-	.map(client => client.username)
-	.sort()
-	.map(username => ({
-		label: username,
-		value: username,
-	}));
+    .map((client) => client.username)
+    .sort()
+    .map((username) => ({
+      label: username,
+      value: username,
+    }));
 
-	const roleSuggestions = roles
-	.map(role => role.rolename)
-	.sort()
-	.map(rolename => ({
-		label: rolename,
-		value: rolename,
-	}));
+  const roleSuggestions = roles
+    .map((role) => role.rolename)
+    .sort()
+    .map((rolename) => ({
+      label: rolename,
+      value: rolename,
+    }));
 
   return (
     <div>
       <Breadcrumbs aria-label="breadcrumb">
-        <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
-        <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
-        <Typography className={classes.breadcrumbItem} color="textPrimary">Groups</Typography>
+        <RouterLink className={classes.breadcrumbLink} to="/home">
+          Home
+        </RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/security">
+          Security
+        </RouterLink>
+        <Typography className={classes.breadcrumbItem} color="textPrimary">
+          Groups
+        </Typography>
       </Breadcrumbs>
       <br />
-	  { groups && groups.length > 0 ? 
-	  <div>
-      <Hidden xsDown implementation="css">
-		<TableContainer component={Paper} className={classes.tableContainer}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                {GROUP_TABLE_COLUMNS.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    sortDirection={sortBy === column.id ? sortDirection : false}
-                  >
-                    <TableSortLabel
-                      active={sortBy === column.id}
-                      direction={sortDirection}
-                      onClick={() => onSort(column.id)}
-                    >
-                      {column.key}
-                    </TableSortLabel>
-                  </TableCell>
-                ))}
-                <TableCell />
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {groups && groups.map((group) => (
-                <TableRow
-                  hover
-				  key={group.groupname}
-                  onClick={(event) => {
-					if (event.target.nodeName?.toLowerCase() === "td") {
-						onSelectGroup(group.groupname);
-					}
-				  }}
-                  style={{ cursor: "pointer" }}
-                >
-                  <TableCell>
-                    {group.groupname}
-                  </TableCell>
-                  <TableCell>
-                    {group.textname}
-                  </TableCell>
-                  <TableCell>
-                    {group.textdescription}
-                  </TableCell>
-                  <TableCell className={classes.badges}>
-					<AutoSuggest 
-						suggestions={clientSuggestions}
-						values={group.clients.map((client) => ({
-							label: client.username,
-							value: client.username
-						}))}
-						handleChange={(value) => {
-							onUpdateGroupClients(group, value);
-						}}
-					/>
-                  </TableCell>
-                  <TableCell className={classes.badges}>
-					<AutoSuggest 
-						suggestions={roleSuggestions}
-						values={group.roles.map((role) => ({
-							label: role.rolename,
-							value: role.rolename
-						}))}
-						handleChange={(value) => {
-							onUpdateGroupRoles(group, value);
-						}}
-					/>
-                  </TableCell>
-                  <TableCell align="right">
-                        {/* <IconButton
+      {groups && groups.length > 0 ? (
+        <div>
+          <Hidden xsDown implementation="css">
+            <TableContainer
+              component={Paper}
+              className={classes.tableContainer}
+            >
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    {GROUP_TABLE_COLUMNS.map((column) => (
+                      <TableCell
+                        key={column.id}
+                        sortDirection={
+                          sortBy === column.id ? sortDirection : false
+                        }
+                      >
+                        <TableSortLabel
+                          active={sortBy === column.id}
+                          direction={sortDirection}
+                          onClick={() => onSort(column.id)}
+                        >
+                          {column.key}
+                        </TableSortLabel>
+                      </TableCell>
+                    ))}
+                    <TableCell />
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {groups &&
+                    groups.map((group) => (
+                      <TableRow
+                        hover
+                        key={group.groupname}
+                        onClick={(event) => {
+                          if (event.target.nodeName?.toLowerCase() === "td") {
+                            onSelectGroup(group.groupname);
+                          }
+                        }}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <TableCell>{group.groupname}</TableCell>
+                        <TableCell>{group.textname}</TableCell>
+                        <TableCell>{group.textdescription}</TableCell>
+                        <TableCell className={classes.badges}>
+                          <AutoSuggest
+                            suggestions={clientSuggestions}
+                            values={group.clients.map((client) => ({
+                              label: client.username,
+                              value: client.username,
+                            }))}
+                            handleChange={(value) => {
+                              onUpdateGroupClients(group, value);
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell className={classes.badges}>
+                          <AutoSuggest
+                            suggestions={roleSuggestions}
+                            values={group.roles.map((role) => ({
+                              label: role.rolename,
+                              value: role.rolename,
+                            }))}
+                            handleChange={(value) => {
+                              onUpdateGroupRoles(group, value);
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell align="right">
+                          {/* <IconButton
 						  size="small"
                           onClick={(event) => {
                             event.stopPropagation();
@@ -254,98 +260,94 @@ const Groups = (props) => {
                           <EditIcon fontSize="small" />
                         </IconButton> */}
 
-						<Tooltip title="Delete group">
-							<IconButton
-								size="small"
-								onClick={(event) => {
-									event.stopPropagation();
-									onDeleteGroup(group.groupname);
-								}}
-							>
-							<DeleteIcon fontSize="small" />
-							</IconButton>
-						</Tooltip>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Hidden>
-      <Hidden smUp implementation="css">
-		  <Paper>
-        <List className={classes.root}>
-          {groups.map((group) => (
-            <React.Fragment>
-			<ListItem
-				alignItems="flex-start" 
-          		onClick={(event) => onSelectGroup(group.groupname)}
-			>
-                <ListItemText
-                  primary={
-                    <span>
-                      {group.groupname}
-                    </span>
-                  }
-                    secondary={
-                      <React.Fragment>
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          className={classes.inline}
-                          color="textPrimary"
+                          <Tooltip title="Delete group">
+                            <IconButton
+                              size="small"
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                onDeleteGroup(group.groupname);
+                              }}
+                            >
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Hidden>
+          <Hidden smUp implementation="css">
+            <Paper>
+              <List className={classes.root}>
+                {groups.map((group) => (
+                  <React.Fragment>
+                    <ListItem
+                      alignItems="flex-start"
+                      onClick={(event) => onSelectGroup(group.groupname)}
+                    >
+                      <ListItemText
+                        primary={<span>{group.groupname}</span>}
+                        secondary={
+                          <React.Fragment>
+                            <Typography
+                              component="span"
+                              variant="body2"
+                              className={classes.inline}
+                              color="textPrimary"
+                            >
+                              {group.textname}
+                            </Typography>
+                            <span> — {group.textdescription} </span>
+                          </React.Fragment>
+                        }
+                      />
+                      <ListItemSecondaryAction>
+                        <IconButton
+                          edge="end"
+                          size="small"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            onSelectGroup(group.groupname);
+                          }}
+                          aria-label="edit"
                         >
-                        {group.textname}
-                      </Typography>
-					  <span> —  {group.textdescription} </span>
-                      </React.Fragment>
-                    }
-                />
-                <ListItemSecondaryAction>
-					<IconButton
-							edge="end"
-							size="small"
-							onClick={(event) => {
-							event.stopPropagation();
-								onSelectGroup(group.groupname);
-							}}
-							aria-label="edit"
-						>
-						<EditIcon fontSize="small" />
-					</IconButton>
+                          <EditIcon fontSize="small" />
+                        </IconButton>
 
-					<IconButton
-							edge="end"
-							size="small"
-							onClick={(event) => {
-							event.stopPropagation();
-								onDeleteGroup(group.groupname);
-							}}
-							aria-label="delete"
-						>
-						<DeleteIcon fontSize="small" />
-					</IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-			  <Divider />
-            </React.Fragment>
-          ))}
-        </List>
-		</Paper>
-      </Hidden>
-	  </div>
-		:
-		<div>No groups found</div>
-		}
+                        <IconButton
+                          edge="end"
+                          size="small"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            onDeleteGroup(group.groupname);
+                          }}
+                          aria-label="delete"
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                    <Divider />
+                  </React.Fragment>
+                ))}
+              </List>
+            </Paper>
+          </Hidden>
+        </div>
+      ) : (
+        <div>No groups found</div>
+      )}
       <Fab
-		  color="primary"
-		  aria-label="add"
-		  className={classes.fab}
-		  onClick={(event) => {
-			event.stopPropagation();
-			onNewGroup();
-		  }}
-	  >
+        color="primary"
+        aria-label="add"
+        className={classes.fab}
+        onClick={(event) => {
+          event.stopPropagation();
+          onNewGroup();
+        }}
+      >
         <AddIcon />
       </Fab>
     </div>
@@ -366,9 +368,9 @@ Groups.defaultProps = {
 
 const mapStateToProps = (state) => {
   return {
-		groups: state.groups?.groups,
-		roles: state.roles?.roles,
-		clients: state.clients?.clients,
+    groups: state.groups?.groups,
+    roles: state.roles?.roles,
+    clients: state.clients?.clients,
   };
 };
 

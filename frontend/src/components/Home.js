@@ -5,16 +5,16 @@ import Grid from "@material-ui/core/Grid";
 // import StreamsIcon from "@material-ui/icons/SettingsInputAntenna";
 // import SystemIcon from '@material-ui/icons/Assessment';
 import Typography from "@material-ui/core/Typography";
-import Box from '@material-ui/core/Box';
+import Box from "@material-ui/core/Box";
 
 import HomeCard from "./HomeCard";
 import NewsCard from "./NewsCard";
 
 function Home() {
   return (
-	  <div>
-	  <Grid container spacing={3}>
-		{/* <Grid item lg={4} sm={6} xl={4} xs={12}>
+    <div>
+      <Grid container spacing={3}>
+        {/* <Grid item lg={4} sm={6} xl={4} xs={12}>
 		  <HomeCard
 			title="Streams"
 			description="Manage streams"
@@ -22,24 +22,24 @@ function Home() {
 			link="/streams"
 		  />
 		</Grid> */}
-		<Grid item lg={6} sm={6} xl={6} xs={12}>
-		  <HomeCard
-			title="System Monitoring"
-			description="Monitor and analyse the system status of Mosquitto"
-			image={"system.png"}
-			link="/system"
-		  />
-		</Grid>
-		<Grid item lg={6} sm={6} xl={6} xs={12}>
-		  <HomeCard
-			title="Dynamic Security"
-			description="Manage the security using clients, groups, roles and ACLs"
-			image={"security.png"}
-			link="/security"
-		  />
-		</Grid>
-	  </Grid>
-	  {/* <br />
+        <Grid item lg={6} sm={6} xl={6} xs={12}>
+          <HomeCard
+            title="System Monitoring"
+            description="Monitor and analyse the system status of Mosquitto"
+            image={"system.png"}
+            link="/system"
+          />
+        </Grid>
+        <Grid item lg={6} sm={6} xl={6} xs={12}>
+          <HomeCard
+            title="Dynamic Security"
+            description="Manage the security using clients, groups, roles and ACLs"
+            image={"security.png"}
+            link="/security"
+          />
+        </Grid>
+      </Grid>
+      {/* <br />
 	  <Typography variant="h4" gutterBottom fontWeight="fontWeightBold">
 	  <Box fontWeight="fontWeightBold" m={1}>
         Latest news
@@ -71,8 +71,7 @@ function Home() {
 		  />
 		</Grid>
 	  </Grid> */}
-	  </div>
-		  
+    </div>
   );
 }
 
