@@ -106,18 +106,18 @@ function getSteps() {
 			imgPath: '/onboarding001.png'
 		},
 		{
-			label: 'Role based ACL',
+			label: 'Role based access control',
 			description: 'Manage clients, groups and roles',
 			imgPath: '/onboarding002.png'
 		},
 		{
-			label: 'Mosquitto Dashboard',
-			description: 'Analyze your Mosquitto broker',
+			label: 'Metrics Dashboard',
+			description: 'Analyze the system status of your brokers',
 			imgPath: '/onboarding003.png'
 		},
 		{
 			label: 'Topic Tree Inspector',
-			description: 'Visualize MQTT topics',
+			description: 'Visualize and inspect MQTT topics',
 			imgPath: '/onboarding004.png'
 		}
 	];
