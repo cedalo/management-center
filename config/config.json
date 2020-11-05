@@ -1,7 +1,95 @@
 {
+	"connections": [
+		{
+			"id": "mosquitto-2-preview",
+			"name": "Mosquitto 2.0 Preview 2",
+			"url": "mqtt://localhost:1883"
+		},
+		{
+			"id": "mosquitto-mock-api",
+			"name": "Mosquitto 2.0 Mock API",
+			"url": "mqtt://localhost:1889"
+		}
+	],
 	"themes": [
 		{
 			"id": "custom",
+			"name": "Cedalo AG",
+			"light": {
+				"logo": {
+					"path": "/logo.png"
+				},
+				"palette": {
+					"primary": {
+						"main": "#556cd6"
+					},
+					"secondary": {
+						"main": "#19857b"
+					}
+				}
+			},
+			"dark": {
+				"logo": {
+					"path": "/logo.png"
+				},
+				"palette": {
+					"primary": {
+						"main": "rgb(16, 30, 38)"
+					},
+					"secondary": {
+						"main": "#2697ed"
+					},
+					"text": {
+						"primary": "rgb(156, 215, 247)"
+					},
+					"info": {
+						"icons": "#2697ed"
+					},
+					"drawer": {
+						"backgroundColor": "green"
+					}
+				}
+			}
+		},
+		{
+			"id": "custom2",
+			"name": "Cedalo AG",
+			"light": {
+				"logo": {
+					"path": "/logo.png"
+				},
+				"palette": {
+					"primary": {
+						"main": "#556cd6"
+					},
+					"secondary": {
+						"main": "#19857b"
+					}
+				}
+			},
+			"dark": {
+				"logo": {
+					"path": "/logo.png"
+				},
+				"palette": {
+					"primary": {
+						"main": "rgb(16, 30, 38)"
+					},
+					"secondary": {
+						"main": "#ffc107"
+					},
+					"text": {
+						"primary": "rgb(156, 215, 247)"
+					},
+					"background": {
+						"default": "rgb(6, 31, 47)",
+						"paper": "rgb(16, 30, 38)"
+					 }
+				}
+			}
+		},
+		{
+			"id": "alternative",
 			"name": "Cedalo AG",
 			"light": {
 				"logo": {
@@ -145,18 +233,6 @@
  					}
 				}
 			}
-		}
-	],
-	"connections": [
-		{
-			"id": "mosquitto-2-preview",
-			"name": "Mosquitto 2.0 Preview 2",
-			"url": "mqtt://localhost:1883"
-		},
-		{
-			"id": "mosquitto-mock-api",
-			"name": "Mosquitto 2.0 Mock API",
-			"url": "mqtt://localhost:1889"
 		}
 	]
 }
