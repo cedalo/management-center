@@ -1,45 +1,45 @@
-version: "3.7"
+version: '3.7'
 
 services:
-  mosquitto:
-    image: ralight/mosquitto-streaming:latest
-    container_name: mosquitto
-    ports:
-      - 1883:1883
-      - 9002:9001
-    expose:
-      - 1883
-      - 9002
-    volumes:
-      - ./data:/mosquitto/data
-    #   - ./conf:/mosquitto/config
-    networks:
-      - mosquitto
-  mosquitto-ui:
-    image: cedalo/mosquitto-ui:dev
-    container_name: mosquitto-ui
-    environment:
-      # Do not change these settings for the moment!
-      MOSQUITTO_UI_BROKER_ID: mosquitto-2.0
-      MOSQUITTO_UI_BROKER_NAME: Mosquitto 2.0
-      MOSQUITTO_UI_BROKER_URL: mqtt://mosquitto:1883
-      MOSQUITTO_UI_BROKER_USERNAME: cedalo
-      MOSQUITTO_UI_BROKER_PASSWORD: eAkX29UnAs
-      MOSQUITTO_UI_PROXY_CONFIG_DIR: /mosquitto-ui/backend/config/config.json
-      MOSQUITTO_UI_LICENSE_PATH: /mosquitto-ui/backend/config/license.lic
-    ports:
-      - 8088:8088
-      - 9003:9000
-    expose:
-      - 8088
-      - 9003
-    depends_on:
-      - mosquitto
-    volumes:
-      - ./config:/mosquitto-ui/backend/config
-    networks:
-      - mosquitto
+    mosquitto:
+        image: ralight/mosquitto-streaming:latest
+        container_name: mosquitto
+        ports:
+            - 1883:1883
+            - 9002:9001
+        expose:
+            - 1883
+            - 9002
+        volumes:
+            - ./data:/mosquitto/data
+        #   - ./conf:/mosquitto/config
+        networks:
+            - mosquitto
+    mosquitto-ui:
+        image: cedalo/mosquitto-ui:dev
+        container_name: mosquitto-ui
+        environment:
+            # Do not change these settings for the moment!
+            MOSQUITTO_UI_BROKER_ID: mosquitto-2.0
+            MOSQUITTO_UI_BROKER_NAME: Mosquitto 2.0
+            MOSQUITTO_UI_BROKER_URL: mqtt://mosquitto:1883
+            MOSQUITTO_UI_BROKER_USERNAME: cedalo
+            MOSQUITTO_UI_BROKER_PASSWORD: eAkX29UnAs
+            MOSQUITTO_UI_PROXY_CONFIG_DIR: /mosquitto-ui/backend/config/config.json
+            MOSQUITTO_UI_LICENSE_PATH: /mosquitto-ui/backend/config/license.lic
+        ports:
+            - 8088:8088
+            - 9003:9000
+        expose:
+            - 8088
+            - 9003
+        depends_on:
+            - mosquitto
+        volumes:
+            - ./config:/mosquitto-ui/backend/config
+        networks:
+            - mosquitto
 networks:
-  mosquitto:
-    name: mosquitto
-    driver: bridge
+    mosquitto:
+        name: mosquitto
+        driver: bridge
