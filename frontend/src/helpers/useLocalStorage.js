@@ -1,9 +1,6 @@
-import { Dispatch, useCallback, useEffect, useState } from 'react';
+import { Dispatch, useCallback, useEffect, useState } from "react";
 
-export default function useLocalStorage(
-  key,
-  initialValue = ''
-) {
+export default function useLocalStorage(key, initialValue = "") {
   const [value, setValue] = useState(
     () => window.localStorage.getItem(key) || initialValue
   );
@@ -30,8 +27,8 @@ export default function useLocalStorage(
   );
 
   useEffect(() => {
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
   }, [handleStorage]);
 
   return [value, setItem];

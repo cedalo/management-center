@@ -2,7 +2,7 @@ import { connect, useDispatch } from "react-redux";
 import React, { useContext, useState } from "react";
 import PropTypes from "prop-types";
 import qs from "qs";
-import { useConfirm } from 'material-ui-confirm';
+import { useConfirm } from "material-ui-confirm";
 import { makeStyles } from "@material-ui/core/styles";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Tabs from "@material-ui/core/Tabs";
@@ -11,9 +11,9 @@ import Avatar from "@material-ui/core/Avatar";
 import GroupIcon from "@material-ui/icons/Group";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
-import Button from '@material-ui/core/Button';
-import EditIcon from '@material-ui/icons/Edit';
-import SaveIcon from '@material-ui/icons/Save';
+import Button from "@material-ui/core/Button";
+import EditIcon from "@material-ui/icons/Edit";
+import SaveIcon from "@material-ui/icons/Save";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
@@ -37,8 +37,8 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { Link as RouterLink } from "react-router-dom";
 
-import { WebSocketContext } from '../websockets/WebSocket';
-import { updateClient, updateClients } from '../actions/actions';
+import { WebSocketContext } from "../websockets/WebSocket";
+import { updateClient, updateClients } from "../actions/actions";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   paper: {
-	padding: "15px",
+    padding: "15px",
   },
   form: {
     display: "flex",
@@ -97,9 +97,9 @@ const useStyles = makeStyles((theme) => ({
     // width: 200,
   },
   buttons: {
-	'& > *': {
-		margin: theme.spacing(1),
-	  },
+    "& > *": {
+      margin: theme.spacing(1),
+    },
   },
   margin: {
     margin: theme.spacing(1),
@@ -115,7 +115,7 @@ const ClientDetail = (props) => {
 
   const { client = {} } = props;
   const [updatedClient, setUpdatedClient] = React.useState({
-	...client
+    ...client,
   });
 
   const context = useContext(WebSocketContext);
@@ -124,65 +124,72 @@ const ClientDetail = (props) => {
   const { client: brokerClient } = context;
 
   const validate = () => {
-	  if (editMode) {
-		  return (updatedClient.username !== '');
-	  } else {
-		return (updatedClient.clientid !== '')
-			&& (updatedClient.username !== '');
-	  }
-}
+    if (editMode) {
+      return updatedClient.username !== "";
+    } else {
+      return updatedClient.clientid !== "" && updatedClient.username !== "";
+    }
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   const onUpdateClient = async () => {
-	// TODO: quick hack
-	delete updatedClient.groups;
-	delete updatedClient.roles;
-	await brokerClient.modifyClient(updatedClient);
-	const clientObject = await brokerClient.getClient(updatedClient.username);
-	dispatch(updateClient(clientObject));
-	const clients = await brokerClient.listClients();
-	dispatch(updateClients(clients));
-	setEditMode(false);
-  }
+    // TODO: quick hack
+    delete updatedClient.groups;
+    delete updatedClient.roles;
+    await brokerClient.modifyClient(updatedClient);
+    const clientObject = await brokerClient.getClient(updatedClient.username);
+    dispatch(updateClient(clientObject));
+    const clients = await brokerClient.listClients();
+    dispatch(updateClients(clients));
+    setEditMode(false);
+  };
 
   const onCancelEdit = async () => {
-	await confirm({
-		title: 'Cancel client editing',
-		description: `Do you really want to cancel editing this client?`,
-		cancellationButtonProps: {
-			variant: 'contained',
-		},
-		confirmationButtonProps: {
-			color: 'primary',
-			variant: 'contained',
-		}
-	});
-	setUpdatedClient({
-		...client
-	});
-	setEditMode(false);
-  }
-	const { match: {
-		params: {
-			clientId
-		}
-	}} = props;
-	// TODO: get client by id if current client is not defined
+    await confirm({
+      title: "Cancel client editing",
+      description: `Do you really want to cancel editing this client?`,
+      cancellationButtonProps: {
+        variant: "contained",
+      },
+      confirmationButtonProps: {
+        color: "primary",
+        variant: "contained",
+      },
+    });
+    setUpdatedClient({
+      ...client,
+    });
+    setEditMode(false);
+  };
+  const {
+    match: {
+      params: { clientId },
+    },
+  } = props;
+  // TODO: get client by id if current client is not defined
 
   return (
     <div>
       <Breadcrumbs aria-label="breadcrumb">
-        <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
-        <RouterLink className={classes.breadcrumbLink} to="/security">Security</RouterLink>
-        <RouterLink className={classes.breadcrumbLink} to="/security/clients">Clients</RouterLink>
-        <Typography className={classes.breadcrumbItem} color="textPrimary">{client.username}</Typography>
+        <RouterLink className={classes.breadcrumbLink} to="/home">
+          Home
+        </RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/security">
+          Security
+        </RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/security/clients">
+          Clients
+        </RouterLink>
+        <Typography className={classes.breadcrumbItem} color="textPrimary">
+          {client.username}
+        </Typography>
       </Breadcrumbs>
       <br />
-    <Paper className={classes.paper}>
-      {/* <Tabs
+      <Paper className={classes.paper}>
+        {/* <Tabs
         value={value}
         onChange={handleChange}
         variant="scrollable"
@@ -202,19 +209,19 @@ const ClientDetail = (props) => {
           {...a11yProps(1)}
         />
       </Tabs> */}
-      {/* <TabPanel value={value} index={0}> */}
+        {/* <TabPanel value={value} index={0}> */}
         <form className={classes.form} noValidate autoComplete="off">
           <div className={classes.margin}>
             <Grid container spacing={1} alignItems="flex-end">
               <Grid item xs={12}>
                 <TextField
-				  disabled
+                  disabled
                   id="client-id"
                   label="Client ID"
-				  value={updatedClient.clientid}
+                  value={updatedClient.clientid}
                   defaultValue=""
                   variant="outlined"
-				  fullWidth
+                  fullWidth
                   className={classes.textField}
                   InputProps={{
                     startAdornment: (
@@ -228,18 +235,18 @@ const ClientDetail = (props) => {
               <Grid item xs={12}>
                 <TextField
                   required
-				  disabled={!editMode}
-				  onChange={(event) => {
-					  if (editMode) {
-						setUpdatedClient({
-							...updatedClient,
-							username: event.target.value
-						})
-					  }
-				  }}
+                  disabled={!editMode}
+                  onChange={(event) => {
+                    if (editMode) {
+                      setUpdatedClient({
+                        ...updatedClient,
+                        username: event.target.value,
+                      });
+                    }
+                  }}
                   id="username"
-				  label="username"
-				  value={updatedClient.username}
+                  label="username"
+                  value={updatedClient.username}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -253,21 +260,21 @@ const ClientDetail = (props) => {
                   }}
                 />
               </Grid>
-			  <Grid item xs={12}>
+              <Grid item xs={12}>
                 <TextField
                   required
-				  disabled
-				//   onChange={(event) => {
-				// 	  if (editMode) {
-				// 		setUpdatedClient({
-				// 			...updatedClient,
-				// 			password: event.target.value
-				// 		})
-				// 	  }
-				//   }}
+                  disabled
+                  //   onChange={(event) => {
+                  // 	  if (editMode) {
+                  // 		setUpdatedClient({
+                  // 			...updatedClient,
+                  // 			password: event.target.value
+                  // 		})
+                  // 	  }
+                  //   }}
                   id="password"
                   label="Password"
-				//   value={client.password}
+                  //   value={client.password}
                   defaultValue="*****"
                   variant="outlined"
                   fullWidth
@@ -284,19 +291,19 @@ const ClientDetail = (props) => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-				  disabled={!editMode}
-				  onChange={(event) => {
-					  if (editMode) {
-						setUpdatedClient({
-							...updatedClient,
-							textname: event.target.value
-						})
-					  }
-				  }}
+                  disabled={!editMode}
+                  onChange={(event) => {
+                    if (editMode) {
+                      setUpdatedClient({
+                        ...updatedClient,
+                        textname: event.target.value,
+                      });
+                    }
+                  }}
                   id="textname"
-				  label="Text name"
-				  value={updatedClient.textname}
-				//   onChange={(event) => setTextName(event.target.value)}
+                  label="Text name"
+                  value={updatedClient.textname}
+                  //   onChange={(event) => setTextName(event.target.value)}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -305,19 +312,19 @@ const ClientDetail = (props) => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-				  disabled={!editMode}
-				  onChange={(event) => {
-					  if (editMode) {
-						setUpdatedClient({
-							...updatedClient,
-							textdescription: event.target.value
-						})
-					  }
-				  }}
+                  disabled={!editMode}
+                  onChange={(event) => {
+                    if (editMode) {
+                      setUpdatedClient({
+                        ...updatedClient,
+                        textdescription: event.target.value,
+                      });
+                    }
+                  }}
                   id="textdescription"
-				  label="Text description"
-				  value={updatedClient.textdescription}
-				//   onChange={(event) => setTextDescription(event.target.value)}
+                  label="Text description"
+                  value={updatedClient.textdescription}
+                  //   onChange={(event) => setTextDescription(event.target.value)}
                   defaultValue=""
                   variant="outlined"
                   fullWidth
@@ -327,8 +334,8 @@ const ClientDetail = (props) => {
             </Grid>
           </div>
         </form>
-      {/* </TabPanel> */}
-      {/* <TabPanel value={value} index={1}>
+        {/* </TabPanel> */}
+        {/* <TabPanel value={value} index={1}>
 	  <List className={classes.root}>
           {client.groups?.map((group) => (
             <React.Fragment>
@@ -348,44 +355,46 @@ const ClientDetail = (props) => {
           ))}
         </List>
       </TabPanel> */}
-			  { !editMode && <Grid item xs={12} className={classes.buttons} >
-				<Button
-					variant="contained"
-					color="primary"
-					className={classes.button}
-					startIcon={<EditIcon />}
-					onClick={() => setEditMode(true)}
-				>
-					Edit
-				</Button>
-				</Grid>
-			}
-			  { editMode && <Grid item xs={12} className={classes.buttons} >
-				<Button
-					variant="contained"
-					disabled={!validate()}
-					color="primary"
-					className={classes.button}
-					startIcon={<SaveIcon />}
-					onClick={(event) => {
-					  event.stopPropagation();
-					  onUpdateClient();
-					}}
-				>
-					Save
-				</Button>
-				<Button
-					variant="contained"
-					onClick={(event) => {
-					  event.stopPropagation();
-					  onCancelEdit();
-					}}
-				>
-					Cancel
-				</Button>
-				</Grid>
-			}
-	  </Paper>
+        {!editMode && (
+          <Grid item xs={12} className={classes.buttons}>
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.button}
+              startIcon={<EditIcon />}
+              onClick={() => setEditMode(true)}
+            >
+              Edit
+            </Button>
+          </Grid>
+        )}
+        {editMode && (
+          <Grid item xs={12} className={classes.buttons}>
+            <Button
+              variant="contained"
+              disabled={!validate()}
+              color="primary"
+              className={classes.button}
+              startIcon={<SaveIcon />}
+              onClick={(event) => {
+                event.stopPropagation();
+                onUpdateClient();
+              }}
+            >
+              Save
+            </Button>
+            <Button
+              variant="contained"
+              onClick={(event) => {
+                event.stopPropagation();
+                onCancelEdit();
+              }}
+            >
+              Cancel
+            </Button>
+          </Grid>
+        )}
+      </Paper>
     </div>
   );
 };
@@ -396,8 +405,8 @@ ClientDetail.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-	// TODO: check object hierarchy
-	client: state.clients?.client,
+    // TODO: check object hierarchy
+    client: state.clients?.client,
   };
 };
 

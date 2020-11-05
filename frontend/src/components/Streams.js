@@ -1,7 +1,7 @@
-import React from 'react';
- 
+import React from "react";
+
 function Streams() {
-  return 'Streams';
+  return "Streams";
 }
- 
+
 export default Streams;

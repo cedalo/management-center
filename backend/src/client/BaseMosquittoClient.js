@@ -52,13 +52,16 @@ module.exports = class BaseMosquittoClient {
     this._isConnecting = true;
     this._mqttEndpointURL = mqttEndpointURL || this._mqttEndpointURL;
     try {
-	  const brokerClient = await this._connectBroker(mqttEndpointURL, credentials);
-	  this._brokerClient = brokerClient;
-	  this._isConnected = true;
+      const brokerClient = await this._connectBroker(
+        mqttEndpointURL,
+        credentials
+      );
+      this._brokerClient = brokerClient;
+      this._isConnected = true;
     } catch (error) {
       this._isConnected = false;
-	  this.logger.error(error);
-	  throw error;
+      this.logger.error(error);
+      throw error;
     }
   }
 
@@ -113,17 +116,20 @@ module.exports = class BaseMosquittoClient {
 
   async _sendCommands(feature, commandMessage, correlationData = createID()) {
     commandMessage.correlationData = correlationData;
-	  const commands = {
-		  commands: [
-			commandMessage
-		  ]
-	  }
+    const commands = {
+      commands: [commandMessage],
+    };
     return this.sendRequest(feature, commands, correlationData);
   }
 
-  async sendRequest(feature, request, correlationData, timeout = this._timeout) {
+  async sendRequest(
+    feature,
+    request,
+    correlationData,
+    timeout = this._timeout
+  ) {
     /* eslint-disable */
-	this.logger.debug("Sending request to Mosquitto", request);
+    this.logger.debug("Sending request to Mosquitto", request);
     return new Promise((resolve, reject) => {
       const timeoutId = setTimeout(
         () => timeoutHandler(correlationData, this._requests),
@@ -136,7 +142,10 @@ module.exports = class BaseMosquittoClient {
         request,
       });
       return new Promise((resolve /* , reject */) => {
-        this._brokerClient.publish(`$CONTROL/${feature}/v1`, JSON.stringify(request));
+        this._brokerClient.publish(
+          `$CONTROL/${feature}/v1`,
+          JSON.stringify(request)
+        );
         resolve();
       }).catch((error) => {
         this.logger.error("Sending request to Mosquitto", request);
@@ -160,41 +169,41 @@ module.exports = class BaseMosquittoClient {
   }
 
   _isResponse(topic, message) {
-	  if (topic === "$CONTROL/dynamic-security/v1/response") {
-		  return true;
-	  }
-	  try {
-		const parsedMessage = JSON.parse(message);
-		if (parsedMessage.result || parsedMessage.data) {
-			return true;
-		}
-	  } catch (error) {
-		return false;
-	  }
+    if (topic === "$CONTROL/dynamic-security/v1/response") {
+      return true;
+    }
+    try {
+      const parsedMessage = JSON.parse(message);
+      if (parsedMessage.result || parsedMessage.data) {
+        return true;
+      }
+    } catch (error) {
+      return false;
+    }
   }
 
   _handleBrokerMessage(topic, message) {
-	  if (topic.startsWith('$CONTROL')) {
-		const parsedMessage = JSON.parse(message);
-		const isResponse = this._isResponse(topic, message);
-		if (isResponse) {
-			parsedMessage.responses.forEach((response) => {
-				const request = deletePendingRequest(
-					response.correlationData,
-					this._requests
-				  );
-				  if (request) {
-					this.logger.debug("Got response from Mosquitto", response);
-					if (response.error) {
-						request.reject(response);
-					}
-					request.resolve(response);
-				  }
-			})
-		} else if (parsedMessage.type === "event") {
-		  this._handleEvent(parsedMessage.event);
-		}
-	  }
+    if (topic.startsWith("$CONTROL")) {
+      const parsedMessage = JSON.parse(message);
+      const isResponse = this._isResponse(topic, message);
+      if (isResponse) {
+        parsedMessage.responses.forEach((response) => {
+          const request = deletePendingRequest(
+            response.correlationData,
+            this._requests
+          );
+          if (request) {
+            this.logger.debug("Got response from Mosquitto", response);
+            if (response.error) {
+              request.reject(response);
+            }
+            request.resolve(response);
+          }
+        });
+      } else if (parsedMessage.type === "event") {
+        this._handleEvent(parsedMessage.event);
+      }
+    }
   }
 
   _handleEvent(event) {
@@ -203,5 +212,4 @@ module.exports = class BaseMosquittoClient {
       listeners.forEach((listener) => listener(event));
     }
   }
-
-}
+};

@@ -84,9 +84,15 @@ const Status = ({ systemStatus }) => {
   return (
     <div>
       <Breadcrumbs aria-label="breadcrumb">
-        <RouterLink className={classes.breadcrumbLink} to="/home">Home</RouterLink>
-        <RouterLink className={classes.breadcrumbLink} to="/system">System</RouterLink>
-        <Typography className={classes.breadcrumbItem} color="textPrimary">Status</Typography>
+        <RouterLink className={classes.breadcrumbLink} to="/home">
+          Home
+        </RouterLink>
+        <RouterLink className={classes.breadcrumbLink} to="/system">
+          System
+        </RouterLink>
+        <Typography className={classes.breadcrumbItem} color="textPrimary">
+          Status
+        </Typography>
       </Breadcrumbs>
       <br />
       <Container maxWidth={false}>
@@ -173,8 +179,8 @@ const Status = ({ systemStatus }) => {
                 </TableBody>
               </Table>
             </TableContainer>
-            </Grid>
-          	<Grid item lg={4} sm={4} xl={4} xs={12}>
+          </Grid>
+          <Grid item lg={4} sm={4} xl={4} xs={12}>
             <TableContainer component={Paper}>
               <Table className={classes.table}>
                 <TableHead>

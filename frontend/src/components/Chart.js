@@ -1,7 +1,7 @@
-import React from 'react';
-import clsx from 'clsx';
-import PropTypes from 'prop-types';
-import { Doughnut } from 'react-chartjs-2';
+import React from "react";
+import clsx from "clsx";
+import PropTypes from "prop-types";
+import { Doughnut } from "react-chartjs-2";
 import {
   Box,
   Card,
@@ -11,19 +11,26 @@ import {
   Typography,
   colors,
   makeStyles,
-  useTheme
-} from '@material-ui/core';
-import LaptopMacIcon from '@material-ui/icons/LaptopMac';
-import PhoneIcon from '@material-ui/icons/Phone';
-import TabletIcon from '@material-ui/icons/Tablet';
+  useTheme,
+} from "@material-ui/core";
+import LaptopMacIcon from "@material-ui/icons/LaptopMac";
+import PhoneIcon from "@material-ui/icons/Phone";
+import TabletIcon from "@material-ui/icons/Tablet";
 
 const useStyles = makeStyles(() => ({
   root: {
-    height: '100%'
-  }
+    height: "100%",
+  },
 }));
 
-const Chart = ({ className, title, data, labels, dataDescriptions, ...rest }) => {
+const Chart = ({
+  className,
+  title,
+  data,
+  labels,
+  dataDescriptions,
+  ...rest
+}) => {
   const classes = useStyles();
   const theme = useTheme();
 
@@ -32,7 +39,7 @@ const Chart = ({ className, title, data, labels, dataDescriptions, ...rest }) =>
     cutoutPercentage: 80,
     layout: { padding: 0 },
     legend: {
-      display: false
+      display: false,
     },
     maintainAspectRatio: false,
     responsive: true,
@@ -44,57 +51,28 @@ const Chart = ({ className, title, data, labels, dataDescriptions, ...rest }) =>
       enabled: true,
       footerFontColor: theme.palette.text.secondary,
       intersect: false,
-      mode: 'index',
-      titleFontColor: theme.palette.text.primary
-    }
+      mode: "index",
+      titleFontColor: theme.palette.text.primary,
+    },
   };
 
   return (
-    <Card
-      className={clsx(classes.root, className)}
-      {...rest}
-    >
+    <Card className={clsx(classes.root, className)} {...rest}>
       <CardHeader title={title} />
       <Divider />
       <CardContent>
-        <Box
-          height={300}
-          position="relative"
-        >
-          <Doughnut
-            data={data}
-            options={options}
-          />
+        <Box height={300} position="relative">
+          <Doughnut data={data} options={options} />
         </Box>
-        <Box
-          display="flex"
-          justifyContent="center"
-          mt={2}
-        >
-          {dataDescriptions.map(({
-            color,
-            icon: Icon,
-            title,
-            value
-          }) => (
-            <Box
-              key={title}
-              p={1}
-              textAlign="center"
-            >
+        <Box display="flex" justifyContent="center" mt={2}>
+          {dataDescriptions.map(({ color, icon: Icon, title, value }) => (
+            <Box key={title} p={1} textAlign="center">
               <Icon color="action" />
-              <Typography
-                color="textPrimary"
-                variant="body1"
-              >
+              <Typography color="textPrimary" variant="body1">
                 {title}
               </Typography>
-              <Typography
-                style={{ color }}
-                variant="h3"
-              >
-                {value}
-                %
+              <Typography style={{ color }} variant="h3">
+                {value}%
               </Typography>
             </Box>
           ))}
@@ -105,7 +83,7 @@ const Chart = ({ className, title, data, labels, dataDescriptions, ...rest }) =>
 };
 
 Chart.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 export default Chart;
