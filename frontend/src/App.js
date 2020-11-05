@@ -55,6 +55,7 @@ import customTheme from './theme';
 import darkTheme from './theme-dark';
 import Home from "./components/Home";
 import Security from "./components/Security";
+import Config from "./components/Config";
 import System from "./components/System";
 import InfoPage from "./components/InfoPage";
 // import Login from "./components/Login";
@@ -135,7 +136,8 @@ const useStyles = makeStyles((theme) => ({
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
-    whiteSpace: "nowrap",
+	whiteSpace: "nowrap",
+	backgroundColor: theme.palette.drawer?.backgroundColor,
   },
   drawerOpen: {
     width: drawerWidth,
@@ -248,6 +250,15 @@ export default function App(props) {
 	  if (response?.dark?.palette?.text) {
 		  darkTheme.palette.text.primary = response?.dark?.palette?.text?.primary;
 	  }
+	  if (response?.dark?.palette?.tables) {
+		  darkTheme.palette.tables = response?.dark?.palette?.tables;
+	  }
+	  if (response?.dark?.palette?.info) {
+		  darkTheme.palette.info = response?.dark?.palette?.info;
+	  }
+	  if (response?.dark?.palette?.drawer) {
+		  darkTheme.palette.drawer = response?.dark?.palette?.drawer;
+	  }
 	}
   
 	const onTourStateChange = (event) => {
@@ -340,16 +351,31 @@ export default function App(props) {
 		<List>
 		  <ListItemLink
 			classes={classes} 
-			to="/system/configurations"
+			to="/config/configurations"
 			primary="Configurations"
 			icon={<ConfigurationIcon />}
 		  />
-		  <ListItemLink
+		  {/* <ListItemLink
 			classes={classes} 
-			to="/system/settings"
+			to="/config/settings"
 			primary="Settings"
 			icon={<SettingsIcon />}
+		  /> */}
+		</List>
+		<Divider />
+		<List>
+		  <ListItemLink
+			classes={classes} 
+			to="https://localhost:8090"
+			primary="Streamsheets"
+			icon={<ConfigurationIcon />}
 		  />
+		  {/* <ListItemLink
+			classes={classes} 
+			to="/config/settings"
+			primary="Settings"
+			icon={<SettingsIcon />}
+		  /> */}
 		</List>
 	  </div>
 	);
@@ -483,7 +509,7 @@ export default function App(props) {
 						  [classes.drawerClose]: !open,
 						})}
 						classes={{
-						  paper: clsx({
+						  paper: clsx(classes.drawer, {
 							[classes.drawerOpen]: open,
 							[classes.drawerClose]: !open,
 						  }),
@@ -538,14 +564,17 @@ export default function App(props) {
 					  <Route path="/system/topics">
 						<TopicTree />
 					  </Route>
-					  <Route path="/system/configurations">
-						<Configurations />
-					  </Route>
-					  <Route path="/system/settings">
-						<Settings />
-					  </Route>
 					  <Route path="/system">
 						<System />
+					  </Route>
+					  <Route path="/config/configurations">
+						<Configurations />
+					  </Route>
+					  <Route path="/config/settings">
+						<Settings />
+					  </Route>
+					  <Route path="/config">
+						<Config />
 					  </Route>
 					  <Route path="/home">
 						<Home />
