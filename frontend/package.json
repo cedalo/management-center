@@ -16,17 +16,18 @@
 		"@material-ui/lab": "^4.0.0-alpha.56",
 		"chart.js": "^2.9.3",
 		"clsx": "latest",
+		"material-ui-confirm": "^2.1.1",
+		"node-cron": "^2.0.3",
 		"react": "latest",
 		"react-chartjs-2": "^2.10.0",
 		"react-dom": "latest",
+		"react-joyride": "^2.2.1",
 		"react-redux": "^7.2.1",
 		"react-router-dom": "^5.2.0",
 		"react-scripts": "latest",
 		"react-select": "^3.1.0",
 		"redux": "^4.0.5",
-		"material-ui-confirm": "^2.1.1",
-		"node-cron": "^2.0.3",
-		"react-joyride": "^2.2.1"
+		"terminal-in-react": "^4.3.1"
 	},
 	"browserslist": {
 		"production": [
