@@ -39,10 +39,10 @@ function Config() {
 			<Grid container spacing={3}>
 				<Grid item lg={6} sm={6} xl={6} xs={12}>
 					<HomeCard
-						title="Configurations"
-						description="Manage configurations"
+						title="Connections"
+						description="Manage connections"
 						image={'settings.png'}
-						link="/config/configurations"
+						link="/config/connections"
 					/>
 				</Grid>
 				{/* <Grid item lg={6} sm={6} xl={6} xs={12}>
