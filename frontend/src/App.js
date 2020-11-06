@@ -10,6 +10,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import ListSubheader from '@material-ui/core/ListSubheader';
+import TerminalIcon from '@material-ui/icons/Computer';
 import Badge from '@material-ui/core/Badge';
 import Button from '@material-ui/core/Button';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -564,6 +565,9 @@ export default function App(props) {
 													</Route>
 													<Route path="/security">
 														<Security />
+													</Route>
+													<Route path="/terminal">
+														<Terminal />
 													</Route>
 													<Route path="/streams">
 														<Streams />
