@@ -10,7 +10,9 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import ListSubheader from '@material-ui/core/ListSubheader';
+import PluginsIcon from '@material-ui/icons/Power';
 import TerminalIcon from '@material-ui/icons/Computer';
+import ConnectionsIcon from '@material-ui/icons/SettingsInputComponent';
 import Badge from '@material-ui/core/Badge';
 import Button from '@material-ui/core/Button';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -63,6 +65,8 @@ import InfoPage from './components/InfoPage';
 // import Login from "./components/Login";
 import Roles from './components/Roles';
 import Configurations from './components/Configurations';
+import Plugins from './components/Plugins';
+import Terminal from './components/Terminal';
 import Settings from './components/Settings';
 import Streams from './components/Streams';
 import Status from './components/Status';
@@ -343,20 +347,22 @@ export default function App(props) {
 		  />
 		</List>
 		<Divider /> */}
+
+				<Divider />
 				<List>
-					{open ? <ListSubheader className={classes.menuSubHeader}>Settings</ListSubheader> : null}
+					{open ? <ListSubheader className={classes.menuSubHeader}>Management</ListSubheader> : null}
 					<ListItemLink
 						classes={classes}
-						to="/config/configurations"
-						primary="Configurations"
-						icon={<ConfigurationIcon />}
+						to="/plugins"
+						primary="Plugins"
+						icon={<PluginsIcon />}
 					/>
 					{/* <ListItemLink
 			classes={classes} 
 			to="/config/settings"
 			primary="Settings"
 			icon={<SettingsIcon />}
-		  /> */}
+		/> */}
 				</List>
 				<Divider />
 				<List>
@@ -366,6 +372,28 @@ export default function App(props) {
 						to="https://localhost:8090"
 						primary="Streamsheets"
 						icon={<ConfigurationIcon />}
+					/>
+					<ListItemLink
+						classes={classes}
+						to="/terminal"
+						primary="Terminal"
+						icon={<TerminalIcon />}
+					/>
+				</List>
+				<Divider />
+				<List>
+					{open ? <ListSubheader className={classes.menuSubHeader}>Admin</ListSubheader> : null}
+					<ListItemLink
+						classes={classes}
+						to="/config/connections"
+						primary="Connections"
+						icon={<ConnectionsIcon />}
+					/>
+					<ListItemLink
+						classes={classes} 
+						to="/config/settings"
+						primary="Settings"
+						icon={<SettingsIcon />}
 					/>
 					{/* <ListItemLink
 			classes={classes} 
@@ -566,6 +594,9 @@ export default function App(props) {
 													<Route path="/security">
 														<Security />
 													</Route>
+													<Route path="/plugins">
+														<Plugins />
+													</Route>
 													<Route path="/terminal">
 														<Terminal />
 													</Route>
@@ -581,7 +612,7 @@ export default function App(props) {
 													<Route path="/system">
 														<System />
 													</Route>
-													<Route path="/config/configurations">
+													<Route path="/config/connections">
 														<Configurations />
 													</Route>
 													<Route path="/config/settings">
