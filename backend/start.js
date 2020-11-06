@@ -185,6 +185,9 @@ const init = (licenseContainer) => {
 	app.use(cors());
 	const server = http.createServer(app);
 
+
+
+
 	// TODO: add error handling
 	const config = loadConfig();
 
@@ -461,10 +464,6 @@ const init = (licenseContainer) => {
 		response.json(config);
 	});
 
-	app.get('/api/connections', (request, response) => {
-		response.json(config.connections);
-	});
-
 	app.get('/api/license', (request, response) => {
 		response.json(licenseContainer.license);
 	});
@@ -478,32 +477,34 @@ const init = (licenseContainer) => {
 		}
 	});
 
-	app.get('/api/system/status', (request, response) => {
-		response.json(globalSystem);
+	app.get('/api/plugins', (request, response) => {
+		response.json(plugins.map((plugin) => plugin.meta));
 	});
 
-	app.get('/api/system/topictree', (request, response) => {
-		if (licenseContainer.license.isValid) {
-			response.json(globalTopicTree);
-		} else {
-			response.status(404).send('Not supported with the given license.');
+	const context = {
+		app,
+		config,
+		globalTopicTree,
+		licenseContainer,
+		brokerConnections,
+		actions: {
+			sendSystemStatusUpdate,
+			sendTopicTreeUpdate
 		}
-	});
+	};
 
-	app.delete('/api/system/topictree', (request, response) => {
-		Object.keys(globalTopicTree).forEach((brokerName) => {
-			const topicTree = globalTopicTree[brokerName];
-			Object.keys(topicTree).forEach((key) => {
-				delete topicTree[key];
-			});
-			const brokerConnection = brokerConnections.get(brokerName);
-			if (brokerConnection) {
-				const { broker, system, topicTree } = brokerConnection;
-				sendSystemStatusUpdate(system, broker);
-				sendTopicTreeUpdate(topicTree, broker);
-			}
-		});
-		response.send();
+	const plugins = [];
+	const pluginNames = [ 'connections-rest-api', 'system-status-rest-api', 'topictree-rest-api' ];
+	pluginNames.forEach((pluginName) => {
+		try {
+			const { Plugin } = require(`./plugins/${pluginName}`);
+			const plugin = new Plugin();
+			plugin.init(context);
+			plugin.load(context);
+			plugins.push(plugin);
+		} catch {
+
+		}
 	});
 
 	server.listen(MOSQUITTO_UI_PROXY_PORT, () => {
