@@ -8,6 +8,7 @@ const WebSocket = require('ws');
 const mqtt = require('mqtt');
 const axios = require('axios');
 const NodeMosquittoClient = require('./src/client/NodeMosquittoClient');
+const PluginManager = require('./src/plugins/PluginManager');
 // const UsageTracker = require("./src/usage/UsageTracker");
 
 const defaultTheme = {
@@ -477,10 +478,6 @@ const init = (licenseContainer) => {
 		}
 	});
 
-	app.get('/api/plugins', (request, response) => {
-		response.json(plugins.map((plugin) => plugin.meta));
-	});
-
 	const context = {
 		app,
 		config,
@@ -493,18 +490,13 @@ const init = (licenseContainer) => {
 		}
 	};
 
-	const plugins = [];
-	const pluginNames = [ 'connections-rest-api', 'system-status-rest-api', 'topictree-rest-api' ];
-	pluginNames.forEach((pluginName) => {
-		try {
-			const { Plugin } = require(`./plugins/${pluginName}`);
-			const plugin = new Plugin();
-			plugin.init(context);
-			plugin.load(context);
-			plugins.push(plugin);
-		} catch {
 
-		}
+	const pluginManager = new PluginManager();
+	const pluginNames = [ 'connections-rest-api', 'system-status-rest-api', 'topictree-rest-api' ];
+	pluginManager.init(pluginNames, context);
+
+	app.get('/api/plugins', (request, response) => {
+		response.json(pluginManager.plugins.map((plugin) => plugin.meta));
 	});
 
 	server.listen(MOSQUITTO_UI_PROXY_PORT, () => {
