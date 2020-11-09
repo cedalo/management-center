@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Plugins = (props) => {
 	const classes = useStyles();
-	const [response, loading, hasError] = useFetch('http://localhost:8088/api/plugins');
+	const [response, loading, hasError] = useFetch(`http://${window.location.hostname}:8088/api/plugins`);
 
 	if (response) {
 		return (

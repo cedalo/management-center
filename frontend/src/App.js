@@ -224,7 +224,7 @@ export default function App(props) {
 	const [value, setValue] = React.useState('recents');
 	const [darkMode, setDarkMode] = useLocalStorage('mosquitto-ui.darkMode');
 	// TODO: make URL relative
-	const [response, loading, hasError] = useFetch('http://localhost:8088/api/theme');
+	const [response, loading, hasError] = useFetch(`http://${window.location.hostname}:8088/api/theme`);
 
 	if (response) {
 		let appliedTheme = darkMode === 'true' ? darkTheme : customTheme;
