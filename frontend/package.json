@@ -11,13 +11,16 @@
 		"eject": "react-scripts eject"
 	},
 	"dependencies": {
+		"express": "^4.17.1"
+	},
+	"devDependencies": {
 		"@material-ui/core": "latest",
 		"@material-ui/icons": "^4.9.1",
 		"@material-ui/lab": "^4.0.0-alpha.56",
 		"chart.js": "^2.9.3",
 		"clsx": "latest",
+		"jest": "24",
 		"material-ui-confirm": "^2.1.1",
-		"node-cron": "^2.0.3",
 		"react": "latest",
 		"react-chartjs-2": "^2.10.0",
 		"react-dom": "latest",
@@ -40,8 +43,5 @@
 			"last 1 firefox version",
 			"last 1 safari version"
 		]
-	},
-	"devDependencies": {
-		"jest": "24"
 	}
 }
