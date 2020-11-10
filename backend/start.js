@@ -428,8 +428,7 @@ const init = (licenseContainer) => {
 
 
 	const pluginManager = new PluginManager();
-	const pluginNames = [ 'connections-rest-api', 'system-status-rest-api', 'topictree-rest-api' ];
-	pluginManager.init(pluginNames, context);
+	pluginManager.init(config.plugins, context);
 
 	app.get('/api/plugins', (request, response) => {
 		response.json(pluginManager.plugins.map((plugin) => plugin.meta));
