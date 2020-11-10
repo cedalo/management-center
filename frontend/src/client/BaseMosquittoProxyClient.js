@@ -87,6 +87,30 @@ export default class BaseMosquittoProxyClient {
 
 	/**
 	 * ******************************************************************************************
+	 * Methods for plugin management
+	 * ******************************************************************************************
+	 */
+
+	async unloadPlugin(pluginId) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'unloadPlugin',
+			pluginId
+		});
+	}
+
+	async loadPlugin(pluginId) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'loadPlugin',
+			pluginId
+		});
+	}
+
+	/**
+	 * ******************************************************************************************
 	 * Methods for handling multiple broker connections
 	 * ******************************************************************************************
 	 */
