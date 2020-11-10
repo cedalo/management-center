@@ -1,4 +1,5 @@
 const BasePlugin = require('../../base/src/BasePlugin');
+const meta = require('./meta');
 
 const defaultTheme = {
 	id: 'cedalo',
@@ -51,27 +52,23 @@ const defaultTheme = {
 module.exports = class Plugin extends BasePlugin {
 	constructor() {
 		super();
-		this._meta = {
-			"id": "cedalo_custom_themes",
-			"name": "Cedalo Custom Themes",
-			"version":"1.0",
-			"description":"Customize themes",
-			"feature": "Custom Themes"
-		}
+		this._meta = meta;
 	}
 
 	init(context) {
-
-	}
-
-	load(context) {
-		const { actions, app, licenseContainer } = context;
+		this._context = context;
+		const { app } = this._context;
 		app.get('/api/theme', (request, response) => {
-			const themes = actions.loadConfig().themes;
-			if (licenseContainer.license.isValid) {
-				response.json(themes.find((theme) => theme.id === 'custom'));
+			const { actions, licenseContainer } = this._context;
+			if (this.isLoaded()) {
+				const themes = actions.loadConfig().themes;
+				if (licenseContainer.license.isValid) {
+					response.json(themes.find((theme) => theme.id === 'custom'));
+				} else {
+					response.json(defaultTheme);
+				}
 			} else {
-				response.json(defaultTheme);
+				response.status(404).send('Plugin not loaded');
 			}
 		});
 	}
