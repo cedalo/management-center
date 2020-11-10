@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Plugins = (props) => {
 	const dispatch = useDispatch();
-	const [darkMode, setDarkMode] = useLocalStorage('mosquitto-ui.darkMode');
+	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
 	const theme = useTheme();
 	const context = useContext(WebSocketContext);
 	const { client: brokerClient } = context;

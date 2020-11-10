@@ -45,7 +45,7 @@ const Settings = ({ settings, sendMessage }) => {
 	const classes = useStyles();
 	const theme = useTheme();
 	const context = useContext(WebSocketContext);
-	const [darkMode, setDarkMode] = useLocalStorage('mosquitto-ui.darkMode');
+	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
 
 	const onChangeTheme = () => {
 		setDarkMode(darkMode === 'true' ? 'false' : 'true');
