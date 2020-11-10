@@ -427,6 +427,7 @@ const init = (licenseContainer) => {
 		...context,
 		app,
 		config,
+		globalSystem,
 		globalTopicTree,
 		licenseContainer,
 		actions: {
