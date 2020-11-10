@@ -1,0 +1,8 @@
+{
+	"id": "cedalo_topic_tree_rest_api",
+	"name": "Cedalo Topic Tree REST API",
+	"version":"1.0",
+	"description":"Access the topic tree via REST API",
+	"feature": "REST API",
+	"featureId": "rest-api"
+}
