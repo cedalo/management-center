@@ -3,19 +3,25 @@ module.exports = class PluginManager {
 		this._plugins = [];
 	}
 
-	init(pluginNames, context) {
-		pluginNames.forEach((pluginName) => {
+	init(pluginConfigurations = [], context) {
+		pluginConfigurations.forEach((pluginConfiguration) => {
 			try {
-				const { Plugin } = require(`../../plugins/${pluginName}`);
+				const { Plugin } = require(`../../plugins/${pluginConfiguration.name}`);
 				const plugin = new Plugin();
 				plugin.init(context);
 				plugin.load(context);
+				plugin.setLoaded();
 				this._plugins.push(plugin);
 			} catch (error) {
 				console.error(`Failed loading plugin`);
 				console.error(error);
+				plugin.setErrored();
 			}
 		});
+	}
+
+	add(plugin) {
+		this._plugins.push(plugin);
 	}
 
 	get plugins() {
