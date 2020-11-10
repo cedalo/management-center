@@ -34,6 +34,11 @@ module.exports = class PluginManager {
 	_getPluginById(pluginId) {
 		return this._plugins.find((plugin) => plugin.meta.id === pluginId);
 	}
+
+	unloadPlugin(pluginId) {
+		const plugin = this._getPluginById(pluginId);
+		plugin.unload(this._context);
+	}
 	get plugins() {
 		return this._plugins;
 	}
