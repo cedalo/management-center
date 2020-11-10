@@ -152,7 +152,6 @@ const InfoPage = (props) => {
 												size="small"
 												variant="contained"
 												color="secondary"
-												// href="https://hub.docker.com/repository/docker/cedalo/mosquitto-ui"
 												onClick={handleClickOpen}
 											>
 												Update available
