@@ -277,6 +277,11 @@ const init = (licenseContainer) => {
 				const response = pluginManager.unloadPlugin(pluginId);
 				return response;
 			}
+			case 'loadPlugin': {
+				const { pluginId } = message;
+				const response = pluginManager.loadPlugin(pluginId);
+				return response;
+			}
 			case 'connectToBroker': {
 				const { brokerName } = message;
 				const response = await connectToBroker(brokerName, client);
