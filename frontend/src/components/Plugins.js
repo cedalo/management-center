@@ -20,11 +20,6 @@ import { Link as RouterLink } from 'react-router-dom';
 import useFetch from '../helpers/useFetch';
 
 const useStyles = makeStyles((theme) => ({
-	tableContainer: {
-		'& td:first-child': {
-			width: '30%'
-		}
-	},
 	updateButton: {
 		marginLeft: '20px'
 	},
@@ -61,6 +56,7 @@ const Plugins = (props) => {
 									<TableCell>Version</TableCell>
 									<TableCell>Name</TableCell>
 									<TableCell>Description</TableCell>
+									<TableCell>Feature</TableCell>
 									<TableCell>Status</TableCell>
 								</TableRow>
 							</TableHead>
@@ -78,6 +74,9 @@ const Plugins = (props) => {
 										</TableCell>
 										<TableCell>
 											{plugin.description}
+										</TableCell>
+										<TableCell>
+											{plugin.feature}
 										</TableCell>
 										<TableCell>
 											{
