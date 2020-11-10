@@ -1,25 +1,21 @@
 const BasePlugin = require('../../base/src/BasePlugin');
+const meta = require('./meta');
 
 module.exports = class Plugin extends BasePlugin {
 	constructor() {
 		super();
-		this._meta = {
-			"id": "cedalo_system_status_rest_api",
-			"name": "Cedalo System Status REST API",
-			"version":"1.0",
-			"description":"Access the system status via REST API",
-			"feature": "REST API"
-		}
+		this._meta = meta;
 	}
 
 	init(context) {
-		const { app } = context;
+		const { app, globalSystem } = context;
 		app.get('/api/system/status', (request, response) => {
-			response.json(globalSystem);
+			if (this.isLoaded()) {
+				response.json(globalSystem);
+			} else {
+				response.status(404).send('Plugin not loaded');
+			}
 		});
-	}
-
-	load(context) {
 	}
 
 	get meta() {

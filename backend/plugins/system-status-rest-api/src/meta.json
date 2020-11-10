@@ -1,0 +1,8 @@
+{
+	"id": "cedalo_system_status_rest_api",
+	"name": "Cedalo System Status REST API",
+	"version":"1.0",
+	"description":"Access the system status via REST API",
+	"feature": "REST API",
+	"featureId": "rest-api"
+}
