@@ -1,25 +1,21 @@
 const BasePlugin = require('../../base/src/BasePlugin');
+const meta = require('./meta');
 
 module.exports = class Plugin extends BasePlugin {
 	constructor() {
 		super();
-		this._meta = {
-			"id": "cedalo_connections_rest_api",
-			"name": "Cedalo Connections REST API",
-			"version":"1.0",
-			"description":"Access the connections via REST API",
-			"feature": "REST API"
-		}
+		this._meta = meta;
 	}
 
 	init(context) {
 		const { app, config } = context;
 		app.get('/api/connections', (request, response) => {
-			response.json(config.connections);
+			if (this.isLoaded()) {
+				response.json(config.connections);
+			} else {
+				response.status(404).send('Plugin not loaded');
+			}
 		});
-	}
-
-	load(context) {
 	}
 
 	get meta() {

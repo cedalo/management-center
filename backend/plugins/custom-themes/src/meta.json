@@ -1,0 +1,8 @@
+{
+	"id": "cedalo_custom_themes",
+	"name": "Cedalo Custom Themes",
+	"version":"1.0",
+	"description":"Customize themes",
+	"feature": "Custom Themes",
+	"featureId": "white-labeling"
+}
