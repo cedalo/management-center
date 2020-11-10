@@ -7,57 +7,10 @@ const cors = require('cors');
 const WebSocket = require('ws');
 const mqtt = require('mqtt');
 const axios = require('axios');
+const BrokerManager = require('./src/broker/BrokerManager');
 const NodeMosquittoClient = require('./src/client/NodeMosquittoClient');
 const PluginManager = require('./src/plugins/PluginManager');
 // const UsageTracker = require("./src/usage/UsageTracker");
-
-const defaultTheme = {
-	id: 'cedalo',
-	name: 'Cedalo AG',
-	light: {
-		logo: {
-			path: '/logo.png'
-		},
-		palette: {
-			primary: {
-				main: '#556cd6'
-			},
-			secondary: {
-				main: '#19857b'
-			}
-		}
-	},
-	dark: {
-		logo: {
-			path: '/logo.png'
-		},
-		palette: {
-			primary: {
-				main: 'rgb(16, 30, 38)'
-			},
-			secondary: {
-				main: '#ffc107'
-			},
-			text: {
-				primary: 'rgb(156, 215, 247)'
-			},
-			background: {
-				default: 'rgb(6, 31, 47)',
-				paper: 'rgb(16, 30, 38)'
-			}
-		}
-	}
-	// "dark": {
-	// 	"palette": {
-	// 		"primary": {
-	// 			"main": "#556cd6"
-	// 		},
-	// 		"secondary": {
-	// 			"main": "#33c9dc"
-	// 		}
-	// 	}
-	// }
-};
 
 const version = {
 	version: process.env.MOSQUITTO_UI_VERSION || '0.9-alpha',
@@ -73,6 +26,10 @@ const LicenseChecker = require('./src/license/LicenseChecker');
 // const licenseManager = new LicenseManager();
 // await licenseManager.loadLicense();
 // const license = licenseManager.getLicenseAsJSON();
+
+let context = {
+	brokerManager: new BrokerManager()
+};
 
 const deletePendingRequest = (requestId, requests) => {
 	const request = requests.get(requestId);
@@ -169,9 +126,6 @@ const initConnections = (config) => {
 	return connections;
 };
 
-const brokerConnections = new Map();
-const clientConnections = new Map();
-const clientBrokerMappings = new Map();
 
 const loadConfig = () => {
 	const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, MOSQUITTO_UI_PROXY_CONFIG_DIR)).toString());
@@ -185,9 +139,6 @@ const init = (licenseContainer) => {
 	const app = express();
 	app.use(cors());
 	const server = http.createServer(app);
-
-
-
 
 	// TODO: add error handling
 	const config = loadConfig();
@@ -279,19 +230,14 @@ const init = (licenseContainer) => {
 			updateTopicTree(topicTree, topic, message, packet);
 			sendTopicTreeUpdate(topicTree, brokerClient);
 		});
-		brokerConnections.set(connection.name, {
-			broker: brokerClient,
-			system,
-			topicTree
-		});
+		context.brokerManager.handleNewBrokerConnection(connection, brokerClient, system, topicTree);
 	});
 
 	console.log(`Started Mosquitto proxy at http://localhost:${MOSQUITTO_UI_PROXY_PORT}`);
 
 	const handleCommandMessage = async (message, client) => {
 		const { api, command } = message;
-		// TODO: get broker the client is currently connected to
-		const broker = clientBrokerMappings.get(client);
+		const broker = context.brokerManager.getBroker(client);
 		if (broker) {
 			console.log(JSON.stringify(api));
 			console.log(JSON.stringify(command));
@@ -310,19 +256,17 @@ const init = (licenseContainer) => {
 	};
 
 	const connectToBroker = (brokerName, client) => {
-		const brokerConnection = brokerConnections.get(brokerName);
+		const brokerConnection = context.brokerManager.getBrokerConnection(brokerName);
 		if (brokerConnection) {
 			const { broker, system, topicTree } = brokerConnection;
-			clientBrokerMappings.set(client, broker);
+			context.brokerManager.connectClient(client, broker);
 			sendSystemStatusUpdate(system, broker);
 			sendTopicTreeUpdate(topicTree, broker);
 		}
 	};
 
 	const disconnectFromBroker = (brokerName, client) => {
-		// TODO: handle different brokers
-		// const broker = brokerConnections.get(brokerName);
-		clientBrokerMappings.set(client, null);
+		context.brokerManager.disconnectClient(client);
 	};
 
 	const handleRequestMessage = async (message, client) => {
@@ -339,7 +283,7 @@ const init = (licenseContainer) => {
 				return response;
 			}
 			case 'getBrokerConnections': {
-				const connections = Array.from(brokerConnections.keys());
+				const connections = context.brokerManager.getBrokerConnections();
 				return connections;
 			}
 			case 'getBrokerConfigurations': {
@@ -411,7 +355,7 @@ const init = (licenseContainer) => {
 
 	const notifyWebSocketClients = (message, brokerClient) => {
 		wss.clients.forEach((client) => {
-			const broker = clientBrokerMappings.get(client);
+			const broker = context.brokerManager.getBroker(client);
 			if (broker === brokerClient) {
 				client.send(JSON.stringify(message));
 			}
@@ -421,7 +365,7 @@ const init = (licenseContainer) => {
 	// TODO: handle disconnect of clients
 
 	wss.on('connection', (ws) => {
-		clientConnections.set(ws, ws);
+		context.brokerManager.handleNewClientWebSocketConnection(ws);
 		// send license information
 		ws.send(
 			JSON.stringify({
@@ -469,22 +413,14 @@ const init = (licenseContainer) => {
 		response.json(licenseContainer.license);
 	});
 
-	app.get('/api/theme', (request, response) => {
-		const themes = loadConfig().themes;
-		if (licenseContainer.license.isValid) {
-			response.json(themes.find((theme) => theme.id === 'custom'));
-		} else {
-			response.json(defaultTheme);
-		}
-	});
-
-	const context = {
+	context = {
+		...context,
 		app,
 		config,
 		globalTopicTree,
 		licenseContainer,
-		brokerConnections,
 		actions: {
+			loadConfig,
 			sendSystemStatusUpdate,
 			sendTopicTreeUpdate
 		}
