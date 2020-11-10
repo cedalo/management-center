@@ -4,14 +4,21 @@ module.exports = class PluginManager {
 	}
 
 	init(pluginConfigurations = [], context) {
+		this._context = context;
+		const { licenseContainer } = context;
 		pluginConfigurations.forEach((pluginConfiguration) => {
 			try {
 				const { Plugin } = require(`../../plugins/${pluginConfiguration.name}`);
 				const plugin = new Plugin();
-				plugin.init(context);
-				plugin.load(context);
-				plugin.setLoaded();
-				this._plugins.push(plugin);
+				if (licenseContainer.license.features.includes(plugin.meta.featureId)) {
+					plugin.init(context);
+					plugin.load(context);
+					plugin.setLoaded();
+					this._plugins.push(plugin);
+				} else {
+					plugin.setErrored('License does not contain this feature.');
+					this._plugins.push(plugin);
+				}
 			} catch (error) {
 				console.error(`Failed loading plugin`);
 				console.error(error);
