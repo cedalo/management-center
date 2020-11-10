@@ -1,0 +1,8 @@
+{
+	"id": "cedalo_multiple_connections",
+	"name": "Cedalo Multiple Broker Connections",
+	"version":"1.0",
+	"description":"Define multiple broker connections",
+	"feature": "Multiple Broker Connections",
+	"featureId": "multiple-broker-connections"
+}

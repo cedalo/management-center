@@ -1,16 +1,11 @@
 const BasePlugin = require('../../base/src/BasePlugin');
 const MultipleBrokerManager = require('./MultipleBrokerManager');
+const meta = require('./meta');
 
 module.exports = class Plugin extends BasePlugin {
 	constructor() {
 		super();
-		this._meta = {
-			"id": "cedalo_multiple_connections",
-			"name": "Cedalo Multiple Broker Connections",
-			"version":"1.0",
-			"description":"Define multiple broker connections",
-			"feature": "Multiple Broker Connections"
-		}
+		this._meta = meta;
 	}
 
 	init(context) {
