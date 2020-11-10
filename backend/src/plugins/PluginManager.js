@@ -22,7 +22,7 @@ module.exports = class PluginManager {
 			} catch (error) {
 				console.error(`Failed loading plugin`);
 				console.error(error);
-				plugin.setErrored();
+				// plugin.setErrored();
 			}
 		});
 	}
