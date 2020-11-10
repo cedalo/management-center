@@ -103,22 +103,28 @@ function getSteps() {
 		{
 			label: 'Management Center for Eclipse Mosquitto',
 			description: 'Manage everything in one central place',
-			imgPath: '/onboarding001.png'
+			imgPath: '/onboarding-broker.png'
 		},
 		{
 			label: 'Role based access control',
 			description: 'Manage clients, groups and roles',
-			imgPath: '/onboarding002.png'
+			imgPath: '/onboarding-dynamic-security.png'
 		},
 		{
 			label: 'Metrics Dashboard',
 			description: 'Analyze the system status of your brokers',
-			imgPath: '/onboarding003.png'
+			imgPath: '/onboarding-dashboard.png'
 		},
 		{
 			label: 'Topic Tree Inspector',
 			description: 'Visualize and inspect MQTT topics',
-			imgPath: '/onboarding004.png'
+			imgPath: '/onboarding-topic-tree.png'
+		},
+		{
+			label: 'Subscribe to our newsletter',
+			description: 'Get the latest news about Mosquitto, MQTT and Streamsheets.',
+			imgPath: '/onboarding004.png',
+			newsletter: true,
 		}
 	];
 }
@@ -179,14 +185,26 @@ export default function OnBoardingDialog(props) {
 			<DialogContent>
 				{/* <Paper square elevation={0} className={classes.header}>
       </Paper> */}
-				<div style={{ textAlign: 'center' }}>
-					<img
-						style={{ width: '555px' }}
-						className={classes.img}
-						src={steps[activeStep].imgPath}
-						alt={steps[activeStep].label}
-					/>
-				</div>
+				{
+					steps[activeStep].newsletter 
+					? <div style={{ textAlign: 'center' }}>
+						Newsletter
+						<img
+							style={{ width: '555px' }}
+							className={classes.img}
+							src={steps[activeStep].imgPath}
+							alt={steps[activeStep].label}
+						/>
+					</div>
+					: <div style={{ textAlign: 'center' }}>
+						<img
+							style={{ width: '555px' }}
+							className={classes.img}
+							src={steps[activeStep].imgPath}
+							alt={steps[activeStep].label}
+						/>
+					</div>
+				}
 				<br />
 				<Typography variant="h6" style={{ textAlign: 'center' }}>
 					<strong>{steps[activeStep].label}</strong>
@@ -195,7 +213,7 @@ export default function OnBoardingDialog(props) {
 				<DialogContentText id="alert-dialog-description"></DialogContentText>
 
 				<MobileStepper
-					steps={4}
+					steps={5}
 					activeStep={activeStep}
 					variant="dots"
 					position="static"
@@ -233,7 +251,7 @@ export default function OnBoardingDialog(props) {
 											onClick={handleNext}
 											className={classes.button}
 										>
-											{activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+											{activeStep === 5 ? 'Finish' : 'Next'}
 										</Button>
 									</div>
 								</div>
