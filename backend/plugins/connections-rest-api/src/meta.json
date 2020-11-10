@@ -1,0 +1,8 @@
+{
+	"id": "cedalo_connections_rest_api",
+	"name": "Cedalo Connections REST API",
+	"version":"1.0",
+	"description":"Access the connections via REST API",
+	"feature": "REST API",
+	"featureId": "rest-api"
+}
