@@ -431,7 +431,10 @@ const init = (licenseContainer) => {
 	pluginManager.init(config.plugins, context);
 
 	app.get('/api/plugins', (request, response) => {
-		response.json(pluginManager.plugins.map((plugin) => plugin.meta));
+		response.json(pluginManager.plugins.map((plugin) => ({
+			...plugin.meta,
+			status: plugin.status
+		})));
 	});
 
 	server.listen(MOSQUITTO_UI_PROXY_PORT, () => {
