@@ -17,8 +17,10 @@ const loadLicense = async () => {
 		const publicKey = await loadPublicKey();
 		const licenseKey = await loadLicenseKey();
 		license = LicenseKey.verify(licenseKey, publicKey);
-	} catch (err) {
-		console.log(__dirname);
+	} catch (error) {
+		console.error(error);
+		console.error(__dirname);
+		console.error(process.env.MOSQUITTO_UI_LICENSE_PATH)
 		license = License.Invalid;
 	}
 	return license;
