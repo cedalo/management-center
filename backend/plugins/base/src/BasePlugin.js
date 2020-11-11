@@ -30,7 +30,7 @@ module.exports = class BasePlugin {
 	setUnloaded() {
 		this._status = {
 			type: STATUS_UNLOADED,
-			message: 'Plugin not loaded'
+			message: 'Plugin not enabled'
 		};
 	}
 

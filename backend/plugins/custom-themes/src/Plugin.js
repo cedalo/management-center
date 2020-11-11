@@ -68,7 +68,7 @@ module.exports = class Plugin extends BasePlugin {
 					response.json(defaultTheme);
 				}
 			} else {
-				response.status(404).send('Plugin not loaded');
+				response.status(404).send('Plugin not enabled');
 			}
 		});
 	}

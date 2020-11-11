@@ -13,7 +13,7 @@ module.exports = class Plugin extends BasePlugin {
 			if (this.isLoaded()) {
 				response.json(globalSystem);
 			} else {
-				response.status(404).send('Plugin not loaded');
+				response.status(404).send('Plugin not enabled');
 			}
 		});
 	}

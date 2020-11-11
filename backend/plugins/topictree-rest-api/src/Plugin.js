@@ -17,7 +17,7 @@ module.exports = class Plugin extends BasePlugin {
 					response.status(404).send('Not supported with the given license.');
 				}
 			} else {
-				response.status(404).send('Plugin not loaded');
+				response.status(404).send('Plugin not enabled');
 			}
 		});
 	
