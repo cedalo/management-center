@@ -406,6 +406,8 @@ const init = (licenseContainer) => {
 		});
 	});
 
+	app.use(express.static(path.join(__dirname, 'public')));
+
 	app.get('/api/version', (request, response) => {
 		response.json(version);
 	});
@@ -446,6 +448,10 @@ const init = (licenseContainer) => {
 			...plugin.meta,
 			status: plugin.status
 		})));
+	});
+
+	app.get('*', (request, response) => {
+		response.sendFile(path.join(__dirname, 'public', 'index.html'));
 	});
 
 	server.listen(MOSQUITTO_UI_PROXY_PORT, () => {
