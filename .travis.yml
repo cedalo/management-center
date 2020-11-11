@@ -7,21 +7,30 @@ jobs:
               - docker
           cache:
               yarn: true
-          install:
-              - yarn install
           script:
-              - cd frontend
-              - yarn install
-              - CI=false yarn build --verbose
-              - cd ..
+              # Why CI=false?
+              - CI=false yarn workspace @cedalo/mosquitto-ui-frontend run build --verbose
           deploy:
               - provider: script
-                script: bash -c "docker login -u $DOCKER_USER -p $DOCKER_PASSWORD && bash ./scripts/travis.dev.sh"
+                script: bash -c '
+                    docker login -u $DOCKER_USER -p $DOCKER_PASSWORD && 
+                    docker build 
+                        --build-arg MOSQUITTO_UI_BUILD_DATE="$(date)" 
+                        --build-arg MOSQUITTO_UI_BUILD_NUMBER="$(date ''+%s'')" 
+                        -t cedalo/mosquitto-ui:dev . && 
+                    docker push cedalo/mosquitto-ui:${TRAVIS_TAG}'
                 on:
                     branch: master
                 skip_cleanup: true
+                # Maybe we should use TRAVIS_BUILD_NUMBER as build number
               - provider: script
-                script: bash -c 'docker login -u $DOCKER_USER -p $DOCKER_PASSWORD && bash ./scripts/travis.release.sh'
+                script: bash -c '
+                    docker login -u $DOCKER_USER -p $DOCKER_PASSWORD && 
+                    docker build 
+                        --build-arg MOSQUITTO_UI_BUILD_DATE="$(date)" 
+                        --build-arg MOSQUITTO_UI_BUILD_NUMBER="$(date ''+%s'')" 
+                        -t cedalo/mosquitto-ui:${TRAVIS_TAG} . && 
+                    docker push cedalo/mosquitto-ui:${TRAVIS_TAG}'
                 on:
                     condition: "${TRAVIS_TAG} =~ ^[0-9]+\\.[0-9]+(\\.[0-9]+)?.*$"
                     tags: true
