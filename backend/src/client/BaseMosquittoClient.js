@@ -195,4 +195,8 @@ module.exports = class BaseMosquittoClient {
 			listeners.forEach((listener) => listener(event));
 		}
 	}
+
+	get connected() {
+		return this._isConnected;
+	}
 };
