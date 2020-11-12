@@ -29,6 +29,12 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				});
 				brokerClient.on('message', (topic, message) => this._handleBrokerMessage(topic, message.toString()));
 			});
+			brokerClient.on('disconnect', () => {
+				this.logger.log(`Disonnected from ${url}`);
+			});
+			brokerClient.on('close', () => {
+				this.logger.log(`Closed connection to ${url}`);
+			});
 		});
 	}
 
