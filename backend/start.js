@@ -180,6 +180,17 @@ const init = (licenseContainer) => {
 			});
 			connectionConfiguration.status.connected = true;
 			console.log(`Connected to '${connection.name}' at ${connection.url}`);
+			brokerClient.on('close', () => {
+				connectionConfiguration.status = {
+					connected: false,
+					error: {
+						errno: 1,
+						code: "ECONNCLOSED",
+						syscall: "on"
+					}
+				};
+				sendConnectionsUpdate(brokerClient);
+			});
 		} catch (error) {
 			console.error(error);
 			connectionConfiguration.status = {
