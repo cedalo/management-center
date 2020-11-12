@@ -119,7 +119,9 @@ const BrokerSelect = ({ brokerConnections, connected, sendMessage }) => {
 				input={<CustomInput />}
 			>
 				{brokerConnections && Array.isArray(brokerConnections)
-					? brokerConnections.map((brokerConnection) => (
+					? brokerConnections
+						.filter((brokerConnection) => brokerConnection.status.connected)
+						.map((brokerConnection) => (
 							<MenuItem value={brokerConnection.name}>{brokerConnection.name}</MenuItem>
 					  ))
 					: null}
