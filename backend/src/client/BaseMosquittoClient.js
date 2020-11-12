@@ -130,16 +130,20 @@ module.exports = class BaseMosquittoClient {
 				timeoutId,
 				request
 			});
-			return new Promise((resolve /* , reject */) => {
-				this._brokerClient.publish(`$CONTROL/${feature}/v1`, JSON.stringify(request));
-				resolve();
+			return new Promise((resolve, reject) => {
+				if (!this._brokerClient) {
+					reject(new Error('Not connected to broker'));
+				} else {
+					this._brokerClient.publish(`$CONTROL/${feature}/v1`, JSON.stringify(request));
+					resolve();
+				}
 			}).catch((error) => {
 				this.logger.error('Sending request to Mosquitto', request);
 				this.logger.error(
 					`Error while communicating with Mosquitto while executing request '${request}'`,
 					error
 				);
-				throw error;
+				reject(error);
 			});
 		});
 		/* eslint-enable */
