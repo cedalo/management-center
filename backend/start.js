@@ -203,6 +203,7 @@ const init = (licenseContainer) => {
 				connected: false,
 				error: error
 			};
+			sendConnectionsUpdate(brokerClient);
 		}
 		// const brokerClient = mqtt.connect(connection.url, {
 		// 	username: connection.credentials?.username,
