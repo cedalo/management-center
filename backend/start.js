@@ -278,8 +278,12 @@ const init = (licenseContainer) => {
 		if (brokerConnection) {
 			const { broker, system, topicTree } = brokerConnection;
 			context.brokerManager.connectClient(client, broker);
-			sendSystemStatusUpdate(system, broker);
-			sendTopicTreeUpdate(topicTree, broker);
+			if (broker.connected) {
+				sendSystemStatusUpdate(system, broker);
+				sendTopicTreeUpdate(topicTree, broker);
+			} else {
+				throw new Error('Broker not connected');
+			}
 		}
 	};
 
@@ -345,13 +349,22 @@ const init = (licenseContainer) => {
 				break;
 			}
 			case 'request': {
-				const response = await handleRequestMessage(message, client);
-				const responseMessage = {
-					type: 'response',
-					requestId: message.id,
-					response
-				};
-				client.send(JSON.stringify(responseMessage));
+				try {
+					const response = await handleRequestMessage(message, client);
+					const responseMessage = {
+						type: 'response',
+						requestId: message.id,
+						response
+					};
+					client.send(JSON.stringify(responseMessage));
+				} catch (error) {
+					const responseMessage = {
+						type: 'response',
+						requestId: message.id,
+						error: error.message
+					};
+					client.send(JSON.stringify(responseMessage));
+				}
 				break;
 			}
 			default:
