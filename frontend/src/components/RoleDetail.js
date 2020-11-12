@@ -135,7 +135,9 @@ const RoleDetail = (props) => {
 	const [selectedTab, setSelectedTab] = React.useState(0);
 	const [newACL, setNewACL] = React.useState({
 		acltype: 'publishClientReceive',
-		allow: true
+		allow: true,
+		topic: '',
+		priority: 0,
 	});
 
 	const [editMode, setEditMode] = React.useState(false);
@@ -145,6 +147,11 @@ const RoleDetail = (props) => {
 
 	const validate = () => {
 		const valid = updatedRole.rolename !== '';
+		return valid;
+	};
+
+	const validateACL = () => {
+		const valid = newACL.topic !== '' && newACL.priority !== '';
 		return valid;
 	};
 
@@ -189,7 +196,8 @@ const RoleDetail = (props) => {
 		setNewACL({
 			acltype: 'publishClientReceive',
 			allow: true,
-			topic: ''
+			topic: '',
+			priority: 0,
 		});
 	};
 
@@ -464,11 +472,10 @@ const RoleDetail = (props) => {
 															label="Priority"
 															value={newACL.priority}
 															type="number"
-															defaultValue="0"
 															onChange={(event) =>
 																setNewACL({
 																	...newACL,
-																	priority: parseInt(event.target.value)
+																	priority: event.target.value !== '' ? parseInt(event.target.value) : ''
 																})
 															}
 														/>
@@ -498,6 +505,7 @@ const RoleDetail = (props) => {
 
 													<TableCell align="right">
 														<Button
+															disabled={!validateACL()}
 															variant="contained"
 															color="primary"
 															startIcon={<SaveIcon />}
