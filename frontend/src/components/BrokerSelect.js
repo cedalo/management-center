@@ -70,13 +70,13 @@ const BrokerSelect = ({ brokerConnections, connected, sendMessage }) => {
 		const connectionID = event.target.value;
 		const { client } = context;
 		await client.disconnectFromBroker(connection);
-		dispatch(updateBrokerConnected(false));
+		dispatch(updateBrokerConnected(false, connectionID));
 		if (connectionID && connectionID !== '') {
 			try {
 				await client.connectToBroker(connectionID);
-				dispatch(updateBrokerConnected(true));
+				dispatch(updateBrokerConnected(true, connectionID));
 			} catch (error) {
-				dispatch(updateBrokerConnected(false));
+				dispatch(updateBrokerConnected(false, connectionID));
 				return;
 			}
 			const brokerConnections = await client.getBrokerConnections();
@@ -105,10 +105,11 @@ const BrokerSelect = ({ brokerConnections, connected, sendMessage }) => {
 				Connection
 			</InputLabel>
 			<Select
-				defaultValue={connection}
+				// displayEmpty
+				// defaultValue={connection}
 				labelId="broker-select-outlined-label"
 				id="connection"
-				value={connection}
+				// value={brokerConnections ? brokerConnections[0] : ''}
 				onChange={handleConnectionChange}
 				label="Connection"
 				classes={{
@@ -119,7 +120,7 @@ const BrokerSelect = ({ brokerConnections, connected, sendMessage }) => {
 			>
 				{brokerConnections && Array.isArray(brokerConnections)
 					? brokerConnections.map((brokerConnection) => (
-							<MenuItem value={brokerConnection}>{brokerConnection}</MenuItem>
+							<MenuItem value={brokerConnection.name}>{brokerConnection.name}</MenuItem>
 					  ))
 					: null}
 			</Select>
