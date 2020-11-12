@@ -47,12 +47,18 @@ export default ({ children }) => {
 		client.on('version', (message) => {
 			dispatch(updateVersion(message.payload));
 		});
+		client.on('connections', (message) => {
+			dispatch(updateBrokerConnections(message.payload));
+			message.payload.forEach((connection) => {
+				dispatch(updateBrokerConnected(connection.status.connected, connection.name));
+			})
+		});
+		client.on('error', (message) => {
+			console.error(message);
+		});
 		// TODO: merge with code from BrokerSelect
 		client
 			.connect({ socketEndpointURL: WS_BASE.url })
-			.then(() => {
-				dispatch(updateBrokerConnected(true));
-			})
 			.then(() => client.getBrokerConnections())
 			.then((brokerConnections) => {
 				dispatch(updateBrokerConnections(brokerConnections));
