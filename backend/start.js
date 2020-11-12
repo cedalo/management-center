@@ -191,6 +191,12 @@ const init = (licenseContainer) => {
 				};
 				sendConnectionsUpdate(brokerClient);
 			});
+			brokerClient.on('connect', () => {
+				connectionConfiguration.status = {
+					connected: true
+				};
+				sendConnectionsUpdate(brokerClient);
+			});
 		} catch (error) {
 			console.error(error);
 			connectionConfiguration.status = {
