@@ -49,10 +49,13 @@ export function updateBrokerConfigurations(update) {
 	};
 }
 
-export function updateBrokerConnected(connected) {
+export function updateBrokerConnected(connected, connectionName) {
 	return {
 		type: ActionTypes.UPDATE_BROKER_CONNECTED,
-		connected
+		update: {
+			connected,
+			connectionName
+		}
 	};
 }
 

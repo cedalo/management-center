@@ -1,12 +1,13 @@
 module.exports = class BrokerManager {
 	constructor() {
-		this._brokerConnectionName = '';
+		// TODO: merge _connection and _brokerConnection
+		this._connection = {};
 		this._brokerConnection = {};
 	}
 
 	handleNewBrokerConnection(connection, brokerClient, system, topicTree) {
 		this._brokerClient = brokerClient;
-		this._brokerConnectionName = connection.name;
+		this._connection = connection;
 		this._brokerConnection = {
 			broker: brokerClient,
 			system,
@@ -22,7 +23,7 @@ module.exports = class BrokerManager {
 	}
 
 	getBrokerConnections() {
-		return [ this._brokerConnectionName ];
+		return [ this._connection ];
 	}
 
 	connectClient(client, broker) {

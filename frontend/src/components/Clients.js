@@ -212,7 +212,16 @@ const Clients = (props) => {
 		dispatch(updateClients(clients));
 	};
 
-	const { groups = [], roles = [], clients = [], onSort, sortBy, sortDirection } = props;
+	const {
+		connectionID,
+		defaultClient,
+		groups = [],
+		roles = [],
+		clients = [],
+		onSort,
+		sortBy,
+		sortDirection
+	} = props;
 
 	const groupSuggestions = groups
 		.map((group) => group.groupname)
@@ -275,7 +284,7 @@ const Clients = (props) => {
 												hover
 												key={client.username}
 												onClick={(event) => {
-													if (event.target.nodeName?.toLowerCase() === 'td') {
+													if (event.target.nodeName?.toLowerCase() === 'td' || defaultClient?.username === client.username) {
 														onSelectClient(client.username);
 													}
 												}}
@@ -287,6 +296,7 @@ const Clients = (props) => {
 												<TableCell>{client.textdescription}</TableCell>
 												<TableCell className={classes.badges}>
 													<AutoSuggest
+														disabled={defaultClient?.username === client.username}
 														suggestions={groupSuggestions}
 														values={client.groups.map((group) => ({
 															label: group.groupname,
@@ -299,6 +309,7 @@ const Clients = (props) => {
 												</TableCell>
 												<TableCell className={classes.badges}>
 													<AutoSuggest
+														disabled={defaultClient?.username === client.username}
 														suggestions={roleSuggestions}
 														values={client.roles.map((role) => ({
 															label: role.rolename,
@@ -322,6 +333,7 @@ const Clients = (props) => {
 
 													<Tooltip title="Delete client">
 														<IconButton
+															disabled={defaultClient?.username === client.username}
 															size="small"
 															onClick={(event) => {
 																event.stopPropagation();
@@ -333,6 +345,7 @@ const Clients = (props) => {
 													</Tooltip>
 													<Tooltip title="Enable / disable client">
 														<Switch
+															disabled={defaultClient?.username === client.username}
 															checked={
 																typeof client.disabled === 'undefined' ||
 																client.disabled === false
@@ -462,7 +475,8 @@ const mapStateToProps = (state) => {
 	return {
 		groups: state.groups?.groups,
 		roles: state.roles?.roles,
-		clients: state.clients?.clients
+		clients: state.clients?.clients,
+		defaultClient: state.brokerConnections?.defaultClient,
 	};
 };
 

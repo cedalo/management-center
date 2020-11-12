@@ -265,7 +265,7 @@ const components = {
 	ValueContainer
 };
 
-export default function AutoSuggest({ handleDelete, handleChange, suggestions, values }) {
+export default function AutoSuggest({ disabled, handleDelete, handleChange, suggestions, values }) {
 	const classes = useStyles();
 	const theme = useTheme();
 
@@ -283,6 +283,7 @@ export default function AutoSuggest({ handleDelete, handleChange, suggestions, v
 		<div className={classes.root}>
 			<NoSsr>
 				<Select
+					isDisabled={disabled}
 					classes={classes}
 					styles={selectStyles}
 					inputId="react-select-multiple"

@@ -113,7 +113,7 @@ const ClientDetail = (props) => {
 	const [value, setValue] = React.useState(0);
 	const [editMode, setEditMode] = React.useState(false);
 
-	const { client = {} } = props;
+	const { client = {}, defaultClient } = props;
 	const [updatedClient, setUpdatedClient] = React.useState({
 		...client
 	});
@@ -355,7 +355,7 @@ const ClientDetail = (props) => {
           ))}
         </List>
       </TabPanel> */}
-				{!editMode && (
+				{!editMode && defaultClient?.username !== client.username && (
 					<Grid item xs={12} className={classes.buttons}>
 						<Button
 							variant="contained"
@@ -368,7 +368,7 @@ const ClientDetail = (props) => {
 						</Button>
 					</Grid>
 				)}
-				{editMode && (
+				{editMode && defaultClient?.username !== client.username && (
 					<Grid item xs={12} className={classes.buttons}>
 						<Button
 							variant="contained"
@@ -405,8 +405,8 @@ ClientDetail.propTypes = {
 
 const mapStateToProps = (state) => {
 	return {
-		// TODO: check object hierarchy
-		client: state.clients?.client
+		client: state.clients?.client,
+		defaultClient: state.brokerConnections?.defaultClient,
 	};
 };
 
