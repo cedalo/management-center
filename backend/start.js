@@ -341,6 +341,17 @@ const init = (licenseContainer) => {
 		}
 	};
 
+	const sendConnectionsUpdate = (brokerClient) => {
+		const messageObject = {
+			type: 'event',
+			event: {
+				type: 'connections',
+				payload: context.brokerManager.getBrokerConnections()
+			}
+		};
+		notifyWebSocketClients(messageObject, brokerClient);
+	};
+
 	const sendSystemStatusUpdate = (system, brokerClient) => {
 		const messageObject = {
 			type: 'event',
