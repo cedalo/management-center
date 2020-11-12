@@ -16,7 +16,9 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import { red, green } from '@material-ui/core/colors';
+import OpenSourcePluginIcon from '@material-ui/icons/Code';
+import PremiumPluginIcon from '@material-ui/icons/Stars';
+import { amber, green, red } from '@material-ui/core/colors';
 
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -91,6 +93,7 @@ const Plugins = (props) => {
 						<Table size="medium">
 							<TableHead>
 								<TableRow>
+									<TableCell>Type</TableCell>
 									<TableCell>ID</TableCell>
 									<TableCell>Version</TableCell>
 									<TableCell>Name</TableCell>
@@ -103,6 +106,9 @@ const Plugins = (props) => {
 							<TableBody>
 								{response.map((plugin) => (
 									<TableRow>
+										<TableCell>
+											{plugin.type === 'premium' ? <PremiumPluginIcon style={{ color: amber[500] }} fontSize="small" /> : <OpenSourcePluginIcon fontSize="small" /> }
+										</TableCell>
 										<TableCell>
 											{plugin.id}
 										</TableCell>
