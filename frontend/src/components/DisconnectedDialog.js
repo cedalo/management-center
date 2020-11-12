@@ -7,6 +7,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+import BrokerSelect from './BrokerSelect';
+
 const DisconnectedDialog = ({ connected }) => {
 	const handleClose = () => {
 		// setOpen(false);
@@ -14,22 +16,17 @@ const DisconnectedDialog = ({ connected }) => {
 
 	return (
 		<Dialog
-			open={false}
+			open={!connected}
 			// onClose={handleClose}
 			aria-labelledby="not-connected-dialog-title"
 			aria-describedby="not-connected-dialog-description"
 		>
-			<DialogTitle id="not-connected-dialog-title">{'Connecting'}</DialogTitle>
+			<DialogTitle id="not-connected-dialog-title">Connection lost</DialogTitle>
 			<DialogContent>
-				<DialogContentText id="alert-dialog-description">{/* Could not connect */}</DialogContentText>
+				<DialogContentText id="alert-dialog-description">Please select another connection</DialogContentText>
+				<BrokerSelect />
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={handleClose} color="primary">
-					Ok
-				</Button>
-				<Button onClick={handleClose} color="secondary" autoFocus>
-					Cancel
-				</Button>
 			</DialogActions>
 		</Dialog>
 	);
@@ -37,7 +34,7 @@ const DisconnectedDialog = ({ connected }) => {
 
 const mapStateToProps = (state) => {
 	return {
-		connected: state.brokerConnections.connected
+		connected: state.brokerConnections?.connected
 	};
 };
 
