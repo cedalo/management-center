@@ -48,6 +48,8 @@ export default ({ children }) => {
 			dispatch(updateVersion(message.payload));
 		});
 		client.on('connections', (message) => {
+			console.log('connections');
+			console.log(message);
 			dispatch(updateBrokerConnections(message.payload));
 			message.payload.forEach((connection) => {
 				dispatch(updateBrokerConnected(connection.status.connected, connection.name));

@@ -124,7 +124,9 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection	 }) => {
 								</TableHead>
 								<TableBody>
 									{brokerConnections &&
-										brokerConnections.map((brokerConnection) => (
+										brokerConnections
+											.sort((a, b) => a.name.localeCompare(b.name))
+											.map((brokerConnection) => (
 											<TableRow
 												hover
 												key={brokerConnection.name}
