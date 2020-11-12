@@ -409,7 +409,7 @@ export default class BaseMosquittoProxyClient {
 			},
 			API_DYNAMIC_SECURITY
 		);
-		return data.client;
+		return data?.client;
 	}
 
 	async listClients(verbose = true) {
@@ -422,7 +422,7 @@ export default class BaseMosquittoProxyClient {
 			},
 			API_DYNAMIC_SECURITY
 		);
-		return data.clients;
+		return data?.clients;
 	}
 
 	async getGroup(groupname) {
@@ -435,7 +435,7 @@ export default class BaseMosquittoProxyClient {
 			},
 			API_DYNAMIC_SECURITY
 		);
-		return data.group;
+		return data?.group;
 	}
 
 	async listGroups(verbose = true) {
@@ -446,7 +446,7 @@ export default class BaseMosquittoProxyClient {
 			},
 			API_DYNAMIC_SECURITY
 		);
-		return data.groups;
+		return data?.groups;
 	}
 
 	async listGroupClients(group) {
@@ -545,7 +545,7 @@ export default class BaseMosquittoProxyClient {
 			},
 			API_DYNAMIC_SECURITY
 		);
-		return data.roles;
+		return data?.roles;
 	}
 
 	async addRoleACL(rolename, { acltype, priority, topic, allow }) {
