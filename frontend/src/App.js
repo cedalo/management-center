@@ -64,7 +64,7 @@ import System from './components/System';
 import InfoPage from './components/InfoPage';
 // import Login from "./components/Login";
 import Roles from './components/Roles';
-import Configurations from './components/Configurations';
+import Connections from './components/Connections';
 import Plugins from './components/Plugins';
 import Terminal from './components/Terminal';
 import Settings from './components/Settings';
@@ -615,7 +615,7 @@ export default function App(props) {
 														<System />
 													</Route>
 													<Route path="/config/connections">
-														<Configurations />
+														<Connections />
 													</Route>
 													<Route path="/config/settings">
 														<Settings />
