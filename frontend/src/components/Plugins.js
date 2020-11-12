@@ -128,15 +128,17 @@ const Plugins = (props) => {
 											}
 										</TableCell>
 										<TableCell>
-											<Switch
-												disabled={plugin.status.type === 'error'}
-												checked={plugin.status.type === 'loaded'}
-												name="pluginLoaded"
-												onChange={(event) => {
-													handlePluginLoad(plugin.id, event.target.checked);
-												}}
-												inputProps={{ 'aria-label': 'Plugin loaded' }}
-											/>
+											<Tooltip title={plugin.status.type === 'loaded' ? 'Disable' : 'Enable'}>
+												<Switch
+													disabled={plugin.status.type === 'error' || !plugin.actions.enable}
+													checked={plugin.status.type === 'loaded'}
+													name="pluginEnabled"
+													onChange={(event) => {
+														handlePluginLoad(plugin.id, event.target.checked);
+													}}
+													inputProps={{ 'aria-label': 'Plugin enabled' }}
+												/>
+											</Tooltip>
 										</TableCell>
 									</TableRow>
 								))}
