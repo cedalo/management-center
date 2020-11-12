@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
-const Configurations = ({ brokerConfigurations, sendMessage, onSort, sortBy, sortDirection }) => {
+const Configurations = ({ brokerConfigurations, onSort, sortBy, sortDirection }) => {
 	const classes = useStyles();
 	const theme = useTheme();
 	const context = useContext(WebSocketContext);
@@ -302,7 +302,6 @@ const Configurations = ({ brokerConfigurations, sendMessage, onSort, sortBy, sor
 
 const mapStateToProps = (state) => {
 	return {
-		// TODO: check object hierarchy
 		brokerConfigurations: state.brokerConfigurations.brokerConfigurations
 	};
 };
