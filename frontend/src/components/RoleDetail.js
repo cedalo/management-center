@@ -132,7 +132,7 @@ const RoleDetail = (props) => {
 
 	const { role = {}, onSort, sortBy, sortDirection } = props;
 
-	const [value, setValue] = React.useState(0);
+	const [selectedTab, setSelectedTab] = React.useState(0);
 	const [newACL, setNewACL] = React.useState({
 		acltype: 'publishClientReceive',
 		allow: true
@@ -148,8 +148,8 @@ const RoleDetail = (props) => {
 		return valid;
 	};
 
-	const handleChange = (event, newValue) => {
-		setValue(newValue);
+	const handleChange = (event, newSelectedTab) => {
+		setSelectedTab(newSelectedTab);
 	};
 
 	const onUpdateRole = async () => {
@@ -228,7 +228,7 @@ const RoleDetail = (props) => {
 			</Breadcrumbs>
 			<br />
 			<Paper className={classes.paper}>
-				<Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="off" aria-label="Role">
+				<Tabs value={selectedTab} onChange={handleChange} variant="scrollable" scrollButtons="off" aria-label="Role">
 					<Tab label="Details" icon={<RoleIcon />} aria-label="details" {...a11yProps(0)} />
 					{/* <Tab
           label="Features"
@@ -250,7 +250,7 @@ const RoleDetail = (props) => {
           {...a11yProps(2)}
         /> */}
 				</Tabs>
-				<TabPanel value={value} index={0}>
+				<TabPanel value={selectedTab} index={0}>
 					<form className={classes.form} noValidate autoComplete="off">
 						<div className={classes.margin}>
 							<Grid container spacing={1} alignItems="flex-end">
@@ -336,7 +336,7 @@ const RoleDetail = (props) => {
           ))}
         </List> */}
 				</TabPanel>
-				<TabPanel value={value} index={1}>
+				<TabPanel value={selectedTab} index={1}>
 					<form className={classes.form} noValidate autoComplete="off">
 						<div className={classes.margin}>
 							<Grid container spacing={1} alignItems="flex-end">
@@ -572,7 +572,7 @@ const RoleDetail = (props) => {
 						</div>
 					</form>
 				</TabPanel>
-				{!editMode && (
+				{!editMode && selectedTab === 0 && (
 					<Grid item xs={12} className={classes.buttons}>
 						<Button
 							variant="contained"
@@ -585,7 +585,7 @@ const RoleDetail = (props) => {
 						</Button>
 					</Grid>
 				)}
-				{editMode && (
+				{editMode && selectedTab === 0 && (
 					<Grid item xs={12} className={classes.buttons}>
 						<Button
 							variant="contained"
