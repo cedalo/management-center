@@ -9,5 +9,4 @@ YELLOW='\033[1;33m'
 
 echo -e "${GREEN}Starting Mosquitto UI${NOCOLOR}"
 
-node frontend/start.js &
-node backend/start.js
+node start.js
