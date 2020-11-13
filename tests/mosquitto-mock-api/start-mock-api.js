@@ -10,7 +10,7 @@ const users = new Map();
 // 	"banned": false,
 // 	"connectionRate": 0,
 // 	"messageRate": 0,
-// 	"policyName": "",
+// 	"rolename": "",
 // 	"groups": [
 // 		{
 // 			"name": "admins",
@@ -31,7 +31,7 @@ const users = new Map();
 // 	"banned": false,
 // 	"connectionRate": 0,
 // 	"messageRate": 0,
-// 	"policyName": "",
+// 	"rolename": "",
 // 	"groups": [
 // 		{
 // 			"name": "admins",
@@ -56,7 +56,7 @@ const users = new Map();
 // 	"banned": false,
 // 	"connectionRate": 0,
 // 	"messageRate": 0,
-// 	"policyName": "",
+// 	"rolename": "",
 // 	"groups": [
 // 		{
 // 			"name": "admins",
@@ -76,38 +76,38 @@ const handleCommand = (message) => {
 	const command = message.commands[0];
 	const { correlationData } = command;
 	switch (command.command) {
-		case 'addUser': {
+		case 'createUser': {
 			const { username, password, clientid } = command;
 			if (users.get(username)) {
 				return {
 					correlationData,
 					error: 'User exists'
-				}
+				};
 			}
 			const user = {
 				username,
 				password,
-				clientid,
+				clientid
 			};
 			users.set(username, user);
 			return {
 				correlationData,
 				data: user
-			}
+			};
 		}
 		case 'deleteUser': {
 			const { username } = command;
 			users.delete(username);
 			return {
 				correlationData
-			}
+			};
 		}
 		case 'deleteGroup': {
 			const { groupname } = command;
 			groups.delete(groupname);
 			return {
 				correlationData
-			}
+			};
 		}
 		case 'setUserPassword': {
 			const { username, password } = command;
@@ -115,17 +115,17 @@ const handleCommand = (message) => {
 			user.password = password;
 			return {
 				correlationData
-			}
+			};
 		}
 		case 'addUserToGroup': {
-			const { username, groupName } = command;
+			const { username, groupname } = command;
 			const user = users.get(username);
 			user.groups = user.groups || [];
 			user.groups.push({
-				name: groupName,
+				name: groupname
 				// TODO: priority
 			});
-			const group = groups.get(groupName);
+			const group = groups.get(groupname);
 			if (group) {
 				group.users = group.users || [];
 				if (!group.users.includes(username)) {
@@ -135,16 +135,16 @@ const handleCommand = (message) => {
 			return {
 				correlationData,
 				data: user
-			}
+			};
 		}
-		case 'deleteUserFromGroup': {
-			const { username, groupName } = command;
+		case 'removeUserFromGroup': {
+			const { username, groupname } = command;
 			const user = users.get(username);
 			user.groups = user.groups || [];
-			const result = user.groups.filter(group => group.name !== groupName);
+			const result = user.groups.filter((group) => group.name !== groupname);
 			user.groups = result;
 
-			const group = groups.get(groupName);
+			const group = groups.get(groupname);
 			if (group) {
 				group.users = group.users || [];
 				if (group.users.includes(username)) {
@@ -154,7 +154,7 @@ const handleCommand = (message) => {
 			}
 			return {
 				correlationData
-			}
+			};
 		}
 		case 'listUsers': {
 			return {
@@ -172,38 +172,38 @@ const handleCommand = (message) => {
 				}
 			};
 		}
-		case 'addGroup': {
-			const { groupName, policyName } = command;
-			if (groups.get(groupName)) {
+		case 'createGroup': {
+			const { gFroupName, rolename } = command;
+			if (groups.get(groupname)) {
 				return {
 					correlationData,
 					error: 'Group exists'
-				}
+				};
 			}
 			const group = {
-				groupName,
-				policyName
+				groupname,
+				rolename
 			};
-			groups.set(groupName, group);
+			groups.set(groupname, group);
 			return {
 				correlationData,
 				data: group
-			}
+			};
 		}
 		case 'listGroupUsers': {
-			const { groupName: groupName } = command;
-			const group = groups.get(groupName);
+			const { groupname: groupname } = command;
+			const group = groups.get(groupname);
 			return {
 				correlationData,
 				data: group.users || []
-			}
+			};
 		}
 	}
-}
+};
 
 const sendResponse = (response) => {
-	mockAPI.publish("$CONTROL/v1/response", JSON.stringify(response));
-}
+	mockAPI.publish('$CONTROL/v1/response', JSON.stringify(response));
+};
 
 const mockAPI = mqtt.connect('mqtt://localhost:1889');
 mockAPI.on('connect', () => {
@@ -212,7 +212,9 @@ mockAPI.on('connect', () => {
 			console.error(error);
 		}
 	});
-	mockAPI.publish('$SYS/broker/version', 'Mosquitto 2.0 Mock API', { retain: true });
+	mockAPI.publish('$SYS/broker/version', 'Mosquitto 2.0 Mock API', {
+		retain: true
+	});
 	mockAPI.publish('$SYS/broker/clients/total', '15');
 	mockAPI.publish('$SYS/broker/clients/active', '5');
 	mockAPI.publish('$SYS/broker/clients/connected', '5');
