@@ -461,6 +461,14 @@ const init = (licenseContainer) => {
 		response.json(config);
 	});
 
+	app.get('/api/config/tools/streamsheets', (request, response) => {
+		if (config?.tools?.streamsheets) {
+			response.json(config?.tools?.streamsheets);
+		} else {
+			response.json([]);
+		}
+	});
+
 	app.get('/api/license', (request, response) => {
 		response.json(licenseContainer.license);
 	});
