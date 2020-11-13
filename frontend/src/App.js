@@ -37,6 +37,7 @@ import ThemeModeIcon from '@material-ui/icons/Brightness4';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import ConfigurationIcon from '@material-ui/icons/Tune';
+import StreamsheetsIcon from '@material-ui/icons/GridOn';
 import StreamsIcon from '@material-ui/icons/SettingsInputAntenna';
 import TopicTreeIcon from '@material-ui/icons/AccountTree';
 import Container from '@material-ui/core/Container';
@@ -69,6 +70,7 @@ import Plugins from './components/Plugins';
 import Terminal from './components/Terminal';
 import Settings from './components/Settings';
 import Streams from './components/Streams';
+import Streamsheets from './components/Streamsheets';
 import Status from './components/Status';
 import TopicTree from './components/TopicTree';
 import GroupDetail from './components/GroupDetail';
@@ -371,9 +373,9 @@ export default function App(props) {
 					{open ? <ListSubheader className={classes.menuSubHeader}>Tools</ListSubheader> : null}
 					<ListItemLink
 						classes={classes}
-						to="https://localhost:8090"
+						to="/tools/streamsheets"
 						primary="Streamsheets"
-						icon={<ConfigurationIcon />}
+						icon={<StreamsheetsIcon />}
 					/>
 					<ListItemLink
 						classes={classes}
@@ -622,6 +624,9 @@ export default function App(props) {
 													</Route>
 													<Route path="/config">
 														<Config />
+													</Route>
+													<Route path="/tools/streamsheets">
+														<Streamsheets />
 													</Route>
 													<Route path="/home">
 														<Home />
