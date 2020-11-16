@@ -18,13 +18,13 @@ module.exports = class PluginManager {
 			try {
 				const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
 				const plugin = new Plugin();
-				if (licenseContainer.license.features.includes(plugin.meta.featureId)) {
+				if (licenseContainer.license.features && licenseContainer.license.features.includes(plugin.meta.featureId)) {
 					plugin.init(context);
 					plugin.load(context);
 					plugin.setLoaded();
 					this._plugins.push(plugin);
 				} else {
-					plugin.setErrored('License does not contain this feature.');
+					plugin.setErrored('License does not allow this plugin.');
 					this._plugins.push(plugin);
 				}
 			} catch (error) {
