@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
-const MessagePage = ({ message, buttonText, buttonIcon, callToAction }) => {
+const MessagePage = ({ message, buttonText, buttonIcon, callToAction, image = "/smilethink.png" }) => {
 	const classes = useStyles();
 	return (<Paper>
 		<Grid
@@ -37,25 +37,27 @@ const MessagePage = ({ message, buttonText, buttonIcon, callToAction }) => {
 			
 		</Grid>
 	   <Grid item xs={12} align="center">
-			   <img src="/smilethink.png" />
+			   <img src={image} />
 			   <Typography variant="h6" gutterBottom>
 				{ message }
 			</Typography>
 		</Grid>
 	   <Grid item xs={12} align="center">
-			<Button
-				variant="contained"
-				style={{ backgroundColor: amber[500] }} 
-				className={classes.button}
-				startIcon={ buttonIcon || <DownloadIcon />}
-				onClick={(event) => {
-					event.stopPropagation();
-					callToAction();
-				}}
-				size="small"
-			>
-				{ buttonText }
-			</Button>
+		   {
+			   buttonText ? <Button
+					variant="contained"
+					style={{ backgroundColor: amber[500] }} 
+					className={classes.button}
+					startIcon={ buttonIcon || <DownloadIcon />}
+					onClick={(event) => {
+						event.stopPropagation();
+						callToAction();
+					}}
+					size="small"
+				>
+					{ buttonText }
+				</Button> : ''
+		   }
 		</Grid>
 	  </Grid>
 	</Paper>)
