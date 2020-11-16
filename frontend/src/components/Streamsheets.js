@@ -166,7 +166,7 @@ const Streamsheets = (props) => {
 											{streamsheets.description}
 										</TableCell>
 										<TableCell align="right">
-											<Tooltip title="Preview Streamsheets instance">
+											<Tooltip title="Open Streamsheets instance">
 												<Button
 													variant="contained"
 													color="primary"
@@ -178,7 +178,7 @@ const Streamsheets = (props) => {
 													}}
 													size="small"
 												>
-													Preview
+													Open
 												</Button>
 												{/* <IconButton
 													size="small"
