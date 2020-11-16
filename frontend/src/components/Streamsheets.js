@@ -92,7 +92,8 @@ const Streamsheets = (props) => {
 					// 	width: '1400px',
 					// }}
 				>
-					<DialogTitle id="streamsheets-preview">{selectedInstance?.name}
+					<DialogTitle id="streamsheets-preview">
+						{selectedInstance?.name}
 						<Button
 							variant="contained"
 							color="primary"
@@ -104,7 +105,7 @@ const Streamsheets = (props) => {
 							}}
 							size="small"
 						>
-							Open
+							Open in new tab
 						</Button>
 						{/* <IconButton
 							size="small"
