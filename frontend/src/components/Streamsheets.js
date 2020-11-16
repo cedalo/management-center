@@ -193,7 +193,7 @@ const Streamsheets = (props) => {
 													<PreviewStreamsheetsIcon fontSize="small" />
 												</IconButton> */}
 											</Tooltip>
-											<Tooltip title="Open Streamsheets instance">
+											{/* <Tooltip title="Open Streamsheets instance">
 												<Button
 													variant="contained"
 													color="primary"
@@ -206,7 +206,7 @@ const Streamsheets = (props) => {
 													size="small"
 												>
 													Open
-												</Button>
+												</Button> */}
 												{/* <IconButton
 													size="small"
 													aria-label="Open Streamsheets instance"
@@ -217,7 +217,7 @@ const Streamsheets = (props) => {
 												>
 													<OpenStreamsheetsIcon fontSize="small" />
 												</IconButton> */}
-											</Tooltip>
+											{/* </Tooltip> */}
 										</TableCell>
 									</TableRow>
 								))}
