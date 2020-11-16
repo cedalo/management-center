@@ -1,3 +1,5 @@
+const path = require('path');
+
 const PLUGIN_DIR = process.env.MOSQUITTO_UI_PLUGIN_DIR;
 
 module.exports = class PluginManager {
@@ -14,7 +16,7 @@ module.exports = class PluginManager {
 		const { licenseContainer } = context;
 		pluginConfigurations.forEach((pluginConfiguration) => {
 			try {
-				const { Plugin } = require(`../../plugins/${pluginConfiguration.name}`);
+				const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
 				const plugin = new Plugin();
 				if (licenseContainer.license.features.includes(plugin.meta.featureId)) {
 					plugin.init(context);
