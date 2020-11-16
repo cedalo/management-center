@@ -8,6 +8,7 @@ module.exports = class PluginManager {
 	init(pluginConfigurations = [], context) {
 		if(!PLUGIN_DIR){
 			console.log('"MOSQUITTO_UI_PLUGIN_DIR" is not set. Skipping loading of plugins');
+			return;
 		}
 		this._context = context;
 		const { licenseContainer } = context;
