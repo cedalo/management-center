@@ -38,7 +38,7 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import ConfigurationIcon from '@material-ui/icons/Tune';
 import StreamsheetsIcon from '@material-ui/icons/GridOn';
-import StreamsIcon from '@material-ui/icons/SettingsInputAntenna';
+import StreamsIcon from '@material-ui/icons/Timeline';
 import TopicTreeIcon from '@material-ui/icons/AccountTree';
 import Container from '@material-ui/core/Container';
 import SearchIcon from '@material-ui/icons/Search';
@@ -379,6 +379,12 @@ export default function App(props) {
 					/>
 					<ListItemLink
 						classes={classes}
+						to="/streams"
+						primary="Stream"
+						icon={<StreamsIcon />}
+					/>
+					<ListItemLink
+						classes={classes}
 						to="/terminal"
 						primary="Terminal"
 						icon={<TerminalIcon />}
@@ -627,6 +633,9 @@ export default function App(props) {
 													</Route>
 													<Route path="/tools/streamsheets">
 														<Streamsheets />
+													</Route>
+													<Route path="/streams">
+														<Streams />
 													</Route>
 													<Route path="/home">
 														<Home />
