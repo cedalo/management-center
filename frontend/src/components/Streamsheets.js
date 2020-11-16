@@ -6,6 +6,7 @@ import { useConfirm } from 'material-ui-confirm';
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
+import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import PluginDisabledIcon from '@material-ui/icons/Cancel';
 import PluginEnabledIcon from '@material-ui/icons/CheckCircle';
@@ -46,6 +47,12 @@ const useStyles = makeStyles((theme) => ({
 		'& > *': {
 			margin: theme.spacing(0.3)
 		}
+	},
+	closeButton: {
+		position: 'absolute',
+		right: theme.spacing(1),
+		top: theme.spacing(1),
+		color: theme.palette.grey[500],
 	},
 	breadcrumbItem: theme.palette.breadcrumbItem,
 	breadcrumbLink: theme.palette.breadcrumbLink
@@ -117,6 +124,13 @@ const Streamsheets = (props) => {
 						>
 							<OpenStreamsheetsIcon fontSize="small" />
 						</IconButton> */}
+						<IconButton
+							aria-label="close"
+							className={classes.closeButton}
+							onClick={onClosePreviewInstance}
+						>
+							<CloseIcon />
+						</IconButton>
 					</DialogTitle>
 					<iframe width="1100px" height="600px" src={selectedInstance?.url} title={selectedInstance?.name}></iframe>
 				</Dialog>
