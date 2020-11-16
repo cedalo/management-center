@@ -256,8 +256,6 @@ const Streamsheets = (props) => {
 
 const mapStateToProps = (state) => {
 	return {
-		license: state.license?.license,
-		version: state.version?.version
 	};
 };
 
