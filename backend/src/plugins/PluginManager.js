@@ -1,4 +1,4 @@
-const PLUGIN_DIR = MOSQUITTO_UI_PLUGIN_DIR;
+const PLUGIN_DIR = process.env.MOSQUITTO_UI_PLUGIN_DIR;
 
 module.exports = class PluginManager {
 	constructor() {
@@ -6,7 +6,7 @@ module.exports = class PluginManager {
 	}
 
 	init(pluginConfigurations = [], context) {
-		if(!MOSQUITTO_UI_PLUGIN_DIR){
+		if(!PLUGIN_DIR){
 			console.log('"MOSQUITTO_UI_PLUGIN_DIR" is not set. Skipping loading of plugins');
 		}
 		this._context = context;
