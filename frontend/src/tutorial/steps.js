@@ -22,5 +22,13 @@ export default [
 	{
 		target: '#menu-item-roles',
 		content: 'Create and manage roles and add them to clients and groups.'
+	},
+	{
+		target: '#menu-item-plugins',
+		content: 'Manage plugins for the management center here.'
+	},
+	{
+		target: '#menu-items-tools',
+		content: 'Access several tools like Streamsheets and an integrated terminal.'
 	}
 ];

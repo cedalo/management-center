@@ -356,6 +356,7 @@ export default function App(props) {
 				<List>
 					{open ? <ListSubheader className={classes.menuSubHeader}>Management</ListSubheader> : null}
 					<ListItemLink
+						id="menu-item-plugins"
 						classes={classes}
 						to="/plugins"
 						primary="Plugins"
@@ -369,7 +370,9 @@ export default function App(props) {
 		/> */}
 				</List>
 				<Divider />
-				<List>
+				<List
+					id="menu-items-tools"
+				>
 					{open ? <ListSubheader className={classes.menuSubHeader}>Tools</ListSubheader> : null}
 					<ListItemLink
 						classes={classes}
