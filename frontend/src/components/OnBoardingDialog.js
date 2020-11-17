@@ -127,7 +127,7 @@ function getSteps() {
 		{
 			label: 'Subscribe to our newsletter',
 			description: 'Get the latest news about Mosquitto, MQTT and Streamsheets.',
-			imgPath: '/onboarding-topic-tree.png',
+			imgPath: '/onboarding-newsletter.png',
 			newsletter: true,
 		}
 	];
