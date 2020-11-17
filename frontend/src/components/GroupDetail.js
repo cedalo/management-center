@@ -34,7 +34,7 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, Redirect } from 'react-router-dom';
 
 import { WebSocketContext } from '../websockets/WebSocket';
 import { updateGroup, updateGroups } from '../actions/actions';
@@ -161,7 +161,7 @@ const GroupDetail = (props) => {
 	};
 
 	return (
-		<div className={classes.root}>
+		group.groupname ? <div className={classes.root}>
 			<Breadcrumbs maxItems={2} aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -335,7 +335,7 @@ const GroupDetail = (props) => {
 					</Grid>
 				)}
 			</Paper>
-		</div>
+		</div> : <Redirect to="/security/groups" push />
 	);
 };
 
