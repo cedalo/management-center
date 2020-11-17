@@ -270,12 +270,13 @@ export default class BaseMosquittoProxyClient {
 		);
 	}
 
-	async modifyClient({ username, password, textname, textdescription, groups, roles }) {
+	async modifyClient({ username, password, clientid, textname, textdescription, groups, roles }) {
 		return this.sendCommand(
 			{
 				command: 'modifyClient',
 				username,
 				password,
+				clientid,
 				textname,
 				textdescription,
 				groups,
