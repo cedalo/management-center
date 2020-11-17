@@ -5,6 +5,8 @@ import qs from 'qs';
 import { useConfirm } from 'material-ui-confirm';
 import { makeStyles } from '@material-ui/core/styles';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import ShowPasswordIcon from '@material-ui/icons/Visibility';
+import HidePasswordIcon from '@material-ui/icons/VisibilityOff';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Avatar from '@material-ui/core/Avatar';
@@ -35,7 +37,7 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, Redirect } from 'react-router-dom';
 
 import { WebSocketContext } from '../websockets/WebSocket';
 import { updateClient, updateClients } from '../actions/actions';
@@ -111,6 +113,7 @@ const useStyles = makeStyles((theme) => ({
 const ClientDetail = (props) => {
 	const classes = useStyles();
 	const [value, setValue] = React.useState(0);
+	const [showPassword, setShowPassword] = React.useState(false);
 	const [editMode, setEditMode] = React.useState(false);
 
 	const { client = {}, defaultClient } = props;
@@ -172,7 +175,7 @@ const ClientDetail = (props) => {
 	// TODO: get client by id if current client is not defined
 
 	return (
-		<div>
+		client.username ? <div>
 			<Breadcrumbs aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -274,11 +277,11 @@ const ClientDetail = (props) => {
 									//   }}
 									id="password"
 									label="Password"
-									//   value={client.password}
+									value={client.password}
 									defaultValue="*****"
 									variant="outlined"
 									fullWidth
-									type="password"
+									type={showPassword ? 'text' : 'password'}
 									className={classes.textField}
 									InputProps={{
 										startAdornment: (
@@ -288,6 +291,15 @@ const ClientDetail = (props) => {
 										)
 									}}
 								/>
+								{/* <IconButton onClick={() => {
+									if (showPassword) {
+										setShowPassword(false);
+									} else {
+										setShowPassword(true);
+									}
+								}} >
+								{ showPassword ? <HidePasswordIcon /> : <ShowPasswordIcon /> }
+								</IconButton> */}
 							</Grid>
 							<Grid item xs={12}>
 								<TextField
@@ -395,7 +407,7 @@ const ClientDetail = (props) => {
 					</Grid>
 				)}
 			</Paper>
-		</div>
+		</div> : <Redirect to="/security/clients" push />
 	);
 };
 
