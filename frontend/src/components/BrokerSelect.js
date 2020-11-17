@@ -37,6 +37,7 @@ const CustomInput = withStyles((theme) => ({
 
 const useStyles = makeStyles((theme) => ({
 	root: {
+		paddingLeft: '20px',
 		backgroundColor: 'rgba(255,255,255,0.2)',
 		border: 'thin solid rgba(255,255,255,0.5)'
 	},
