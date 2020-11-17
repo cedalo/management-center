@@ -218,25 +218,6 @@ const ClientDetail = (props) => {
 						<Grid container spacing={1} alignItems="flex-end">
 							<Grid item xs={12}>
 								<TextField
-									disabled
-									id="client-id"
-									label="Client ID"
-									value={updatedClient.clientid}
-									defaultValue=""
-									variant="outlined"
-									fullWidth
-									className={classes.textField}
-									InputProps={{
-										startAdornment: (
-											<InputAdornment position="start">
-												<ClientIDIcon />
-											</InputAdornment>
-										)
-									}}
-								/>
-							</Grid>
-							<Grid item xs={12}>
-								<TextField
 									required
 									disabled={!editMode}
 									onChange={(event) => {
@@ -300,6 +281,33 @@ const ClientDetail = (props) => {
 								}} >
 								{ showPassword ? <HidePasswordIcon /> : <ShowPasswordIcon /> }
 								</IconButton> */}
+							</Grid>
+							<Grid item xs={12}>
+								<TextField
+									disabled={!editMode}
+									id="client-id"
+									label="Client ID"
+									value={updatedClient.clientid}
+									defaultValue=""
+									variant="outlined"
+									fullWidth
+									className={classes.textField}
+									onChange={(event) => {
+										if (editMode) {
+											setUpdatedClient({
+												...updatedClient,
+												clientid: event.target.value
+											});
+										}
+									}}
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position="start">
+												<ClientIDIcon />
+											</InputAdornment>
+										)
+									}}
+								/>
 							</Grid>
 							<Grid item xs={12}>
 								<TextField
