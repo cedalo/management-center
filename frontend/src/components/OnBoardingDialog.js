@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import Select from 'react-select';
 import { emphasize, makeStyles, useTheme } from '@material-ui/core/styles';
+import { green } from '@material-ui/core/colors';
+import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import MobileStepper from '@material-ui/core/MobileStepper';
 import Stepper from '@material-ui/core/Stepper';
@@ -25,8 +27,10 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
+import SubscribedIcon from '@material-ui/icons/CheckCircle';
 
 import useLocalStorage from '../helpers/useLocalStorage';
 
@@ -123,36 +127,20 @@ function getSteps() {
 		{
 			label: 'Subscribe to our newsletter',
 			description: 'Get the latest news about Mosquitto, MQTT and Streamsheets.',
-			imgPath: '/onboarding004.png',
+			imgPath: '/onboarding-topic-tree.png',
 			newsletter: true,
 		}
 	];
-}
-
-function getStepContent(step) {
-	switch (step) {
-		case 0:
-			return `For each ad campaign that you create, you can control how much
-				you're willing to spend on clicks and conversions, which networks
-				and geographical locations you want your ads to show on, and more.`;
-		case 1:
-			return 'An ad group contains one or more ads which target a shared set of keywords.';
-		case 2:
-			return `Try out different ad text to see what brings in the most customers,
-				and learn how to enhance your ads using features like ad extensions.
-				If you run into any problems with your ads, find out how to tell if
-				they're running and how to resolve approval issues.`;
-		default:
-			return 'Unknown step';
-	}
 }
 
 export default function OnBoardingDialog(props) {
 	const classes = useStyles();
 	const theme = useTheme();
 	const [activeStep, setActiveStep] = React.useState(0);
+	const [email, setEMail] = React.useState('');
+	const [subscribed, setSubscribed] = useLocalStorage('cedalo.managementcenter.subscribedToNewsletter');
 	const steps = getSteps();
-	const [showOnBoardingDialog, setShowOnBoardingDialog] = useLocalStorage('mosquitto-ui.showOnBoardingDialog');
+	const [showOnBoardingDialog, setShowOnBoardingDialog] = useLocalStorage('cedalo.managementcenter.showOnBoardingDialog');
 
 	const handleClose = () => {
 		setShowOnBoardingDialog('false');
@@ -174,6 +162,24 @@ export default function OnBoardingDialog(props) {
 		setActiveStep(0);
 	};
 
+	const subscribeNewsletter = async () => {
+		try {
+			const response = await fetch(`http://${window.location.hostname}:8088/api/newsletter/subscribe`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					email
+				})
+			})
+			setSubscribed('true');
+		} catch (error) {
+			// TODO: add error handling
+			console.error(error);
+		}
+	}
+
 	return (
 		<Dialog
 			open={showOnBoardingDialog === '' || showOnBoardingDialog === 'true'}
@@ -183,12 +189,10 @@ export default function OnBoardingDialog(props) {
 		>
 			{/* <DialogTitle id="alert-dialog-title">{steps[activeStep].label}</DialogTitle> */}
 			<DialogContent>
+				
 				{/* <Paper square elevation={0} className={classes.header}>
       </Paper> */}
-				{
-					steps[activeStep].newsletter 
-					? <div style={{ textAlign: 'center' }}>
-						Newsletter
+					<div style={{ textAlign: 'center' }}>
 						<img
 							style={{ width: '555px' }}
 							className={classes.img}
@@ -196,20 +200,55 @@ export default function OnBoardingDialog(props) {
 							alt={steps[activeStep].label}
 						/>
 					</div>
-					: <div style={{ textAlign: 'center' }}>
-						<img
-							style={{ width: '555px' }}
-							className={classes.img}
-							src={steps[activeStep].imgPath}
-							alt={steps[activeStep].label}
-						/>
-					</div>
-				}
 				<br />
+				
 				<Typography variant="h6" style={{ textAlign: 'center' }}>
 					<strong>{steps[activeStep].label}</strong>
 				</Typography>
 				<Typography style={{ textAlign: 'center' }}>{steps[activeStep].description}</Typography>
+				
+				{
+					steps[activeStep].newsletter && subscribed !== 'true' ?
+					<div style={{ textAlign: 'center' }}>
+					<Grid container spacing={3} alignItems="flex-end">
+						<Grid item xs={9}>
+							<TextField
+								id="email"
+								label="E-Mail"
+								type="email"
+								value={email}
+								onChange={ (event) => {
+									event.stopPropagation();
+									setEMail(event.target.value);
+								} }
+								style={{
+									width: '100%'
+								}}
+							/>
+						</Grid>
+						<Grid item xs={3}>
+							<Button
+								disabled={email === ''}
+								onClick={subscribeNewsletter}
+								variant="contained"
+								color="primary"
+							>
+								Subscribe
+							</Button>
+						</Grid>
+					</Grid>
+				</div> : null
+				}
+				{
+					subscribed === 'true'
+						? <div style={{ textAlign: 'center' }}>
+							<SubscribedIcon style={{ color: green[500] }} />
+							<Typography>
+								<strong>Thanks for subscribing!</strong>
+							</Typography>
+						</div>
+						: null
+				}
 				<DialogContentText id="alert-dialog-description"></DialogContentText>
 
 				<MobileStepper
@@ -235,7 +274,6 @@ export default function OnBoardingDialog(props) {
 						<Step key={label}>
 							<StepLabel>{label}</StepLabel>
 							<StepContent>
-								<Typography>{getStepContent(index)}</Typography>
 								<div className={classes.actionsContainer}>
 									<div>
 										<Button
