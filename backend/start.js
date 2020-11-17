@@ -138,6 +138,7 @@ const init = (licenseContainer) => {
 	const globalTopicTree = {};
 	const app = express();
 	app.use(cors());
+	app.use(express.json());
 	const server = http.createServer(app);
 
 	// TODO: add error handling
@@ -461,6 +462,22 @@ const init = (licenseContainer) => {
 
 	app.get('/api/config', (request, response) => {
 		response.json(config);
+	});
+
+	const NEWSLETTER_URL = 'https://api.cedalo.cloud/rest/api/v1.0/newsletter/subscribe';
+	app.post('/api/newsletter/subscribe', (request, response) => {
+		const user = request.body;
+		axios
+			.post(NEWSLETTER_URL, user)
+			.then(() => {
+				response.status(200).json({
+					newsletter: true
+				});
+			})
+			.catch((error) => {
+				console.error('Error when trying to subscribe for newsletter.');
+				console.error(error);
+			});
 	});
 
 	app.get('/api/config/tools/streamsheets', (request, response) => {
