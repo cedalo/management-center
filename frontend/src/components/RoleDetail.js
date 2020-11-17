@@ -49,7 +49,7 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, Redirect } from 'react-router-dom';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { updateRole, updateRoles } from '../actions/actions';
 
@@ -219,7 +219,7 @@ const RoleDetail = (props) => {
 	};
 
 	return (
-		<div>
+		role.rolename ? <div>
 			<Breadcrumbs maxItems={2} aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -620,7 +620,7 @@ const RoleDetail = (props) => {
 					</Grid>
 				)}
 			</Paper>
-		</div>
+		</div> : <Redirect to="/security/roles" push />
 	);
 };
 
