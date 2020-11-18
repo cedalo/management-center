@@ -1,12 +1,12 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import DownloadIcon from '@material-ui/icons/GetApp';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import DownloadIcon from '@material-ui/icons/GetApp';
 import { amber } from '@material-ui/core/colors';
+import { connect } from 'react-redux';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
 	button: {

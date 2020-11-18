@@ -1,39 +1,38 @@
-import moment from 'moment';
 import React, { useContext } from 'react';
+import { amber, green, red } from '@material-ui/core/colors';
 import { connect, useDispatch } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
-import { useConfirm } from 'material-ui-confirm';
+
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
-import IconButton from '@material-ui/core/IconButton';
-import PluginDisabledIcon from '@material-ui/icons/Cancel';
-import PluginEnabledIcon from '@material-ui/icons/CheckCircle';
-import Switch from '@material-ui/core/Switch';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import DownloadIcon from '@material-ui/icons/GetApp';
 import Grid from '@material-ui/core/Grid';
-import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import MessagePage from './MessagePage';
+import OpenSourcePluginIcon from '@material-ui/icons/Code';
+import OpenStreamsheetsIcon from '@material-ui/icons/Navigation';
+import Paper from '@material-ui/core/Paper';
+import PluginDisabledIcon from '@material-ui/icons/Cancel';
+import PluginEnabledIcon from '@material-ui/icons/CheckCircle';
+import PremiumPluginIcon from '@material-ui/icons/Stars';
+import PreviewStreamsheetsIcon from '@material-ui/icons/Visibility';
+import { Link as RouterLink } from 'react-router-dom';
+import Switch from '@material-ui/core/Switch';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
-import TableHead from '@material-ui/core/TableHead';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import DownloadIcon from '@material-ui/icons/GetApp';
-import OpenSourcePluginIcon from '@material-ui/icons/Code';
-import PremiumPluginIcon from '@material-ui/icons/Stars';
-import { amber, green, red } from '@material-ui/core/colors';
-import OpenStreamsheetsIcon from '@material-ui/icons/Navigation';
-import PreviewStreamsheetsIcon from '@material-ui/icons/Visibility';
-
-import { Link as RouterLink } from 'react-router-dom';
-
 import { WebSocketContext } from '../websockets/WebSocket';
-import MessagePage from './MessagePage';
+import { makeStyles } from '@material-ui/core/styles';
+import moment from 'moment';
+import { useConfirm } from 'material-ui-confirm';
 import useFetch from '../helpers/useFetch';
 
 const useStyles = makeStyles((theme) => ({

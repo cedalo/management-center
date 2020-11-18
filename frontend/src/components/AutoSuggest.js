@@ -1,15 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import clsx from 'clsx';
-import Select from 'react-select';
 import { emphasize, makeStyles, useTheme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import NoSsr from '@material-ui/core/NoSsr';
-import TextField from '@material-ui/core/TextField';
-import Paper from '@material-ui/core/Paper';
+
+import CancelIcon from '@material-ui/icons/Cancel';
 import Chip from '@material-ui/core/Chip';
 import MenuItem from '@material-ui/core/MenuItem';
-import CancelIcon from '@material-ui/icons/Cancel';
+import NoSsr from '@material-ui/core/NoSsr';
+import Paper from '@material-ui/core/Paper';
+import PropTypes from 'prop-types';
+import React from 'react';
+import Select from 'react-select';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
 	root: {

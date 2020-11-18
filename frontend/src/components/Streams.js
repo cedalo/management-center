@@ -1,13 +1,12 @@
 import React, { useContext } from 'react';
 import { connect, useDispatch } from 'react-redux';
+
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import MessagePage from './MessagePage';
+import { Link as RouterLink } from 'react-router-dom';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Typography from '@material-ui/core/Typography';
-
-import { Link as RouterLink } from 'react-router-dom';
-
-import MessagePage from './MessagePage';
 
 const useStyles = makeStyles((theme) => ({
 	breadcrumbItem: theme.palette.breadcrumbItem,

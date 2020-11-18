@@ -1,19 +1,20 @@
 import React, { createContext } from 'react';
-import WS_BASE from './config';
-import { useDispatch } from 'react-redux';
 import {
-	updateGroups,
-	updateRoles,
-	updateClients,
 	updateBrokerConfigurations,
 	updateBrokerConnected,
 	updateBrokerConnections,
+	updateClients,
+	updateGroups,
 	updateLicense,
-	updateVersion,
+	updateRoles,
 	updateSystemStatus,
-	updateTopicTree
+	updateTopicTree,
+	updateVersion
 } from '../actions/actions';
+
+import WS_BASE from './config';
 import WebMosquittoProxyClient from '../client/WebMosquittoProxyClient';
+import { useDispatch } from 'react-redux';
 
 const WebSocketContext = createContext(null);
 

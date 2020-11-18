@@ -1,31 +1,32 @@
-import { connect, useDispatch } from 'react-redux';
 import React, { useContext, useState } from 'react';
-import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import { useConfirm } from 'material-ui-confirm';
-import { useHistory } from 'react-router-dom';
+import { connect, useDispatch } from 'react-redux';
+
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 import ClientIDIcon from '@material-ui/icons/Fingerprint';
+import ClientIcon from '@material-ui/icons/Person';
+import Divider from '@material-ui/core/Divider';
+import Grid from '@material-ui/core/Grid';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Divider from '@material-ui/core/Divider';
-import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import Paper from '@material-ui/core/Paper';
 import PasswordIcon from '@material-ui/icons/VpnKey';
-import ClientIcon from '@material-ui/icons/Person';
+import PropTypes from 'prop-types';
+import { Link as RouterLink } from 'react-router-dom';
+import SaveIcon from '@material-ui/icons/Save';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import SaveIcon from '@material-ui/icons/Save';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import { Link as RouterLink } from 'react-router-dom';
 import { WebSocketContext } from '../websockets/WebSocket';
+import { makeStyles } from '@material-ui/core/styles';
 import { updateRoles } from '../actions/actions';
+import { useConfirm } from 'material-ui-confirm';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
 	root: {

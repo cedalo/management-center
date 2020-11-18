@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
-import { connect } from 'react-redux';
+
+import BrokerSelect from './BrokerSelect';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -9,8 +10,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import { connect } from 'react-redux';
 
-import BrokerSelect from './BrokerSelect';
 // import MessagePage from './MessagePage';
 
 const DisconnectedDialog = ({ connected }) => {
