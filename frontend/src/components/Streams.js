@@ -27,17 +27,13 @@ const Streams = (props) => {
 				</Typography>
 			</Breadcrumbs>
 			<br />
-			<MessagePage 
-				message="Pssst!!! We are working on a secret feature. Coming soon."
-				image="/inprogress.png"
-			/>
+			<MessagePage message="Pssst!!! We are working on a secret feature. Coming soon." image="/inprogress.png" />
 		</div>
-	)
+	);
 };
 
 const mapStateToProps = (state) => {
-	return {
-	};
+	return {};
 };
 
 export default connect(mapStateToProps)(Streams);

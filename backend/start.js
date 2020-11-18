@@ -126,7 +126,6 @@ const initConnections = (config) => {
 	return connections;
 };
 
-
 const loadConfig = () => {
 	const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, MOSQUITTO_UI_PROXY_CONFIG_DIR)).toString());
 	return config;
@@ -186,8 +185,8 @@ const init = (licenseContainer) => {
 					connected: false,
 					error: {
 						errno: 1,
-						code: "ECONNCLOSED",
-						syscall: "on"
+						code: 'ECONNCLOSED',
+						syscall: 'on'
 					}
 				};
 				sendConnectionsUpdate(brokerClient);
@@ -506,15 +505,16 @@ const init = (licenseContainer) => {
 		}
 	};
 
-
 	const pluginManager = new PluginManager();
 	pluginManager.init(config.plugins, context);
 
 	app.get('/api/plugins', (request, response) => {
-		response.json(pluginManager.plugins.map((plugin) => ({
-			...plugin.meta,
-			status: plugin.status
-		})));
+		response.json(
+			pluginManager.plugins.map((plugin) => ({
+				...plugin.meta,
+				status: plugin.status
+			}))
+		);
 	});
 
 	app.get('*', (request, response) => {

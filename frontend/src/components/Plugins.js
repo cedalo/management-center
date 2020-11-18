@@ -89,68 +89,62 @@ const Plugins = (props) => {
 					</Typography>
 				</Breadcrumbs>
 				<br />
-					<TableContainer component={Paper} className={classes.tableContainer}>
-						<Table size="medium">
-							<TableHead>
+				<TableContainer component={Paper} className={classes.tableContainer}>
+					<Table size="medium">
+						<TableHead>
+							<TableRow>
+								<TableCell>Type</TableCell>
+								<TableCell>ID</TableCell>
+								<TableCell>Version</TableCell>
+								<TableCell>Name</TableCell>
+								<TableCell>Description</TableCell>
+								<TableCell>Feature</TableCell>
+								<TableCell>Status</TableCell>
+								<TableCell>Actions</TableCell>
+							</TableRow>
+						</TableHead>
+						<TableBody>
+							{response.map((plugin) => (
 								<TableRow>
-									<TableCell>Type</TableCell>
-									<TableCell>ID</TableCell>
-									<TableCell>Version</TableCell>
-									<TableCell>Name</TableCell>
-									<TableCell>Description</TableCell>
-									<TableCell>Feature</TableCell>
-									<TableCell>Status</TableCell>
-									<TableCell>Actions</TableCell>
-								</TableRow>
-							</TableHead>
-							<TableBody>
-								{response.map((plugin) => (
-									<TableRow>
-										<TableCell>
-											{plugin.type === 'premium' ? <PremiumPluginIcon style={{ color: amber[500] }} fontSize="small" /> : <OpenSourcePluginIcon fontSize="small" /> }
-										</TableCell>
-										<TableCell>
-											{plugin.id}
-										</TableCell>
-										<TableCell>
-											{plugin.version}
-										</TableCell>
-										<TableCell>
-											{plugin.name}
-										</TableCell>
-										<TableCell>
-											{plugin.description}
-										</TableCell>
-										<TableCell>
-											{plugin.feature}
-										</TableCell>
-										<TableCell>
-											{
-												plugin.status.type === 'loaded' 
-												? <PluginEnabledIcon fontSize="small" style={{ color: green[500] }} /> 
-												: <Tooltip title={plugin.status.message ? plugin.status.message : null}>
-													<PluginDisabledIcon fontSize="small" style={{ color: red[500] }} />
-												  </Tooltip>
-											}
-										</TableCell>
-										<TableCell>
-											<Tooltip title={plugin.status.type === 'loaded' ? 'Disable' : 'Enable'}>
-												<Switch
-													disabled={plugin.status.type === 'error' || !plugin.actions.enable}
-													checked={plugin.status.type === 'loaded'}
-													name="pluginEnabled"
-													onChange={(event) => {
-														handlePluginLoad(plugin.id, event.target.checked);
-													}}
-													inputProps={{ 'aria-label': 'Plugin enabled' }}
-												/>
+									<TableCell>
+										{plugin.type === 'premium' ? (
+											<PremiumPluginIcon style={{ color: amber[500] }} fontSize="small" />
+										) : (
+											<OpenSourcePluginIcon fontSize="small" />
+										)}
+									</TableCell>
+									<TableCell>{plugin.id}</TableCell>
+									<TableCell>{plugin.version}</TableCell>
+									<TableCell>{plugin.name}</TableCell>
+									<TableCell>{plugin.description}</TableCell>
+									<TableCell>{plugin.feature}</TableCell>
+									<TableCell>
+										{plugin.status.type === 'loaded' ? (
+											<PluginEnabledIcon fontSize="small" style={{ color: green[500] }} />
+										) : (
+											<Tooltip title={plugin.status.message ? plugin.status.message : null}>
+												<PluginDisabledIcon fontSize="small" style={{ color: red[500] }} />
 											</Tooltip>
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-					</TableContainer>
+										)}
+									</TableCell>
+									<TableCell>
+										<Tooltip title={plugin.status.type === 'loaded' ? 'Disable' : 'Enable'}>
+											<Switch
+												disabled={plugin.status.type === 'error' || !plugin.actions.enable}
+												checked={plugin.status.type === 'loaded'}
+												name="pluginEnabled"
+												onChange={(event) => {
+													handlePluginLoad(plugin.id, event.target.checked);
+												}}
+												inputProps={{ 'aria-label': 'Plugin enabled' }}
+											/>
+										</Tooltip>
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</TableContainer>
 			</div>
 		);
 	} else {

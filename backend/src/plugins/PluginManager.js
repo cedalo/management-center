@@ -8,7 +8,7 @@ module.exports = class PluginManager {
 	}
 
 	init(pluginConfigurations = [], context) {
-		if(!PLUGIN_DIR){
+		if (!PLUGIN_DIR) {
 			console.log('"MOSQUITTO_UI_PLUGIN_DIR" is not set. Skipping loading of plugins');
 			return;
 		}
@@ -18,7 +18,10 @@ module.exports = class PluginManager {
 			try {
 				const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
 				const plugin = new Plugin();
-				if (licenseContainer.license.features && licenseContainer.license.features.includes(plugin.meta.featureId)) {
+				if (
+					licenseContainer.license.features &&
+					licenseContainer.license.features.includes(plugin.meta.featureId)
+				) {
 					plugin.init(context);
 					plugin.load(context);
 					plugin.setLoaded();
@@ -56,4 +59,4 @@ module.exports = class PluginManager {
 	get plugins() {
 		return this._plugins;
 	}
-}
+};

@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
-const Connections = ({ brokerConnections, onSort, sortBy, sortDirection	 }) => {
+const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 	const classes = useStyles();
 	const theme = useTheme();
 	const context = useContext(WebSocketContext);
@@ -127,111 +127,111 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection	 }) => {
 										brokerConnections
 											.sort((a, b) => a.name.localeCompare(b.name))
 											.map((brokerConnection) => (
-											<TableRow
-												hover
-												key={brokerConnection.name}
-												//   onClick={() => onSelectConfiguration(brokerConnection.name)}
-												//   style={{ cursor: "pointer" }}
-											>
-												<TableCell>{brokerConnection.id}</TableCell>
-												<TableCell>{brokerConnection.name}</TableCell>
-												<TableCell>{brokerConnection.url}</TableCell>
-												<TableCell>
-													<Popover
-														id={brokerConnection.id}
-														open={openedPopoverId === brokerConnection.id}
-														anchorEl={anchorEl}
-														onClose={handleClose}
-														anchorOrigin={{
-															vertical: 'bottom',
-															horizontal: 'center'
-														}}
-														transformOrigin={{
-															vertical: 'top',
-															horizontal: 'center'
-														}}
-													>
-														<Typography className={classes.typography}>
-															{brokerConnection.status.connected ? (
-																<Paper>Broker successfully connected</Paper>
-															) : (
-																<TableContainer component={Paper}>
-																	<Table>
-																		<TableBody>
-																			<TableRow>
-																				<TableCell>
-																					<strong>Error number</strong>
-																				</TableCell>
-																				<TableCell>
-																					{
-																						brokerConnection.status
-																							?.error?.errno
-																					}
-																				</TableCell>
-																			</TableRow>
-																			<TableRow>
-																				<TableCell>
-																					<strong>Error code</strong>
-																				</TableCell>
-																				<TableCell>
-																					{
-																						brokerConnection.status
-																							?.error?.code
-																					}
-																				</TableCell>
-																			</TableRow>
-																			<TableRow>
-																				<TableCell>
-																					<strong>System call</strong>
-																				</TableCell>
-																				<TableCell>
-																					{
-																						brokerConnection.status
-																							?.error?.syscall
-																					}
-																				</TableCell>
-																			</TableRow>
-																			<TableRow>
-																				<TableCell>
-																					<strong>Address</strong>
-																				</TableCell>
-																				<TableCell>
-																					{
-																						brokerConnection.status
-																							?.error?.address
-																					}
-																				</TableCell>
-																			</TableRow>
-																			<TableRow>
-																				<TableCell>
-																					<strong>Port</strong>
-																				</TableCell>
-																				<TableCell>
-																					{
-																						brokerConnection.status
-																							?.error?.port
-																					}
-																				</TableCell>
-																			</TableRow>
-																		</TableBody>
-																	</Table>
-																</TableContainer>
-															)}
-														</Typography>
-													</Popover>
-													<IconButton
-														size="small"
-														onClick={(event) => {
-															event.stopPropagation();
-															handlePopoverOpen(event.target, brokerConnection.id);
-														}}
-													>
-														{createStatusIcon(brokerConnection.status)}
-													</IconButton>
-													{}
-												</TableCell>
-												<TableCell align="right">
-													{/* <IconButton
+												<TableRow
+													hover
+													key={brokerConnection.name}
+													//   onClick={() => onSelectConfiguration(brokerConnection.name)}
+													//   style={{ cursor: "pointer" }}
+												>
+													<TableCell>{brokerConnection.id}</TableCell>
+													<TableCell>{brokerConnection.name}</TableCell>
+													<TableCell>{brokerConnection.url}</TableCell>
+													<TableCell>
+														<Popover
+															id={brokerConnection.id}
+															open={openedPopoverId === brokerConnection.id}
+															anchorEl={anchorEl}
+															onClose={handleClose}
+															anchorOrigin={{
+																vertical: 'bottom',
+																horizontal: 'center'
+															}}
+															transformOrigin={{
+																vertical: 'top',
+																horizontal: 'center'
+															}}
+														>
+															<Typography className={classes.typography}>
+																{brokerConnection.status.connected ? (
+																	<Paper>Broker successfully connected</Paper>
+																) : (
+																	<TableContainer component={Paper}>
+																		<Table>
+																			<TableBody>
+																				<TableRow>
+																					<TableCell>
+																						<strong>Error number</strong>
+																					</TableCell>
+																					<TableCell>
+																						{
+																							brokerConnection.status
+																								?.error?.errno
+																						}
+																					</TableCell>
+																				</TableRow>
+																				<TableRow>
+																					<TableCell>
+																						<strong>Error code</strong>
+																					</TableCell>
+																					<TableCell>
+																						{
+																							brokerConnection.status
+																								?.error?.code
+																						}
+																					</TableCell>
+																				</TableRow>
+																				<TableRow>
+																					<TableCell>
+																						<strong>System call</strong>
+																					</TableCell>
+																					<TableCell>
+																						{
+																							brokerConnection.status
+																								?.error?.syscall
+																						}
+																					</TableCell>
+																				</TableRow>
+																				<TableRow>
+																					<TableCell>
+																						<strong>Address</strong>
+																					</TableCell>
+																					<TableCell>
+																						{
+																							brokerConnection.status
+																								?.error?.address
+																						}
+																					</TableCell>
+																				</TableRow>
+																				<TableRow>
+																					<TableCell>
+																						<strong>Port</strong>
+																					</TableCell>
+																					<TableCell>
+																						{
+																							brokerConnection.status
+																								?.error?.port
+																						}
+																					</TableCell>
+																				</TableRow>
+																			</TableBody>
+																		</Table>
+																	</TableContainer>
+																)}
+															</Typography>
+														</Popover>
+														<IconButton
+															size="small"
+															onClick={(event) => {
+																event.stopPropagation();
+																handlePopoverOpen(event.target, brokerConnection.id);
+															}}
+														>
+															{createStatusIcon(brokerConnection.status)}
+														</IconButton>
+														{}
+													</TableCell>
+													<TableCell align="right">
+														{/* <IconButton
 						  size="small"
                           onClick={(event) => {
                             event.stopPropagation();
@@ -249,9 +249,9 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection	 }) => {
                         >
                           <DeleteIcon fontSize="small" />
                         </IconButton> */}
-												</TableCell>
-											</TableRow>
-										))}
+													</TableCell>
+												</TableRow>
+											))}
 								</TableBody>
 							</Table>
 						</TableContainer>

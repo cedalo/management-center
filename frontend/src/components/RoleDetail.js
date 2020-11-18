@@ -137,7 +137,7 @@ const RoleDetail = (props) => {
 		acltype: 'publishClientReceive',
 		allow: true,
 		topic: '',
-		priority: 0,
+		priority: 0
 	});
 
 	const [editMode, setEditMode] = React.useState(false);
@@ -197,7 +197,7 @@ const RoleDetail = (props) => {
 			acltype: 'publishClientReceive',
 			allow: true,
 			topic: '',
-			priority: 0,
+			priority: 0
 		});
 	};
 
@@ -218,8 +218,8 @@ const RoleDetail = (props) => {
 		dispatch(updateRole(updatedRole));
 	};
 
-	return (
-		role.rolename ? <div>
+	return role.rolename ? (
+		<div>
 			<Breadcrumbs maxItems={2} aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -236,7 +236,13 @@ const RoleDetail = (props) => {
 			</Breadcrumbs>
 			<br />
 			<Paper className={classes.paper}>
-				<Tabs value={selectedTab} onChange={handleChange} variant="scrollable" scrollButtons="off" aria-label="Role">
+				<Tabs
+					value={selectedTab}
+					onChange={handleChange}
+					variant="scrollable"
+					scrollButtons="off"
+					aria-label="Role"
+				>
 					<Tab label="Details" icon={<RoleIcon />} aria-label="details" {...a11yProps(0)} />
 					{/* <Tab
           label="Features"
@@ -475,7 +481,10 @@ const RoleDetail = (props) => {
 															onChange={(event) =>
 																setNewACL({
 																	...newACL,
-																	priority: event.target.value !== '' ? parseInt(event.target.value) : ''
+																	priority:
+																		event.target.value !== ''
+																			? parseInt(event.target.value)
+																			: ''
 																})
 															}
 														/>
@@ -620,7 +629,9 @@ const RoleDetail = (props) => {
 					</Grid>
 				)}
 			</Paper>
-		</div> : <Redirect to="/security/roles" push />
+		</div>
+	) : (
+		<Redirect to="/security/roles" push />
 	);
 };
 

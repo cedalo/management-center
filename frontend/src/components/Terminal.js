@@ -24,8 +24,8 @@ import useLocalStorage from '../helpers/useLocalStorage';
 
 const useStyles = makeStyles((theme) => ({
 	terminal: {
-		fontWeight: "bold", 
-		fontSize: "2em"
+		fontWeight: 'bold',
+		fontSize: '2em'
 	},
 	badges: {
 		'& > *': {
@@ -43,72 +43,69 @@ const Plugins = (props) => {
 	const context = useContext(WebSocketContext);
 	const { client: brokerClient } = context;
 
-	const showMsg = () => 'Hello World'
+	const showMsg = () => 'Hello World';
 
 	const classes = useStyles();
 
 	return (
 		<Terminal
-		  startState='maximised'
-		  className={classes.terminal}
-		  showActions={false}
-		  hideTopBar={true}
-		  allowTabs={false}
-		  prompt={darkMode === 'true' ? 'yellow' : 'darkgrey'}
-		  color={darkMode === 'true' ? 'yellow' : 'darkgrey'}
-		  style={{ fontWeight: "bold", fontSize: "1.4em", width: '100%' }}
-          backgroundColor={darkMode === 'true' ? 'black' : 'white'}
-		  barColor='black'
-		  outputColor={darkMode === 'true' ? 'green' : 'grey'}
-          commands={{
-			  'addClient': (args, print, runCommand) => {
-				brokerClient.createClient(args[1], args[2], args[3])
-					.then(() => {
-						print(`Client "${args[1]}" successfully created!`);
-					})
-					.then(() => brokerClient.listClients())
-					.then(clients => dispatch(updateClients(clients)))
-			  },
-			  'listClients': (args, print, runCommand) => {
-				brokerClient.listClients().then((clients) => {
-					const message = clients
-						.map((client) => `${client.username}\t${client.clientid ? client.clientid : ''}`)
-						.join('\n')
-					print(message);
-				});
-			  },
-			  'listGroups': (args, print, runCommand) => {
-				brokerClient.listGroups().then((groups) => {
-					const message = groups
-						.map((group) => `${group.groupname}`)
-						.join('\n')
-					print(message);
-				});
-			  },
-			  'listRoles': (args, print, runCommand) => {
-				brokerClient.listRoles().then((roles) => {
-					const message = roles
-						.map((role) => `${role.rolename}`)
-						.join('\n')
-					print(message);
-				});
-			  },
-			  'deleteClient': (args, print, runCommand) => {
-				brokerClient.deleteClient(args[1]).then(() => {
-					print(`Client "${args[1]}" successfully deleted!`);
-				});
-			  },
-          }}
-          descriptions={{
-            'addClient': 'Add a new client',
-            'deleteClient': 'Delete a client',
-            'listClients': 'List all clients',
-            'listGroups': 'List all groups',
-            'listRoles': 'List all roles'
-          }}
-          msg='Welcome to the Management Center Terminal'
-        />
-	)
+			startState="maximised"
+			className={classes.terminal}
+			showActions={false}
+			hideTopBar={true}
+			allowTabs={false}
+			prompt={darkMode === 'true' ? 'yellow' : 'darkgrey'}
+			color={darkMode === 'true' ? 'yellow' : 'darkgrey'}
+			style={{ fontWeight: 'bold', fontSize: '1.4em', width: '100%' }}
+			backgroundColor={darkMode === 'true' ? 'black' : 'white'}
+			barColor="black"
+			outputColor={darkMode === 'true' ? 'green' : 'grey'}
+			commands={{
+				addClient: (args, print, runCommand) => {
+					brokerClient
+						.createClient(args[1], args[2], args[3])
+						.then(() => {
+							print(`Client "${args[1]}" successfully created!`);
+						})
+						.then(() => brokerClient.listClients())
+						.then((clients) => dispatch(updateClients(clients)));
+				},
+				listClients: (args, print, runCommand) => {
+					brokerClient.listClients().then((clients) => {
+						const message = clients
+							.map((client) => `${client.username}\t${client.clientid ? client.clientid : ''}`)
+							.join('\n');
+						print(message);
+					});
+				},
+				listGroups: (args, print, runCommand) => {
+					brokerClient.listGroups().then((groups) => {
+						const message = groups.map((group) => `${group.groupname}`).join('\n');
+						print(message);
+					});
+				},
+				listRoles: (args, print, runCommand) => {
+					brokerClient.listRoles().then((roles) => {
+						const message = roles.map((role) => `${role.rolename}`).join('\n');
+						print(message);
+					});
+				},
+				deleteClient: (args, print, runCommand) => {
+					brokerClient.deleteClient(args[1]).then(() => {
+						print(`Client "${args[1]}" successfully deleted!`);
+					});
+				}
+			}}
+			descriptions={{
+				addClient: 'Add a new client',
+				deleteClient: 'Delete a client',
+				listClients: 'List all clients',
+				listGroups: 'List all groups',
+				listRoles: 'List all roles'
+			}}
+			msg="Welcome to the Management Center Terminal"
+		/>
+	);
 };
 
 const mapStateToProps = (state) => {

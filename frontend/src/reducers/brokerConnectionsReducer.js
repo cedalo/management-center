@@ -20,6 +20,6 @@ export default function brokerConnections(state = {}, action) {
 			username: newState.currentConnection?.credentials?.username
 		};
 	}
-	
+
 	return newState;
 }

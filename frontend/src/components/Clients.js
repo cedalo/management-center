@@ -212,16 +212,7 @@ const Clients = (props) => {
 		dispatch(updateClients(clients));
 	};
 
-	const {
-		connectionID,
-		defaultClient,
-		groups = [],
-		roles = [],
-		clients = [],
-		onSort,
-		sortBy,
-		sortDirection
-	} = props;
+	const { connectionID, defaultClient, groups = [], roles = [], clients = [], onSort, sortBy, sortDirection } = props;
 
 	const groupSuggestions = groups
 		.map((group) => group.groupname)
@@ -284,7 +275,10 @@ const Clients = (props) => {
 												hover
 												key={client.username}
 												onClick={(event) => {
-													if (event.target.nodeName?.toLowerCase() === 'td' || defaultClient?.username === client.username) {
+													if (
+														event.target.nodeName?.toLowerCase() === 'td' ||
+														defaultClient?.username === client.username
+													) {
 														onSelectClient(client.username);
 													}
 												}}
@@ -476,7 +470,7 @@ const mapStateToProps = (state) => {
 		groups: state.groups?.groups,
 		roles: state.roles?.roles,
 		clients: state.clients?.clients,
-		defaultClient: state.brokerConnections?.defaultClient,
+		defaultClient: state.brokerConnections?.defaultClient
 	};
 };
 

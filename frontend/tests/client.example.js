@@ -4,12 +4,14 @@ const MOSQUITTO_PROXY_URL = process.env.MOSQUITTO_PROXY_URL || 'ws://localhost';
 const MOSQUITTO_PROXY_PORT = process.env.MOSQUITTO_PROXY_PORT || 8088;
 
 (async () => {
-	const client = new NodeMosquittoProxyClient({ /* logger: console */ });
+	const client = new NodeMosquittoProxyClient({
+		/* logger: console */
+	});
 	try {
 		await client.connect({ socketEndpointURL: `${MOSQUITTO_PROXY_URL}:${MOSQUITTO_PROXY_PORT}` });
 		await client.connectToBroker('Mosquitto 2.0 Preview');
 		// await client.connectToBroker('Mosquitto 2.0 Mock API');
-		console.log("connected");
+		console.log('connected');
 		const usersBefore = await client.listUsers();
 		console.log(usersBefore);
 		const groupsBefore = await client.listGroups();
@@ -17,11 +19,18 @@ const MOSQUITTO_PROXY_PORT = process.env.MOSQUITTO_PROXY_PORT || 8088;
 		// process.exit(0)
 
 		try {
-			const response = await client.addUser('streamsheets', 'secret', 'streamsheets', '', 'Cedalo Sheets', 'The best software for integrating things.');
+			const response = await client.addUser(
+				'streamsheets',
+				'secret',
+				'streamsheets',
+				'',
+				'Cedalo Sheets',
+				'The best software for integrating things.'
+			);
 			console.log(response);
-			console.log("connected");
+			console.log('connected');
 		} catch (error) {
-			console.log(error)
+			console.log(error);
 		}
 		await client.addGroup('software', '', 'Software', 'Software connected to Mosquitto.');
 		await client.addGroup('sensors', '', 'Sensors', 'Sensors connected to Mosquitto.');
@@ -32,8 +41,15 @@ const MOSQUITTO_PROXY_PORT = process.env.MOSQUITTO_PROXY_PORT || 8088;
 		await client.addUser('node-red', 'secret', 'nodered', '', 'Node-RED', 'A software for integrating things.');
 		await client.addUser('n8n', 'secret', 'n8n', '', 'n8n.io', 'A software for integrating things.');
 		await client.addUser('temp-1', 'secret', 'sensor_1', '', ' Temperature Sensor', 'A sensor for temperature.');
-		await client.addUser('hum-1', 'secret', 'sensor_2', '', 'Humidity Sensor', 'A sensor for humidity.');;
-		await client.addUser('temp-2', 'secret', 'sensor_3', '', 'Temperature Sensor', 'Another sensor for temperature.');
+		await client.addUser('hum-1', 'secret', 'sensor_2', '', 'Humidity Sensor', 'A sensor for humidity.');
+		await client.addUser(
+			'temp-2',
+			'secret',
+			'sensor_3',
+			'',
+			'Temperature Sensor',
+			'Another sensor for temperature.'
+		);
 
 		await client.addUserToGroup('streamsheets', 'software');
 		await client.addUserToGroup('node-red', 'software');

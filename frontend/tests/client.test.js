@@ -1,10 +1,11 @@
-
 const NodeMosquittoProxyClient = require('../src/client/NodeMosquittoProxyClient');
 
 const MOSQUITTO_PROXY_URL = process.env.MOSQUITTO_PROXY_URL || 'ws://localhost';
 const MOSQUITTO_PROXY_PORT = process.env.MOSQUITTO_PROXY_PORT || 8088;
 
-const client = new NodeMosquittoProxyClient({ /* logger: console */ });
+const client = new NodeMosquittoProxyClient({
+	/* logger: console */
+});
 const TEST_BROKER = 'Mosquitto 2.0 Mock API';
 
 beforeAll(async (callback) => {
@@ -48,7 +49,7 @@ test('listUsers()', async (callback) => {
 		expect(user.username).toBeDefined();
 		expect(user.password).toBeDefined();
 		expect(user.clientid).toBeDefined();
-	} 
+	}
 	callback();
 });
 
@@ -72,7 +73,7 @@ test('getUser()', async (callback) => {
 		username: 'maxmustermann',
 		password: 'secret',
 		clientid: 'fsdf'
-	}
+	};
 	await client.addUser(user.username, user.password, user.clientid);
 	const userLoaded = await client.getUser(user.username);
 	expect(userLoaded).toEqual(user);
@@ -84,7 +85,7 @@ test('setUserPassword()', async (callback) => {
 		username: 'maxmustermann',
 		password: 'secret',
 		clientid: 'fsdf'
-	}
+	};
 	const newPassword = 'newPassword';
 	await client.addUser(user.username, user.password, user.clientid);
 	await client.setUserPassword(user.username, newPassword);
@@ -106,7 +107,7 @@ test('addUserToGroup()', async (callback) => {
 		username: 'maxmustermann',
 		password: 'secret',
 		clientid: 'fsdf'
-	}
+	};
 	const groupname = 'example';
 	await client.addUser(user.username, user.password, user.clientid);
 	await client.addGroup(groupname, 'examplePolicy');
@@ -123,7 +124,7 @@ test('removeUserFromGroup()', async (callback) => {
 		username: 'maxmustermann',
 		password: 'secret',
 		clientid: 'fsdf'
-	}
+	};
 	const groupname = 'example';
 	await client.addUser(user.username, user.password, user.clientid);
 	await client.addGroup(groupname, 'examplePolicy');
@@ -158,7 +159,7 @@ test('listGroupUsers()', async (callback) => {
 		username: 'maxmustermann',
 		password: 'secret',
 		clientid: 'fsdf'
-	}
+	};
 	const groupname = 'example';
 	await client.addUser(user.username, user.password, user.clientid);
 	await client.addGroup(groupname, 'examplePolicy');

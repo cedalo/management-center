@@ -20,7 +20,7 @@ const loadLicense = async () => {
 	} catch (error) {
 		console.error(error);
 		console.error(__dirname);
-		console.error(process.env.MOSQUITTO_UI_LICENSE_PATH)
+		console.error(process.env.MOSQUITTO_UI_LICENSE_PATH);
 		license = License.Invalid;
 	}
 	return license;

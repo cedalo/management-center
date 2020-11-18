@@ -13,11 +13,11 @@ jobs:
           deploy:
               - provider: script
                 script: bash -c '
-                    docker login -u $DOCKER_USER -p $DOCKER_PASSWORD && 
-                    docker build 
-                        --build-arg MOSQUITTO_UI_BUILD_DATE="$(date)" 
-                        --build-arg MOSQUITTO_UI_BUILD_NUMBER="$(date ''+%s'')" 
-                        -t cedalo/mosquitto-ui:dev . && 
+                    docker login -u $DOCKER_USER -p $DOCKER_PASSWORD &&
+                    docker build
+                    --build-arg MOSQUITTO_UI_BUILD_DATE="$(date)"
+                    --build-arg MOSQUITTO_UI_BUILD_NUMBER="$(date ''+%s'')"
+                    -t cedalo/mosquitto-ui:dev . &&
                     docker push cedalo/mosquitto-ui:dev'
                 on:
                     branch: master
@@ -25,11 +25,11 @@ jobs:
                 # Maybe we should use TRAVIS_BUILD_NUMBER as build number
               - provider: script
                 script: bash -c '
-                    docker login -u $DOCKER_USER -p $DOCKER_PASSWORD && 
-                    docker build 
-                        --build-arg MOSQUITTO_UI_BUILD_DATE="$(date)" 
-                        --build-arg MOSQUITTO_UI_BUILD_NUMBER="$(date ''+%s'')" 
-                        -t cedalo/mosquitto-ui:${TRAVIS_TAG} . && 
+                    docker login -u $DOCKER_USER -p $DOCKER_PASSWORD &&
+                    docker build
+                    --build-arg MOSQUITTO_UI_BUILD_DATE="$(date)"
+                    --build-arg MOSQUITTO_UI_BUILD_NUMBER="$(date ''+%s'')"
+                    -t cedalo/mosquitto-ui:${TRAVIS_TAG} . &&
                     docker push cedalo/mosquitto-ui:${TRAVIS_TAG}'
                 on:
                     condition: "${TRAVIS_TAG} =~ ^[0-9]+\\.[0-9]+(\\.[0-9]+)?.*$"

@@ -174,8 +174,8 @@ const ClientDetail = (props) => {
 	} = props;
 	// TODO: get client by id if current client is not defined
 
-	return (
-		client.username ? <div>
+	return client.username ? (
+		<div>
 			<Breadcrumbs aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -415,7 +415,9 @@ const ClientDetail = (props) => {
 					</Grid>
 				)}
 			</Paper>
-		</div> : <Redirect to="/security/clients" push />
+		</div>
+	) : (
+		<Redirect to="/security/clients" push />
 	);
 };
 
@@ -426,7 +428,7 @@ ClientDetail.propTypes = {
 const mapStateToProps = (state) => {
 	return {
 		client: state.clients?.client,
-		defaultClient: state.brokerConnections?.defaultClient,
+		defaultClient: state.brokerConnections?.defaultClient
 	};
 };
 

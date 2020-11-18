@@ -160,8 +160,8 @@ const GroupDetail = (props) => {
 		setEditMode(false);
 	};
 
-	return (
-		group.groupname ? <div className={classes.root}>
+	return group.groupname ? (
+		<div className={classes.root}>
 			<Breadcrumbs maxItems={2} aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -335,7 +335,9 @@ const GroupDetail = (props) => {
 					</Grid>
 				)}
 			</Paper>
-		</div> : <Redirect to="/security/groups" push />
+		</div>
+	) : (
+		<Redirect to="/security/groups" push />
 	);
 };
 

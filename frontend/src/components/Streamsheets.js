@@ -38,7 +38,7 @@ import useFetch from '../helpers/useFetch';
 
 const useStyles = makeStyles((theme) => ({
 	button: {
-		margin: theme.spacing(1),
+		margin: theme.spacing(1)
 	},
 	updateButton: {
 		marginLeft: '20px'
@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 		position: 'absolute',
 		right: theme.spacing(1),
 		top: theme.spacing(1),
-		color: theme.palette.grey[500],
+		color: theme.palette.grey[500]
 	},
 	breadcrumbItem: theme.palette.breadcrumbItem,
 	breadcrumbLink: theme.palette.breadcrumbLink
@@ -67,7 +67,9 @@ const Streamsheets = (props) => {
 	const [selectedInstance, setSelectedInstance] = React.useState({});
 
 	const { client } = context;
-	const [response, loading, hasError] = useFetch(`http://${window.location.hostname}:8088/api/config/tools/streamsheets`);
+	const [response, loading, hasError] = useFetch(
+		`http://${window.location.hostname}:8088/api/config/tools/streamsheets`
+	);
 
 	const onPreviewInstance = async (instance) => {
 		setSelectedInstance(instance);
@@ -77,7 +79,7 @@ const Streamsheets = (props) => {
 	const onClosePreviewInstance = () => {
 		setSelectedInstance({});
 		setPreviewOpen(false);
-	  };
+	};
 
 	const onSelectInstance = async (instance) => {
 		window.open(instance.url, '_blank');
@@ -124,15 +126,16 @@ const Streamsheets = (props) => {
 						>
 							<OpenStreamsheetsIcon fontSize="small" />
 						</IconButton> */}
-						<IconButton
-							aria-label="close"
-							className={classes.closeButton}
-							onClick={onClosePreviewInstance}
-						>
+						<IconButton aria-label="close" className={classes.closeButton} onClick={onClosePreviewInstance}>
 							<CloseIcon />
 						</IconButton>
 					</DialogTitle>
-					<iframe width="1100px" height="600px" src={selectedInstance?.url} title={selectedInstance?.name}></iframe>
+					<iframe
+						width="1100px"
+						height="600px"
+						src={selectedInstance?.url}
+						title={selectedInstance?.name}
+					></iframe>
 				</Dialog>
 				<Breadcrumbs aria-label="breadcrumb">
 					<RouterLink className={classes.breadcrumbLink} to="/home">
@@ -159,27 +162,23 @@ const Streamsheets = (props) => {
 							<TableBody>
 								{response?.instances?.map((streamsheets) => (
 									<TableRow
-										// hover
-										// onClick={(event) => {
-										// 	onSelectInstance(streamsheets);
-										// }}
-										// style={{ cursor: 'pointer' }}
+									// hover
+									// onClick={(event) => {
+									// 	onSelectInstance(streamsheets);
+									// }}
+									// style={{ cursor: 'pointer' }}
 									>
 										<TableCell>
-											{streamsheets.type === 'premium' ? <PremiumPluginIcon style={{ color: amber[500] }} fontSize="small" /> : <OpenSourcePluginIcon fontSize="small" /> }
+											{streamsheets.type === 'premium' ? (
+												<PremiumPluginIcon style={{ color: amber[500] }} fontSize="small" />
+											) : (
+												<OpenSourcePluginIcon fontSize="small" />
+											)}
 										</TableCell>
-										<TableCell>
-											{streamsheets.id}
-										</TableCell>
-										<TableCell>
-											{streamsheets.version}
-										</TableCell>
-										<TableCell>
-											{streamsheets.name}
-										</TableCell>
-										<TableCell>
-											{streamsheets.description}
-										</TableCell>
+										<TableCell>{streamsheets.id}</TableCell>
+										<TableCell>{streamsheets.version}</TableCell>
+										<TableCell>{streamsheets.name}</TableCell>
+										<TableCell>{streamsheets.description}</TableCell>
 										<TableCell align="right">
 											<Tooltip title="Open Streamsheets instance">
 												<Button
@@ -222,7 +221,7 @@ const Streamsheets = (props) => {
 												>
 													Open
 												</Button> */}
-												{/* <IconButton
+											{/* <IconButton
 													size="small"
 													aria-label="Open Streamsheets instance"
 													onClick={(event) => {
@@ -239,24 +238,23 @@ const Streamsheets = (props) => {
 							</TableBody>
 						</Table>
 					</TableContainer>
-					) : (
-						<MessagePage 
-							message="We could not find any Streamsheets installation."
-							buttonIcon={<DownloadIcon />}
-							buttonText="Get Streamsheets now!"
-							callToAction={onDownloadStreamsheets}
-						/>
-					)}
+				) : (
+					<MessagePage
+						message="We could not find any Streamsheets installation."
+						buttonIcon={<DownloadIcon />}
+						buttonText="Get Streamsheets now!"
+						callToAction={onDownloadStreamsheets}
+					/>
+				)}
 			</div>
-		)
+		);
 	} else {
 		return null;
 	}
 };
 
 const mapStateToProps = (state) => {
-	return {
-	};
+	return {};
 };
 
 export default connect(mapStateToProps)(Streamsheets);

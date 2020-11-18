@@ -12,28 +12,24 @@ module.exports = class BrokerManager {
 			broker: brokerClient,
 			system,
 			topicTree
-		}
+		};
 	}
 
-	handleNewClientWebSocketConnection(ws) {
-	}
+	handleNewClientWebSocketConnection(ws) {}
 
 	getBrokerConnection(brokerName) {
 		return this._brokerConnection;
 	}
 
 	getBrokerConnections() {
-		return [ this._connection ];
+		return [this._connection];
 	}
 
-	connectClient(client, broker) {
-	}
+	connectClient(client, broker) {}
 
-	disconnectClient(client) {
-	}
+	disconnectClient(client) {}
 
 	getBroker(client) {
 		return this._brokerClient;
 	}
-
-}
+};

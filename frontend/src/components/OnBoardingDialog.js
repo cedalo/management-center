@@ -128,7 +128,7 @@ function getSteps() {
 			label: 'Subscribe to our newsletter',
 			description: 'Get the latest news about Mosquitto, MQTT and Streamsheets.',
 			imgPath: '/onboarding-newsletter.png',
-			newsletter: true,
+			newsletter: true
 		}
 	];
 }
@@ -140,7 +140,9 @@ export default function OnBoardingDialog(props) {
 	const [email, setEMail] = React.useState('');
 	const [subscribed, setSubscribed] = useLocalStorage('cedalo.managementcenter.subscribedToNewsletter');
 	const steps = getSteps();
-	const [showOnBoardingDialog, setShowOnBoardingDialog] = useLocalStorage('cedalo.managementcenter.showOnBoardingDialog');
+	const [showOnBoardingDialog, setShowOnBoardingDialog] = useLocalStorage(
+		'cedalo.managementcenter.showOnBoardingDialog'
+	);
 
 	const handleClose = () => {
 		setShowOnBoardingDialog('false');
@@ -172,13 +174,13 @@ export default function OnBoardingDialog(props) {
 				body: JSON.stringify({
 					email
 				})
-			})
+			});
 			setSubscribed('true');
 		} catch (error) {
 			// TODO: add error handling
 			console.error(error);
 		}
-	}
+	};
 
 	return (
 		<Dialog
@@ -189,66 +191,62 @@ export default function OnBoardingDialog(props) {
 		>
 			{/* <DialogTitle id="alert-dialog-title">{steps[activeStep].label}</DialogTitle> */}
 			<DialogContent>
-				
 				{/* <Paper square elevation={0} className={classes.header}>
       </Paper> */}
-					<div style={{ textAlign: 'center' }}>
-						<img
-							style={{ width: '555px' }}
-							className={classes.img}
-							src={steps[activeStep].imgPath}
-							alt={steps[activeStep].label}
-						/>
-					</div>
+				<div style={{ textAlign: 'center' }}>
+					<img
+						style={{ width: '555px' }}
+						className={classes.img}
+						src={steps[activeStep].imgPath}
+						alt={steps[activeStep].label}
+					/>
+				</div>
 				<br />
-				
+
 				<Typography variant="h6" style={{ textAlign: 'center' }}>
 					<strong>{steps[activeStep].label}</strong>
 				</Typography>
 				<Typography style={{ textAlign: 'center' }}>{steps[activeStep].description}</Typography>
-				
-				{
-					steps[activeStep].newsletter && subscribed !== 'true' ?
+
+				{steps[activeStep].newsletter && subscribed !== 'true' ? (
 					<div style={{ textAlign: 'center' }}>
-					<Grid container spacing={3} alignItems="flex-end">
-						<Grid item xs={9}>
-							<TextField
-								id="email"
-								label="E-Mail"
-								type="email"
-								value={email}
-								onChange={ (event) => {
-									event.stopPropagation();
-									setEMail(event.target.value);
-								} }
-								style={{
-									width: '100%'
-								}}
-							/>
+						<Grid container spacing={3} alignItems="flex-end">
+							<Grid item xs={9}>
+								<TextField
+									id="email"
+									label="E-Mail"
+									type="email"
+									value={email}
+									onChange={(event) => {
+										event.stopPropagation();
+										setEMail(event.target.value);
+									}}
+									style={{
+										width: '100%'
+									}}
+								/>
+							</Grid>
+							<Grid item xs={3}>
+								<Button
+									disabled={email === ''}
+									onClick={subscribeNewsletter}
+									variant="contained"
+									color="primary"
+								>
+									Subscribe
+								</Button>
+							</Grid>
 						</Grid>
-						<Grid item xs={3}>
-							<Button
-								disabled={email === ''}
-								onClick={subscribeNewsletter}
-								variant="contained"
-								color="primary"
-							>
-								Subscribe
-							</Button>
-						</Grid>
-					</Grid>
-				</div> : null
-				}
-				{
-					subscribed === 'true'
-						? <div style={{ textAlign: 'center' }}>
-							<SubscribedIcon style={{ color: green[500] }} />
-							<Typography>
-								<strong>Thanks for subscribing!</strong>
-							</Typography>
-						</div>
-						: null
-				}
+					</div>
+				) : null}
+				{subscribed === 'true' ? (
+					<div style={{ textAlign: 'center' }}>
+						<SubscribedIcon style={{ color: green[500] }} />
+						<Typography>
+							<strong>Thanks for subscribing!</strong>
+						</Typography>
+					</div>
+				) : null}
 				<DialogContentText id="alert-dialog-description"></DialogContentText>
 
 				<MobileStepper

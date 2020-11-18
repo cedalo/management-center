@@ -53,7 +53,7 @@ export default ({ children }) => {
 			dispatch(updateBrokerConnections(message.payload));
 			message.payload.forEach((connection) => {
 				dispatch(updateBrokerConnected(connection.status.connected, connection.name));
-			})
+			});
 		});
 		client.on('error', (message) => {
 			console.error(message);
