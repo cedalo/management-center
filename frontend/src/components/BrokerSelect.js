@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-const BrokerSelect = ({ brokerConnections, connected, sendMessage }) => {
+const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sendMessage }) => {
 	const classes = useStyles();
 	const theme = useTheme();
 	const context = useContext(WebSocketContext);
@@ -95,7 +95,7 @@ const BrokerSelect = ({ brokerConnections, connected, sendMessage }) => {
 		}
 	};
 
-	return (
+	return brokerConnections ? (
 		<FormControl id="connection-select" variant="outlined" className={classes.formControl}>
 			<InputLabel
 				id="broker-select-outlined-label"
@@ -107,10 +107,10 @@ const BrokerSelect = ({ brokerConnections, connected, sendMessage }) => {
 			</InputLabel>
 			<Select
 				// displayEmpty
-				// defaultValue={connection}
+				defaultValue={currentConnectionName}
 				labelId="broker-select-outlined-label"
 				id="connection"
-				// value={brokerConnections ? brokerConnections[0] : ''}
+				value={currentConnectionName}
 				onChange={handleConnectionChange}
 				label="Connection"
 				classes={{
@@ -121,20 +121,21 @@ const BrokerSelect = ({ brokerConnections, connected, sendMessage }) => {
 			>
 				{brokerConnections && Array.isArray(brokerConnections)
 					? brokerConnections
-						.filter((brokerConnection) => brokerConnection.status.connected)
-						.map((brokerConnection) => (
-							<MenuItem value={brokerConnection.name}>{brokerConnection.name}</MenuItem>
-					  ))
+							.filter((brokerConnection) => brokerConnection.status.connected)
+							.map((brokerConnection) => (
+								<MenuItem value={brokerConnection.name}>{brokerConnection.name}</MenuItem>
+							))
 					: null}
 			</Select>
 		</FormControl>
-	);
+	) : null;
 };
 
 const mapStateToProps = (state) => {
 	return {
 		brokerConnections: state.brokerConnections.brokerConnections,
-		connected: state.brokerConnections.connected
+		connected: state.brokerConnections.connected,
+		currentConnectionName: state.brokerConnections.currentConnectionName
 	};
 };
 
