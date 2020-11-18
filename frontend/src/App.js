@@ -383,7 +383,7 @@ export default function App(props) {
 					<ListItemLink
 						classes={classes}
 						to="/streams"
-						primary="Stream"
+						primary="Streams"
 						icon={<StreamsIcon />}
 					/>
 					<ListItemLink
