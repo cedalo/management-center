@@ -293,10 +293,10 @@ export default function App(props) {
 
 		const drawer = (
 			<div>
-				<Divider />
+				{/* <Divider />
 				<List>
 					<ListItemLink id="menu-item-home" classes={classes} to="/home" primary="Home" icon={<HomeIcon />} />
-				</List>
+				</List> */}
 				<Divider />
 				<List>
 
