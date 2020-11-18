@@ -1,5 +1,8 @@
 {
 	"private": true,
+	"scripts": {
+		"prettier": "npx prettier --write ."
+	},
 	"workspaces": [
 		"frontend",
 		"backend"
