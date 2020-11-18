@@ -12,7 +12,9 @@
 		"import-sort": "npx import-sort-cli --write src/**/*.js"
 	},
 	"dependencies": {
-		"express": "^4.17.1"
+		"express": "^4.17.1",
+		"sweetalert2": "^10.10.1",
+		"sweetalert2-react-content": "^3.2.1"
 	},
 	"devDependencies": {
 		"@material-ui/core": "latest",
