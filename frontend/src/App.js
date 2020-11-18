@@ -63,6 +63,7 @@ import Security from './components/Security';
 import Config from './components/Config';
 import System from './components/System';
 import InfoPage from './components/InfoPage';
+import NewsletterPopup from './components/NewsletterPopup';
 // import Login from "./components/Login";
 import Roles from './components/Roles';
 import Connections from './components/Connections';
@@ -424,6 +425,7 @@ export default function App(props) {
 						<Provider store={store}>
 							<WebSocketProvider>
 								<div className={classes.root}>
+									<NewsletterPopup />
 									<OnBoardingDialog />
 									<Switch>
 										<Route path="/login">
