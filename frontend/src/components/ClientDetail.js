@@ -259,7 +259,7 @@ const ClientDetail = (props) => {
 									id="password"
 									label="Password"
 									value={client.password}
-									defaultValue="*****"
+									// defaultValue="*****"
 									variant="outlined"
 									fullWidth
 									type={showPassword ? 'text' : 'password'}
