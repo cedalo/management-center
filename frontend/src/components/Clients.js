@@ -198,6 +198,9 @@ const Clients = (props) => {
 		});
 		await brokerClient.disableClient(username);
 		const clients = await brokerClient.listClients();
+		enqueueSnackbar('Client successfully disabled', {
+			variant: 'success'
+		});
 		dispatch(updateClients(clients));
 	};
 
