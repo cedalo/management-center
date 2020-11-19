@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Redirect, Link as RouterLink } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import { updateRole, updateRoles } from '../actions/actions';
+import { useSnackbar } from 'notistack';
 
 import ACLIcon from '@material-ui/icons/Security';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -129,6 +130,7 @@ const RoleDetail = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
+	const { enqueueSnackbar } = useSnackbar();
 	const { client: brokerClient } = context;
 
 	const { role = {}, onSort, sortBy, sortDirection } = props;
@@ -165,6 +167,9 @@ const RoleDetail = (props) => {
 		delete updatedRole.groups;
 		delete updatedRole.roles;
 		await brokerClient.modifyRole(updatedRole);
+		enqueueSnackbar('Role successfully updated', {
+			variant: 'success'
+		});
 		const roleObject = await brokerClient.getRole(role.rolename);
 		dispatch(updateRole(roleObject));
 		const roles = await brokerClient.listRoles();
