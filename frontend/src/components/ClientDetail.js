@@ -246,15 +246,15 @@ const ClientDetail = (props) => {
 							</Grid>
 							<Grid item xs={12}>
 								<TextField
-									disabled
-									//   onChange={(event) => {
-									// 	  if (editMode) {
-									// 		setUpdatedClient({
-									// 			...updatedClient,
-									// 			password: event.target.value
-									// 		})
-									// 	  }
-									//   }}
+									disabled={!editMode}
+									  onChange={(event) => {
+										  if (editMode) {
+											setUpdatedClient({
+												...updatedClient,
+												password: event.target.value
+											})
+										  }
+									  }}
 									id="password"
 									label="Password"
 									value={client.password}
