@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { updateClients, updateGroup, updateGroups } from '../actions/actions';
+import { useSnackbar } from 'notistack';
 
 import AddIcon from '@material-ui/icons/Add';
 import AutoSuggest from './AutoSuggest';
@@ -81,6 +82,7 @@ const Groups = (props) => {
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const confirm = useConfirm();
+	const { enqueueSnackbar } = useSnackbar();
 	const { client } = context;
 
 	const onUpdateGroupClients = async (group, clients = []) => {
@@ -128,6 +130,9 @@ const Groups = (props) => {
 			}
 		});
 		await client.deleteGroup(groupname);
+		enqueueSnackbar('Group successfully deleted', {
+			variant: 'success'
+		});
 		const groups = await client.listGroups();
 		dispatch(updateGroups(groups));
 		const clients = await client.listClients();
