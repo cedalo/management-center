@@ -246,7 +246,6 @@ const ClientDetail = (props) => {
 							</Grid>
 							<Grid item xs={12}>
 								<TextField
-									required
 									disabled
 									//   onChange={(event) => {
 									// 	  if (editMode) {
