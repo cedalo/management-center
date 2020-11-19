@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Redirect, Link as RouterLink } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import { updateGroup, updateGroups } from '../actions/actions';
+import { useSnackbar } from 'notistack';
 
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Avatar from '@material-ui/core/Avatar';
@@ -110,6 +111,7 @@ const GroupDetail = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
+	const { enqueueSnackbar } = useSnackbar();
 	const { client: brokerClient } = context;
 
 	const [value, setValue] = React.useState(0);
@@ -135,6 +137,9 @@ const GroupDetail = (props) => {
 	const onUpdateGroup = async () => {
 		console.log(updatedGroup);
 		await brokerClient.modifyGroup(updatedGroup);
+		enqueueSnackbar('Group successfully updated', {
+			variant: 'success'
+		});
 		const groupObject = await brokerClient.getGroup(group.groupname);
 		dispatch(updateGroup(groupObject));
 		const groups = await brokerClient.listGroups();
