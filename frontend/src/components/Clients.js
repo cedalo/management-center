@@ -207,6 +207,9 @@ const Clients = (props) => {
 	const onEnableClient = async (username) => {
 		await brokerClient.enableClient(username);
 		const clients = await brokerClient.listClients();
+		enqueueSnackbar('Client successfully enabled', {
+			variant: 'success'
+		});
 		dispatch(updateClients(clients));
 	};
 
