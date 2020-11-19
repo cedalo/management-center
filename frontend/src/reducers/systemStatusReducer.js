@@ -5,6 +5,7 @@ export default function systemStatus(state = {}, action) {
 	switch (action.type) {
 		case ActionTypes.UPDATE_SYSTEM_STATUS:
 			newState.systemStatus = action.update;
+			newState.lastUpdated = Date.now();
 			break;
 		default:
 	}
