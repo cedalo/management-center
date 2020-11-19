@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Redirect, Link as RouterLink } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import { updateClient, updateClients } from '../actions/actions';
+import { useSnackbar } from 'notistack';
 
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Avatar from '@material-ui/core/Avatar';
@@ -115,6 +116,7 @@ const ClientDetail = (props) => {
 	const [value, setValue] = React.useState(0);
 	const [showPassword, setShowPassword] = React.useState(false);
 	const [editMode, setEditMode] = React.useState(false);
+	const { enqueueSnackbar } = useSnackbar();
 
 	const { client = {}, defaultClient } = props;
 	const [updatedClient, setUpdatedClient] = React.useState({
@@ -143,6 +145,9 @@ const ClientDetail = (props) => {
 		delete updatedClient.groups;
 		delete updatedClient.roles;
 		await brokerClient.modifyClient(updatedClient);
+		enqueueSnackbar('Client successfully updated', {
+			variant: 'success'
+		});
 		const clientObject = await brokerClient.getClient(updatedClient.username);
 		dispatch(updateClient(clientObject));
 		const clients = await brokerClient.listClients();
