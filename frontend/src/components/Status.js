@@ -247,7 +247,7 @@ const Status = ({ lastUpdated, systemStatus }) => {
 			<div style={{
 				position: 'absolute',
 				right: '15px',
-				bottom: '15px'
+				top: '70px'
 			}}>
 				Last update: {moment(lastUpdated).format('hh:mm:ss a')}
 			</div>
