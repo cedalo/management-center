@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { updateClients, updateGroups, updateRole, updateRoles } from '../actions/actions';
+import { useSnackbar } from 'notistack';
 
 import AddIcon from '@material-ui/icons/Add';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
@@ -90,6 +91,7 @@ const Roles = (props) => {
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const confirm = useConfirm();
+	const { enqueueSnackbar } = useSnackbar();
 	const { client } = context;
 
 	const onNewRole = () => {
@@ -122,6 +124,9 @@ const Roles = (props) => {
 			});
 		}
 		await client.deleteRole(rolename);
+		enqueueSnackbar('Role successfully deleted', {
+			variant: 'success'
+		});
 		const roles = await client.listRoles();
 		dispatch(updateRoles(roles));
 		const clients = await client.listClients();
