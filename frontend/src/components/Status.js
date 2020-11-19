@@ -245,6 +245,7 @@ const Status = ({ lastUpdated, systemStatus }) => {
 				</Grid>
 			</Container>
 			<div style={{
+				fontSize: '0.9em',
 				position: 'absolute',
 				right: '15px',
 				top: '70px'
