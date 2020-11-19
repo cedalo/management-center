@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { updateClient, updateClients, updateGroups } from '../actions/actions';
+import { useSnackbar } from 'notistack';
 
 import AddIcon from '@material-ui/icons/Add';
 import AutoSuggest from './AutoSuggest';
@@ -94,6 +95,7 @@ const Clients = (props) => {
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const confirm = useConfirm();
+	const { enqueueSnackbar } = useSnackbar();
 	const { client: brokerClient } = context;
 
 	const onUpdateClientGroups = async (client, groups = []) => {
@@ -173,6 +175,9 @@ const Clients = (props) => {
 			});
 		}
 		await brokerClient.deleteClient(username);
+		enqueueSnackbar('Client successfully deleted', {
+			variant: 'success'
+		});
 		const clients = await brokerClient.listClients();
 		dispatch(updateClients(clients));
 		const groups = await brokerClient.listGroups();
