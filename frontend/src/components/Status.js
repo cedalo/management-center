@@ -7,6 +7,7 @@ import DataSentIcon from '@material-ui/icons/CallMade';
 import Grid from '@material-ui/core/Grid';
 import Info from './Info';
 import MessageIcon from '@material-ui/icons/Email';
+import moment from 'moment';
 import Paper from '@material-ui/core/Paper';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -33,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
-const Status = ({ systemStatus }) => {
+const Status = ({ lastUpdated, systemStatus }) => {
 	const classes = useStyles();
 
 	const totalMessages = parseInt(systemStatus?.$SYS?.broker?.messages?.sent);
@@ -243,13 +244,20 @@ const Status = ({ systemStatus }) => {
           </Grid> */}
 				</Grid>
 			</Container>
+			<div style={{
+				position: 'absolute',
+				right: '15px',
+				bottom: '15px'
+			}}>
+				Last update: {moment(lastUpdated).format('hh:mm:ss a')}
+			</div>
 		</div>
 	);
 };
 
 const mapStateToProps = (state) => {
 	return {
-		// TODO: check object hierarchy
+		lastUpdated: state.systemStatus.lastUpdated,
 		systemStatus: state.systemStatus.systemStatus
 	};
 };
