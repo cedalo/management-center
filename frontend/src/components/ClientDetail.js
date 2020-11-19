@@ -218,7 +218,7 @@ const ClientDetail = (props) => {
 						<Grid container spacing={1} alignItems="flex-end">
 							<Grid item xs={12}>
 								<TextField
-									required
+									required={editMode}
 									disabled={!editMode}
 									onChange={(event) => {
 										if (editMode) {
