@@ -13,6 +13,7 @@
 	},
 	"dependencies": {
 		"express": "^4.17.1",
+		"notistack": "^1.0.1",
 		"sweetalert2": "^10.10.1",
 		"sweetalert2-react-content": "^3.2.1"
 	},
