@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { SnackbarProvider } from 'notistack';
 import clsx from 'clsx';
 import { Provider, useSelector, useDispatch } from 'react-redux';
 import Joyride from 'react-joyride';
@@ -404,6 +405,7 @@ export default function App(props) {
 
 		return (
 			<ThemeProvider theme={appliedTheme}>
+				<SnackbarProvider>
 				<Joyride
 					run={showTour}
 					continuous={true}
@@ -640,6 +642,7 @@ export default function App(props) {
 						</Provider>
 					</Router>
 				</ConfirmProvider>
+				</SnackbarProvider>
 			</ThemeProvider>
 		);
 	} else {
