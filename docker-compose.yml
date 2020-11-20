@@ -10,8 +10,8 @@ services:
         expose:
             - 1883
             - 9002
-        volumes:
-            - ./data:/mosquitto/data
+        # volumes:
+        #   - ./data:/mosquitto/data
         #   - ./conf:/mosquitto/config
         networks:
             - mosquitto
@@ -29,10 +29,8 @@ services:
             CEDALO_MC_LICENSE_PATH: /mosquitto-ui/backend/config/license.lic
         ports:
             - 8088:8088
-            - 9003:9000
         expose:
             - 8088
-            - 9003
         depends_on:
             - mosquitto
         volumes:
