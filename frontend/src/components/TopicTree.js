@@ -17,6 +17,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
+import Tooltip from '@material-ui/core/Tooltip';
 import TreeItem from '@material-ui/lab/TreeItem';
 import TreeView from '@material-ui/lab/TreeView';
 import Typography from '@material-ui/core/Typography';
@@ -122,20 +123,26 @@ function StyledTreeItem(props) {
 						{labelText}
 					</Typography>
 					{message && (
-						<Typography variant="caption" color="inherit" className={classes.label}>
-							<Chip size="small" label={message} color="primary" />
-						</Typography>
+						<Tooltip title="Message body">
+							<Typography variant="caption" color="inherit" className={classes.label}>
+								<Chip size="small" label={message} color="primary" />
+							</Typography>
+						</Tooltip>
 					)}
 					{topicsCounter && (
-						<Typography variant="caption" color="inherit" className={classes.label}>
-							{/* <strong>Topics:</strong><span>{topicsCounter} </span> */}
-							<Chip size="small" label={topicsCounter} style={{ backgroundColor: '#ff9800' }} />
-						</Typography>
+						<Tooltip title="Number of subtopics">
+							<Typography variant="caption" color="inherit" className={classes.label}>
+								{/* <strong>Topics:</strong><span>{topicsCounter} </span> */}
+								<Chip size="small" label={topicsCounter} style={{ backgroundColor: '#ff9800' }} />
+							</Typography>
+						</Tooltip>
 					)}
 					{labelInfo && (
-						<Typography variant="caption" color="inherit" className={classes.label}>
-							<Chip size="small" label={labelInfo} style={{ backgroundColor: '#f50057' }} />
-						</Typography>
+						<Tooltip title="Number of messages">
+							<Typography variant="caption" color="inherit" className={classes.label}>
+								<Chip size="small" label={labelInfo} style={{ backgroundColor: '#f50057' }} />
+							</Typography>
+						</Tooltip>
 					)}
 				</div>
 			}
