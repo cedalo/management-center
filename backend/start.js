@@ -13,13 +13,13 @@ const PluginManager = require('./src/plugins/PluginManager');
 // const UsageTracker = require("./src/usage/UsageTracker");
 
 const version = {
-	version: process.env.MOSQUITTO_UI_VERSION || '0.9-alpha',
-	buildNumber: process.env.TRAVIS_BUILD_NUMBER || process.env.MOSQUITTO_UI_BUILD_NUMBER || uuidv4(),
-	buildDate: process.env.MOSQUITTO_UI_BUILD_DATE || Date.now()
+	version: process.env.CEDALO_MC_VERSION || '0.9-alpha',
+	buildNumber: process.env.TRAVIS_BUILD_NUMBER || process.env.CEDALO_MC_BUILD_NUMBER || uuidv4(),
+	buildDate: process.env.CEDALO_MC_BUILD_DATE || Date.now()
 };
 
-const MOSQUITTO_UI_PROXY_CONFIG_DIR = process.env.MOSQUITTO_UI_PROXY_CONFIG_DIR || '../config/config.json';
-const MOSQUITTO_UI_PROXY_PORT = process.env.MOSQUITTO_UI_PROXY_PORT || 8088;
+const CEDALO_MC_PROXY_CONFIG_DIR = process.env.CEDALO_MC_PROXY_CONFIG_DIR || '../config/config.json';
+const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 
 // const LicenseManager = require("../src/LicenseManager");
 const LicenseChecker = require('./src/license/LicenseChecker');
@@ -109,16 +109,16 @@ const updateTopicTree = (topicTree, topic, message, packet) => {
 
 const initConnections = (config) => {
 	const connections = config.connections || [];
-	if (process.env.MOSQUITTO_UI_BROKER_NAME && process.env.MOSQUITTO_UI_BROKER_URL) {
+	if (process.env.CEDALO_MC_BROKER_NAME && process.env.CEDALO_MC_BROKER_URL) {
 		const connection = {
-			name: process.env.MOSQUITTO_UI_BROKER_NAME,
-			url: process.env.MOSQUITTO_UI_BROKER_URL
+			name: process.env.CEDALO_MC_BROKER_NAME,
+			url: process.env.CEDALO_MC_BROKER_URL
 		};
-		connection.id = process.env.MOSQUITTO_UI_BROKER_ID || uuidv4();
-		if (process.env.MOSQUITTO_UI_BROKER_USERNAME && process.env.MOSQUITTO_UI_BROKER_PASSWORD) {
+		connection.id = process.env.CEDALO_MC_BROKER_ID || uuidv4();
+		if (process.env.CEDALO_MC_BROKER_USERNAME && process.env.CEDALO_MC_BROKER_PASSWORD) {
 			connection.credentials = {
-				username: process.env.MOSQUITTO_UI_BROKER_USERNAME,
-				password: process.env.MOSQUITTO_UI_BROKER_PASSWORD
+				username: process.env.CEDALO_MC_BROKER_USERNAME,
+				password: process.env.CEDALO_MC_BROKER_PASSWORD
 			};
 		}
 		connections.push(connection);
@@ -127,7 +127,7 @@ const initConnections = (config) => {
 };
 
 const loadConfig = () => {
-	const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, MOSQUITTO_UI_PROXY_CONFIG_DIR)).toString());
+	const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, CEDALO_MC_PROXY_CONFIG_DIR)).toString());
 	return config;
 };
 
@@ -144,7 +144,7 @@ const init = (licenseContainer) => {
 	const config = loadConfig();
 
 	const wss = new WebSocket.Server({
-		//   port: MOSQUITTO_UI_PROXY_PORT,
+		//   port: CEDALO_MC_PROXY_PORT,
 		server
 	});
 
@@ -176,7 +176,7 @@ const init = (licenseContainer) => {
 			await brokerClient.connect({
 				mqttEndpointURL: connection.url,
 				credentials: connection.credentials,
-				connectTimeout: process.env.MOSQUITTO_UI_TIMOUT_MOSQUITTO_CONNECT || 5000
+				connectTimeout: process.env.CEDALO_MC_TIMOUT_MOSQUITTO_CONNECT || 5000
 			});
 			connectionConfiguration.status.connected = true;
 			console.log(`Connected to '${connection.name}' at ${connection.url}`);
@@ -251,7 +251,7 @@ const init = (licenseContainer) => {
 		context.brokerManager.handleNewBrokerConnection(connection, brokerClient, system, topicTree);
 	});
 
-	console.log(`Started Mosquitto proxy at http://localhost:${MOSQUITTO_UI_PROXY_PORT}`);
+	console.log(`Started Mosquitto proxy at http://localhost:${CEDALO_MC_PROXY_PORT}`);
 
 	const handleCommandMessage = async (message, client) => {
 		const { api, command } = message;
@@ -521,7 +521,7 @@ const init = (licenseContainer) => {
 		response.sendFile(path.join(__dirname, 'public', 'index.html'));
 	});
 
-	server.listen(MOSQUITTO_UI_PROXY_PORT, () => {
+	server.listen(CEDALO_MC_PROXY_PORT, () => {
 		console.log(`Mosquitto proxy server started on port ${server.address().port}`);
 	});
 

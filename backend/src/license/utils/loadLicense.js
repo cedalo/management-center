@@ -5,9 +5,9 @@ const LicenseKey = require('../LicenseKey');
 const readFile = require('./readFile');
 
 const loadPublicKey = () =>
-	readFile(process.env.MOSQUITTO_UI_LICENSE_PUBLIC_KEY_PATH || path.join(__dirname, 'config', 'public.pem'));
+	readFile(process.env.CEDALO_MC_LICENSE_PUBLIC_KEY_PATH || path.join(__dirname, 'config', 'public.pem'));
 const loadLicenseKey = () =>
-	readFile(process.env.MOSQUITTO_UI_LICENSE_PATH || path.join(__dirname, 'config', 'license.lic')).then((key) =>
+	readFile(process.env.CEDALO_MC_LICENSE_PATH || path.join(__dirname, 'config', 'license.lic')).then((key) =>
 		key.toString()
 	);
 
@@ -20,7 +20,7 @@ const loadLicense = async () => {
 	} catch (error) {
 		console.error(error);
 		console.error(__dirname);
-		console.error(process.env.MOSQUITTO_UI_LICENSE_PATH);
+		console.error(process.env.CEDALO_MC_LICENSE_PATH);
 		license = License.Invalid;
 	}
 	return license;

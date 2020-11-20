@@ -1,6 +1,6 @@
 const path = require('path');
 
-const PLUGIN_DIR = process.env.MOSQUITTO_UI_PLUGIN_DIR;
+const PLUGIN_DIR = process.env.CEDALO_MC_PLUGIN_DIR;
 
 module.exports = class PluginManager {
 	constructor() {
@@ -9,7 +9,7 @@ module.exports = class PluginManager {
 
 	init(pluginConfigurations = [], context) {
 		if (!PLUGIN_DIR) {
-			console.log('"MOSQUITTO_UI_PLUGIN_DIR" is not set. Skipping loading of plugins');
+			console.log('"CEDALO_MC_PLUGIN_DIR" is not set. Skipping loading of plugins');
 			return;
 		}
 		this._context = context;
