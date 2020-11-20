@@ -26,12 +26,7 @@ const useStyles = makeStyles((theme) => ({
 		backgroundColor: 'rgba(255,255,255,0.2)',
 		border: 'thin solid rgba(255,255,255,0.5)'
 	},
-	icon: {
-		color: 'white'
-		//   top: "calc(50% - 14px)",
-	},
 	label: {
-		color: 'white',
 		fontSize: '12px',
 		textTransform: 'uppercase',
 		transform: 'translate(14px, 20px) scale(1)'
