@@ -16,7 +16,7 @@ RUN yarn install --prod --frozen-lockfile
 
 COPY backend .
 COPY frontend/build public
-# COPY docker/config.json ./config/
+COPY docker/config.json ./config/
 COPY docker/docker-entrypoint.sh .
 
 VOLUME /mosquitto-ui/config
