@@ -356,6 +356,16 @@ export default class BaseMosquittoProxyClient {
 		);
 	}
 
+	async setAnonymousGroup(groupname) {
+		return this.sendCommand(
+			{
+				command: 'setAnonymousGroup',
+				groupname,
+			},
+			API_DYNAMIC_SECURITY
+		);
+	}
+
 	async addGroupRole(groupname, rolename) {
 		return this.sendCommand(
 			{
