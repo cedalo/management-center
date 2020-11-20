@@ -126,8 +126,31 @@ const initConnections = (config) => {
 	return connections;
 };
 
+const addStreamsheetsConfig = (config) => {
+	if (!config.tools) {
+		config.tools = {}
+	}
+	if (!config.tools.streamsheets) {
+		config.tools.streamsheets = {};
+	}
+	if (!config.tools.streamsheets.instances) {
+		config.tools.streamsheets.instances = [];
+	}
+	// id and url are required parameters
+	if (process.env.CEDALO_STREAMSHEETS_ID
+		&& process.env.CEDALO_STREAMSHEETS_URL) {
+			config.tools.streamsheets.instances.push({
+				id: process.env.CEDALO_STREAMSHEETS_ID,
+				name: process.env.CEDALO_STREAMSHEETS_NAME,
+				description: process.env.CEDALO_STREAMSHEETS_DESCRIPTION,
+				url: process.env.CEDALO_STREAMSHEETS_URL
+			})
+		}
+}
+
 const loadConfig = () => {
 	const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, CEDALO_MC_PROXY_CONFIG_DIR)).toString());
+	addStreamsheetsConfig(config);
 	return config;
 };
 
