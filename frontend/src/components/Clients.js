@@ -34,7 +34,6 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
-import moment from 'moment';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
 
