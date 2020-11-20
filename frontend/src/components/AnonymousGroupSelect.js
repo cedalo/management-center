@@ -73,7 +73,7 @@ const AnonymousGroupSelect = ({ anonymousGroup, groups = [], onUpdateAnonymousGr
 				}}
 				placeholder="Select anonymous group"
 				options={groupSuggestions}
-				value={anonymousGroup?.groupname}
+				value={anonymousGroup?.groupname || ''}
 				onChange={(event) => {
 					onUpdateAnonymousGroup(event.target.value);
 				}}
