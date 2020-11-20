@@ -88,6 +88,8 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 			dispatch(updateClients(clients));
 			const groups = await client.listGroups();
 			dispatch(updateGroups(groups));
+			const anonymousGroup = await client.getAnonymousGroup();
+			dispatch(updateAnonymousGroup(anonymousGroup));
 			const roles = await client.listRoles();
 			dispatch(updateRoles(roles));
 			setConnection(event.target.value);

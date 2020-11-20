@@ -4,6 +4,7 @@ import {
 	updateBrokerConnected,
 	updateBrokerConnections,
 	updateClients,
+	updateAnonymousGroup,
 	updateGroups,
 	updateLicense,
 	updateRoles,
@@ -85,6 +86,10 @@ export default ({ children }) => {
 			.then(() => client.listGroups())
 			.then((groups) => {
 				dispatch(updateGroups(groups));
+			})
+			.then(() => client.getAnonymousGroup())
+			.then((group) => {
+				dispatch(updateAnonymousGroup(group));
 			})
 			.then(() => client.listRoles())
 			.then((roles) => {
