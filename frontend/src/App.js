@@ -70,7 +70,7 @@ import Roles from './components/Roles';
 import Connections from './components/Connections';
 import Plugins from './components/Plugins';
 import Terminal from './components/Terminal';
-import Settings from './components/Settings';
+// import Settings from './components/Settings';
 import Streams from './components/Streams';
 import Streamsheets from './components/Streamsheets';
 import Status from './components/Status';
@@ -392,7 +392,7 @@ export default function App(props) {
 						primary="Connections"
 						icon={<ConnectionsIcon />}
 					/>
-					<ListItemLink classes={classes} to="/config/settings" primary="Settings" icon={<SettingsIcon />} />
+					{/* <ListItemLink classes={classes} to="/config/settings" primary="Settings" icon={<SettingsIcon />} /> */}
 					{/* <ListItemLink
 			classes={classes} 
 			to="/config/settings"
@@ -464,7 +464,7 @@ export default function App(props) {
 													>
 														<MenuIcon />
 													</IconButton>
-													<Typography variant="h6" noWrap>
+													<Typography noWrap>
 														<img
 															className={clsx(classes.logo)}
 															src={
@@ -612,9 +612,9 @@ export default function App(props) {
 													<Route path="/config/connections">
 														<Connections />
 													</Route>
-													<Route path="/config/settings">
+													{/* <Route path="/config/settings">
 														<Settings />
-													</Route>
+													</Route> */}
 													<Route path="/config">
 														<Config />
 													</Route>
