@@ -14,6 +14,13 @@ export function updateClients(update) {
 	};
 }
 
+export function updateAnonymousGroup(update) {
+	return {
+		type: ActionTypes.UPDATE_ANONYMOUS_GROUP,
+		update
+	};
+}
+
 export function updateGroup(update) {
 	return {
 		type: ActionTypes.UPDATE_GROUP,
