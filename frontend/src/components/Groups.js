@@ -1,9 +1,10 @@
 import React, { useContext } from 'react';
 import { connect, useDispatch } from 'react-redux';
-import { updateClients, updateGroup, updateGroups } from '../actions/actions';
+import { updateAnonymousGroup, updateClients, updateGroup, updateGroups } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
 import AddIcon from '@material-ui/icons/Add';
+import AnonymousGroupSelect from './AnonymousGroupSelect';
 import AutoSuggest from './AutoSuggest';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Chip from '@material-ui/core/Chip';
@@ -12,16 +13,20 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Divider from '@material-ui/core/Divider';
 import EditIcon from '@material-ui/icons/Edit';
 import Fab from '@material-ui/core/Fab';
+import FormControl from '@material-ui/core/FormControl';
 import GroupIcon from '@material-ui/icons/Group';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
+import InputLabel from '@material-ui/core/InputLabel';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
+import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';
+import Select from '@material-ui/core/Select';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -40,6 +45,13 @@ import { useHistory } from 'react-router-dom';
 const useStyles = makeStyles((theme) => ({
 	tableContainer: {
 		minHeight: '500px'
+	},
+	select: {
+		backgroundColor: 'rgba(255,255,255,0.2)',
+		border: 'thin solid rgba(255,255,255,0.5)',
+		'label + &': {
+			marginTop: theme.spacing(1)
+		}
 	},
 	badges: {
 		'& > *': {
@@ -107,6 +119,15 @@ const Groups = (props) => {
 		dispatch(updateGroups(groups));
 	};
 
+	const onUpdateAnonymousGroup = async (groupname) => {
+		await client.setAnonymousGroup(groupname);
+		const group = await client.getAnonymousGroup();
+		dispatch(updateAnonymousGroup(group));
+		enqueueSnackbar('Anonymous group successfully set', {
+			variant: 'success'
+		});
+	}
+
 	const onSelectGroup = async (groupname) => {
 		const group = await client.getGroup(groupname);
 		dispatch(updateGroup(group));
@@ -145,7 +166,7 @@ const Groups = (props) => {
 		dispatch(updateGroups(groups));
 	};
 
-	const { groups = [], roles = [], clients = [], onSort, sortBy, sortDirection } = props;
+	const { anonymousGroup, groups = [], roles = [], clients = [], onSort, sortBy, sortDirection } = props;
 
 	// TODO: probably extract into reducer
 	const clientSuggestions = clients
@@ -332,6 +353,9 @@ const Groups = (props) => {
 			) : (
 				<div>No groups found</div>
 			)}
+			<AnonymousGroupSelect
+				onUpdateAnonymousGroup={onUpdateAnonymousGroup}
+			/>
 			<Fab
 				color="primary"
 				aria-label="add"
@@ -361,6 +385,7 @@ Groups.defaultProps = {
 
 const mapStateToProps = (state) => {
 	return {
+		anonymousGroup: state.groups?.anonymousGroup,
 		groups: state.groups?.groups,
 		roles: state.roles?.roles,
 		clients: state.clients?.clients
