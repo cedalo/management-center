@@ -13,12 +13,19 @@ jobs:
           deploy:
               - provider: script
                 script: bash -c '
+                    echo '{"experimental":"enabled"}' | sudo tee $HOME/.docker/config.json &&
                     docker login -u $DOCKER_USER -p $DOCKER_PASSWORD &&
                     docker build
-                    --build-arg CEDALO_MC_BUILD_DATE="$(date)"
-                    --build-arg CEDALO_MC_BUILD_NUMBER="$(date ''+%s'')"
-                    -t cedalo/mosquitto-ui:dev . &&
-                    docker push cedalo/mosquitto-ui:dev'
+                        --build-arg CEDALO_MC_BUILD_DATE="$(date)"
+                        --build-arg CEDALO_MC_BUILD_NUMBER="$(date ''+%s'')"
+                        -t cedalo/mosquitto-ui:dev-amd64 . &&
+                    docker push cedalo/mosquitto-ui:dev-amd64 &&
+                    docker manifest create cedalo/mosquitto-ui:dev 
+                        --amend cedalo/mosquitto-ui:dev-amd64
+                        --amend cedalo/mosquitto-ui:dev-arm32v7 ||
+                    docker manifest create cedalo/mosquitto-ui:dev 
+                        --amend cedalo/mosquitto-ui:dev-amd64 &&
+                    docker manifest push cedalo/mosquitto-ui:dev'
                 on:
                     branch: master
                 skip_cleanup: true
