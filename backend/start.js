@@ -186,7 +186,7 @@ const init = (licenseContainer) => {
 			/* logger: console */
 		});
 		console.log(`Connecting to "${connection.name}" on ${connection.url}`);
-		const connectionConfiguration = config.connections.find(
+		const connectionConfiguration = config.connections?.find(
 			(connectionToSearch) => connection.id === connectionToSearch.id
 		);
 		if (connectionConfiguration) {
