@@ -25,8 +25,8 @@ services:
             CEDALO_MC_BROKER_URL: mqtt://mosquitto:1883
             CEDALO_MC_BROKER_USERNAME: cedalo
             CEDALO_MC_BROKER_PASSWORD: eAkX29UnAs
-            CEDALO_MC_PROXY_CONFIG_DIR: /mosquitto-ui/backend/config/config.json
-            CEDALO_MC_LICENSE_PATH: /mosquitto-ui/backend/config/license.lic
+            CEDALO_MC_PROXY_CONFIG_DIR: /mosquitto-ui/config/config.json
+            CEDALO_MC_LICENSE_PATH: /mosquitto-ui/config/license.lic
         ports:
             - 8088:8088
         expose:
