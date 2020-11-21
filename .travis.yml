@@ -13,7 +13,6 @@ jobs:
           deploy:
               - provider: script
                 script: bash -c '
-                    echo '{"experimental":"enabled"}' | sudo tee $HOME/.docker/config.json &&
                     docker login -u $DOCKER_USER -p $DOCKER_PASSWORD &&
                     docker build
                         --build-arg CEDALO_MC_BUILD_DATE="$(date)"
@@ -44,5 +43,6 @@ jobs:
                 skip_cleanup: true
 env:
     global:
+        - DOCKER_CLI_EXPERIMENTAL=enabled
         - secure: pVEE42JZzXq92k/54IdFTw1ZMAX7EIvhlDaLD6dCQ6bXORwbKBKNHj2PzB8lmkN+ods9KKm7/jbUeC585z8qPKc6E5pZgCwSTvRGj1o2KQ22vge2BcGPILLYmDQtbSVqiXsJyydpNFreHp/eQrQnZDGByoMWGRdsAhArn3D4iSRQjT9qbzvMK5ULqAC5Lj/orV6F3Kr+QHx3G++2uKp3/nyKdvzwBsAUjfHY+HhVPeRbNSDMsyWO6+yBZFzkcQwPTP/gLIokw6WoYk0qGvo5WuebLRNHP8pyQB68CKSj+FBUPVpSWRdlpXqTT3EoYlPuE0iw5FzdLEWR6Z9d3YdAsS8uca2BgODQyN1gS/vIq8SBFRvKKSvO/hB1iAZLLLVxARmUdAIRuNJ+TmrU9bfE6s8AuuENiOJ4IxTZCWgnEC0fIdz83nsXZ6K+FT7PjMOAE1i/MLJvMXEAWYJzlVXVeHapbOJRkluO9+Ct7nV5i7gnRZlXPZS1jeJO4y821aOE8KXjpbDJtB+DruUETJQ3vodDc6i79xZJg0myotpNfS0O8/vGH7vWSwJ4q9QPzNAXzrK9NE1EQ1uxAU8cfGpHgJnZcgM9Q0Jz1EzkDaLgCyg7Cl+6TC9EUQ08GpkELWST42Sr1/bHBgv07BLq1A02w1+MPZ1fcBzP1bcbaeVTu8Q=
         - secure: qHTgESrEhSjMA8I4uMOURg+hBPSqdGWlWuRTQcqFcEL2B20LWH5l7BN63IulAfbFdTnIl9dul+Jdzj2y6XAJQwu+xUnYNmB8S0WY14z1u4lRAqjv5jr//WGwiiSETshfDT36sIm/ff2QPKf8s5VenhVyrXpAxyd5B4FE10nxn9vBEdQ9dr1C4N2X6TzmIyMNwmoqocrphJE+VYdcGOStm6k4SMBxPPag+fmw+j4BysPVFaTZwlYr4AQ/89CktjY3lnpBnRJ1gin5HkKPwQrbtXpMKV9Gs9pQiSjOFWYXZgjxsVYKh6GFgztj4hj9c0J0EUDFBcH9WDnTDHslMsDNc9qoCWSwIsDEXhGN1o8NR4CpX2Mbim1LUu4ATJx1aZ8AMgZqqXtXCIiWvzMkF0bx+1NtEwy4LkAQNpVHm9fJlFU7pxYRB+rE6BTUNM9x1m1vGRqPTbsdkuyISb2l9jW9v2VOz6dRBx/XjB82YDrHczg5TFCJ1sGefMa68216O7xEVoVpn52n3wl91eU/jnviDtYHzyQ+0syXVr7ygZAkvXruZmg3swwdf4JHddUabkRm769i7puFLk1tdc9i6hi9/74oM+kJ8gp0Aivjs0v419JwMMwsa1YqjhqjULZ3/iwBz1Ho6rf+qtWqxEne2UL95xtlTTHokmlhMDDPjkq1zX8=
