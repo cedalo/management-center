@@ -357,13 +357,12 @@ export default class BaseMosquittoProxyClient {
 	}
 
 	async getAnonymousGroup() {
-		// const data = await this.sendCommand(
-		// 	{
-		// 		command: 'getAnonymousGroup',
-		// 	},
-		// 	API_DYNAMIC_SECURITY
-		// );
-		return null;
+		const data = await this.sendCommand(
+			{
+				command: 'getAnonymousGroup',
+			},
+			API_DYNAMIC_SECURITY
+		);
 		return data?.group;
 	}
 
