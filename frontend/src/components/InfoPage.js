@@ -123,6 +123,12 @@ const InfoPage = (props) => {
 							<TableBody>
 								<TableRow>
 									<TableCell>
+										<b>Name</b>
+									</TableCell>
+									<TableCell>{version.name}</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell>
 										<b>Version</b>
 									</TableCell>
 									<TableCell>{version.version}</TableCell>
