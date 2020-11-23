@@ -349,13 +349,13 @@ const Groups = (props) => {
 							</List>
 						</Paper>
 					</Hidden>
+					<AnonymousGroupSelect
+						onUpdateAnonymousGroup={onUpdateAnonymousGroup}
+					/>
 				</div>
 			) : (
 				<div>No groups found</div>
 			)}
-			<AnonymousGroupSelect
-				onUpdateAnonymousGroup={onUpdateAnonymousGroup}
-			/>
 			<Fab
 				color="primary"
 				aria-label="add"
