@@ -13,7 +13,7 @@ const PluginManager = require('./src/plugins/PluginManager');
 // const UsageTracker = require("./src/usage/UsageTracker");
 
 const version = {
-	version: process.env.CEDALO_MC_VERSION || '0.9-alpha',
+	name: process.env.CEDALO_MC_NAME || 'Cedalo Management Center',
 	buildNumber: process.env.TRAVIS_BUILD_NUMBER || process.env.CEDALO_MC_BUILD_NUMBER || uuidv4(),
 	buildDate: process.env.CEDALO_MC_BUILD_DATE || Date.now()
 };
