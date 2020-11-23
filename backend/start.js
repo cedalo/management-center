@@ -5,7 +5,6 @@ const { v4: uuidv4 } = require('uuid');
 const express = require('express');
 const cors = require('cors');
 const WebSocket = require('ws');
-const mqtt = require('mqtt');
 const axios = require('axios');
 const BrokerManager = require('./src/broker/BrokerManager');
 const NodeMosquittoClient = require('./src/client/NodeMosquittoClient');
@@ -229,12 +228,6 @@ const init = (licenseContainer) => {
 			};
 			sendConnectionsUpdate(brokerClient);
 		}
-		// const brokerClient = mqtt.connect(connection.url, {
-		// 	username: connection.credentials?.username,
-		// 	password: connection.credentials?.password
-		//   });
-		// brokerClient.on("connect", () => {
-		// 	console.log(`Connected to '${connection.name}' at ${connection.url}`);
 		brokerClient.subscribe('$SYS/#', (error) => {
 			console.log(`Subscribed to system topics for '${connection.name}'`);
 			if (error) {
