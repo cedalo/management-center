@@ -17,6 +17,7 @@ import {
 	updateBrokerConfigurations,
 	updateBrokerConnected,
 	updateBrokerConnections,
+	updateDefaultACLAccess,
 	updateSystemStatus,
 	updateTopicTree
 } from '../actions/actions';
@@ -87,6 +88,8 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 			dispatch(updateAnonymousGroup(anonymousGroup));
 			const roles = await client.listRoles();
 			dispatch(updateRoles(roles));
+			const defaultACLAccess = await client.getDefaultACLAccess();
+			dispatch(updateDefaultACLAccess(defaultACLAccess));
 			setConnection(event.target.value);
 		} else {
 		}
