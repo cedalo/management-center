@@ -604,6 +604,16 @@ export default class BaseMosquittoProxyClient {
 			API_DYNAMIC_SECURITY
 		);
 	}
+
+	async getDefaultACLAccess() {
+		return this.sendCommand(
+			{
+				command: 'getDefaultACLAccess',
+			},
+			API_DYNAMIC_SECURITY
+		);
+	}
+
 	/**
 	 * ******************************************************************************************
 	 * Additional methods not specified in the Mosquitto API
