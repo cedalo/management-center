@@ -7,6 +7,7 @@ import {
 	updateAnonymousGroup,
 	updateGroups,
 	updateLicense,
+	updateDefaultACLAccess,
 	updateRoles,
 	updateSystemStatus,
 	updateTopicTree,
@@ -94,6 +95,10 @@ export default ({ children }) => {
 			.then(() => client.listRoles())
 			.then((roles) => {
 				dispatch(updateRoles(roles));
+			})
+			.then(() => client.getDefaultACLAccess())
+			.then((defaultACLAccess) => {
+				dispatch(updateDefaultACLAccess(defaultACLAccess));
 			});
 
 		ws = {
