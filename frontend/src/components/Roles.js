@@ -5,7 +5,7 @@ import { useSnackbar } from 'notistack';
 
 import AddIcon from '@material-ui/icons/Add';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Chip from '@material-ui/core/Chip';
+import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Divider from '@material-ui/core/Divider';
 import EditIcon from '@material-ui/icons/Edit';
@@ -94,6 +94,10 @@ const Roles = (props) => {
 	const { enqueueSnackbar } = useSnackbar();
 	const { client } = context;
 
+	const onEditDefaultACLAccess = () => {
+		history.push('/security/acl');
+	}
+
 	const onNewRole = () => {
 		history.push('/security/roles/new');
 	};
@@ -141,7 +145,7 @@ const Roles = (props) => {
 		history.push(`/security/roles/detail/${rolename}`);
 	};
 
-	const { roles = [], onSort, sortBy, sortDirection } = props;
+	const { defaultACLAccess, roles = [], onSort, sortBy, sortDirection } = props;
 
 	return (
 		<div>
@@ -260,6 +264,16 @@ const Roles = (props) => {
 			) : (
 				<div>No roles found</div>
 			)}
+			<br />
+			<Button
+				variant="contained"
+				color="primary"
+				className={classes.button}
+				startIcon={<EditIcon />}
+				onClick={onEditDefaultACLAccess}
+			>
+				Edit default ACL access
+			</Button>
 			<Fab
 				color="primary"
 				aria-label="add"
