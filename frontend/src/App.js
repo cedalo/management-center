@@ -91,6 +91,7 @@ import OnBoardingDialog from './components/OnBoardingDialog';
 import steps from './tutorial/steps';
 
 import { BrowserRouter as Router, Switch, Route, Link as RouterLink, Redirect } from 'react-router-dom';
+import DefaultACLAccess from './components/DefaultACLAccess';
 
 const tourOptions = {
 	defaultStepOptions: {
@@ -582,6 +583,9 @@ export default function App(props) {
 														path="/security/roles/detail/:roleId"
 														component={RoleDetail}
 													/>
+													<Route path="/security/acl">
+														<DefaultACLAccess />
+													</Route>
 													<Route path="/security/roles/new">
 														<RoleNew />
 													</Route>
