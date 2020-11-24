@@ -595,6 +595,15 @@ export default class BaseMosquittoProxyClient {
 		);
 	}
 
+	async setDefaultACLAccess(acls) {
+		return this.sendCommand(
+			{
+				command: 'setDefaultACLAccess',
+				acls
+			},
+			API_DYNAMIC_SECURITY
+		);
+	}
 	/**
 	 * ******************************************************************************************
 	 * Additional methods not specified in the Mosquitto API
