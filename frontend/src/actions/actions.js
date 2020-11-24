@@ -35,6 +35,13 @@ export function updateGroups(update) {
 	};
 }
 
+export function updateDefaultACLAccess(update) {
+	return {
+		type: ActionTypes.UPDATE_DEFAULT_ACL_ACESS,
+		update
+	};
+}
+
 export function updateRole(update) {
 	return {
 		type: ActionTypes.UPDATE_ROLE,
