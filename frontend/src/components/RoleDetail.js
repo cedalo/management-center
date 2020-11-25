@@ -6,6 +6,7 @@ import { useSnackbar } from 'notistack';
 
 import ACLIcon from '@material-ui/icons/Security';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import ACLTypesHelpDialog from './ACLTypesHelpDialog';
 import Avatar from '@material-ui/core/Avatar';
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
@@ -23,6 +24,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
 import GroupIcon from '@material-ui/icons/Group';
 import GroupsIcon from '@material-ui/icons/Group';
+import HelpIcon from '@material-ui/icons/Help';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -135,6 +137,16 @@ const RoleDetail = (props) => {
 
 	const { role = {}, onSort, sortBy, sortDirection } = props;
 
+	const [aclTypesHelpDialogOpen, setACLTypesHelpDialogOpen] = React.useState(true);
+
+	const handleOpenACLTypesHelpDialog = () => {
+		setACLTypesHelpDialogOpen(true);
+	};
+
+	const handleCloseACLTypesHelpDialog = () => {
+		setACLTypesHelpDialogOpen(false);
+	};
+
 	const [selectedTab, setSelectedTab] = React.useState(0);
 	const [newACL, setNewACL] = React.useState({
 		acltype: 'publishClientReceive',
@@ -226,6 +238,7 @@ const RoleDetail = (props) => {
 
 	return role.rolename ? (
 		<div>
+			<ACLTypesHelpDialog open={aclTypesHelpDialogOpen} handleClose={handleCloseACLTypesHelpDialog} />
 			<Breadcrumbs maxItems={2} aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -460,6 +473,13 @@ const RoleDetail = (props) => {
 																</MenuItem>
 															</Select>
 														</FormControl>
+														<IconButton
+															variant="contained"
+															edge="end" aria-label="help"
+															onClick={handleOpenACLTypesHelpDialog}
+														>
+															<HelpIcon fontSize="small" />
+														</IconButton>
 													</TableCell>
 
 													<TableCell>
@@ -504,18 +524,22 @@ const RoleDetail = (props) => {
 							allow: event.target.checked
 						})}
 					/> */}
-														<Select
-															value={newACL.allow ? 'allow' : 'deny'}
-															onChange={(event) => {
-																setNewACL({
-																	...newACL,
-																	allow: event.target.value === 'allow'
-																});
-															}}
-														>
-															<MenuItem value="allow">allow</MenuItem>
-															<MenuItem value="deny">deny</MenuItem>
-														</Select>
+
+														<FormControl>
+															<InputLabel id="allow-deny-label"></InputLabel>
+															<Select
+																value={newACL.allow ? 'allow' : 'deny'}
+																onChange={(event) => {
+																	setNewACL({
+																		...newACL,
+																		allow: event.target.value === 'allow'
+																	});
+																}}
+															>
+																<MenuItem value="allow">allow</MenuItem>
+																<MenuItem value="deny">deny</MenuItem>
+															</Select>
+														</FormControl>
 													</TableCell>
 
 													<TableCell align="right">
