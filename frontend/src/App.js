@@ -382,7 +382,7 @@ export default function App(props) {
 						icon={<StreamsheetsIcon />}
 					/>
 					<ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon />} />
-					<ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon />} />
+					{/* <ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon />} /> */}
 				</List>
 				<Divider />
 				<List>
