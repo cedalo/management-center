@@ -87,7 +87,7 @@ const InfoPage = (props) => {
 					<DialogContent>
 						<DialogContentText id="alert-dialog-description">
 							<ul>
-								{response.features.map((feature) => {
+								{response?.features?.map((feature) => {
 									return <li>{feature.title}</li>;
 								})}
 							</ul>
