@@ -219,7 +219,7 @@ const InfoPage = (props) => {
 								</TableRow>
 								<TableRow>
 									<TableCell>
-										<b>REST API</b>
+										<b>Advanced REST API</b>
 									</TableCell>
 									<TableCell>{createFeatureIcon('rest-api', license)}</TableCell>
 								</TableRow>
