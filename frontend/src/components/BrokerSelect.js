@@ -40,19 +40,20 @@ const useStyles = makeStyles((theme) => ({
 	root: {
 		paddingLeft: '20px',
 		backgroundColor: 'rgba(255,255,255,0.2)',
-		border: 'thin solid rgba(255,255,255,0.5)'
+		border: 'thin solid rgba(255,255,255,0.5)',
+		color: 'white',
 	},
 	label: {
 		fontSize: '12px',
 		textTransform: 'uppercase',
-		transform: 'translate(14px, 20px) scale(1)'
+		transform: 'translate(14px, 20px) scale(1)',
+		color: 'white',
 	},
 	formControl: {
 		// margin: theme.spacing(1),
 		// height: "25px",
 		margin: theme.spacing(1),
 		minWidth: 120
-		// color: colors.white,
 	}
 }));
 
