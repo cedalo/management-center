@@ -472,8 +472,9 @@ const init = (licenseContainer) => {
 	});
 
 	app.get('/api/update', async (request, response) => {
-		const update = await axios.get('https://api.cedalo.cloud/rest/request/mosquitto-ui/version');
-		response.json(update.data);
+		// const update = await axios.get('https://api.cedalo.cloud/rest/request/mosquitto-ui/version');
+		// response.json(update.data);
+		response.json({});
 	});
 
 	app.get('/api/config', (request, response) => {
