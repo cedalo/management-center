@@ -40,27 +40,27 @@ const useStyles = makeStyles((theme) => ({
 const aclTypeHelp = [
 	{
 		acltype: 'publishClientSend',
-		description: 'Restrict the topics this client is allowed to use when publishing to the broker.'
+		description: 'Restrict the topics this role is allowed to use when publishing to the broker.'
 	},
 	{
 		acltype: 'publishClientReceive', 
-		description: 'Restrict the topics this client is allowed to use when receiving published messages from the broker.'
+		description: 'Restrict the topics this role is allowed to use when receiving published messages from the broker.'
 	},
 	{
 		acltype: 'subscribeLiteral',
-		description: 'Restrict the exact topic filters that this client is allowed to subscribe to.'
+		description: 'Restrict the exact topic filters that this role is allowed to subscribe to.'
 	},
 	{
 		acltype: 'subscribePattern',
-		description: 'Restrict a range of topic filters that this client is allowed to subscribe to.'
+		description: 'Restrict a range of topic filters that this role is allowed to subscribe to.'
 	},
 	{
 		acltype: 'unsubcribeLiteral',
-		description: 'Restrict the exact topic filters that this client is allowed to unsubscribe from.'
+		description: 'Restrict the exact topic filters that this role is allowed to unsubscribe from.'
 	}, 
 	{
 		acltype: 'unsubcribePattern',
-		description: 'Restrict a range of topic filters that this client is allowed to unsubscribe from.'
+		description: 'Restrict a range of topic filters that this role is allowed to unsubscribe from.'
 	}
 ]
 
