@@ -250,7 +250,7 @@ const Status = ({ lastUpdated, systemStatus }) => {
 				right: '15px',
 				top: '70px'
 			}}>
-				Last update: {moment(lastUpdated).format('hh:mm:ss a')}
+				Dashboard last updated at: {moment(lastUpdated).format('hh:mm:ss a')}
 			</div>
 		</div>
 	);
