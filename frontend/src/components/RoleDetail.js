@@ -137,7 +137,7 @@ const RoleDetail = (props) => {
 
 	const { role = {}, onSort, sortBy, sortDirection } = props;
 
-	const [aclTypesHelpDialogOpen, setACLTypesHelpDialogOpen] = React.useState(true);
+	const [aclTypesHelpDialogOpen, setACLTypesHelpDialogOpen] = React.useState(false);
 
 	const handleOpenACLTypesHelpDialog = () => {
 		setACLTypesHelpDialogOpen(true);
