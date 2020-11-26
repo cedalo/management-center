@@ -145,7 +145,7 @@ const InfoPage = (props) => {
 									</TableCell>
 									<TableCell>{moment(version.buildDate).format('LLLL')}</TableCell>
 								</TableRow>
-								<TableRow>
+								{ response.lastUpdated ? <TableRow>
 									<TableCell>
 										<b>Latest version</b>
 									</TableCell>
@@ -165,7 +165,7 @@ const InfoPage = (props) => {
 											<span className={classes.updateButton}>You are up to date!</span>
 										)}
 									</TableCell>
-								</TableRow>
+								</TableRow> : null}
 							</TableBody>
 						</Table>
 					</TableContainer>
