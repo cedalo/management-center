@@ -241,9 +241,9 @@ const InfoPage = (props) => {
                 </TableRow> */}
 								<TableRow>
 									<TableCell>
-										<b>Topic Tree</b>
+										<b>Multiple Connections</b>
 									</TableCell>
-									<TableCell>{createFeatureIcon('topic-tree', license)}</TableCell>
+									<TableCell>{createFeatureIcon('multiple-broker-connections', license)}</TableCell>
 								</TableRow>
 							</TableBody>
 						</Table>
