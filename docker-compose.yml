@@ -15,9 +15,9 @@ services:
         #   - ./conf:/mosquitto/config
         networks:
             - mosquitto
-    mosquitto-ui:
-        image: cedalo/mosquitto-ui:dev
-        container_name: mosquitto-ui
+    management-center:
+        image: cedalo/management-center:dev
+        container_name: management-center
         environment:
             # Do not change these settings for the moment!
             CEDALO_MC_BROKER_ID: mosquitto-2.0
@@ -25,8 +25,7 @@ services:
             CEDALO_MC_BROKER_URL: mqtt://mosquitto:1883
             CEDALO_MC_BROKER_USERNAME: cedalo
             CEDALO_MC_BROKER_PASSWORD: eAkX29UnAs
-            CEDALO_MC_PROXY_CONFIG_DIR: /mosquitto-ui/config/config.json
-            CEDALO_MC_LICENSE_PATH: /mosquitto-ui/config/license.lic
+            CEDALO_MC_PROXY_CONFIG_DIR: /management-center/config/config.json
         ports:
             - 8088:8088
         expose:
@@ -34,7 +33,7 @@ services:
         depends_on:
             - mosquitto
         # volumes:
-        #     - ./config:/mosquitto-ui/backend/config
+        #     - ./config:/management-center/backend/config
         networks:
             - mosquitto
 networks:

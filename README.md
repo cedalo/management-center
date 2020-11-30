@@ -1,3 +1,3 @@
-# mosquitto-ui
+# Management Center
 
 The web UI for Mosquitto
