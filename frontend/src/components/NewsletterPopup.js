@@ -72,6 +72,8 @@ const NewsletterPopup = () => {
 						icon: 'success',
 						width: 500,
 					})
+				  } else {
+					setShowNewsletterPopup('false');
 				  }
 			}
 		  
