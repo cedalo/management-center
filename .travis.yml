@@ -2,14 +2,14 @@ jobs:
     include:
         - language: node_js
           node_js:
-              - 10.15.0
+              - 14
           services:
               - docker
           cache:
               yarn: true
           script:
               # Why CI=false?
-              - CI=false yarn workspace @cedalo/mosquitto-ui-frontend run build --verbose
+              - CI=false yarn workspace @cedalo/management-center-frontend run build --verbose
           deploy:
               - provider: script
                 script: bash -c '
@@ -17,14 +17,14 @@ jobs:
                     docker build
                         --build-arg CEDALO_MC_BUILD_DATE="$(date)"
                         --build-arg CEDALO_MC_BUILD_NUMBER="$(date ''+%s'')"
-                        -t cedalo/mosquitto-ui:dev-amd64 . &&
-                    docker push cedalo/mosquitto-ui:dev-amd64 &&
-                    docker manifest create cedalo/mosquitto-ui:dev 
-                        --amend cedalo/mosquitto-ui:dev-amd64
-                        --amend cedalo/mosquitto-ui:dev-arm32v7 ||
-                    docker manifest create cedalo/mosquitto-ui:dev 
-                        --amend cedalo/mosquitto-ui:dev-amd64 &&
-                    docker manifest push cedalo/mosquitto-ui:dev'
+                        -t cedalo/management-center:dev-amd64 . &&
+                    docker push cedalo/management-center:dev-amd64 &&
+                    docker manifest create cedalo/management-center:dev
+                        --amend cedalo/management-center:dev-amd64
+                        --amend cedalo/management-center:dev-arm32v7 ||
+                    docker manifest create cedalo/management-center:dev
+                        --amend cedalo/management-center:dev-amd64 &&
+                    docker manifest push cedalo/management-center:dev'
                 on:
                     branch: master
                 skip_cleanup: true
@@ -33,10 +33,16 @@ jobs:
                 script: bash -c '
                     docker login -u $DOCKER_USER -p $DOCKER_PASSWORD &&
                     docker build
-                    --build-arg CEDALO_MC_BUILD_DATE="$(date)"
-                    --build-arg CEDALO_MC_BUILD_NUMBER="$(date ''+%s'')"
-                    -t cedalo/mosquitto-ui:${TRAVIS_TAG} . &&
-                    docker push cedalo/mosquitto-ui:${TRAVIS_TAG}'
+                        --build-arg CEDALO_MC_BUILD_DATE="$(date)"
+                        --build-arg CEDALO_MC_BUILD_NUMBER="$(date ''+%s'')"
+                        -t cedalo/management-center:${TRAVIS_TAG}-amd64 . &&
+                    docker push cedalo/management-center:${TRAVIS_TAG}-amd64 &&
+                    docker manifest create cedalo/management-center:dev
+                        --amend cedalo/management-center:${TRAVIS_TAG}-amd64
+                        --amend cedalo/management-center:${TRAVIS_TAG}-arm32v7 ||
+                    docker manifest create cedalo/management-center:${TRAVIS_TAG}
+                        --amend cedalo/management-center:${TRAVIS_TAG}-amd64 &&
+                    docker manifest push cedalo/management-center:${TRAVIS_TAG}'
                 on:
                     condition: "${TRAVIS_TAG} =~ ^[0-9]+\\.[0-9]+(\\.[0-9]+)?.*$"
                     tags: true

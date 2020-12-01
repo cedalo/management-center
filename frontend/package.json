@@ -1,5 +1,5 @@
 {
-	"name": "@cedalo/mosquitto-ui-frontend",
+	"name": "@cedalo/management-center-frontend",
 	"version": "4.0.0",
 	"private": true,
 	"author": "Cedalo AG",

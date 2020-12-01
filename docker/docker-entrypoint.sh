@@ -7,6 +7,6 @@ CYAN='\033[0;36m'
 ORANGE='\033[0;33m'
 YELLOW='\033[1;33m'
 
-echo -e "${GREEN}Starting Mosquitto UI${NOCOLOR}"
+echo -e "${GREEN}Starting Management Center for Eclipse Mosquitto${NOCOLOR}"
 
 node start.js
