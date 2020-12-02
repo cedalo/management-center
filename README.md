@@ -1,3 +1,3 @@
 # Management Center
 
-The web UI for Mosquitto
+The management center for Eclipse Mosquitto
