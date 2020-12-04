@@ -47,7 +47,10 @@ const StyledTableRow = withStyles((theme) => ({
 
 const useStyles = makeStyles((theme) => ({
 	tableContainer: {
-		minHeight: '500px'
+		minHeight: '500px',
+		'& td:nth-child(2)': {
+			minWidth: '100px'
+		}
 	},
 	badges: {
 		'& > *': {
