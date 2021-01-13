@@ -10,6 +10,7 @@ const BrokerManager = require('./src/broker/BrokerManager');
 const NodeMosquittoClient = require('./src/client/NodeMosquittoClient');
 const PluginManager = require('./src/plugins/PluginManager');
 // const UsageTracker = require("./src/usage/UsageTracker");
+const { loadInstallation } = require("./src/utils/utils");
 
 const version = {
 	name: process.env.CEDALO_MC_NAME || 'Cedalo Management Center',
@@ -156,6 +157,7 @@ const loadConfig = () => {
 
 const init = (licenseContainer) => {
 	// const usageTracker = new UsageTracker({ license: licenseContainer, version });
+	const installation = loadInstallation();
 	const globalSystem = {};
 	const globalTopicTree = {};
 	const app = express();
