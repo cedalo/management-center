@@ -10,6 +10,7 @@ const BrokerManager = require('./src/broker/BrokerManager');
 const NodeMosquittoClient = require('./src/client/NodeMosquittoClient');
 const PluginManager = require('./src/plugins/PluginManager');
 // const UsageTracker = require("./src/usage/UsageTracker");
+const InstallationManager = require("./src/usage/InstallationManager");
 const { loadInstallation } = require("./src/utils/utils");
 
 const version = {
@@ -158,6 +159,7 @@ const loadConfig = () => {
 const init = (licenseContainer) => {
 	// const usageTracker = new UsageTracker({ license: licenseContainer, version });
 	const installation = loadInstallation();
+	const installationManager = new InstallationManager( { license: licenseContainer, version, installation });
 	const globalSystem = {};
 	const globalTopicTree = {};
 	const app = express();
