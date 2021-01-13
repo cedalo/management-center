@@ -158,8 +158,10 @@ const loadConfig = () => {
 
 const init = (licenseContainer) => {
 	// const usageTracker = new UsageTracker({ license: licenseContainer, version });
+const init = async (licenseContainer) => {
 	const installation = loadInstallation();
 	const installationManager = new InstallationManager( { license: licenseContainer, version, installation });
+	await installationManager.verifyLicense();
 	const globalSystem = {};
 	const globalTopicTree = {};
 	const app = express();
@@ -568,8 +570,8 @@ const init = (licenseContainer) => {
 
 const licenseContainer = {};
 const checker = new LicenseChecker();
-checker.check((license) => {
+checker.check(async (license) => {
 	licenseContainer.license = license;
 	licenseContainer.isValid = license.isValid;
-	init(licenseContainer);
+	await init(licenseContainer);
 });
