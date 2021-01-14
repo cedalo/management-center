@@ -11,6 +11,7 @@ const NodeMosquittoClient = require('./src/client/NodeMosquittoClient');
 const PluginManager = require('./src/plugins/PluginManager');
 // const UsageTracker = require("./src/usage/UsageTracker");
 const InstallationManager = require("./src/usage/InstallationManager");
+const SettingsManager = require("./src/settings/SettingsManager");
 const { loadInstallation } = require("./src/utils/utils");
 
 const version = {
@@ -162,6 +163,7 @@ const init = async (licenseContainer) => {
 	const installation = loadInstallation();
 	const installationManager = new InstallationManager( { license: licenseContainer, version, installation });
 	await installationManager.verifyLicense();
+	const settingsManager = new SettingsManager();
 	const globalSystem = {};
 	const globalTopicTree = {};
 	const app = express();
