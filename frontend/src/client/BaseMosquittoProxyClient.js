@@ -151,6 +151,15 @@ export default class BaseMosquittoProxyClient {
 		return response.response;
 	}
 
+	async getSettings() {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'getSettings'
+		});
+		return response.response;
+	}
+
 	/**
 	 * ******************************************************************************************
 	 * Methods for role management
