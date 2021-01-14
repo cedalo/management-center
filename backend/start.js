@@ -346,6 +346,9 @@ const init = async (licenseContainer) => {
 			case 'getBrokerConfigurations': {
 				return config;
 			}
+			case 'getSettings': {
+				return settingsManager.settings;
+			}
 		}
 		return {};
 	};
