@@ -80,6 +80,13 @@ export function updateBrokerConnections(update) {
 	};
 }
 
+export function updateSettings(update) {
+	return {
+		type: ActionTypes.UPDATE_SETTINGS,
+		update
+	};
+}
+
 export function updateVersion(update) {
 	return {
 		type: ActionTypes.UPDATE_VERSION,
