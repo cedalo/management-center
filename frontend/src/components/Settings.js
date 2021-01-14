@@ -51,6 +51,9 @@ const Settings = ({ settings, sendMessage }) => {
 		setDarkMode(darkMode === 'true' ? 'false' : 'true');
 	};
 
+	const onChangeAllowTrackingUsageData = (allow) => {
+	};
+
 	return (
 		<div>
 			<Breadcrumbs aria-label="breadcrumb">
@@ -77,6 +80,19 @@ const Settings = ({ settings, sendMessage }) => {
 						/>
 					}
 					label="Dark Mode"
+				/>
+			</FormGroup>
+			<FormGroup row>
+				<FormControlLabel
+					control={
+						<Switch
+							checked={settings?.allowTrackingUsageData}
+							onChange={(event) => onChangeAllowTrackingUsageData(event.target.checked)}
+							name="allowTrackingUsageData"
+							color="primary"
+						/>
+					}
+					label="Allow tracking of usage data"
 				/>
 			</FormGroup>
 		</div>
