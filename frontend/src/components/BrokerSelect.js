@@ -18,6 +18,7 @@ import {
 	updateBrokerConnected,
 	updateBrokerConnections,
 	updateDefaultACLAccess,
+	updateSettings,
 	updateSystemStatus,
 	updateTopicTree
 } from '../actions/actions';
@@ -77,6 +78,8 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 				dispatch(updateBrokerConnected(false, connectionID));
 				return;
 			}
+			const settings = await client.getSettings();
+			dispatch(updateSettings(settings));
 			const brokerConnections = await client.getBrokerConnections();
 			dispatch(updateBrokerConnections(brokerConnections));
 			const brokerConfigurations = await client.getBrokerConfigurations();
