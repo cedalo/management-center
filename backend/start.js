@@ -496,6 +496,10 @@ const init = async (licenseContainer) => {
 		response.json(installation);
 	});
 
+	app.get('/api/settings', (request, response) => {
+		response.json(settingsManager.settings);
+	});
+
 	const NEWSLETTER_URL = 'https://api.cedalo.cloud/rest/api/v1.0/newsletter/subscribe';
 	app.post('/api/newsletter/subscribe', (request, response) => {
 		const user = request.body;
