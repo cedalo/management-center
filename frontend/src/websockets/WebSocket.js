@@ -9,6 +9,7 @@ import {
 	updateLicense,
 	updateDefaultACLAccess,
 	updateRoles,
+	updateSettings,
 	updateSystemStatus,
 	updateTopicTree,
 	updateVersion
@@ -79,6 +80,10 @@ export default ({ children }) => {
 			.then(() => client.getBrokerConfigurations())
 			.then((brokerConfigurations) => {
 				dispatch(updateBrokerConfigurations(brokerConfigurations));
+			})
+			.then(() => client.getSettings())
+			.then((settings) => {
+				dispatch(updateSettings(settings));
 			})
 			.then(() => client.listClients())
 			.then((clients) => {
