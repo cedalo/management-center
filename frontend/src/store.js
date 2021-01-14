@@ -9,6 +9,7 @@ import rolesReducer from './reducers/rolesReducer';
 import systemStatusReducer from './reducers/systemStatusReducer';
 import topicTreeReducer from './reducers/topicTreeReducer';
 import clientsReducer from './reducers/clientsReducer';
+import settingsReducer from './reducers/settingsReducer';
 
 const store = createStore(
 	combineReducers({
@@ -18,6 +19,7 @@ const store = createStore(
 		license: licenseReducer,
 		version: versionsReducer,
 		roles: rolesReducer,
+		settings: settingsReducer,
 		systemStatus: systemStatusReducer,
 		topicTree: topicTreeReducer,
 		clients: clientsReducer
