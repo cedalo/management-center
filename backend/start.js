@@ -316,6 +316,7 @@ const init = async (licenseContainer) => {
 		context.brokerManager.disconnectClient(client);
 	};
 
+	// TODO: extract in separate WebSocket API class
 	const handleRequestMessage = async (message, client) => {
 		const { request } = message;
 		switch (request) {
