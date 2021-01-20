@@ -120,6 +120,14 @@ const Plugins = (props) => {
 					.then(() => brokerClient.listClients())
 					.then((clients) => dispatch(updateClients(clients)));
 				},
+				enableClient: (args, print, runCommand) => {
+					const username = args[1];
+					brokerClient.enableClient(username).then(() => {
+						print(`Client "${username}" enabled!`);
+					})
+					.then(() => brokerClient.listClients())
+					.then((clients) => dispatch(updateClients(clients)));
+				},
 				getGroup: (args, print, runCommand) => {
 					brokerClient.getGroup(args[1]).then((group) => {
 						print(`Name: ${group.groupname}`);
