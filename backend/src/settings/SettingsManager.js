@@ -9,4 +9,12 @@ module.exports = class SettingsManager {
 	get settings() {
 		return this._settings;
 	}
+
+	set settings(settings) {
+		Object.assign(this._settings, settings);
+	}
+
+	updateSettings(settings) {
+		this.settings = settings;
+	}
 };
