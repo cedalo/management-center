@@ -59,17 +59,11 @@ const Plugins = (props) => {
 			outputColor={darkMode === 'true' ? 'green' : 'grey'}
 			commands={{
 				addGroupClient: (args, print, runCommand) => {
+					const [, username, groupname] = args;
 					brokerClient
-						.addGroupClient(args[1], args[2])
+						.addGroupClient(username, groupname)
 						.then(() => {
-							print(`Client "${args[1]}" successfully added to group "${args[2]}"!`);
-						});
-				},
-				removeGroupClient: (args, print, runCommand) => {
-					brokerClient
-						.removeGroupClient(args[1], args[2])
-						.then(() => {
-							print(`Client "${args[1]}" successfully removed from group "${args[2]}"!`);
+							print(`Client "${username}" successfully added to group "${groupname}"!`);
 						});
 				},
 				createClient: (args, print, runCommand) => {
