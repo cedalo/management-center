@@ -1,5 +1,7 @@
 import React, { useContext } from 'react';
+import { connect, useDispatch } from 'react-redux';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { updateSettings } from '../actions/actions';
 
 import AddIcon from '@material-ui/icons/Add';
 import Avatar from '@material-ui/core/Avatar';
@@ -33,7 +35,6 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Typography from '@material-ui/core/Typography';
 import UserIcon from '@material-ui/icons/Person';
 import { WebSocketContext } from '../websockets/WebSocket';
-import { connect } from 'react-redux';
 import useLocalStorage from '../helpers/useLocalStorage';
 
 const useStyles = makeStyles((theme) => ({
@@ -44,14 +45,20 @@ const useStyles = makeStyles((theme) => ({
 const Settings = ({ settings, sendMessage }) => {
 	const classes = useStyles();
 	const theme = useTheme();
+	const dispatch = useDispatch();
 	const context = useContext(WebSocketContext);
+	const { client: brokerClient } = context;
 	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
 
 	const onChangeTheme = () => {
 		setDarkMode(darkMode === 'true' ? 'false' : 'true');
 	};
 
-	const onChangeAllowTrackingUsageData = (allow) => {
+	const onChangeAllowTrackingUsageData = async (allowTrackingUsageData) => {
+		const updatedSettings = await brokerClient.updateSettings({
+			allowTrackingUsageData
+		});
+		dispatch(updateSettings(updatedSettings));
 	};
 
 	return (
@@ -87,7 +94,14 @@ const Settings = ({ settings, sendMessage }) => {
 					control={
 						<Switch
 							checked={settings?.allowTrackingUsageData}
-							onChange={(event) => onChangeAllowTrackingUsageData(event.target.checked)}
+							onClick={(event) => {
+								event.stopPropagation();
+								if (event.target.checked) {
+									onChangeAllowTrackingUsageData(true);
+								} else {
+									onChangeAllowTrackingUsageData(false);
+								}
+							}}
 							name="allowTrackingUsageData"
 							color="primary"
 						/>
@@ -100,7 +114,9 @@ const Settings = ({ settings, sendMessage }) => {
 };
 
 const mapStateToProps = (state) => {
-	return {};
+	return {
+		settings: state.settings?.settings
+	};
 };
 
 export default connect(mapStateToProps)(Settings);
