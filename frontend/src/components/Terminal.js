@@ -92,6 +92,16 @@ const Plugins = (props) => {
 						.then(() => brokerClient.listGroups())
 						.then((groups) => dispatch(updateGroups(groups)));
 				},
+				deleteClient: (args, print, runCommand) => {
+					brokerClient.deleteClient(args[1]).then(() => {
+						print(`Client "${args[1]}" successfully deleted!`);
+					});
+				},
+				deleteGroup: (args, print, runCommand) => {
+					brokerClient.deleteGroup(args[1]).then(() => {
+						print(`Group "${args[1]}" successfully deleted!`);
+					});
+				},
 				getGroup: (args, print, runCommand) => {
 					brokerClient.getGroup(args[1]).then((group) => {
 						print(`Name: ${group.groupname}`);
@@ -116,16 +126,6 @@ const Plugins = (props) => {
 					brokerClient.listRoles().then((roles) => {
 						const message = roles.map((role) => `${role.rolename}`).join('\n');
 						print(message);
-					});
-				},
-				deleteClient: (args, print, runCommand) => {
-					brokerClient.deleteClient(args[1]).then(() => {
-						print(`Client "${args[1]}" successfully deleted!`);
-					});
-				},
-				deleteGroup: (args, print, runCommand) => {
-					brokerClient.deleteGroup(args[1]).then(() => {
-						print(`Group "${args[1]}" successfully deleted!`);
 					});
 				},
 				getAnonymousGroup: (args, print, runCommand) => {
