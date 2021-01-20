@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { green, red } from '@material-ui/core/colors';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { updateClient, updateClients, updateGroups } from '../actions/actions';
+import { updateClient, updateClients, updateGroups, updateRoles } from '../actions/actions';
 
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Paper from '@material-ui/core/Paper';
