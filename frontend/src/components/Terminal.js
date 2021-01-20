@@ -91,6 +91,12 @@ const Plugins = (props) => {
 						.then(() => brokerClient.listGroups())
 						.then((groups) => dispatch(updateGroups(groups)));
 				},
+				getGroup: (args, print, runCommand) => {
+					brokerClient.getGroup(args[1]).then((group) => {
+						print(`Name: ${group.groupname}`);
+						print(`Description: ${group.textdescription}`);
+					});
+				},
 				listClients: (args, print, runCommand) => {
 					brokerClient.listClients().then((clients) => {
 						const message = clients
