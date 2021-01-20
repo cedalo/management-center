@@ -73,18 +73,19 @@ const Plugins = (props) => {
 						});
 				},
 				createClient: (args, print, runCommand) => {
+					const [, username, password, clientid, rolename, textname, textdescription] = args;
 					brokerClient
-						.createClient(args[1], args[2], args[3])
+						.createClient(username, password, clientid, rolename, textname, textdescription)
 						.then(() => {
-							print(`Client "${args[1]}" successfully created!`);
+							print(`Client "${username}" successfully created!`);
 						})
 						.then(() => brokerClient.listClients())
 						.then((clients) => dispatch(updateClients(clients)));
 				},
 				createGroup: (args, print, runCommand) => {
+					const [, groupname, rolename, textname, textdescription] = args;
 					brokerClient
-						// groupname, rolename, textname, textdescription
-						.createGroup(args[1], args[2], args[3])
+						.createGroup(groupname, rolename, textname, textdescription)
 						.then(() => {
 							print(`Group "${args[1]}" successfully created!`);
 						})
