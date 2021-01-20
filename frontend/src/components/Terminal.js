@@ -135,6 +135,10 @@ const Plugins = (props) => {
 							print(`Description: ${group.textdescription}`);
 						});
 				},
+				setAnonymousGroup: (args, print, runCommand) => {
+					brokerClient.setAnonymousGroup(args[1]).then(() => {
+						print('Done');
+					});
 				}
 			}}
 			descriptions={{
