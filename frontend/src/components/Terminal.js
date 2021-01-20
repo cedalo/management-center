@@ -65,6 +65,14 @@ const Plugins = (props) => {
 							print(`Client "${args[1]}" successfully added to group "${args[2]}"!`);
 						});
 				},
+				removeGroupClient: (args, print, runCommand) => {
+					brokerClient
+						.removeGroupClient(args[1], args[2])
+						.then(() => {
+							print(`Client "${args[1]}" successfully removed from group "${args[2]}"!`);
+						});
+				},
+				createClient: (args, print, runCommand) => {
 					brokerClient
 						.createClient(args[1], args[2], args[3])
 						.then(() => {
