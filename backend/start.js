@@ -9,7 +9,7 @@ const axios = require('axios');
 const BrokerManager = require('./src/broker/BrokerManager');
 const NodeMosquittoClient = require('./src/client/NodeMosquittoClient');
 const PluginManager = require('./src/plugins/PluginManager');
-// const UsageTracker = require("./src/usage/UsageTracker");
+const UsageTracker = require("./src/usage/UsageTracker");
 const InstallationManager = require("./src/usage/InstallationManager");
 const SettingsManager = require("./src/settings/SettingsManager");
 const { loadInstallation } = require("./src/utils/utils");
@@ -161,6 +161,7 @@ const init = (licenseContainer) => {
 	// const usageTracker = new UsageTracker({ license: licenseContainer, version });
 const init = async (licenseContainer) => {
 	const installation = loadInstallation();
+	const usageTracker = new UsageTracker({ license: licenseContainer, version, installation });
 	const installationManager = new InstallationManager( { license: licenseContainer, version, installation });
 	await installationManager.verifyLicense();
 	const settingsManager = new SettingsManager();
@@ -562,19 +563,21 @@ const init = async (licenseContainer) => {
 		console.log(`Mosquitto proxy server started on port ${server.address().port}`);
 	});
 
-	// setInterval(() => {
-	// 	const data = Object.values(globalSystem);
-	// 	usageTracker.send({
-	// 		data,
-	// 		os: {
-	// 			arch: os.arch(),
-	// 			cpus: os.cpus(),
-	// 			platform: os.platform(),
-	// 			release: os.release(),
-	// 			version: os.version(),
-	// 		}
-	// 	});
-	// }, 5000);
+	setInterval(() => {
+		const data = Object.values(globalSystem);
+		if (settingsManager.settings.allowTrackingUsageData) {
+			usageTracker.send({
+				data,
+				os: {
+					arch: os.arch(),
+					cpus: os.cpus(),
+					platform: os.platform(),
+					release: os.release(),
+					version: os.version(),
+				}
+			});
+		}
+	}, 5000);
 };
 
 const licenseContainer = {};
