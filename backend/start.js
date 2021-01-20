@@ -349,6 +349,11 @@ const init = async (licenseContainer) => {
 			case 'getSettings': {
 				return settingsManager.settings;
 			}
+			case 'updateSettings': {
+				const { settings } = message;
+				settingsManager.updateSettings(settings);
+				return settingsManager.settings;
+			}
 		}
 		return {};
 	};
