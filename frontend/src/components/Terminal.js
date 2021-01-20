@@ -121,6 +121,12 @@ const Plugins = (props) => {
 					brokerClient.deleteClient(args[1]).then(() => {
 						print(`Client "${args[1]}" successfully deleted!`);
 					});
+				},
+				deleteGroup: (args, print, runCommand) => {
+					brokerClient.deleteGroup(args[1]).then(() => {
+						print(`Group "${args[1]}" successfully deleted!`);
+					});
+				},
 				}
 			}}
 			descriptions={{
