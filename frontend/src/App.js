@@ -266,6 +266,9 @@ export default function App(props) {
 			if (response?.dark?.palette?.info) {
 				darkTheme.palette.info = response?.dark?.palette?.info;
 			}
+			if (response?.light?.palette?.info) {
+				customTheme.palette.info = response?.light?.palette?.info;
+			}
 			if (response?.dark?.palette?.drawer) {
 				darkTheme.palette.drawer = response?.dark?.palette?.drawer;
 			}
@@ -382,7 +385,7 @@ export default function App(props) {
 						icon={<StreamsheetsIcon />}
 					/>
 					<ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon />} />
-					{/* <ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon />} /> */}
+					<ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon />} />
 				</List>
 				<Divider />
 				<List>
