@@ -145,6 +145,13 @@ const Plugins = (props) => {
 							print('Done');
 						});
 				},
+				removeGroupClient: (args, print, runCommand) => {
+					brokerClient
+						.removeGroupClient(args[1], args[2])
+						.then(() => {
+							print(`Client "${args[1]}" successfully removed from group "${args[2]}"!`);
+						});
+				},
 				setAnonymousGroup: (args, print, runCommand) => {
 					brokerClient.setAnonymousGroup(args[1]).then(() => {
 						print('Done');
