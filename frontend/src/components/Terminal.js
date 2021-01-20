@@ -92,6 +92,16 @@ const Plugins = (props) => {
 						.then(() => brokerClient.listGroups())
 						.then((groups) => dispatch(updateGroups(groups)));
 				},
+				createRole: (args, print, runCommand) => {
+					brokerClient
+						// rolename, textname, textdescription
+						.createRole(args[1], args[2], args[3])
+						.then(() => {
+							print(`Role "${args[1]}" successfully created!`);
+						})
+						.then(() => brokerClient.listRoles())
+						.then((roles) => dispatch(updateRoles(roles)));
+				},
 				deleteClient: (args, print, runCommand) => {
 					brokerClient.deleteClient(args[1]).then(() => {
 						print(`Client "${args[1]}" successfully deleted!`);
