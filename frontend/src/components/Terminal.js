@@ -185,11 +185,15 @@ const Plugins = (props) => {
 				}
 			}}
 			descriptions={{
+				addGroupClient: 'Add a client to a group',
 				createClient: 'Create a new client',
 				createGroup: 'Create a new group',
+				createRole: 'Create a new role',
 				deleteClient: 'Delete a client',
 				deleteGroup: 'Delete a client',
 				getAnonymousGroup: 'Get anonymous group',
+				getGroup: 'Get the details for a group',
+				removeGroupClient: 'Remove a client from a group',
 				setAnonymousGroup: 'Set anonymous group',
 				listClients: 'List all clients',
 				listGroups: 'List all groups',
