@@ -23,4 +23,8 @@ module.exports = class UsageTracker {
 			console.error(error);
 		}
 	}
+
+	async init() {
+		
+	}
 };
