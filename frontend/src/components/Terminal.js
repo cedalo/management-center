@@ -127,6 +127,14 @@ const Plugins = (props) => {
 						print(`Group "${args[1]}" successfully deleted!`);
 					});
 				},
+				getAnonymousGroup: (args, print, runCommand) => {
+					brokerClient.getAnonymousGroup()
+						.then((group) => brokerClient.getGroup(group.groupname))
+						.then((group) => {
+							print(`Name: ${group.groupname}`);
+							print(`Description: ${group.textdescription}`);
+						});
+				},
 				}
 			}}
 			descriptions={{
