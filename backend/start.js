@@ -1,4 +1,5 @@
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const http = require('http');
 const { v4: uuidv4 } = require('uuid');
@@ -157,8 +158,6 @@ const loadConfig = () => {
 	return config;
 };
 
-const init = (licenseContainer) => {
-	// const usageTracker = new UsageTracker({ license: licenseContainer, version });
 const init = async (licenseContainer) => {
 	const installation = loadInstallation();
 	const usageTracker = new UsageTracker({ license: licenseContainer, version, installation });
