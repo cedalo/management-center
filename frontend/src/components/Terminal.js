@@ -42,8 +42,6 @@ const Plugins = (props) => {
 	const context = useContext(WebSocketContext);
 	const { client: brokerClient } = context;
 
-	const showMsg = () => 'Hello World';
-
 	const classes = useStyles();
 
 	return (
@@ -102,7 +100,8 @@ const Plugins = (props) => {
 				listGroups: 'List all groups',
 				listRoles: 'List all roles'
 			}}
-			msg="Welcome to the Management Center Terminal"
+
+			msg="Welcome to the Management Center Terminal, type 'help' for more information."
 		/>
 	);
 };
