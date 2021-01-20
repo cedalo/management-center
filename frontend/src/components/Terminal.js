@@ -136,6 +136,15 @@ const Plugins = (props) => {
 							print(`Description: ${group.textdescription}`);
 						});
 				},
+				modifyRole: (args, print, runCommand) => {
+					const rolename = args[1];
+					const textname = args[2];
+					const textdescription = args[3];
+					brokerClient.modifyRole({ rolename, textname, textdescription })
+						.then(() => {
+							print('Done');
+						});
+				},
 				setAnonymousGroup: (args, print, runCommand) => {
 					brokerClient.setAnonymousGroup(args[1]).then(() => {
 						print('Done');
