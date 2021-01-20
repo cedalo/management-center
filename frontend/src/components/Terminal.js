@@ -112,6 +112,14 @@ const Plugins = (props) => {
 						print(`Group "${args[1]}" successfully deleted!`);
 					});
 				},
+				disableClient: (args, print, runCommand) => {
+					const username = args[1];
+					brokerClient.disableClient(username).then(() => {
+						print(`Client "${username}" disabled!`);
+					})
+					.then(() => brokerClient.listClients())
+					.then((clients) => dispatch(updateClients(clients)));
+				},
 				getGroup: (args, print, runCommand) => {
 					brokerClient.getGroup(args[1]).then((group) => {
 						print(`Name: ${group.groupname}`);
