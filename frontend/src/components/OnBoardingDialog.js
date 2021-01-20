@@ -1,3 +1,5 @@
+import React, { useContext } from 'react';
+import { connect, useDispatch } from 'react-redux';
 import { emphasize, makeStyles, useTheme } from '@material-ui/core/styles';
 
 import AppBar from '@material-ui/core/AppBar';
@@ -9,6 +11,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
@@ -19,7 +23,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import MobileStepper from '@material-ui/core/MobileStepper';
 import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
-import React from 'react';
 import Select from 'react-select';
 import Slide from '@material-ui/core/Slide';
 import Step from '@material-ui/core/Step';
@@ -27,12 +30,15 @@ import StepContent from '@material-ui/core/StepContent';
 import StepLabel from '@material-ui/core/StepLabel';
 import Stepper from '@material-ui/core/Stepper';
 import SubscribedIcon from '@material-ui/icons/CheckCircle';
+import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
 import { green } from '@material-ui/core/colors';
 import useLocalStorage from '../helpers/useLocalStorage';
+import { WebSocketContext } from '../websockets/WebSocket';
+import { updateSettings } from '../actions/actions';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -129,13 +135,22 @@ function getSteps() {
 			description: 'Get the latest news about Mosquitto, MQTT and Streamsheets.',
 			imgPath: '/onboarding-newsletter.png',
 			newsletter: true
+		},
+		{
+			label: 'Usage data',
+			description: 'We are continuously improving our software. For that it would be really great if you would allow the tracking of anonymous usage data.',
+			imgPath: '/onboarding-dashboard.png',
+			usageData: true
 		}
 	];
 }
 
-export default function OnBoardingDialog(props) {
+const OnBoardingDialog = ({ settings }) => {
 	const classes = useStyles();
 	const theme = useTheme();
+	const dispatch = useDispatch();
+	const context = useContext(WebSocketContext);
+	const { client: brokerClient } = context;
 	const [activeStep, setActiveStep] = React.useState(0);
 	const [email, setEMail] = React.useState('');
 	const [subscribed, setSubscribed] = useLocalStorage('cedalo.managementcenter.subscribedToNewsletter');
@@ -143,6 +158,13 @@ export default function OnBoardingDialog(props) {
 	const [showOnBoardingDialog, setShowOnBoardingDialog] = useLocalStorage(
 		'cedalo.managementcenter.showOnBoardingDialog'
 	);
+
+	const onChangeAllowTrackingUsageData = async (allowTrackingUsageData) => {
+		const updatedSettings = await brokerClient.updateSettings({
+			allowTrackingUsageData
+		});
+		dispatch(updateSettings(updatedSettings));
+	};
 
 	const handleClose = () => {
 		setShowOnBoardingDialog('false');
@@ -247,10 +269,48 @@ export default function OnBoardingDialog(props) {
 						</Typography>
 					</div>
 				) : null}
+
+				{steps[activeStep].usageData ? (
+					<div style={{ textAlign: 'center' }}>
+						<Grid container spacing={3} alignItems="flex-end">
+							<Grid item xs={12}>
+								<FormGroup row>
+									<FormControlLabel
+										control={
+											<Switch
+												checked={settings?.allowTrackingUsageData}
+												onClick={(event) => {
+													event.stopPropagation();
+													if (event.target.checked) {
+														onChangeAllowTrackingUsageData(true);
+													} else {
+														onChangeAllowTrackingUsageData(false);
+													}
+												}}
+												name="allowTrackingUsageData"
+												color="primary"
+											/>
+										}
+										label="Allow tracking of usage data"
+									/>
+								</FormGroup>
+							</Grid>
+						</Grid>
+					</div>
+				) : null}
+				{subscribed === 'true' ? (
+					<div style={{ textAlign: 'center' }}>
+						<SubscribedIcon style={{ color: green[500] }} />
+						<Typography>
+							<strong>Thanks for subscribing!</strong>
+						</Typography>
+					</div>
+				) : null}
+
 				<DialogContentText id="alert-dialog-description"></DialogContentText>
 
 				<MobileStepper
-					steps={5}
+					steps={6}
 					activeStep={activeStep}
 					variant="dots"
 					position="static"
@@ -315,3 +375,11 @@ export default function OnBoardingDialog(props) {
 		</Dialog>
 	);
 }
+
+const mapStateToProps = (state) => {
+	return {
+		settings: state.settings?.settings
+	};
+};
+
+export default connect(mapStateToProps)(OnBoardingDialog);
