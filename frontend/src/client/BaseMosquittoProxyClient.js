@@ -160,6 +160,16 @@ export default class BaseMosquittoProxyClient {
 		return response.response;
 	}
 
+	async updateSettings(settings) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'updateSettings',
+			settings
+		});
+		return response.response;
+	}
+
 	/**
 	 * ******************************************************************************************
 	 * Methods for role management
