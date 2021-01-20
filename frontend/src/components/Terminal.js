@@ -142,8 +142,12 @@ const Plugins = (props) => {
 				}
 			}}
 			descriptions={{
-				addClient: 'Add a new client',
+				createClient: 'Create a new client',
+				createGroup: 'Create a new group',
 				deleteClient: 'Delete a client',
+				deleteGroup: 'Delete a client',
+				getAnonymousGroup: 'Get anonymous group',
+				setAnonymousGroup: 'Set anonymous group',
 				listClients: 'List all clients',
 				listGroups: 'List all groups',
 				listRoles: 'List all roles'
