@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const isHelpParameter = (parameter) => parameter === '--help';
+const toErrorMessage = (error) => `⚠️ ${error}`;
 
 const Plugins = (props) => {
 	const dispatch = useDispatch();
