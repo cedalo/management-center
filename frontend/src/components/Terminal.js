@@ -261,11 +261,16 @@ const Plugins = (props) => {
 					}
 				},
 				removeGroupClient: (args, print, runCommand) => {
-					brokerClient
-						.removeGroupClient(args[1], args[2])
-						.then(() => {
-							print(`Client "${args[1]}" successfully removed from group "${args[2]}"!`);
-						});
+					if (isHelpParameter(args[1])) {
+						print(`removeGroupClient <username>, <groupname>`);
+					} else {
+						const [, username, groupname] = args;
+						brokerClient
+							.removeGroupClient(username, groupname)
+							.then(() => {
+								print(`Client "${username}" successfully removed from group "${groupname}"!`);
+							});
+					}
 				},
 				removeGroupRole: (args, print, runCommand) => {
 					const [, groupname, rolename] = args;
