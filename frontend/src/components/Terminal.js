@@ -46,6 +46,9 @@ const Plugins = (props) => {
 
 	const classes = useStyles();
 
+	const message = `Welcome to the Management Center Terminal.
+💡 Type 'help' for a list of available commands and type '<command> --help' for information on a specific command.`
+
 	const commands = {
 		addGroupClient: (args, print, runCommand) => {
 			if (isHelpParameter(args[1])) {
@@ -332,7 +335,7 @@ const Plugins = (props) => {
 				listRoles: 'List all roles'
 			}}
 
-			msg="Welcome to the Management Center Terminal, type 'help' for more information."
+			msg={message}
 		/>
 	);
 };
