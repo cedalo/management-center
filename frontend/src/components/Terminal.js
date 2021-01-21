@@ -124,6 +124,10 @@ const Plugins = (props) => {
 						print(`Group "${groupname}" successfully deleted!`);
 					});
 				},
+				deleteRole: (args, print, runCommand) => {
+					const [, rolename] = args;
+					brokerClient.deleteRole(rolename).then(() => {
+						print(`Role "${rolename}" successfully deleted!`);
 					});
 				},
 				disableClient: (args, print, runCommand) => {
