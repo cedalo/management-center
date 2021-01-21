@@ -715,10 +715,10 @@ export default class BaseMosquittoProxyClient {
 		return groups.length;
 	}
 
-	async addClientToGroups(username, groups) {
+	async addClientToGroups(username, groups, priority) {
 		if (groups) {
 			for (const group of groups) {
-				await this.addGroupClient(username, group);
+				await this.addGroupClient(username, group, priority);
 			}
 		}
 	}
