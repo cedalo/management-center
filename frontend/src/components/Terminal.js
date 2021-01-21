@@ -35,6 +35,8 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
+const isHelpParameter = (parameter) => parameter === '--help';
+
 const Plugins = (props) => {
 	const dispatch = useDispatch();
 	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
