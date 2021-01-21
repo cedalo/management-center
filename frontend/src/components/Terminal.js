@@ -273,12 +273,16 @@ const Plugins = (props) => {
 					}
 				},
 				removeGroupRole: (args, print, runCommand) => {
-					const [, groupname, rolename] = args;
-					brokerClient
-						.removeGroupRole(groupname, rolename)
-						.then(() => {
-							print(`Role "${rolename}" successfully removed from group "${groupname}"!`);
-						});
+					if (isHelpParameter(args[1])) {
+						print(`removeGroupRole <groupname>, <rolename>`);
+					} else {
+						const [, groupname, rolename] = args;
+						brokerClient
+							.removeGroupRole(groupname, rolename)
+							.then(() => {
+								print(`Role "${rolename}" successfully removed from group "${groupname}"!`);
+							});
+					}
 				},
 				setAnonymousGroup: (args, print, runCommand) => {
 					brokerClient.setAnonymousGroup(args[1]).then(() => {
