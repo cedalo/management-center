@@ -395,12 +395,13 @@ export default class BaseMosquittoProxyClient {
 		);
 	}
 
-	async addGroupRole(groupname, rolename) {
+	async addGroupRole(groupname, rolename, priority) {
 		return this.sendCommand(
 			{
 				command: 'addGroupRole',
 				groupname,
-				rolename
+				rolename,
+				priority
 			},
 			API_DYNAMIC_SECURITY
 		);
