@@ -59,9 +59,9 @@ const Plugins = (props) => {
 			outputColor={darkMode === 'true' ? 'green' : 'grey'}
 			commands={{
 				addGroupClient: (args, print, runCommand) => {
-					const [, username, groupname] = args;
+					const [, username, groupname, priority] = args;
 					brokerClient
-						.addGroupClient(username, groupname)
+						.addGroupClient(username, groupname, priority)
 						.then(() => {
 							print(`Client "${username}" successfully added to group "${groupname}"!`);
 						});
