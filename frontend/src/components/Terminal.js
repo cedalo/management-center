@@ -206,12 +206,16 @@ const Plugins = (props) => {
 					}
 				},
 				listClients: (args, print, runCommand) => {
-					brokerClient.listClients().then((clients) => {
-						const message = clients
-							.map((client) => `${client.username}\t${client.clientid ? client.clientid : ''}`)
-							.join('\n');
-						print(message);
-					});
+					if (isHelpParameter(args[1])) {
+						print(`listClients`);
+					} else {
+						brokerClient.listClients().then((clients) => {
+							const message = clients
+								.map((client) => `${client.username}\t${client.clientid ? client.clientid : ''}`)
+								.join('\n');
+							print(message);
+						});
+					}
 				},
 				listGroups: (args, print, runCommand) => {
 					brokerClient.listGroups().then((groups) => {
