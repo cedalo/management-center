@@ -835,7 +835,11 @@ export default class BaseMosquittoProxyClient {
 			if (request) {
 				if (parsedMessage.type === 'response') {
 					this.logger.debug('Got response from Mosquitto proxy', parsedMessage);
-					request.resolve(parsedMessage);
+					if (parsedMessage.error) {
+						request.reject(parsedMessage.error);
+					} else {
+						request.resolve(parsedMessage);
+					}
 				} else {
 					request.reject(parsedMessage);
 				}
