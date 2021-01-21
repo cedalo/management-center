@@ -113,13 +113,17 @@ const Plugins = (props) => {
 						.then((roles) => dispatch(updateRoles(roles)));
 				},
 				deleteClient: (args, print, runCommand) => {
-					brokerClient.deleteClient(args[1]).then(() => {
-						print(`Client "${args[1]}" successfully deleted!`);
+					const [, username] = args;
+					brokerClient.deleteClient(username).then(() => {
+						print(`Client "${username}" successfully deleted!`);
 					});
 				},
 				deleteGroup: (args, print, runCommand) => {
-					brokerClient.deleteGroup(args[1]).then(() => {
-						print(`Group "${args[1]}" successfully deleted!`);
+					const [, groupname] = args;
+					brokerClient.deleteGroup(groupname).then(() => {
+						print(`Group "${groupname}" successfully deleted!`);
+					});
+				},
 					});
 				},
 				disableClient: (args, print, runCommand) => {
