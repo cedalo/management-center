@@ -169,12 +169,17 @@ const Plugins = (props) => {
 					}
 				},
 				disableClient: (args, print, runCommand) => {
-					const username = args[1];
-					brokerClient.disableClient(username).then(() => {
-						print(`Client "${username}" disabled!`);
-					})
-					.then(() => brokerClient.listClients())
-					.then((clients) => dispatch(updateClients(clients)));
+					if (isHelpParameter(args[1])) {
+						print(`disableClient <username>`);
+					} else {
+						const username = args[1];
+						brokerClient.disableClient(username)
+							.then(() => {
+								print(`Client "${username}" disabled!`);
+							})
+							.then(() => brokerClient.listClients())
+							.then((clients) => dispatch(updateClients(clients)));
+					}
 				},
 				enableClient: (args, print, runCommand) => {
 					const username = args[1];
