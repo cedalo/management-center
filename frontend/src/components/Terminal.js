@@ -182,12 +182,17 @@ const Plugins = (props) => {
 					}
 				},
 				enableClient: (args, print, runCommand) => {
-					const username = args[1];
-					brokerClient.enableClient(username).then(() => {
-						print(`Client "${username}" enabled!`);
-					})
-					.then(() => brokerClient.listClients())
-					.then((clients) => dispatch(updateClients(clients)));
+					if (isHelpParameter(args[1])) {
+						print(`enableClient <username>`);
+					} else {
+						const username = args[1];
+						brokerClient.enableClient(username)
+							.then(() => {
+								print(`Client "${username}" enabled!`);
+							})
+							.then(() => brokerClient.listClients())
+							.then((clients) => dispatch(updateClients(clients)));
+					}
 				},
 				getGroup: (args, print, runCommand) => {
 					brokerClient.getGroup(args[1]).then((group) => {
