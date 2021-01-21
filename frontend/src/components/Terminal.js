@@ -203,6 +203,7 @@ const Plugins = (props) => {
 						.then(() => {
 							print(`Role "${rolename}" successfully removed from group "${groupname}"!`);
 						});
+				},
 				setAnonymousGroup: (args, print, runCommand) => {
 					brokerClient.setAnonymousGroup(args[1]).then(() => {
 						print('Done');
