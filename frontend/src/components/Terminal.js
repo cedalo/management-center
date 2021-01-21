@@ -149,10 +149,14 @@ const Plugins = (props) => {
 					}
 				},
 				deleteGroup: (args, print, runCommand) => {
-					const [, groupname] = args;
-					brokerClient.deleteGroup(groupname).then(() => {
-						print(`Group "${groupname}" successfully deleted!`);
-					});
+					if (isHelpParameter(args[1])) {
+						print(`deleteGroup <groupname>`);
+					} else {
+						const [, groupname] = args;
+						brokerClient.deleteGroup(groupname).then(() => {
+							print(`Group "${groupname}" successfully deleted!`);
+						});
+					}
 				},
 				deleteRole: (args, print, runCommand) => {
 					const [, rolename] = args;
