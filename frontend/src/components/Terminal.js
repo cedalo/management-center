@@ -238,12 +238,16 @@ const Plugins = (props) => {
 					}
 				},
 				getAnonymousGroup: (args, print, runCommand) => {
-					brokerClient.getAnonymousGroup()
-						.then((group) => brokerClient.getGroup(group.groupname))
-						.then((group) => {
-							print(`Name: ${group.groupname}`);
-							print(`Description: ${group.textdescription}`);
-						});
+					if (isHelpParameter(args[1])) {
+						print(`getAnonymousGroup`);
+					} else {
+						brokerClient.getAnonymousGroup()
+							.then((group) => brokerClient.getGroup(group.groupname))
+							.then((group) => {
+								print(`Name: ${group.groupname}`);
+								print(`Description: ${group.textdescription}`);
+							});
+					}
 				},
 				modifyRole: (args, print, runCommand) => {
 					const rolename = args[1];
