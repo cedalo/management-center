@@ -103,11 +103,11 @@ const Plugins = (props) => {
 						.then((groups) => dispatch(updateGroups(groups)));
 				},
 				createRole: (args, print, runCommand) => {
+					const [, rolename, textname, textdescription] = args;
 					brokerClient
-						// rolename, textname, textdescription
-						.createRole(args[1], args[2], args[3])
+						.createRole(rolename, textname, textdescription)
 						.then(() => {
-							print(`Role "${args[1]}" successfully created!`);
+							print(`Role "${rolename}" successfully created!`);
 						})
 						.then(() => brokerClient.listRoles())
 						.then((roles) => dispatch(updateRoles(roles)));
