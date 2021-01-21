@@ -111,14 +111,18 @@ const Plugins = (props) => {
 					}
 				},
 				createGroup: (args, print, runCommand) => {
-					const [, groupname, rolename, textname, textdescription] = args;
-					brokerClient
-						.createGroup(groupname, rolename, textname, textdescription)
-						.then(() => {
-							print(`Group "${args[1]}" successfully created!`);
-						})
-						.then(() => brokerClient.listGroups())
-						.then((groups) => dispatch(updateGroups(groups)));
+					if (isHelpParameter(args[1])) {
+						print(`createGroup <groupname>, <rolename>, <textname>, <textdescription>`);
+					} else {
+						const [, groupname, rolename, textname, textdescription] = args;
+						brokerClient
+							.createGroup(groupname, rolename, textname, textdescription)
+							.then(() => {
+								print(`Group "${args[1]}" successfully created!`);
+							})
+							.then(() => brokerClient.listGroups())
+							.then((groups) => dispatch(updateGroups(groups)));
+					}
 				},
 				createRole: (args, print, runCommand) => {
 					const [, rolename, textname, textdescription] = args;
