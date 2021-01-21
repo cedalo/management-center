@@ -290,7 +290,8 @@ const init = async (licenseContainer) => {
 				// TODO: remove users and groups properties when Mosquitto supports that API
 				// data: result.data || result.users || result.groups,
 				data: result.data,
-				done: true
+				done: result.error ? false : true,
+				error: result.error
 			};
 			return response;
 		} else {
