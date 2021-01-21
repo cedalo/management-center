@@ -159,10 +159,14 @@ const Plugins = (props) => {
 					}
 				},
 				deleteRole: (args, print, runCommand) => {
-					const [, rolename] = args;
-					brokerClient.deleteRole(rolename).then(() => {
-						print(`Role "${rolename}" successfully deleted!`);
-					});
+					if (isHelpParameter(args[1])) {
+						print(`deleteRole <rolename>`);
+					} else {
+						const [, rolename] = args;
+						brokerClient.deleteRole(rolename).then(() => {
+							print(`Role "${rolename}" successfully deleted!`);
+						});
+					}
 				},
 				disableClient: (args, print, runCommand) => {
 					const username = args[1];
