@@ -139,10 +139,14 @@ const Plugins = (props) => {
 					}
 				},
 				deleteClient: (args, print, runCommand) => {
-					const [, username] = args;
-					brokerClient.deleteClient(username).then(() => {
-						print(`Client "${username}" successfully deleted!`);
-					});
+					if (isHelpParameter(args[1])) {
+						print(`deleteClient <username>`);
+					} else {
+						const [, username] = args;
+						brokerClient.deleteClient(username).then(() => {
+							print(`Client "${username}" successfully deleted!`);
+						});
+					}
 				},
 				deleteGroup: (args, print, runCommand) => {
 					const [, groupname] = args;
