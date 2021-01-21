@@ -218,10 +218,14 @@ const Plugins = (props) => {
 					}
 				},
 				listGroups: (args, print, runCommand) => {
-					brokerClient.listGroups().then((groups) => {
-						const message = groups.map((group) => `${group.groupname}`).join('\n');
-						print(message);
-					});
+					if (isHelpParameter(args[1])) {
+						print(`listGroups`);
+					} else {
+						brokerClient.listGroups().then((groups) => {
+							const message = groups.map((group) => `${group.groupname}`).join('\n');
+							print(message);
+						});
+					}
 				},
 				listRoles: (args, print, runCommand) => {
 					brokerClient.listRoles().then((roles) => {
