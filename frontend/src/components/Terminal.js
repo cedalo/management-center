@@ -59,6 +59,9 @@ const Plugins = (props) => {
 					.addGroupClient(username, groupname, priority)
 					.then(() => {
 						print(`Client "${username}" successfully added to group "${groupname}"!`);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
 					});
 			}
 		},
@@ -71,6 +74,9 @@ const Plugins = (props) => {
 					.addGroupRole(groupname, rolename, priority)
 					.then(() => {
 						print(`Role "${rolename}" successfully added to group "${groupname}"!`);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
 					});
 			}
 		},
@@ -83,6 +89,9 @@ const Plugins = (props) => {
 					.addRoleACL(rolename, { acltype, priority, topic, allow })
 					.then(() => {
 						print(`ACL successfully added to role "${rolename}"!`);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
 					});
 			}
 		},
@@ -97,7 +106,10 @@ const Plugins = (props) => {
 						print(`Client "${username}" successfully created!`);
 					})
 					.then(() => brokerClient.listClients())
-					.then((clients) => dispatch(updateClients(clients)));
+					.then((clients) => dispatch(updateClients(clients)))
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
 			}
 		},
 		createGroup: (args, print, runCommand) => {
@@ -111,7 +123,10 @@ const Plugins = (props) => {
 						print(`Group "${args[1]}" successfully created!`);
 					})
 					.then(() => brokerClient.listGroups())
-					.then((groups) => dispatch(updateGroups(groups)));
+					.then((groups) => dispatch(updateGroups(groups)))
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
 			}
 		},
 		createRole: (args, print, runCommand) => {
@@ -125,7 +140,10 @@ const Plugins = (props) => {
 						print(`Role "${rolename}" successfully created!`);
 					})
 					.then(() => brokerClient.listRoles())
-					.then((roles) => dispatch(updateRoles(roles)));
+					.then((roles) => dispatch(updateRoles(roles)))
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
 			}
 		},
 		deleteClient: (args, print, runCommand) => {
@@ -133,9 +151,13 @@ const Plugins = (props) => {
 				print(`deleteClient <username>`);
 			} else {
 				const [, username] = args;
-				brokerClient.deleteClient(username).then(() => {
-					print(`Client "${username}" successfully deleted!`);
-				});
+				brokerClient.deleteClient(username)
+					.then(() => {
+						print(`Client "${username}" successfully deleted!`);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
 			}
 		},
 		deleteGroup: (args, print, runCommand) => {
@@ -143,9 +165,13 @@ const Plugins = (props) => {
 				print(`deleteGroup <groupname>`);
 			} else {
 				const [, groupname] = args;
-				brokerClient.deleteGroup(groupname).then(() => {
-					print(`Group "${groupname}" successfully deleted!`);
-				});
+				brokerClient.deleteGroup(groupname)
+					.then(() => {
+						print(`Group "${groupname}" successfully deleted!`);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
 			}
 		},
 		deleteRole: (args, print, runCommand) => {
@@ -153,9 +179,13 @@ const Plugins = (props) => {
 				print(`deleteRole <rolename>`);
 			} else {
 				const [, rolename] = args;
-				brokerClient.deleteRole(rolename).then(() => {
-					print(`Role "${rolename}" successfully deleted!`);
-				});
+				brokerClient.deleteRole(rolename)
+					.then(() => {
+						print(`Role "${rolename}" successfully deleted!`);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
 			}
 		},
 		disableClient: (args, print, runCommand) => {
@@ -168,7 +198,10 @@ const Plugins = (props) => {
 						print(`Client "${username}" disabled!`);
 					})
 					.then(() => brokerClient.listClients())
-					.then((clients) => dispatch(updateClients(clients)));
+					.then((clients) => dispatch(updateClients(clients)))
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
 			}
 		},
 		enableClient: (args, print, runCommand) => {
@@ -181,7 +214,12 @@ const Plugins = (props) => {
 						print(`Client "${username}" enabled!`);
 					})
 					.then(() => brokerClient.listClients())
-					.then((clients) => dispatch(updateClients(clients)));
+					.then((clients) => dispatch(updateClients(clients)))
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
+			}
+		},
 			}
 		},
 		getGroup: (args, print, runCommand) => {
@@ -235,20 +273,28 @@ Clients:     ${group.clients.map(client => client.username).join(', ')}
 			if (isHelpParameter(args[1])) {
 				print(`listGroups`);
 			} else {
-				brokerClient.listGroups().then((groups) => {
-					const message = groups.map((group) => `${group.groupname}`).join('\n');
-					print(message);
-				});
+				brokerClient.listGroups()
+					.then((groups) => {
+						const message = groups.map((group) => `${group.groupname}`).join('\n');
+						print(message);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
 			}
 		},
 		listRoles: (args, print, runCommand) => {
 			if (isHelpParameter(args[1])) {
 				print(`listRoles`);
 			} else {
-				brokerClient.listRoles().then((roles) => {
-					const message = roles.map((role) => `${role.rolename}`).join('\n');
-					print(message);
-				});
+				brokerClient.listRoles()
+					.then((roles) => {
+						const message = roles.map((role) => `${role.rolename}`).join('\n');
+						print(message);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
 			}
 		},
 		getAnonymousGroup: (args, print, runCommand) => {
@@ -260,6 +306,9 @@ Clients:     ${group.clients.map(client => client.username).join(', ')}
 					.then((group) => {
 						print(`Name: ${group.groupname}`);
 						print(`Description: ${group.textdescription}`);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
 					});
 			}
 		},
@@ -271,6 +320,9 @@ Clients:     ${group.clients.map(client => client.username).join(', ')}
 				brokerClient.modifyRole({ rolename, textname, textdescription })
 					.then(() => {
 						print('Done');
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
 					});
 			}
 		},
@@ -283,6 +335,9 @@ Clients:     ${group.clients.map(client => client.username).join(', ')}
 					.removeGroupClient(username, groupname)
 					.then(() => {
 						print(`Client "${username}" successfully removed from group "${groupname}"!`);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
 					});
 			}
 		},
@@ -295,6 +350,9 @@ Clients:     ${group.clients.map(client => client.username).join(', ')}
 					.removeGroupRole(groupname, rolename)
 					.then(() => {
 						print(`Role "${rolename}" successfully removed from group "${groupname}"!`);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
 					});
 			}
 		},
@@ -303,9 +361,13 @@ Clients:     ${group.clients.map(client => client.username).join(', ')}
 				print(`setAnonymousGroup <groupname>`);
 			} else {
 				const [, groupname] = args;
-				brokerClient.setAnonymousGroup(groupname).then(() => {
-					print('Done');
-				});
+				brokerClient.setAnonymousGroup(groupname)
+					.then(() => {
+						print('Done');
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
 			}
 		}
 	}
