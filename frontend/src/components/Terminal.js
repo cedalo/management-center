@@ -74,6 +74,14 @@ const Plugins = (props) => {
 							print(`Role "${rolename}" successfully added to group "${groupname}"!`);
 						});
 				},
+				addRoleACL: (args, print, runCommand) => {
+					const [, rolename, acltype, priority, topic, allow] = args;
+					brokerClient
+						.addRoleACL(rolename, { acltype, priority, topic, allow })
+						.then(() => {
+							print(`ACL successfully added to role "${rolename}"!`);
+						});
+				},
 				createClient: (args, print, runCommand) => {
 					const [, username, password, clientid, rolename, textname, textdescription] = args;
 					brokerClient
