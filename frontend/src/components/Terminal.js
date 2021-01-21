@@ -195,10 +195,15 @@ const Plugins = (props) => {
 					}
 				},
 				getGroup: (args, print, runCommand) => {
-					brokerClient.getGroup(args[1]).then((group) => {
-						print(`Name: ${group.groupname}`);
-						print(`Description: ${group.textdescription}`);
-					});
+					if (isHelpParameter(args[1])) {
+						print(`getGroup <groupname>`);
+					} else {
+						const [, groupname] = args;
+						brokerClient.getGroup(groupname).then((group) => {
+							print(`Name: ${group.groupname}`);
+							print(`Description: ${group.textdescription}`);
+						});
+					}
 				},
 				listClients: (args, print, runCommand) => {
 					brokerClient.listClients().then((clients) => {
