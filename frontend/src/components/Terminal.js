@@ -66,6 +66,14 @@ const Plugins = (props) => {
 							print(`Client "${username}" successfully added to group "${groupname}"!`);
 						});
 				},
+				addGroupRole: (args, print, runCommand) => {
+					const [, groupname, rolename, priority] = args;
+					brokerClient
+						.addGroupRole(groupname, rolename, priority)
+						.then(() => {
+							print(`Role "${rolename}" successfully added to group "${groupname}"!`);
+						});
+				},
 				createClient: (args, print, runCommand) => {
 					const [, username, password, clientid, rolename, textname, textdescription] = args;
 					brokerClient
