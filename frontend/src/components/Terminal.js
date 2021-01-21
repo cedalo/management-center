@@ -189,10 +189,18 @@ const Plugins = (props) => {
 				print(`getGroup <groupname>`);
 			} else {
 				const [, groupname] = args;
-				brokerClient.getGroup(groupname).then((group) => {
-					print(`Name: ${group.groupname}`);
-					print(`Description: ${group.textdescription}`);
-				});
+				brokerClient.getGroup(groupname)
+					.then((group) => {print(
+`Name:        ${group.groupname}
+Textname:    ${group.textname}
+Description: ${group.textdescription}
+Roles:       ${group.roles.map(role => role.rolename).join(', ')}
+Clients:     ${group.clients.map(client => client.username).join(', ')}
+`);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
 			}
 		},
 		listClients: (args, print, runCommand) => {
