@@ -85,12 +85,16 @@ const Plugins = (props) => {
 					}
 				},
 				addRoleACL: (args, print, runCommand) => {
-					const [, rolename, acltype, priority, topic, allow] = args;
-					brokerClient
-						.addRoleACL(rolename, { acltype, priority, topic, allow })
-						.then(() => {
-							print(`ACL successfully added to role "${rolename}"!`);
-						});
+					if (isHelpParameter(args[1])) {
+						print(`addRoleACL <rolename> <acltype> <topic filter> allow|deny <priority>`);
+					} else {
+						const [, rolename, acltype, topic, allow, priority] = args;
+						brokerClient
+							.addRoleACL(rolename, { acltype, priority, topic, allow })
+							.then(() => {
+								print(`ACL successfully added to role "${rolename}"!`);
+							});
+					}
 				},
 				createClient: (args, print, runCommand) => {
 					const [, username, password, clientid, rolename, textname, textdescription] = args;
