@@ -221,6 +221,24 @@ const Plugins = (props) => {
 					});
 			}
 		},
+		getClient: (args, print, runCommand) => {
+			if (isHelpParameter(args[1])) {
+				print(`getClient <clientname>`);
+			} else {
+				const [, clientname] = args;
+				brokerClient.getClient(clientname)
+					.then((client) => {
+						print(
+`Name:        ${client.username}
+Textname:    ${client.textname}
+Description: ${client.textdescription}
+Roles:       ${client.roles.map(role => role.rolename).join(', ')}
+Groups:      ${client.groups.map(group => group.groupname).join(', ')}
+`);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
 			}
 		},
 		getGroup: (args, print, runCommand) => {
