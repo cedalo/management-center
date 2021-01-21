@@ -418,12 +418,13 @@ export default class BaseMosquittoProxyClient {
 		);
 	}
 
-	async addGroupClient(username, groupname) {
+	async addGroupClient(username, groupname, priority) {
 		return this.sendCommand(
 			{
 				command: 'addGroupClient',
 				username,
-				groupname
+				groupname,
+				priority
 			},
 			API_DYNAMIC_SECURITY
 		);
