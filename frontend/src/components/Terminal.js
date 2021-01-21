@@ -73,12 +73,16 @@ const Plugins = (props) => {
 					}
 				},
 				addGroupRole: (args, print, runCommand) => {
-					const [, groupname, rolename, priority] = args;
-					brokerClient
-						.addGroupRole(groupname, rolename, priority)
-						.then(() => {
-							print(`Role "${rolename}" successfully added to group "${groupname}"!`);
-						});
+					if (isHelpParameter(args[1])) {
+						print(`addGroupRole <groupname> <rolename> <priority>`);
+					} else {
+						const [, groupname, rolename, priority] = args;
+						brokerClient
+							.addGroupRole(groupname, rolename, priority)
+							.then(() => {
+								print(`Role "${rolename}" successfully added to group "${groupname}"!`);
+							});
+					}
 				},
 				addRoleACL: (args, print, runCommand) => {
 					const [, rolename, acltype, priority, topic, allow] = args;
