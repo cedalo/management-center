@@ -250,13 +250,15 @@ const Plugins = (props) => {
 					}
 				},
 				modifyRole: (args, print, runCommand) => {
-					const rolename = args[1];
-					const textname = args[2];
-					const textdescription = args[3];
-					brokerClient.modifyRole({ rolename, textname, textdescription })
-						.then(() => {
-							print('Done');
-						});
+					if (isHelpParameter(args[1])) {
+						print(`modifyRole <rolename>, <textname>, <textdescription>`);
+					} else {
+						const [, rolename, textname, textdescription] = args;
+						brokerClient.modifyRole({ rolename, textname, textdescription })
+							.then(() => {
+								print('Done');
+							});
+					}
 				},
 				removeGroupClient: (args, print, runCommand) => {
 					brokerClient
