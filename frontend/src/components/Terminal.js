@@ -228,10 +228,14 @@ const Plugins = (props) => {
 					}
 				},
 				listRoles: (args, print, runCommand) => {
-					brokerClient.listRoles().then((roles) => {
-						const message = roles.map((role) => `${role.rolename}`).join('\n');
-						print(message);
-					});
+					if (isHelpParameter(args[1])) {
+						print(`listRoles`);
+					} else {
+						brokerClient.listRoles().then((roles) => {
+							const message = roles.map((role) => `${role.rolename}`).join('\n');
+							print(message);
+						});
+					}
 				},
 				getAnonymousGroup: (args, print, runCommand) => {
 					brokerClient.getAnonymousGroup()
