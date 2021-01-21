@@ -125,14 +125,18 @@ const Plugins = (props) => {
 					}
 				},
 				createRole: (args, print, runCommand) => {
-					const [, rolename, textname, textdescription] = args;
-					brokerClient
-						.createRole(rolename, textname, textdescription)
-						.then(() => {
-							print(`Role "${rolename}" successfully created!`);
-						})
-						.then(() => brokerClient.listRoles())
-						.then((roles) => dispatch(updateRoles(roles)));
+					if (isHelpParameter(args[1])) {
+						print(`createRole <rolename>, <textname>, <textdescription>`);
+					} else {
+						const [, rolename, textname, textdescription] = args;
+						brokerClient
+							.createRole(rolename, textname, textdescription)
+							.then(() => {
+								print(`Role "${rolename}" successfully created!`);
+							})
+							.then(() => brokerClient.listRoles())
+							.then((roles) => dispatch(updateRoles(roles)));
+					}
 				},
 				deleteClient: (args, print, runCommand) => {
 					const [, username] = args;
