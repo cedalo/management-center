@@ -61,12 +61,16 @@ const Plugins = (props) => {
 			outputColor={darkMode === 'true' ? 'green' : 'grey'}
 			commands={{
 				addGroupClient: (args, print, runCommand) => {
-					const [, username, groupname, priority] = args;
-					brokerClient
-						.addGroupClient(username, groupname, priority)
-						.then(() => {
-							print(`Client "${username}" successfully added to group "${groupname}"!`);
-						});
+					if (isHelpParameter(args[1])) {
+						print(`addGroupClient <username> <groupname> <priority>`);
+					} else {
+						const [, username, groupname, priority] = args;
+						brokerClient
+							.addGroupClient(username, groupname, priority)
+							.then(() => {
+								print(`Client "${username}" successfully added to group "${groupname}"!`);
+							});
+					}
 				},
 				addGroupRole: (args, print, runCommand) => {
 					const [, groupname, rolename, priority] = args;
