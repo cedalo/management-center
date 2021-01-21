@@ -207,12 +207,16 @@ Clients:     ${group.clients.map(client => client.username).join(', ')}
 			if (isHelpParameter(args[1])) {
 				print(`listClients`);
 			} else {
-				brokerClient.listClients().then((clients) => {
-					const message = clients
-						.map((client) => `${client.username}\t${client.clientid ? client.clientid : ''}`)
-						.join('\n');
-					print(message);
-				});
+				brokerClient.listClients()
+					.then((clients) => {
+						const message = clients
+							.map((client) => `${client.username}\t${client.clientid ? client.clientid : ''}`)
+							.join('\n');
+						print(message);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
 			}
 		},
 		// listGroupClients: (args, print, runCommand) => {
