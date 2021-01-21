@@ -285,9 +285,14 @@ const Plugins = (props) => {
 					}
 				},
 				setAnonymousGroup: (args, print, runCommand) => {
-					brokerClient.setAnonymousGroup(args[1]).then(() => {
-						print('Done');
-					});
+					if (isHelpParameter(args[1])) {
+						print(`setAnonymousGroup <groupname>`);
+					} else {
+						const [, groupname] = args;
+						brokerClient.setAnonymousGroup(groupname).then(() => {
+							print('Done');
+						});
+					}
 				}
 			}}
 			descriptions={{
