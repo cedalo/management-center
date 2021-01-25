@@ -241,6 +241,20 @@ Groups:      ${client.groups.map(group => group.groupname).join(', ')}
 					});
 			}
 		},
+		getDefaultACLAccess: (args, print, runCommand) => {
+			if (isHelpParameter(args[1])) {
+				print(`getDefaultACLAccess`);
+			} else {
+				brokerClient.getDefaultACLAccess()
+					.then((defaultAccess) => {
+						print(
+`${defaultAccess.acls.map(acl => `${acl.acltype}: ${acl.allow}`).join('\n')}`);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
+			}
+		},
 		getGroup: (args, print, runCommand) => {
 			if (isHelpParameter(args[1])) {
 				print(`getGroup <groupname>`);
