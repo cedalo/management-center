@@ -374,15 +374,21 @@ Topic:      ${acl.topic}
 					});
 			}
 		},
-		getAnonymousGroup: (args, print, runCommand) => {
+		modifyClient: (args, print, runCommand) => {
 			if (isHelpParameter(args[1])) {
-				print(`getAnonymousGroup`);
+				// TODO: add support for groups and roles
+				print(`modifyClient <username> <password> <clientid> <textname> <textdescription>`);
 			} else {
-				brokerClient.getAnonymousGroup()
-					.then((group) => brokerClient.getGroup(group.groupname))
-					.then((group) => {
-						print(`Name: ${group.groupname}`);
-						print(`Description: ${group.textdescription}`);
+				const [, username, password, clientid, textname, textdescription ] = args;
+				brokerClient.modifyClient({ username, password, clientid, textname, textdescription })
+					.then(() => {
+						print('Done');
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
+			}
+		},
 		modifyGroup: (args, print, runCommand) => {
 			if (isHelpParameter(args[1])) {
 				// TODO: add support for clients and roles
