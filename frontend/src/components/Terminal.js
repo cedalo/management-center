@@ -361,6 +361,15 @@ Topic:      ${acl.topic}
 					.then((group) => {
 						print(`Name: ${group.groupname}`);
 						print(`Description: ${group.textdescription}`);
+		modifyGroup: (args, print, runCommand) => {
+			if (isHelpParameter(args[1])) {
+				// TODO: add support for clients and roles
+				print(`modifyGroup <groupname> <textname> <textdescription>`);
+			} else {
+				const [, groupname, textname, textdescription ] = args;
+				brokerClient.modifyGroup({ groupname, textname, textdescription })
+					.then(() => {
+						print('Done');
 					})
 					.catch((error) => {
 						print(toErrorMessage(error));
