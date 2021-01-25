@@ -267,6 +267,28 @@ Textname:    ${group.textname}
 Description: ${group.textdescription}
 Roles:       ${group.roles.map(role => role.rolename).join(', ')}
 Clients:     ${group.clients.map(client => client.username).join(', ')}
+		},
+		getRole: (args, print, runCommand) => {
+			if (isHelpParameter(args[1])) {
+				print(`getRole <rolename>`);
+			} else {
+				const [, rolename] = args;
+				brokerClient.getRole(rolename)
+					.then((client) => {
+						print(
+`Name:        ${client.rolename}
+Textname:    ${client.textname}
+Description: ${client.textdescription}
+
+************************************************************
+ACLs:       
+************************************************************
+${client.acls.map(acl => `
+ACL Type:   ${acl.acltype}
+Allow:      ${acl.allow}
+Priority:   ${acl.priority}
+Topic:      ${acl.topic}
+`).join('')}
 `);
 					})
 					.catch((error) => {
