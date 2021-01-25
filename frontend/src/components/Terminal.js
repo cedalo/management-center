@@ -464,7 +464,7 @@ Topic:      ${acl.topic}
 			style={{ fontWeight: 'bold', fontSize: '1.4em', width: '100%' }}
 			backgroundColor={darkMode === 'true' ? 'black' : 'white'}
 			barColor="black"
-			outputColor={darkMode === 'true' ? 'green' : 'grey'}
+			outputColor={darkMode === 'true' ? 'yellow' : 'grey'}
 			commands={commands}
 			descriptions={{
 				addGroupClient: 'Add a client to a group',
