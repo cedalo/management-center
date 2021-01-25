@@ -479,14 +479,20 @@ Topic:      ${acl.topic}
 				disableClient: 'Disable a client',
 				enableClient: 'Enable a client',
 				getAnonymousGroup: 'Get anonymous group',
+				getClient: 'Get the details for a client',
+				getDefaultACLAccess: 'Get the default ACL access',
 				getGroup: 'Get the details for a group',
+				getRole: 'Get the details for a role',
+				listClients: 'List all clients',
+				listGroups: 'List all groups',
+				listRoles: 'List all roles',
+				modifyClient: 'Modify a client',
+				modifyGroup: 'Modify a group',
 				modifyRole: 'Modify a role',
 				removeGroupClient: 'Remove a client from a group',
 				removeGroupRole: 'Remove a role from a group',
 				setAnonymousGroup: 'Set anonymous group',
-				listClients: 'List all clients',
-				listGroups: 'List all groups',
-				listRoles: 'List all roles'
+				setDefaultACLAccess: 'Set the default ACL access'
 			}}
 
 			msg={message}
