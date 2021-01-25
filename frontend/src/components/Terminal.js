@@ -247,6 +247,7 @@ const Plugins = (props) => {
 `Name:        ${client.username}
 Textname:    ${client.textname}
 Description: ${client.textdescription}
+Client ID:   ${client.clientid}
 Roles:       ${client.roles.map(role => role.rolename).join(', ')}
 Groups:      ${client.groups.map(group => group.groupname).join(', ')}
 `);
