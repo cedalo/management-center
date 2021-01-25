@@ -461,7 +461,7 @@ Topic:      ${acl.topic}
 			allowTabs={false}
 			prompt={darkMode === 'true' ? 'yellow' : 'darkgrey'}
 			color={darkMode === 'true' ? 'yellow' : 'darkgrey'}
-			style={{ fontWeight: 'bold', fontSize: '1.4em', width: '100%' }}
+			style={{ fontWeight: 'light', fontSize: '1.25em', width: '100%' }}
 			backgroundColor={darkMode === 'true' ? 'black' : 'white'}
 			barColor="black"
 			outputColor={darkMode === 'true' ? 'yellow' : 'grey'}
