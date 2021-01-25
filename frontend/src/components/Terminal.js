@@ -98,7 +98,7 @@ const Plugins = (props) => {
 		},
 		createClient: (args, print, runCommand) => {
 			if (isHelpParameter(args[1])) {
-				print(`createClient <username>, <password>, <clientid>, <rolename>, <textname>, <textdescription>`);
+				print(`createClient <username> <password> <clientid> <rolename> <textname> <textdescription>`);
 			} else {
 				const [, username, password, clientid, rolename, textname, textdescription] = args;
 				brokerClient
@@ -115,7 +115,7 @@ const Plugins = (props) => {
 		},
 		createGroup: (args, print, runCommand) => {
 			if (isHelpParameter(args[1])) {
-				print(`createGroup <groupname>, <rolename>, <textname>, <textdescription>`);
+				print(`createGroup <groupname> <rolename> <textname> <textdescription>`);
 			} else {
 				const [, groupname, rolename, textname, textdescription] = args;
 				brokerClient
@@ -132,7 +132,7 @@ const Plugins = (props) => {
 		},
 		createRole: (args, print, runCommand) => {
 			if (isHelpParameter(args[1])) {
-				print(`createRole <rolename>, <textname>, <textdescription>`);
+				print(`createRole <rolename> <textname> <textdescription>`);
 			} else {
 				const [, rolename, textname, textdescription] = args;
 				brokerClient
@@ -378,7 +378,7 @@ Topic:      ${acl.topic}
 		},
 		modifyRole: (args, print, runCommand) => {
 			if (isHelpParameter(args[1])) {
-				print(`modifyRole <rolename>, <textname>, <textdescription>`);
+				print(`modifyRole <rolename> <textname> <textdescription>`);
 			} else {
 				const [, rolename, textname, textdescription] = args;
 				brokerClient.modifyRole({ rolename, textname, textdescription })
