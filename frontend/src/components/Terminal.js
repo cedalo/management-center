@@ -283,6 +283,12 @@ Textname:    ${group.textname}
 Description: ${group.textdescription}
 Roles:       ${group.roles.map(role => role.rolename).join(', ')}
 Clients:     ${group.clients.map(client => client.username).join(', ')}
+`);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
+			}
 		},
 		getRole: (args, print, runCommand) => {
 			if (isHelpParameter(args[1])) {
