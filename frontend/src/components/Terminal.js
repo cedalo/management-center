@@ -433,6 +433,22 @@ Topic:      ${acl.topic}
 						print(toErrorMessage(error));
 					});
 			}
+		},
+		setDefaultACLAccess: (args, print, runCommand) => {
+			if (isHelpParameter(args[1])) {
+				print(`setDefaultACLAccess <acltype> true|false`);
+			} else {
+				const [, acltype, allow] = args;
+				brokerClient.setDefaultACLAccess([{ acltype, allow: allow === 'true' ? true : false }])
+				brokerClient.getDefaultACLAccess()
+					.then((defaultAccess) => {
+						print(
+`${defaultAccess.acls.map(acl => `${acl.acltype}: ${acl.allow}`).join('\n')}`);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
+			}
 		}
 	}
 	
