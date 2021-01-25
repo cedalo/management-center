@@ -221,6 +221,21 @@ const Plugins = (props) => {
 					});
 			}
 		},
+		getAnonymousGroup: (args, print, runCommand) => {
+			if (isHelpParameter(args[1])) {
+				print(`getAnonymousGroup`);
+			} else {
+				brokerClient.getAnonymousGroup()
+					.then((group) => brokerClient.getGroup(group.groupname))
+					.then((group) => {
+						print(`Name: ${group.groupname}`);
+						print(`Description: ${group.textdescription}`);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
+			}
+		},
 		getClient: (args, print, runCommand) => {
 			if (isHelpParameter(args[1])) {
 				print(`getClient <clientname>`);
