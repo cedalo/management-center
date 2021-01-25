@@ -177,9 +177,9 @@ module.exports = class BaseMosquittoClient {
 					const request = deletePendingRequest(response.correlationData, this._requests);
 					if (request) {
 						this.logger.debug('Got response from Mosquitto', response);
-						if (response.error) {
-							request.reject(response);
-						}
+						// if (response.error) {
+						// 	request.reject(response);
+						// }
 						request.resolve(response);
 					}
 				});

@@ -395,12 +395,13 @@ export default class BaseMosquittoProxyClient {
 		);
 	}
 
-	async addGroupRole(groupname, rolename) {
+	async addGroupRole(groupname, rolename, priority) {
 		return this.sendCommand(
 			{
 				command: 'addGroupRole',
 				groupname,
-				rolename
+				rolename,
+				priority
 			},
 			API_DYNAMIC_SECURITY
 		);
@@ -417,12 +418,13 @@ export default class BaseMosquittoProxyClient {
 		);
 	}
 
-	async addGroupClient(username, groupname) {
+	async addGroupClient(username, groupname, priority) {
 		return this.sendCommand(
 			{
 				command: 'addGroupClient',
 				username,
-				groupname
+				groupname,
+				priority
 			},
 			API_DYNAMIC_SECURITY
 		);
@@ -713,10 +715,10 @@ export default class BaseMosquittoProxyClient {
 		return groups.length;
 	}
 
-	async addClientToGroups(username, groups) {
+	async addClientToGroups(username, groups, priority) {
 		if (groups) {
 			for (const group of groups) {
-				await this.addGroupClient(username, group);
+				await this.addGroupClient(username, group, priority);
 			}
 		}
 	}
@@ -833,7 +835,11 @@ export default class BaseMosquittoProxyClient {
 			if (request) {
 				if (parsedMessage.type === 'response') {
 					this.logger.debug('Got response from Mosquitto proxy', parsedMessage);
-					request.resolve(parsedMessage);
+					if (parsedMessage.error) {
+						request.reject(parsedMessage.error);
+					} else {
+						request.resolve(parsedMessage);
+					}
 				} else {
 					request.reject(parsedMessage);
 				}
