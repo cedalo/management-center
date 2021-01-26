@@ -429,7 +429,7 @@ Topic:      ${acl.topic}
 		},
 		removeGroupClient: (args, print, runCommand) => {
 			if (isHelpParameter(args[1])) {
-				print(`removeGroupClient <username>, <groupname>`);
+				print(`removeGroupClient <username> <groupname>`);
 			} else {
 				const [, username, groupname] = args;
 				brokerClient
@@ -444,7 +444,7 @@ Topic:      ${acl.topic}
 		},
 		removeGroupRole: (args, print, runCommand) => {
 			if (isHelpParameter(args[1])) {
-				print(`removeGroupRole <groupname>, <rolename>`);
+				print(`removeGroupRole <groupname> <rolename>`);
 			} else {
 				const [, groupname, rolename] = args;
 				brokerClient
