@@ -457,6 +457,21 @@ Topic:      ${acl.topic}
 					});
 			}
 		},
+		removeRoleACL: (args, print, runCommand) => {
+			if (isHelpParameter(args[1])) {
+				print(`removeRoleACL <rolename> <acltype> <topic>`);
+			} else {
+				const [, rolename, acltype, topic] = args;
+				brokerClient
+					.removeRoleACL(rolename, { acltype, topic })
+					.then(() => {
+						print(`ACL successfully removed from role "${rolename}"!`);
+					})
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
+			}
+		},
 		setAnonymousGroup: (args, print, runCommand) => {
 			if (isHelpParameter(args[1])) {
 				print(`setAnonymousGroup <groupname>`);
@@ -528,6 +543,7 @@ Topic:      ${acl.topic}
 				modifyRole: 'Modify a role',
 				removeGroupClient: 'Remove a client from a group',
 				removeGroupRole: 'Remove a role from a group',
+				removeRoleACL: 'Remove an ACL from a role',
 				setAnonymousGroup: 'Set anonymous group',
 				setDefaultACLAccess: 'Set the default ACL access'
 			}}
