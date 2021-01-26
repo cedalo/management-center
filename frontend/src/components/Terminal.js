@@ -86,8 +86,17 @@ const Plugins = (props) => {
 				print(`addRoleACL <rolename> <acltype> <topic filter> allow|deny <priority>`);
 			} else {
 				const [, rolename, acltype, topic, allow, priority] = args;
+				const parsedPriority = parseInt(priority);
+				if (allow !== 'true' && allow !== 'false') {
+					print(toErrorMessage('allow|deny parameter must be a boolean.'));
+					return;
+				}
+				if (isNaN(parsedPriority)) {
+					print(toErrorMessage('Priority must be a number.'));
+					return;
+				}
 				brokerClient
-					.addRoleACL(rolename, { acltype, priority, topic, allow })
+					.addRoleACL(rolename, { acltype, priority: parsedPriority, topic, allow })
 					.then(() => {
 						print(`ACL successfully added to role "${rolename}"!`);
 					})
