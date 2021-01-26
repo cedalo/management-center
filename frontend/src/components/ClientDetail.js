@@ -224,7 +224,7 @@ const ClientDetail = (props) => {
 							<Grid item xs={12}>
 								<TextField
 									required={editMode}
-									disabled={!editMode}
+									disabled={true}
 									onChange={(event) => {
 										if (editMode) {
 											setUpdatedClient({
