@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { green, red } from '@material-ui/core/colors';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { updateClient, updateClients, updateGroups, updateRoles } from '../actions/actions';
+import { updateAnonymousGroup, updateDefaultACLAccess, updateClient, updateClients, updateGroups, updateRoles } from '../actions/actions';
 
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Paper from '@material-ui/core/Paper';
@@ -50,6 +50,21 @@ const Plugins = (props) => {
 	const message = `Welcome to the Management Center Terminal.
 💡 Type 'help' for a list of available commands and type '<command> --help' for information on a specific command.`
 
+	const updateAndDispatchClients = () => 
+		brokerClient
+			.listClients()
+			.then((clients) => dispatch(updateClients(clients)))
+
+	const updateAndDispatchGroups = () => 
+		brokerClient
+			.listGroups()
+			.then((groups) => dispatch(updateGroups(groups)))
+
+	const updateAndDispatchRoles = () => 
+		brokerClient
+			.listRoles()
+			.then((roles) => dispatch(updateRples(roles)))
+
 	const commands = {
 		addGroupClient: (args, print, runCommand) => {
 			if (isHelpParameter(args[1])) {
@@ -61,6 +76,8 @@ const Plugins = (props) => {
 					.then(() => {
 						print(`Client "${username}" successfully added to group "${groupname}"!`);
 					})
+					.then(updateAndDispatchClients())
+					.then(updateAndDispatchGroups())
 					.catch((error) => {
 						print(toErrorMessage(error));
 					});
@@ -76,6 +93,8 @@ const Plugins = (props) => {
 					.then(() => {
 						print(`Role "${rolename}" successfully added to group "${groupname}"!`);
 					})
+					.then(updateAndDispatchGroups())
+					.then(updateAndDispatchRoles())
 					.catch((error) => {
 						print(toErrorMessage(error));
 					});
@@ -100,6 +119,7 @@ const Plugins = (props) => {
 					.then(() => {
 						print(`ACL successfully added to role "${rolename}"!`);
 					})
+					.then(updateAndDispatchRoles())
 					.catch((error) => {
 						print(toErrorMessage(error));
 					});
@@ -115,8 +135,7 @@ const Plugins = (props) => {
 					.then(() => {
 						print(`Client "${username}" successfully created!`);
 					})
-					.then(() => brokerClient.listClients())
-					.then((clients) => dispatch(updateClients(clients)))
+					.then(updateAndDispatchClients())
 					.catch((error) => {
 						print(toErrorMessage(error));
 					});
@@ -132,8 +151,7 @@ const Plugins = (props) => {
 					.then(() => {
 						print(`Group "${args[1]}" successfully created!`);
 					})
-					.then(() => brokerClient.listGroups())
-					.then((groups) => dispatch(updateGroups(groups)))
+					.then(updateAndDispatchGroups())
 					.catch((error) => {
 						print(toErrorMessage(error));
 					});
@@ -149,8 +167,7 @@ const Plugins = (props) => {
 					.then(() => {
 						print(`Role "${rolename}" successfully created!`);
 					})
-					.then(() => brokerClient.listRoles())
-					.then((roles) => dispatch(updateRoles(roles)))
+					.then(updateAndDispatchRoles())
 					.catch((error) => {
 						print(toErrorMessage(error));
 					});
@@ -165,6 +182,7 @@ const Plugins = (props) => {
 					.then(() => {
 						print(`Client "${username}" successfully deleted!`);
 					})
+					.then(updateAndDispatchClients())
 					.catch((error) => {
 						print(toErrorMessage(error));
 					});
@@ -179,6 +197,7 @@ const Plugins = (props) => {
 					.then(() => {
 						print(`Group "${groupname}" successfully deleted!`);
 					})
+					.then(updateAndDispatchGroups())
 					.catch((error) => {
 						print(toErrorMessage(error));
 					});
@@ -193,6 +212,7 @@ const Plugins = (props) => {
 					.then(() => {
 						print(`Role "${rolename}" successfully deleted!`);
 					})
+					.then(updateAndDispatchRoles())
 					.catch((error) => {
 						print(toErrorMessage(error));
 					});
@@ -207,8 +227,7 @@ const Plugins = (props) => {
 					.then(() => {
 						print(`Client "${username}" disabled!`);
 					})
-					.then(() => brokerClient.listClients())
-					.then((clients) => dispatch(updateClients(clients)))
+					.then(updateAndDispatchGroups())
 					.catch((error) => {
 						print(toErrorMessage(error));
 					});
@@ -223,8 +242,7 @@ const Plugins = (props) => {
 					.then(() => {
 						print(`Client "${username}" enabled!`);
 					})
-					.then(() => brokerClient.listClients())
-					.then((clients) => dispatch(updateClients(clients)))
+					.then(updateAndDispatchGroups())
 					.catch((error) => {
 						print(toErrorMessage(error));
 					});
@@ -393,6 +411,7 @@ Topic:      ${acl.topic}
 					.then(() => {
 						print('Done');
 					})
+					.then(updateAndDispatchClients())
 					.catch((error) => {
 						print(toErrorMessage(error));
 					});
@@ -408,6 +427,7 @@ Topic:      ${acl.topic}
 					.then(() => {
 						print('Done');
 					})
+					.then(updateAndDispatchGroups())
 					.catch((error) => {
 						print(toErrorMessage(error));
 					});
@@ -422,6 +442,7 @@ Topic:      ${acl.topic}
 					.then(() => {
 						print('Done');
 					})
+					.then(updateAndDispatchRoles())
 					.catch((error) => {
 						print(toErrorMessage(error));
 					});
@@ -437,6 +458,8 @@ Topic:      ${acl.topic}
 					.then(() => {
 						print(`Client "${username}" successfully removed from group "${groupname}"!`);
 					})
+					.then(updateAndDispatchClients())
+					.then(updateAndDispatchGroups())
 					.catch((error) => {
 						print(toErrorMessage(error));
 					});
@@ -452,6 +475,8 @@ Topic:      ${acl.topic}
 					.then(() => {
 						print(`Role "${rolename}" successfully removed from group "${groupname}"!`);
 					})
+					.then(updateAndDispatchGroups())
+					.then(updateAndDispatchRoles())
 					.catch((error) => {
 						print(toErrorMessage(error));
 					});
@@ -467,6 +492,7 @@ Topic:      ${acl.topic}
 					.then(() => {
 						print(`ACL successfully removed from role "${rolename}"!`);
 					})
+					.then(updateAndDispatchRoles())
 					.catch((error) => {
 						print(toErrorMessage(error));
 					});
@@ -481,6 +507,8 @@ Topic:      ${acl.topic}
 					.then(() => {
 						print('Done');
 					})
+					.then(() => brokerClient.getAnonymousGroup())
+					.then((group) => dispatch(updateAnonymousGroup(group)))
 					.catch((error) => {
 						print(toErrorMessage(error));
 					});
@@ -491,15 +519,19 @@ Topic:      ${acl.topic}
 				print(`setDefaultACLAccess <acltype> true|false`);
 			} else {
 				const [, acltype, allow] = args;
-				brokerClient.setDefaultACLAccess([{ acltype, allow: allow === 'true' ? true : false }])
-				brokerClient.getDefaultACLAccess()
-					.then((defaultAccess) => {
-						print(
+				brokerClient
+					.setDefaultACLAccess([{ acltype, allow: allow === 'true' ? true : false }])
+					.then(() => {
+						brokerClient.getDefaultACLAccess()
+						.then((defaultAccess) => {
+							dispatch(updateDefaultACLAccess(defaultACLAccess));
+							print(
 `${defaultAccess.acls.map(acl => `${acl.acltype}: ${acl.allow}`).join('\n')}`);
+						})
+						.catch((error) => {
+							print(toErrorMessage(error));
+						});
 					})
-					.catch((error) => {
-						print(toErrorMessage(error));
-					});
 			}
 		}
 	}
