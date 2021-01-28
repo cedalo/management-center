@@ -48,6 +48,12 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
+const prettifyJSON = (jsonString) => {
+	const json = JSON.parse(jsonString);
+	const prettifiedJSON = JSON.stringify(json, null, 2);
+	return prettifiedJSON;
+}
+
 const useTreeItemStyles = makeStyles((theme) => ({
 	root: {
 		color: theme.palette.text.secondary
@@ -339,8 +345,8 @@ const TopicTree = ({ topicTree }) => {
 											<TableCell>
 												<TextareaAutosize
 													className={classes.payloadDetail}
-													value={selectedNode?._message}
 													rows={5}
+													value={prettifyJSON(selectedNode?._message)}
 												/>
 											</TableCell>
 										</TableRow>
