@@ -339,8 +339,8 @@ const TopicTree = ({ topicTree }) => {
 											<TableCell>
 												<TextareaAutosize
 													className={classes.payloadDetail}
-													rows={20}
 													value={selectedNode?._message}
+													rows={5}
 												/>
 											</TableCell>
 										</TableRow>
