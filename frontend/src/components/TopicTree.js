@@ -366,6 +366,38 @@ const TopicTree = ({ topicTree }) => {
 								</TableBody>
 							</Table>
 						</TableContainer>
+						<TableContainer component={Paper} className={classes.table}>
+							<Table size="medium">
+								<TableBody>
+									{/* TODO: extract as component */}
+									{messageHistory ? messageHistory.map((entry, index) => {
+										if (index > 0) {
+											if (entry?._message && entry?._message.startsWith('{')) {
+												return <TableRow>
+													<TableCell>
+														<strong>{moment(entry._received).format('HH:mm:ss:SSS')}</strong>
+													</TableCell>
+													<TableCell>
+														<TextareaAutosize
+															className={classes.payloadDetail}
+															rows={5}
+															value={prettifyJSON(entry?._message)}
+														/>
+													</TableCell>
+												</TableRow>
+											} else if(entry?._message && !entry?._message.startsWith('{')) {
+												return <TableRow>
+													<TableCell>
+														<strong>{moment(entry._received).format('HH:mm:ss:SSS')}</strong>
+													</TableCell>
+													<TableCell>{entry?._message}</TableCell>
+												</TableRow>
+											}
+										}
+									}) : null }
+								</TableBody>
+							</Table>
+						</TableContainer>
 					</Paper>
 				</Grid>
 			</Grid>
