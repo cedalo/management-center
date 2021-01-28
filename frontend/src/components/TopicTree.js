@@ -197,6 +197,7 @@ const generateTreeData = (id, name, object) => {
 
 const TopicTree = ({ topicTree }) => {
 	const classes = useStyles();
+	const [messageHistory, setMessageHistory] = React.useState([]);
 	const [selectedNode, setSelectedNode] = React.useState({});
 	const [selectedNodeId, setSelectedNodeId] = React.useState('');
 
@@ -212,12 +213,15 @@ const TopicTree = ({ topicTree }) => {
 		current._received = Date.now();
 		if (current._message !== selectedNode._message) {
 			setSelectedNode(current);
+			messageHistory.unshift(current);
+			setMessageHistory(messageHistory.slice(0, 51));
 		}
 	})
 
 	const onLabelClick = (node) => {
 		setSelectedNode(node);
 		setSelectedNodeId(node.id);
+		setMessageHistory([]);
 	};
 
 	const data = generateTreeData('topic-tree-root', 'Topic Tree', topicTree);
