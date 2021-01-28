@@ -192,9 +192,26 @@ const generateTreeData = (id, name, object) => {
 const TopicTree = ({ topicTree }) => {
 	const classes = useStyles();
 	const [selectedNode, setSelectedNode] = React.useState({});
+	const [selectedNodeId, setSelectedNodeId] = React.useState('');
+
+	useEffect(() => {
+		const parts = selectedNodeId.split('/');
+		let current = topicTree;
+		parts.forEach((part, index) => {
+			if (current[part]) {
+				current = current[part];
+			}
+		});
+		current = Object.assign({}, current);
+		current._received = Date.now();
+		if (current._message !== selectedNode._message) {
+			setSelectedNode(current);
+		}
+	})
 
 	const onLabelClick = (node) => {
 		setSelectedNode(node);
+		setSelectedNodeId(node.id);
 	};
 
 	const data = generateTreeData('topic-tree-root', 'Topic Tree', topicTree);
