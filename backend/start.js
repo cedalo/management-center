@@ -24,6 +24,7 @@ const version = {
 
 const CEDALO_MC_PROXY_CONFIG_DIR = process.env.CEDALO_MC_PROXY_CONFIG_DIR || '../config/config.json';
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
+const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
 
 // const LicenseManager = require("../src/LicenseManager");
 const LicenseChecker = require('./src/license/LicenseChecker');
@@ -583,7 +584,7 @@ const init = async (licenseContainer) => {
 				}
 			});
 		}
-	}, 5000);
+	}, USAGE_TRACKER_INTERVAL);
 };
 
 const licenseContainer = {};
