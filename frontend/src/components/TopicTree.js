@@ -7,7 +7,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -47,6 +47,12 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbItem: theme.palette.breadcrumbItem,
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
+
+const prettifyJSON = (jsonString) => {
+	const json = JSON.parse(jsonString);
+	const prettifiedJSON = JSON.stringify(json, null, 2);
+	return prettifiedJSON;
+}
 
 const useTreeItemStyles = makeStyles((theme) => ({
 	root: {
@@ -191,10 +197,34 @@ const generateTreeData = (id, name, object) => {
 
 const TopicTree = ({ topicTree }) => {
 	const classes = useStyles();
+	const [messageHistory, setMessageHistory] = React.useState([]);
 	const [selectedNode, setSelectedNode] = React.useState({});
+	const [selectedNodeId, setSelectedNodeId] = React.useState('');
+
+	useEffect(() => {
+		const parts = selectedNodeId.split('/');
+		let current = topicTree;
+		parts.forEach((part, index) => {
+			if (current[part]) {
+				current = current[part];
+			}
+		});
+		current = Object.assign({}, current);
+		current._received = Date.now();
+		if (current._message !== selectedNode._message // if new message
+			&& current._messagesCounter > selectedNode._messagesCounter) // quick fix
+			{
+			console.log(current);
+			setSelectedNode(current);
+			messageHistory.unshift(current);
+			setMessageHistory(messageHistory.slice(0, 51));
+		}
+	})
 
 	const onLabelClick = (node) => {
 		setSelectedNode(node);
+		setSelectedNodeId(node.id);
+		setMessageHistory([]);
 	};
 
 	const data = generateTreeData('topic-tree-root', 'Topic Tree', topicTree);
@@ -322,8 +352,8 @@ const TopicTree = ({ topicTree }) => {
 											<TableCell>
 												<TextareaAutosize
 													className={classes.payloadDetail}
-													rows={20}
-													value={selectedNode?._message}
+													rows={5}
+													value={prettifyJSON(selectedNode?._message)}
 												/>
 											</TableCell>
 										</TableRow>
@@ -336,6 +366,38 @@ const TopicTree = ({ topicTree }) => {
 											<TableCell>{selectedNode?._message}</TableCell>
 										</TableRow>
 									)}
+								</TableBody>
+							</Table>
+						</TableContainer>
+						<TableContainer component={Paper} className={classes.table}>
+							<Table size="medium">
+								<TableBody>
+									{/* TODO: extract as component */}
+									{messageHistory ? messageHistory.map((entry, index) => {
+										if (index > 0) {
+											if (entry?._message && entry?._message.startsWith('{')) {
+												return <TableRow>
+													<TableCell>
+														<strong>{moment(entry._received).format('HH:mm:ss:SSS')}</strong>
+													</TableCell>
+													<TableCell>
+														<TextareaAutosize
+															className={classes.payloadDetail}
+															rows={5}
+															value={prettifyJSON(entry?._message)}
+														/>
+													</TableCell>
+												</TableRow>
+											} else if(entry?._message && !entry?._message.startsWith('{')) {
+												return <TableRow>
+													<TableCell>
+														<strong>{moment(entry._received).format('HH:mm:ss:SSS')}</strong>
+													</TableCell>
+													<TableCell>{entry?._message}</TableCell>
+												</TableRow>
+											}
+										}
+									}) : null }
 								</TableBody>
 							</Table>
 						</TableContainer>
