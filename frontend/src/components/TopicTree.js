@@ -211,7 +211,10 @@ const TopicTree = ({ topicTree }) => {
 		});
 		current = Object.assign({}, current);
 		current._received = Date.now();
-		if (current._message !== selectedNode._message) {
+		if (current._message !== selectedNode._message // if new message
+			&& current._messagesCounter > selectedNode._messagesCounter) // quick fix
+			{
+			console.log(current);
 			setSelectedNode(current);
 			messageHistory.unshift(current);
 			setMessageHistory(messageHistory.slice(0, 51));
