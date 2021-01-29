@@ -1,9 +1,9 @@
 
 module.exports = class SettingsManager {
 	constructor() {
-		this._settings = {
+		this.updateSettings({
 			allowTrackingUsageData: false
-		};
+		});
 	}
 
 	get settings() {
