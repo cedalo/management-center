@@ -6,17 +6,19 @@ const adapter = new FileSync('settings.json');
 const db = low(adapter);
 module.exports = class SettingsManager {
 	constructor() {
-		this.updateSettings({
-			allowTrackingUsageData: false
-		});
+		db.defaults({
+			settings: {
+				allowTrackingUsageData: false
+			}
+		}).write();
 	}
 
 	get settings() {
-		return this._settings;
+		return db.get('settings').value();
 	}
 
 	set settings(settings) {
-		Object.assign(this._settings, settings);
+		db.find('settings').assign(settings).write();
 	}
 
 	updateSettings(settings) {
