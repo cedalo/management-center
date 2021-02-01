@@ -344,7 +344,8 @@ const TopicTree = ({ topicTree }) => {
 											<TableCell>{selectedNode?._messagesCounter}</TableCell>
 										</TableRow>
 									)}
-									{selectedNode?._message && selectedNode?._message.startsWith('{') && (
+									{/* {selectedNode?._message && selectedNode?._message.startsWith('{') && ( */}
+									{selectedNode?._message && (
 										<TableRow>
 											<TableCell>
 												<strong>Payload</strong>
@@ -358,14 +359,14 @@ const TopicTree = ({ topicTree }) => {
 											</TableCell>
 										</TableRow>
 									)}
-									{selectedNode?._message && !selectedNode?._message.startsWith('{') && (
+									{/* {selectedNode?._message && !selectedNode?._message.startsWith('{') && (
 										<TableRow>
 											<TableCell>
 												<strong>Payload</strong>
 											</TableCell>
 											<TableCell>{selectedNode?._message}</TableCell>
 										</TableRow>
-									)}
+									)} */}
 								</TableBody>
 							</Table>
 						</TableContainer>
@@ -375,7 +376,8 @@ const TopicTree = ({ topicTree }) => {
 									{/* TODO: extract as component */}
 									{messageHistory ? messageHistory.map((entry, index) => {
 										if (index > 0) {
-											if (entry?._message && entry?._message.startsWith('{')) {
+											// if (entry?._message && entry?._message.startsWith('{')) {
+											if (entry?._message) {
 												return <TableRow>
 													<TableCell>
 														<strong>{moment(entry._received).format('HH:mm:ss:SSS')}</strong>
@@ -388,13 +390,13 @@ const TopicTree = ({ topicTree }) => {
 														/>
 													</TableCell>
 												</TableRow>
-											} else if(entry?._message && !entry?._message.startsWith('{')) {
-												return <TableRow>
-													<TableCell>
-														<strong>{moment(entry._received).format('HH:mm:ss:SSS')}</strong>
-													</TableCell>
-													<TableCell>{entry?._message}</TableCell>
-												</TableRow>
+											// } else if(entry?._message && !entry?._message.startsWith('{')) {
+											// 	return <TableRow>
+											// 		<TableCell>
+											// 			<strong>{moment(entry._received).format('HH:mm:ss:SSS')}</strong>
+											// 		</TableCell>
+											// 		<TableCell>{entry?._message}</TableCell>
+											// 	</TableRow>
 											}
 										}
 									}) : null }
