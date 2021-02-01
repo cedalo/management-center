@@ -11,6 +11,7 @@ import InputBase from '@material-ui/core/InputBase';
 import DisconnectedIcon from '@material-ui/icons/Cancel';
 import ConnectedIcon from '@material-ui/icons/CheckCircle';
 import {
+	updateAnonymousGroup,
 	updateGroups,
 	updateRoles,
 	updateClients,
