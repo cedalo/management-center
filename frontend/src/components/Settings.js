@@ -75,7 +75,7 @@ const Settings = ({ settings, sendMessage }) => {
 				</Typography>
 			</Breadcrumbs>
 			<br />
-			<FormGroup row>
+			{/* <FormGroup row>
 				<FormControlLabel
 					control={
 						<Switch
@@ -88,7 +88,7 @@ const Settings = ({ settings, sendMessage }) => {
 					}
 					label="Dark Mode"
 				/>
-			</FormGroup>
+			</FormGroup> */}
 			<FormGroup row>
 				<FormControlLabel
 					control={
