@@ -79,7 +79,7 @@ const USER_TABLE_COLUMNS = [
 	{ id: 'textname', key: 'Text name' },
 	{ id: 'textdescription', key: 'Description' },
 	{ id: 'groups', key: 'Groups' },
-	{ id: 'roles', key: 'Roles' }
+	{ id: 'roles', key: 'Client Roles' }
 ];
 
 const FormattedClientType = (props) => {
