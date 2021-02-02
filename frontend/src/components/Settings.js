@@ -93,7 +93,7 @@ const Settings = ({ settings, sendMessage }) => {
 				<FormControlLabel
 					control={
 						<Switch
-							checked={settings?.allowTrackingUsageData}
+							checked={settings?.allowTrackingUsageData === true}
 							onClick={(event) => {
 								event.stopPropagation();
 								if (event.target.checked) {
