@@ -18,7 +18,7 @@ module.exports = class SettingsManager {
 	}
 
 	set settings(settings) {
-		db.find('settings').assign(settings).write();
+		db.update('settings', (oldSettings) => settings).write();
 	}
 
 	updateSettings(settings) {
