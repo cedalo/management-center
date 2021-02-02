@@ -75,7 +75,7 @@ const Settings = ({ settings, sendMessage }) => {
 				</Typography>
 			</Breadcrumbs>
 			<br />
-			<FormGroup row>
+			{/* <FormGroup row>
 				<FormControlLabel
 					control={
 						<Switch
@@ -88,12 +88,12 @@ const Settings = ({ settings, sendMessage }) => {
 					}
 					label="Dark Mode"
 				/>
-			</FormGroup>
+			</FormGroup> */}
 			<FormGroup row>
 				<FormControlLabel
 					control={
 						<Switch
-							checked={settings?.allowTrackingUsageData}
+							checked={settings?.allowTrackingUsageData === true}
 							onClick={(event) => {
 								event.stopPropagation();
 								if (event.target.checked) {
