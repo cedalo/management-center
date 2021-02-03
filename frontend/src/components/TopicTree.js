@@ -354,7 +354,11 @@ const TopicTree = ({ topicTree }) => {
 												<TextareaAutosize
 													className={classes.payloadDetail}
 													rows={5}
-													value={prettifyJSON(selectedNode?._message)}
+													value={
+														selectedNode?._message.startsWith('{') 
+														? prettifyJSON(selectedNode?._message)
+														: selectedNode?._message
+													}
 												/>
 											</TableCell>
 										</TableRow>
@@ -386,7 +390,11 @@ const TopicTree = ({ topicTree }) => {
 														<TextareaAutosize
 															className={classes.payloadDetail}
 															rows={5}
-															value={prettifyJSON(entry?._message)}
+															value={
+																entry?._message.startsWith('{') 
+																? prettifyJSON(entry?._message)
+																: entry?._message
+															}
 														/>
 													</TableCell>
 												</TableRow>
