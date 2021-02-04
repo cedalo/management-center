@@ -788,6 +788,21 @@ export default class BaseMosquittoProxyClient {
 			API_STREAMS_PROCESSING
 		);
 	}
+
+	async createStream(streamname, sourceTopic, targetTopic, targetQoS, ttl) {
+		return this.sendCommand(
+			{
+				command: 'createStream',
+				streamname, 
+				sourceTopic, 
+				targetTopic,
+				targetQos: typeof targetQoS === 'string' ? parseInt(targetQoS) : targetQoS,
+				ttl: typeof ttl === 'string' ? parseInt(ttl) : ttl
+			},
+			API_STREAMS_PROCESSING
+		);
+	}
+
 	off(event, listener) {
 		const listeners = this._eventListeners.get(event);
 		if (listeners) {
