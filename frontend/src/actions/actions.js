@@ -101,6 +101,13 @@ export function updateLicense(update) {
 	};
 }
 
+export function updateStreams(update) {
+	return {
+		type: ActionTypes.UPDATE_STREAMS,
+		update
+	};
+}
+
 export function updateSystemStatus(update) {
 	return {
 		type: ActionTypes.UPDATE_SYSTEM_STATUS,
