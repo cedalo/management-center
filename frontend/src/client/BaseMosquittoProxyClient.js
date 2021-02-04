@@ -778,6 +778,16 @@ export default class BaseMosquittoProxyClient {
 		);
 		return data?.streams;
 	}
+
+	async deleteStream(streamname) {
+		return this.sendCommand(
+			{
+				command: 'deleteStream',
+				streamname
+			},
+			API_STREAMS_PROCESSING
+		);
+	}
 	off(event, listener) {
 		const listeners = this._eventListeners.get(event);
 		if (listeners) {
