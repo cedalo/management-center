@@ -81,6 +81,7 @@ import ClientDetail from './components/ClientDetail';
 import GroupNew from './components/GroupNew';
 import ClientNew from './components/ClientNew';
 import RoleNew from './components/RoleNew';
+import StreamNew from './components/StreamNew';
 import Clients from './components/Clients';
 import store from './store';
 import WebSocketProvider, { WebSocketContext } from './websockets/WebSocket';
@@ -603,6 +604,9 @@ export default function App(props) {
 													</Route>
 													<Route path="/terminal">
 														<Terminal />
+													</Route>
+													<Route path="/streams/new">
+														<StreamNew />
 													</Route>
 													<Route path="/streams">
 														<Streams />
