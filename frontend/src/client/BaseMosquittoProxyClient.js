@@ -762,6 +762,22 @@ export default class BaseMosquittoProxyClient {
 		listeners.push(listener);
 	}
 
+	/**
+	 * ******************************************************************************************
+	 * Methods for stream processing
+	 * ******************************************************************************************
+	 */
+
+	async listStreams(verbose = true) {
+		const data = await this.sendCommand(
+			{
+				command: 'listStreams',
+				verbose
+			},
+			API_STREAMS_PROCESSING
+		);
+		return data?.streams;
+	}
 	off(event, listener) {
 		const listeners = this._eventListeners.get(event);
 		if (listeners) {
