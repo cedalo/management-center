@@ -6,6 +6,7 @@ const createError = (code, message) => ({
 });
 
 const API_DYNAMIC_SECURITY = 'dynamic-security';
+const API_STREAMS_PROCESSING = 'stream-processing';
 
 // TODO: merge with method deletePendingRequest()
 const deletePendingRequest = (requestId, requests) => {
