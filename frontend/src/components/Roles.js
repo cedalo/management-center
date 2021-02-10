@@ -61,6 +61,9 @@ const useStyles = makeStyles((theme) => ({
 		bottom: theme.spacing(2),
 		right: theme.spacing(2)
 	},
+	button: {
+		marginRight: 10
+	},
 	breadcrumbItem: theme.palette.breadcrumbItem,
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
@@ -290,15 +293,6 @@ const Roles = (props) => {
 				<div>No roles found</div>
 			)}
 			<br />
-			<Button
-				variant="contained"
-				color="primary"
-				className={classes.button}
-				startIcon={<EditIcon />}
-				onClick={onEditDefaultACLAccess}
-			>
-				Edit default ACL access
-			</Button>
 			<Fab
 				color="primary"
 				aria-label="add"
