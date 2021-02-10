@@ -7,12 +7,14 @@ import { Link as RouterLink } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 
-import { updateStreams } from '../actions/actions';
+import { updateStream, updateStreams } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
 import AddIcon from '@material-ui/icons/Add';
 import ReloadIcon from '@material-ui/icons/Replay';
 import AutoSuggest from './AutoSuggest';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import ClientIcon from '@material-ui/icons/Person';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -118,6 +120,41 @@ const Streams = (props) => {
 					Streams
 				</Typography>
 			</Breadcrumbs>
+			<Grid container spacing={1} alignItems="flex-end">
+				<Grid item xs={6}>
+					<Button
+						variant="outlined"
+						color="default"
+						size="small"
+						className={classes.button}
+						startIcon={<AddIcon />}
+						onClick={(event) => {
+							event.stopPropagation();
+							onNewStream();
+						}}
+					>
+						New Stream
+					</Button>
+				</Grid>
+				<Grid item xs={6}>
+					<Box display="flex" flexDirection="row-reverse">
+						<Tooltip title="Reload streams">
+							<IconButton
+								color="secondary"
+								aria-label="Reload streams"
+								component="span"
+								onClick={(event) => {
+									event.stopPropagation();
+									onReload();
+								}}
+							>
+								<ReloadIcon />
+							</IconButton>
+						</Tooltip>
+					</Box>
+				</Grid>
+			</Grid>
+			
 			<br />
 			{streams && streams.length > 0 ? (
 				<div>
