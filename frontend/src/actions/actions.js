@@ -101,6 +101,13 @@ export function updateLicense(update) {
 	};
 }
 
+export function updateStream(update) {
+	return {
+		type: ActionTypes.UPDATE_STREAM,
+		update
+	};
+}
+
 export function updateStreams(update) {
 	return {
 		type: ActionTypes.UPDATE_STREAMS,
