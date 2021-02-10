@@ -7,6 +7,7 @@ import AddIcon from '@material-ui/icons/Add';
 import AnonymousGroupSelect from './AnonymousGroupSelect';
 import AutoSuggest from './AutoSuggest';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import ClientIcon from '@material-ui/icons/Person';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -151,7 +152,7 @@ const Groups = (props) => {
 			}
 		});
 		await client.deleteGroup(groupname);
-		enqueueSnackbar('Group successfully deleted', {
+		enqueueSnackbar(`Group "${groupname}" successfully deleted`, {
 			variant: 'success'
 		});
 		const groups = await client.listGroups();
@@ -198,6 +199,21 @@ const Groups = (props) => {
 					Groups
 				</Typography>
 			</Breadcrumbs>
+			<br />
+			<Button
+				variant="outlined"
+				color="default"
+				size="small"
+				className={classes.button}
+				startIcon={<AddIcon />}
+				onClick={(event) => {
+					event.stopPropagation();
+					onNewGroup();
+				}}
+			>
+				New Group
+			</Button>
+			<br />
 			<br />
 			{groups && groups.length > 0 ? (
 				<div>
