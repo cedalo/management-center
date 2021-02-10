@@ -779,6 +779,20 @@ export default class BaseMosquittoProxyClient {
 		return data?.streams;
 	}
 
+	async getStream(streamname) {
+		const streams = await this.listStreams();
+		const stream = streams.find((stream) => stream.streamname === streamname);
+		return stream;
+		// const data = await this.sendCommand(
+		// 	{
+		// 		command: 'getStream',
+		// 		streamname
+		// 	},
+		// 	API_DYNAMIC_SECURITY
+		// );
+		// return data?.stream;
+	}
+
 	async deleteStream(streamname) {
 		return this.sendCommand(
 			{
