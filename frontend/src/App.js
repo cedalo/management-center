@@ -78,6 +78,7 @@ import TopicTree from './components/TopicTree';
 import GroupDetail from './components/GroupDetail';
 import RoleDetail from './components/RoleDetail';
 import ClientDetail from './components/ClientDetail';
+import StreamDetail from './components/StreamDetail';
 import GroupNew from './components/GroupNew';
 import ClientNew from './components/ClientNew';
 import RoleNew from './components/RoleNew';
@@ -605,6 +606,10 @@ export default function App(props) {
 													<Route path="/terminal">
 														<Terminal />
 													</Route>
+													<Route
+														path="/streams/detail/:streamId"
+														component={StreamDetail}
+													/>
 													<Route path="/streams/new">
 														<StreamNew />
 													</Route>
