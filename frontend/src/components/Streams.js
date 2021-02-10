@@ -90,6 +90,13 @@ const Streams = (props) => {
 		const streams = await brokerClient.listStreams();
 		dispatch(updateStreams(streams));
 	}
+
+	const onSelectStream = async (streamname) => {
+		const stream = await brokerClient.getStream(streamname);
+		dispatch(updateStream(stream));
+		history.push(`/streams/detail/${streamname}`);
+	};
+
 	const onDeleteStream = async (streamname) => {
 		await confirm({
 			title: 'Confirm stream deletion',
