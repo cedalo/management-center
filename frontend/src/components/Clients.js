@@ -7,6 +7,7 @@ import { useSnackbar } from 'notistack';
 import AddIcon from '@material-ui/icons/Add';
 import AutoSuggest from './AutoSuggest';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import ClientIcon from '@material-ui/icons/Person';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -177,7 +178,7 @@ const Clients = (props) => {
 			});
 		}
 		await brokerClient.deleteClient(username);
-		enqueueSnackbar('Client successfully deleted', {
+		enqueueSnackbar(`Client "${username}" successfully deleted`, {
 			variant: 'success'
 		});
 		const clients = await brokerClient.listClients();
@@ -256,6 +257,21 @@ const Clients = (props) => {
 					Clients
 				</Typography>
 			</Breadcrumbs>
+			<br />
+			<Button
+				variant="outlined"
+				color="default"
+				size="small"
+				className={classes.button}
+				startIcon={<AddIcon />}
+				onClick={(event) => {
+					event.stopPropagation();
+					onNewClient();
+				}}
+			>
+				New Client
+			</Button>
+			<br />
 			<br />
 			{clients && clients.length > 0 ? (
 				<div>
