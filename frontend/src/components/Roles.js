@@ -161,6 +161,31 @@ const Roles = (props) => {
 				</Typography>
 			</Breadcrumbs>
 			<br />
+			<Button
+				variant="outlined"
+				color="default"
+				size="small"
+				className={classes.button}
+				startIcon={<AddIcon />}
+				onClick={(event) => {
+					event.stopPropagation();
+					onNewRole();
+				}}
+			>
+				New Role
+			</Button>
+			<Button
+				variant="outlined"
+				color="default"
+				size="small"
+				className={classes.button}
+				startIcon={<EditIcon />}
+				onClick={onEditDefaultACLAccess}
+			>
+				Edit default ACL access
+			</Button>
+			<br />
+			<br />
 			{roles && roles.length > 0 ? (
 				<div>
 					<Hidden xsDown implementation="css">
