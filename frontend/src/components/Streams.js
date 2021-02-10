@@ -11,6 +11,7 @@ import { updateStreams } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
 import AddIcon from '@material-ui/icons/Add';
+import ReloadIcon from '@material-ui/icons/Replay';
 import AutoSuggest from './AutoSuggest';
 import Chip from '@material-ui/core/Chip';
 import ClientIcon from '@material-ui/icons/Person';
@@ -83,6 +84,10 @@ const Streams = (props) => {
 		history.push('/streams/new');
 	};
 
+	const onReload = async () => {
+		const streams = await brokerClient.listStreams();
+		dispatch(updateStreams(streams));
+	}
 	const onDeleteStream = async (streamname) => {
 		await confirm({
 			title: 'Confirm stream deletion',
