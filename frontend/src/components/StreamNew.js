@@ -1,6 +1,9 @@
 import React, { useContext, useState } from 'react';
 import { JsonEditor as Editor } from 'jsoneditor-react';
 import 'jsoneditor-react/es/editor.min.css';
+import ace from 'brace';
+import 'brace/mode/json';
+import 'brace/theme/github'
 import { connect, useDispatch } from 'react-redux';
 import { updateStreams } from '../actions/actions';
 
@@ -198,6 +201,7 @@ const StreamNew = (props) => {
 									<Editor
 										className={classes.editor}
 										// value={}
+										ace={ace}
 										// onChange={this.handleChange}
 										mode="code"
 										navigationBar={false}
