@@ -1,4 +1,6 @@
 import React, { useContext, useState } from 'react';
+import { JsonEditor as Editor } from 'jsoneditor-react';
+import 'jsoneditor-react/es/editor.min.css';
 import { connect, useDispatch } from 'react-redux';
 import { updateStreams } from '../actions/actions';
 
@@ -190,6 +192,17 @@ const StreamNew = (props) => {
 										variant="outlined"
 										fullWidth
 										className={classes.textField}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<Editor
+										className={classes.editor}
+										// value={}
+										// onChange={this.handleChange}
+										mode="code"
+										navigationBar={false}
+										search={false}
+										allowedModes={[ 'code', 'view', 'form', 'tree']}
 									/>
 								</Grid>
 								<Grid container xs={12} alignItems="flex-start">
