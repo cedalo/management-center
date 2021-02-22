@@ -87,6 +87,7 @@ const StreamNew = (props) => {
 	const [streamname, setStreamname] = useState('');
 	const [sourceTopic, setSourceTopic] = useState('');
 	const [targetTopic, setTargetTopic] = useState('');
+	const [key, setKey] = useState('');
 	const [targetQoS, setTargetQoS] = useState('');
 	const [ttl, setTTL] = useState('');
 	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
@@ -209,6 +210,17 @@ const StreamNew = (props) => {
 										id="ttl"
 										label="TTL"
 										onChange={(event) => setTTL(event.target.value)}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										className={classes.textField}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										id="key"
+										label="Key"
+										onChange={(event) => setKey(event.target.value)}
 										defaultValue=""
 										variant="outlined"
 										fullWidth
