@@ -120,6 +120,14 @@ const Streams = (props) => {
 		dispatch(updateStreams(streams));
 	};
 
+	const onEnableProcessStream = async (streamname) => {
+		await brokerClient.processStream(streamname, true);
+		const streams = await brokerClient.listStreams();
+		enqueueSnackbar('Stream processing successfully enabled', {
+			variant: 'success'
+		});
+		dispatch(updateStreams(streams));
+	};
 	const onSelectStream = async (streamname) => {
 		const stream = await brokerClient.getStream(streamname);
 		dispatch(updateStream(stream));
