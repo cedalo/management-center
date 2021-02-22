@@ -237,6 +237,7 @@ const StreamNew = (props) => {
 										ace={ace}
 										// onChange={this.handleChange}
 										ajv={ajv}
+										value={query}
 										theme={darkMode === 'true' ? "ace/theme/monokai" : "ace/theme/github"}
 										onChange={(json) => setQuery(json)}
 										mode="code"
