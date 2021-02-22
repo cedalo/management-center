@@ -34,6 +34,8 @@ import { WebSocketContext } from '../websockets/WebSocket';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
+import useLocalStorage from '../helpers/useLocalStorage';
+
 const ajv = new Ajv({
 	allErrors: true,
 	verbose: true,
@@ -86,6 +88,7 @@ const StreamNew = (props) => {
 	const [targetTopic, setTargetTopic] = useState('');
 	const [targetQoS, setTargetQoS] = useState('');
 	const [ttl, setTTL] = useState('');
+	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
 
 	const streamnameExists = props?.streams?.find((searchStream) => {
 		return searchStream.streamname === streamname;
@@ -218,6 +221,7 @@ const StreamNew = (props) => {
 										ace={ace}
 										// onChange={this.handleChange}
 										ajv={ajv}
+										theme={darkMode === 'true' ? "ace/theme/monokai" : "ace/theme/github"}
 										mode="code"
 										navigationBar={false}
 										search={false}
