@@ -147,6 +147,15 @@ const Streams = (props) => {
 		dispatch(updateStreams(streams));
 	};
 
+	const onDisablePersistStream = async (streamname) => {
+		await brokerClient.persistStream(streamname, false);
+		const streams = await brokerClient.listStreams();
+		enqueueSnackbar('Stream persistence successfully disabled', {
+			variant: 'success'
+		});
+		dispatch(updateStreams(streams));
+	};
+
 	const onSelectStream = async (streamname) => {
 		const stream = await brokerClient.getStream(streamname);
 		dispatch(updateStream(stream));
