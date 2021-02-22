@@ -90,6 +90,7 @@ const StreamNew = (props) => {
 	const [key, setKey] = useState('');
 	const [targetQoS, setTargetQoS] = useState('');
 	const [ttl, setTTL] = useState('');
+	const [query, setQuery] = useState({});
 	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
 
 	const streamnameExists = props?.streams?.find((searchStream) => {
@@ -235,6 +236,7 @@ const StreamNew = (props) => {
 										// onChange={this.handleChange}
 										ajv={ajv}
 										theme={darkMode === 'true' ? "ace/theme/monokai" : "ace/theme/github"}
+										onChange={(json) => setQuery(json)}
 										mode="code"
 										navigationBar={false}
 										search={false}
