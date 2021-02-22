@@ -113,8 +113,10 @@ const StreamNew = (props) => {
 			streamname, 
 			sourceTopic, 
 			targetTopic,
+			key,
 			targetQoS,
-			ttl
+			ttl,
+			query
 		);
 		const streams = await client.listStreams();
 		dispatch(updateStreams(streams));
