@@ -4,6 +4,8 @@ import 'jsoneditor-react/es/editor.min.css';
 import ace from 'brace';
 import 'brace/mode/json';
 import 'brace/theme/github'
+import Ajv from 'ajv';
+
 import { connect, useDispatch } from 'react-redux';
 import { updateStreams } from '../actions/actions';
 
@@ -32,6 +34,18 @@ import { WebSocketContext } from '../websockets/WebSocket';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
+const ajv = new Ajv({
+	allErrors: true,
+	verbose: true,
+	// code: {
+	// 	// NEW
+	// 	es5: true,
+	// 	lines: true,
+	// 	source: true,
+	// 	process: undefined, // (code: string) => string
+	// 	optimize: true,
+	// },
+});
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -203,6 +217,7 @@ const StreamNew = (props) => {
 										// value={}
 										ace={ace}
 										// onChange={this.handleChange}
+										ajv={ajv}
 										mode="code"
 										navigationBar={false}
 										search={false}
