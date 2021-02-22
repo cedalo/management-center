@@ -324,7 +324,7 @@ const Streams = (props) => {
 													</Tooltip>
 												</TableCell>
 												<TableCell>
-													<Tooltip title="Activat / Deactivate stream">
+													<Tooltip title="Activate / Deactivate stream">
 														<Switch
 															checked={
 																typeof stream.active === 'undefined' ||
