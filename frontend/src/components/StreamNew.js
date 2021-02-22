@@ -5,6 +5,7 @@ import './jsoneditor-fix.css';
 import ace from 'brace';
 import 'brace/mode/json';
 import 'brace/theme/github'
+import 'brace/theme/monokai'
 import Ajv from 'ajv';
 
 import { connect, useDispatch } from 'react-redux';
