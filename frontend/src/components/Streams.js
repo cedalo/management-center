@@ -97,6 +97,21 @@ const Streams = (props) => {
 		history.push(`/streams/detail/${streamname}`);
 	};
 
+	const onClearStreamMessages = async (streamname) => {
+		await confirm({
+			title: 'Confirm clear all stream messages',
+			description: `Do you really want to clear all messages in the stream "${streamname}"?`,
+			cancellationButtonProps: {
+				variant: 'contained'
+			},
+			confirmationButtonProps: {
+				color: 'primary',
+				variant: 'contained'
+			}
+		});
+		await brokerClient.clearStreamMessages(streamname);
+	};
+
 	const onDeleteStream = async (streamname) => {
 		await confirm({
 			title: 'Confirm stream deletion',
@@ -262,6 +277,17 @@ const Streams = (props) => {
 													</Tooltip>
 												</TableCell>
 												<TableCell align="right">
+													<Tooltip title="Clear stream messages">
+														<IconButton
+															size="small"
+															onClick={(event) => {
+																event.stopPropagation();
+																onClearStreamMessages(stream.streamname);
+															}}
+														>
+															<ClearStreamIcon fontSize="small" />
+														</IconButton>
+													</Tooltip>
 													<Tooltip title="Delete stream">
 														<IconButton
 															size="small"
