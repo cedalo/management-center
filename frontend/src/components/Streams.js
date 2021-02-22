@@ -128,6 +128,15 @@ const Streams = (props) => {
 		});
 		dispatch(updateStreams(streams));
 	};
+
+	const onDisableProcessStream = async (streamname) => {
+		await brokerClient.processStream(streamname, false);
+		const streams = await brokerClient.listStreams();
+		enqueueSnackbar('Stream processing successfully disabled', {
+			variant: 'success'
+		});
+		dispatch(updateStreams(streams));
+	};
 	const onSelectStream = async (streamname) => {
 		const stream = await brokerClient.getStream(streamname);
 		dispatch(updateStream(stream));
