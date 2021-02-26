@@ -832,6 +832,17 @@ export default class BaseMosquittoProxyClient {
 			API_STREAMS_PROCESSING
 		);
 	}
+
+	async processStream(streamname, process) {
+		return this.sendCommand(
+			{
+				command: 'processStream',
+				streamname,
+				process
+			},
+			API_STREAMS_PROCESSING
+		);
+	}
 		return this.sendCommand(
 			{
 				command: 'createStream',
