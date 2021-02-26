@@ -914,8 +914,10 @@ export default class BaseMosquittoProxyClient {
 				streamname, 
 				sourceTopic, 
 				targetTopic,
-				targetQos: typeof targetQoS === 'string' ? parseInt(targetQoS) : targetQoS,
-				ttl: typeof ttl === 'string' ? parseInt(ttl) : ttl
+				targetqos: typeof targetQoS === 'string' ? parseInt(targetQoS) : targetQoS,
+				ttl: typeof ttl === 'string' ? parseInt(ttl) : ttl,
+				key,
+				query
 			},
 			API_STREAMS_PROCESSING
 		);
