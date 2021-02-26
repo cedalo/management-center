@@ -416,7 +416,7 @@ const StreamDetail = (props) => {
 							startIcon={<SaveIcon />}
 							onClick={(event) => {
 								event.stopPropagation();
-								onUpdateClient();
+								onUpdateStream();
 							}}
 						>
 							Save
