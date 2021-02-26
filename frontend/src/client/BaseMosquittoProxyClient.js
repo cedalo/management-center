@@ -812,6 +812,16 @@ export default class BaseMosquittoProxyClient {
 			API_STREAMS_PROCESSING
 		);
 	}
+
+	async disableStream(streamname) {
+		return this.sendCommand(
+			{
+				command: 'disableStream',
+				streamname
+			},
+			API_STREAMS_PROCESSING
+		);
+	}
 		return this.sendCommand(
 			{
 				command: 'createStream',
