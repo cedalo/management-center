@@ -155,6 +155,16 @@ const StreamDetail = (props) => {
 		});
 		dispatch(updateStreams(streams));
 	};
+
+	const onEnableStream = async (streamname) => {
+		await brokerClient.enableStream(streamname);
+		const stream = await brokerClient.getStream(streamname);
+		dispatch(updateStream(stream));
+		const streams = await brokerClient.listStreams();
+		enqueueSnackbar('Stream successfully enabled', {
+			variant: 'success'
+		});
+		dispatch(updateStreams(streams));
 	};
 
 	const onUpdateStream = async () => {
