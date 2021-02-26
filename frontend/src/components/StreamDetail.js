@@ -234,7 +234,7 @@ const StreamDetail = (props) => {
 										}
 									}}
 									id="streamname"
-									label="streamname"
+									label="Stream name"
 									value={updatedStream.streamname}
 									defaultValue=""
 									variant="outlined"
