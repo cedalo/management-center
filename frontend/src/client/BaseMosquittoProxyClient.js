@@ -822,6 +822,16 @@ export default class BaseMosquittoProxyClient {
 			API_STREAMS_PROCESSING
 		);
 	}
+
+	async clearStreamMessages(streamname) {
+		return this.sendCommand(
+			{
+				command: 'clearStreamMessages',
+				streamname
+			},
+			API_STREAMS_PROCESSING
+		);
+	}
 		return this.sendCommand(
 			{
 				command: 'createStream',
