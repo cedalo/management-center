@@ -134,8 +134,27 @@ const StreamDetail = (props) => {
 		}
 	};
 
-	const handleChange = (event, newValue) => {
-		setValue(newValue);
+	const onDisableStream = async (streamname) => {
+		await confirm({
+			title: 'Confirm stream disable',
+			description: `Do you really want to disable stream "${streamname}"?`,
+			cancellationButtonProps: {
+				variant: 'contained'
+			},
+			confirmationButtonProps: {
+				color: 'primary',
+				variant: 'contained'
+			}
+		});
+		await brokerClient.disableStream(streamname);
+		const stream = await brokerClient.getStream(streamname);
+		dispatch(updateStream(stream));
+		const streams = await brokerClient.listStreams();
+		enqueueSnackbar('Stream successfully disabled', {
+			variant: 'success'
+		});
+		dispatch(updateStreams(streams));
+	};
 	};
 
 	const onUpdateStream = async () => {
