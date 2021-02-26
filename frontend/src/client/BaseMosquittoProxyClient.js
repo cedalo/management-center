@@ -843,6 +843,18 @@ export default class BaseMosquittoProxyClient {
 			API_STREAMS_PROCESSING
 		);
 	}
+
+	async persistStream(streamname, persist) {
+		return this.sendCommand(
+			{
+				command: 'persistStream',
+				streamname,
+				persist
+			},
+			API_STREAMS_PROCESSING
+		);
+	}
+
 		return this.sendCommand(
 			{
 				command: 'createStream',
