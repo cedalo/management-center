@@ -803,7 +803,15 @@ export default class BaseMosquittoProxyClient {
 		);
 	}
 
-	async createStream(streamname, sourceTopic, targetTopic, targetQoS, ttl) {
+	async enableStream(streamname) {
+		return this.sendCommand(
+			{
+				command: 'enableStream',
+				streamname
+			},
+			API_STREAMS_PROCESSING
+		);
+	}
 		return this.sendCommand(
 			{
 				command: 'createStream',
