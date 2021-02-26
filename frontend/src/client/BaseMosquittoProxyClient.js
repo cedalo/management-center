@@ -855,6 +855,41 @@ export default class BaseMosquittoProxyClient {
 		);
 	}
 
+	async modifyStream({ streamname, sourcetopic, targettopic, targetQoS, ttl, key, query, active, persist, process }) {
+		return this.sendCommand(
+			{
+				command: 'createStream',
+				replace: true,
+				streamname,
+				sourcetopic,
+				targettopic,
+				targetQoS,
+				ttl,
+				key,
+				query,
+				active,
+				persist,
+				process
+			},
+			API_STREAMS_PROCESSING
+		);
+		// TODO: use native command when implemented
+		// return this.sendCommand(
+		// 	{
+		// 		command: 'modifyStream',
+		// 		streamname,
+		// 		sourceTopic,
+		// 		targetTopic,
+		// 		targetQoS,
+		// 		ttl,
+		// 		query,
+		// 		active,
+		// 		persist,
+		// 		process
+		// 	},
+		// 	API_STREAMS_PROCESSING
+		// );
+	}
 		return this.sendCommand(
 			{
 				command: 'createStream',
