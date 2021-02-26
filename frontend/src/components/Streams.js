@@ -46,6 +46,8 @@ import { WebSocketContext } from '../websockets/WebSocket';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
 
+import ReplayStreamDialog from './streams/ReplayStreamDialog';
+
 const StyledTableRow = withStyles((theme) => ({
 	root: {
 		'&:nth-of-type(odd)': {
@@ -84,6 +86,16 @@ const Streams = (props) => {
 	const { enqueueSnackbar } = useSnackbar();
 	const { client: brokerClient } = context;
 	const { connectionID, streams = [], onSort, sortBy, sortDirection } = props;
+	const [replayStreamEditorOpen, setReplayStreamEditorOpen] = React.useState(false);
+	const [replayStream, setReplayStream] = React.useState({});
+
+	const handleClickReplayStreamEditorOpen = () => {
+		setReplayStreamEditorOpen(true);
+	};
+  
+	const handleReplayStreamEditorClose = () => {
+		setReplayStreamEditorOpen(false);
+	};
 
 	const onNewStream = () => {
 		history.push('/streams/new');
@@ -180,6 +192,11 @@ const Streams = (props) => {
 		await brokerClient.clearStreamMessages(streamname);
 	};
 
+	const onReplayStream = async (stream) => {
+		setReplayStream(stream);
+		setReplayStreamEditorOpen(true);
+	};
+
 	const onDeleteStream = async (streamname) => {
 		await confirm({
 			title: 'Confirm stream deletion',
@@ -202,6 +219,11 @@ const Streams = (props) => {
 
 	return (
 		<div>
+			<ReplayStreamDialog 
+				stream={replayStream} 
+				open={replayStreamEditorOpen} 
+				handleClose={handleReplayStreamEditorClose}
+			/>
 			<Breadcrumbs aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -354,6 +376,17 @@ const Streams = (props) => {
 															}}
 														>
 															<ClearStreamIcon fontSize="small" />
+														</IconButton>
+													</Tooltip>
+													<Tooltip title="Replay stream">
+														<IconButton
+															size="small"
+															onClick={(event) => {
+																event.stopPropagation();
+																onReplayStream(stream);
+															}}
+														>
+															<ReplayIcon fontSize="small" />
 														</IconButton>
 													</Tooltip>
 													<Tooltip title="Delete stream">
