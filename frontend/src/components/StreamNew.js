@@ -114,9 +114,9 @@ const StreamNew = (props) => {
 			streamname, 
 			sourceTopic, 
 			targetTopic,
-			key,
 			targetQoS,
 			ttl,
+			key,
 			query
 		);
 		const streams = await client.listStreams();
