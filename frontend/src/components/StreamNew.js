@@ -89,7 +89,7 @@ const StreamNew = (props) => {
 	const [sourceTopic, setSourceTopic] = useState('');
 	const [targetTopic, setTargetTopic] = useState('');
 	const [key, setKey] = useState('');
-	const [targetQoS, setTargetQoS] = useState('');
+	const [targetQoS, setTargetQoS] = useState(0);
 	const [ttl, setTTL] = useState('');
 	const [query, setQuery] = useState({});
 	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
