@@ -890,6 +890,24 @@ export default class BaseMosquittoProxyClient {
 		// 	API_STREAMS_PROCESSING
 		// );
 	}
+
+	async replayStream({ streamname, replayTopic, gte, lte, reverse, limit, speed }) {
+		return this.sendCommand(
+			{
+				command: 'replayStream',
+				streamname,
+				replayTopic,
+				gte,
+				lte,
+				reverse,
+				limit,
+				speed
+			},
+			API_STREAMS_PROCESSING
+		);
+	}
+
+	async createStream(streamname, sourceTopic, targetTopic, targetQoS, ttl, key, query) {
 		return this.sendCommand(
 			{
 				command: 'createStream',
