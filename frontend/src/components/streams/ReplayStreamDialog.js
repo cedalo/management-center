@@ -23,6 +23,11 @@ export default function ReplayStreamDialog({ stream, open, handleClose }) {
 	const [limit, setLimit] = React.useState(-1);
 	const [speed, setSpeed] = React.useState(1);
 
+	const validate = () => {
+		const valid = replayTopic !== '';
+		return valid;
+	};
+
 	const handleReplay = async () => {
 		await brokerClient.replayStream({
 			streamname: stream.streamname,
@@ -50,6 +55,7 @@ export default function ReplayStreamDialog({ stream, open, handleClose }) {
 								onChange={(event) => {
 									setReplayTopic(event.target.value);
 								}}
+								required
 								id="replaytopic"
 								label="Replay topic"
 								value={replayTopic}
@@ -132,8 +138,16 @@ export default function ReplayStreamDialog({ stream, open, handleClose }) {
 					</Grid>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleClose}>Cancel</Button>
-					<Button onClick={handleReplay}>Replay</Button>
+					<Button
+						onClick={handleClose}
+					>
+							Cancel
+					</Button>
+					<Button
+						disabled={!validate()}
+						onClick={handleReplay}>
+							Replay
+					</Button>
 				</DialogActions>
 			</Dialog>
 		</div>
