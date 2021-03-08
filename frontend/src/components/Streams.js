@@ -97,6 +97,29 @@ const Streams = (props) => {
 		setReplayStreamEditorOpen(false);
 	};
 
+	const handleReplay = async (stream, { replayTopic, gte, lte, reverse, limit, speed }) => {
+		try {
+			await brokerClient.replayStream({
+				streamname: stream.streamname,
+				replayTopic,
+				gte,
+				lte,
+				reverse,
+				limit,
+				speed
+			});
+			enqueueSnackbar(`Successfully started replay of stream "${stream.streamname}"`, {
+				variant: 'success'
+			});
+			setReplayStreamEditorOpen(false);
+		} catch (error) {
+			enqueueSnackbar(`Error starting replay of stream "${stream.streamname}". Reason: ${error}`, {
+				variant: 'error'
+			});
+			setReplayStreamEditorOpen(false);
+		}
+	}
+
 	const onNewStream = () => {
 		history.push('/streams/new');
 	};
@@ -222,6 +245,7 @@ const Streams = (props) => {
 			<ReplayStreamDialog 
 				stream={replayStream} 
 				open={replayStreamEditorOpen} 
+				handleReplay={handleReplay}
 				handleClose={handleReplayStreamEditorClose}
 			/>
 			<Breadcrumbs aria-label="breadcrumb">
