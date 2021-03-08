@@ -12,7 +12,7 @@ import { WebSocketContext } from '../../websockets/WebSocket';
 
 const useStyles = makeStyles((theme) => ({}));
 
-export default function ReplayStreamDialog({ stream, open, handleClose }) {
+export default function ReplayStreamDialog({ stream, open, handleReplay, handleClose }) {
 	const context = useContext(WebSocketContext);
 	const classes = useStyles();
 	const { client: brokerClient } = context;
@@ -27,19 +27,6 @@ export default function ReplayStreamDialog({ stream, open, handleClose }) {
 		const valid = replayTopic !== '';
 		return valid;
 	};
-
-	const handleReplay = async () => {
-		await brokerClient.replayStream({
-			streamname: stream.streamname,
-			replayTopic,
-			gte,
-			lte,
-			reverse,
-			limit,
-			speed
-		});
-		alert("ready");
-	}
 
 	return (
 		<div>
@@ -145,7 +132,7 @@ export default function ReplayStreamDialog({ stream, open, handleClose }) {
 					</Button>
 					<Button
 						disabled={!validate()}
-						onClick={handleReplay}>
+						onClick={() => handleReplay(stream, { replayTopic, gte, lte, reverse, limit, speed })}>
 							Replay
 					</Button>
 				</DialogActions>
