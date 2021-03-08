@@ -81,10 +81,19 @@ const GroupNew = (props) => {
 	};
 
 	const onSaveGroup = async () => {
-		await client.createGroup(groupname, '', textname, textdescription);
-		const groups = await client.listGroups();
-		dispatch(updateGroups(groups));
-		history.push(`/security/groups`);
+		try {
+			await client.createGroup(groupname, '', textname, textdescription);
+			const groups = await client.listGroups();
+			dispatch(updateGroups(groups));
+			history.push(`/security/groups`);
+			enqueueSnackbar(`Group "${groupname}" successfully created.`, {
+				variant: 'success'
+			});
+		} catch(error) {
+			enqueueSnackbar(`Error creating group "${groupname}". Reason: ${error}`, {
+				variant: 'error'
+			});
+		}
 	};
 
 	const onCancel = async () => {
