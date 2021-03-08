@@ -7,6 +7,7 @@ import 'brace/mode/json';
 import 'brace/theme/github'
 import 'brace/theme/monokai'
 import Ajv from 'ajv';
+import { useSnackbar } from 'notistack';
 
 import { connect, useDispatch } from 'react-redux';
 import { updateStreams } from '../actions/actions';
@@ -84,6 +85,7 @@ const useStyles = makeStyles((theme) => ({
 
 const StreamNew = (props) => {
 	const classes = useStyles();
+	const { enqueueSnackbar } = useSnackbar();
 
 	const [streamname, setStreamname] = useState('');
 	const [sourceTopic, setSourceTopic] = useState('');
@@ -113,18 +115,27 @@ const StreamNew = (props) => {
 	const { client } = context;
 
 	const onSaveStream = async () => {
-		await client.createStream(
-			streamname, 
-			sourceTopic, 
-			targetTopic,
-			targetQoS,
-			ttl,
-			key,
-			query
-		);
-		const streams = await client.listStreams();
-		dispatch(updateStreams(streams));
-		history.push(`/streams`);
+		try {
+			await client.createStream(
+				streamname, 
+				sourceTopic, 
+				targetTopic,
+				targetQoS,
+				ttl,
+				key,
+				query
+			);
+			const streams = await client.listStreams();
+			dispatch(updateStreams(streams));
+			history.push(`/streams`);
+			enqueueSnackbar(`Stream "${streamname}" successfully created.`, {
+				variant: 'success'
+			});
+		} catch(error) {
+			enqueueSnackbar(`Error creating stream "${streamname}". Reason: ${error}`, {
+				variant: 'error'
+			});
+		}
 	};
 
 	const onCancel = async () => {
