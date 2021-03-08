@@ -20,7 +20,6 @@ import ClientIcon from '@material-ui/icons/Person';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Divider from '@material-ui/core/Divider';
 import EditIcon from '@material-ui/icons/Edit';
-import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
 import GroupIcon from '@material-ui/icons/Group';
 import Hidden from '@material-ui/core/Hidden';
@@ -59,11 +58,10 @@ const StyledTableRow = withStyles((theme) => ({
 const useStyles = makeStyles((theme) => ({
 	breadcrumbItem: theme.palette.breadcrumbItem,
 	breadcrumbLink: theme.palette.breadcrumbLink,
-	fab: {
-		position: 'absolute',
-		bottom: theme.spacing(2),
-		right: theme.spacing(2)
-	},
+	// tableContainer: {
+	// 	borderWidth: '1px',
+	// 	borderStyle: 'solid',
+	// }
 }));
 
 const STREAM_TABLE_COLUMNS = [
@@ -491,17 +489,6 @@ const Streams = (props) => {
 			) : (
 				<div>No streams found</div>
 			)}
-			<Fab
-				color="primary"
-				aria-label="add"
-				className={classes.fab}
-				onClick={(event) => {
-					event.stopPropagation();
-					onNewStream();
-				}}
-			>
-				<AddIcon />
-			</Fab>
 		</div>
 	);
 };

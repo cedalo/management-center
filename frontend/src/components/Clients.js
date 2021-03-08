@@ -13,7 +13,7 @@ import ClientIcon from '@material-ui/icons/Person';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Divider from '@material-ui/core/Divider';
 import EditIcon from '@material-ui/icons/Edit';
-import Fab from '@material-ui/core/Fab';
+// import Fab from '@material-ui/core/Fab';
 import GroupIcon from '@material-ui/icons/Group';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
@@ -58,11 +58,11 @@ const useStyles = makeStyles((theme) => ({
 			margin: theme.spacing(0.3)
 		}
 	},
-	fab: {
-		position: 'absolute',
-		bottom: theme.spacing(2),
-		right: theme.spacing(2)
-	},
+	// fab: {
+	// 	position: 'absolute',
+	// 	bottom: theme.spacing(2),
+	// 	right: theme.spacing(2)
+	// },
 	breadcrumbItem: theme.palette.breadcrumbItem,
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
@@ -466,7 +466,7 @@ const Clients = (props) => {
 			) : (
 				<div>No clients found</div>
 			)}
-			<Fab
+			{/* <Fab
 				color="primary"
 				aria-label="add"
 				className={classes.fab}
@@ -476,7 +476,7 @@ const Clients = (props) => {
 				}}
 			>
 				<AddIcon />
-			</Fab>
+			</Fab> */}
 		</div>
 	);
 };

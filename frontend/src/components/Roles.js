@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Divider from '@material-ui/core/Divider';
 import EditIcon from '@material-ui/icons/Edit';
-import Fab from '@material-ui/core/Fab';
+// import Fab from '@material-ui/core/Fab';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
@@ -56,11 +56,11 @@ const useStyles = makeStyles((theme) => ({
 			margin: theme.spacing(0.5)
 		}
 	},
-	fab: {
-		position: 'absolute',
-		bottom: theme.spacing(2),
-		right: theme.spacing(2)
-	},
+	// fab: {
+	// 	position: 'absolute',
+	// 	bottom: theme.spacing(2),
+	// 	right: theme.spacing(2)
+	// },
 	button: {
 		marginRight: 10
 	},
@@ -293,7 +293,7 @@ const Roles = (props) => {
 				<div>No roles found</div>
 			)}
 			<br />
-			<Fab
+			{/* <Fab
 				color="primary"
 				aria-label="add"
 				className={classes.fab}
@@ -303,7 +303,7 @@ const Roles = (props) => {
 				}}
 			>
 				<AddIcon />
-			</Fab>
+			</Fab> */}
 		</div>
 	);
 };
