@@ -3,6 +3,15 @@ import { Redirect, Link as RouterLink } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import { updateStream, updateStreams } from '../actions/actions';
 import { useSnackbar } from 'notistack';
+import { JsonEditor as Editor } from 'jsoneditor-react';
+import 'jsoneditor-react/es/editor.min.css';
+import './jsoneditor-fix.css';
+import ace from 'brace';
+import 'brace/mode/json';
+import 'brace/theme/github'
+import 'brace/theme/monokai'
+import Ajv from 'ajv';
+import useLocalStorage from '../helpers/useLocalStorage';
 
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Avatar from '@material-ui/core/Avatar';
@@ -70,6 +79,19 @@ TabPanel.propTypes = {
 	value: PropTypes.any.isRequired
 };
 
+const ajv = new Ajv({
+	allErrors: true,
+	verbose: true,
+	// code: {
+	// 	// NEW
+	// 	es5: true,
+	// 	lines: true,
+	// 	source: true,
+	// 	process: undefined, // (code: string) => string
+	// 	optimize: true,
+	// },
+});
+
 function a11yProps(index) {
 	return {
 		id: `scrollable-prevent-tab-${index}`,
@@ -115,6 +137,7 @@ const StreamDetail = (props) => {
 	const [showPassword, setShowPassword] = React.useState(false);
 	const [editMode, setEditMode] = React.useState(false);
 	const { enqueueSnackbar } = useSnackbar();
+	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
 
 	const { stream = {}, defaultStream } = props;
 	const [updatedStream, setUpdatedStream] = React.useState({
@@ -308,6 +331,31 @@ const StreamDetail = (props) => {
 											});
 										}
 									}}
+								/>
+							</Grid>
+							<Grid item xs={12}>
+								<Editor
+									ace={ace}
+									ajv={ajv}
+									// schema={schema}
+									value={updatedStream.query}
+									theme={darkMode === 'true' ? "ace/theme/monokai" : "ace/theme/github"}
+									onChange={(query) => {
+										if (editMode) {
+											setUpdatedStream({
+												...updatedStream,
+												query
+											});
+										} else {
+											enqueueSnackbar('Please enable edit mode before editing the query', {
+												variant: 'error'
+											});
+										}
+									}}
+									mode="code"
+									navigationBar={false}
+									search={false}
+									allowedModes={[ 'code', 'view', 'form', 'tree']}
 								/>
 							</Grid>
 							<Grid item xs={12}>
