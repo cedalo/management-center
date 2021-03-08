@@ -334,6 +334,27 @@ const StreamDetail = (props) => {
 								/>
 							</Grid>
 							<Grid item xs={12}>
+								<TextField
+									disabled={!editMode}
+									id="key"
+									label="Key"
+									value={updatedStream.key}
+									defaultValue=""
+									variant="outlined"
+									fullWidth
+									type="number"
+									className={classes.textField}
+									onChange={(event) => {
+										if (editMode) {
+											setUpdatedStream({
+												...updatedStream,
+												key: event.target.value
+											});
+										}
+									}}
+								/>
+							</Grid>
+							<Grid item xs={12}>
 								<Editor
 									ace={ace}
 									ajv={ajv}
