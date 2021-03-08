@@ -362,16 +362,17 @@ const StreamDetail = (props) => {
 								<FormControlLabel
 									control={
 										<Switch
+											disabled={!editMode}
 											checked={
-												typeof stream.process === 'undefined' ||
-												stream.process === true
+												typeof updatedStream.process === 'undefined' ||
+												updatedStream.process === true
 											}
 											onClick={(event) => {
-												event.stopPropagation();
-												if (event.target.checked) {
-													onEnableProcessStream(stream.streamname);
-												} else {
-													onDisableProcessStream(stream.streamname);
+												if (editMode) {
+													setUpdatedStream({
+														...updatedStream,
+														process: event.target.checked
+													});
 												}
 											}}
 										/>
@@ -381,16 +382,17 @@ const StreamDetail = (props) => {
 								<FormControlLabel
 									control={
 										<Switch
+											disabled={!editMode}
 											checked={
-												typeof stream.persist === 'undefined' ||
-												stream.persist === true
+												typeof updatedStream.persist === 'undefined' ||
+												updatedStream.persist === true
 											}
 											onClick={(event) => {
-												event.stopPropagation();
-												if (event.target.checked) {
-													onEnablePersistStream(stream.streamname);
-												} else {
-													onDisablePersistStream(stream.streamname);
+												if (editMode) {
+													setUpdatedStream({
+														...updatedStream,
+														persist: event.target.checked
+													});
 												}
 											}}
 										/>
@@ -400,16 +402,17 @@ const StreamDetail = (props) => {
 								<FormControlLabel
 									control={
 										<Switch
+											disabled={!editMode}
 											checked={
-												typeof stream.active === 'undefined' ||
-												stream.active === true
+												typeof updatedStream.active === 'undefined' ||
+												updatedStream.active === true
 											}
 											onClick={(event) => {
-												event.stopPropagation();
-												if (event.target.checked) {
-													onEnableStream(stream.streamname);
-												} else {
-													onDisableStream(stream.streamname);
+												if (editMode) {
+													setUpdatedStream({
+														...updatedStream,
+														active: event.target.checked
+													});
 												}
 											}}
 										/>
