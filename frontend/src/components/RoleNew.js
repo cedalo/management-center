@@ -78,10 +78,19 @@ const RoleNew = (props) => {
 	};
 
 	const onSaveRole = async () => {
-		await client.createRole(rolename, textname, textdescription);
-		const roles = await client.listRoles();
-		dispatch(updateRoles(roles));
-		history.push(`/security/roles`);
+		try {
+			await client.createRole(rolename, textname, textdescription);
+			const roles = await client.listRoles();
+			dispatch(updateRoles(roles));
+			history.push(`/security/roles`);
+			enqueueSnackbar(`Role "${rolename}" successfully created.`, {
+				variant: 'success'
+			});
+		} catch(error) {
+			enqueueSnackbar(`Error creating role "${rolename}". Reason: ${error}`, {
+				variant: 'error'
+			});
+		}
 	};
 
 	const onCancel = async () => {
