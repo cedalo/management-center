@@ -84,10 +84,19 @@ const ClientNew = (props) => {
 	const { client } = context;
 
 	const onSaveClient = async () => {
-		await client.createClient(username, password, clientID, '', textname, textdescription);
-		const clients = await client.listClients();
-		dispatch(updateClients(clients));
-		history.push(`/security/clients`);
+		try {
+			await client.createClient(username, password, clientID, '', textname, textdescription);
+			const clients = await client.listClients();
+			dispatch(updateClients(clients));
+			history.push(`/security/clients`);
+			enqueueSnackbar(`Client "${username}" successfully created.`, {
+				variant: 'success'
+			});
+		} catch(error) {
+			enqueueSnackbar(`Error creating client "${username}". Reason: ${error}`, {
+				variant: 'error'
+			});
+		}
 	};
 
 	const onCancel = async () => {
