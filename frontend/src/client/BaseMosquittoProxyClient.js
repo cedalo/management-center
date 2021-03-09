@@ -830,6 +830,16 @@ export default class BaseMosquittoProxyClient {
 		);
 	}
 
+	async getStreamMessageCount(streamname) {
+		return this.sendCommand(
+			{
+				command: 'getStreamMessageCount',
+				streamname
+			},
+			API_STREAMS_PROCESSING
+		);
+	}
+
 	async processStream(streamname, process) {
 		return this.sendCommand(
 			{
