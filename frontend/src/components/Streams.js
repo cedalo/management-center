@@ -210,7 +210,16 @@ const Streams = (props) => {
 				variant: 'contained'
 			}
 		});
-		await brokerClient.clearStreamMessages(streamname);
+		try {
+			await brokerClient.clearStreamMessages(streamname);
+			enqueueSnackbar(`Messages from stream "${streamname}" successfully cleared.`, {
+				variant: 'success'
+			});
+		} catch(error) {
+			enqueueSnackbar(`Error clearing messages from "${streamname}". Reason: ${error}`, {
+				variant: 'error'
+			});
+		}
 	};
 
 	const onReplayStream = async (stream) => {
