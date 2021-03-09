@@ -359,7 +359,7 @@ const StreamDetail = (props) => {
 									ace={ace}
 									ajv={ajv}
 									// schema={schema}
-									value={updatedStream.query}
+									value={updatedStream.query || {}}
 									theme={darkMode === 'true' ? "ace/theme/monokai" : "ace/theme/github"}
 									onChange={(query) => {
 										if (editMode) {
