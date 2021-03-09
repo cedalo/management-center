@@ -391,6 +391,7 @@ const Streams = (props) => {
 												<TableCell align="right">
 													<Tooltip title="Clear stream messages">
 														<IconButton
+															disabled={!stream.persist}
 															size="small"
 															onClick={(event) => {
 																event.stopPropagation();
@@ -402,6 +403,7 @@ const Streams = (props) => {
 													</Tooltip>
 													<Tooltip title="Replay stream">
 														<IconButton
+															disabled={!stream.persist}
 															size="small"
 															onClick={(event) => {
 																event.stopPropagation();
