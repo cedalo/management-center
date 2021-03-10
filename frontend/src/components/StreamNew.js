@@ -116,8 +116,9 @@ const StreamNew = (props) => {
 
 	const onSaveStream = async () => {
 		try {
-			await client.createStream(
+			await client.createStream({
 				streamname, 
+				textdescription,
 				sourceTopic, 
 				targetTopic,
 				targetQoS,
