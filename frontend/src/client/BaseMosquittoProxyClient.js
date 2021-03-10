@@ -843,7 +843,7 @@ export default class BaseMosquittoProxyClient {
 	async processStream(streamname, process) {
 		return this.sendCommand(
 			{
-				command: 'processStream',
+				command: 'modifyStream',
 				streamname,
 				process
 			},
@@ -854,7 +854,7 @@ export default class BaseMosquittoProxyClient {
 	async persistStream(streamname, persist) {
 		return this.sendCommand(
 			{
-				command: 'persistStream',
+				command: 'modifyStream',
 				streamname,
 				persist
 			},
