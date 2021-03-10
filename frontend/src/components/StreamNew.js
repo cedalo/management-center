@@ -192,6 +192,17 @@ const StreamNew = (props) => {
 								</Grid>
 								<Grid item xs={12}>
 									<TextField
+										id="description"
+										label="Description"
+										onChange={(event) => setTextdescription(event.target.value)}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										className={classes.textField}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
 										required
 										id="sourcetopic"
 										label="Source Topic"
