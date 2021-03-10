@@ -275,6 +275,26 @@ const StreamDetail = (props) => {
 							<Grid item xs={12}>
 								<TextField
 									disabled={!editMode}
+									id="textdescription"
+									label="Description"
+									value={updatedStream.textdescription}
+									defaultValue=""
+									variant="outlined"
+									fullWidth
+									className={classes.textField}
+									onChange={(event) => {
+										if (editMode) {
+											setUpdatedStream({
+												...updatedStream,
+												textdescription: event.target.value
+											});
+										}
+									}}
+								/>
+							</Grid>
+							<Grid item xs={12}>
+								<TextField
+									disabled={!editMode}
 									id="source-topic"
 									label="Source topic"
 									value={updatedStream.sourcetopic}
