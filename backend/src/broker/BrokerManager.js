@@ -21,6 +21,10 @@ module.exports = class BrokerManager {
 		return this._brokerConnection;
 	}
 
+	getBrokerConnectionById(brokerId) {
+		return this._brokerConnection;
+	}
+
 	getBrokerConnections() {
 		return [this._connection];
 	}

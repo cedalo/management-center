@@ -6,6 +6,7 @@ import groupsReducer from './reducers/groupsReducer';
 import licenseReducer from './reducers/licenseReducer';
 import versionsReducer from './reducers/versionsReducer';
 import rolesReducer from './reducers/rolesReducer';
+import streamsReducer from './reducers/streamsReducer';
 import systemStatusReducer from './reducers/systemStatusReducer';
 import topicTreeReducer from './reducers/topicTreeReducer';
 import clientsReducer from './reducers/clientsReducer';
@@ -20,6 +21,7 @@ const store = createStore(
 		version: versionsReducer,
 		roles: rolesReducer,
 		settings: settingsReducer,
+		streams: streamsReducer,
 		systemStatus: systemStatusReducer,
 		topicTree: topicTreeReducer,
 		clients: clientsReducer

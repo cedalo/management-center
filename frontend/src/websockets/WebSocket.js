@@ -10,6 +10,7 @@ import {
 	updateDefaultACLAccess,
 	updateRoles,
 	updateSettings,
+	updateStreams,
 	updateSystemStatus,
 	updateTopicTree,
 	updateVersion
@@ -104,6 +105,10 @@ export default ({ children }) => {
 			.then(() => client.getDefaultACLAccess())
 			.then((defaultACLAccess) => {
 				dispatch(updateDefaultACLAccess(defaultACLAccess));
+			})
+			.then(() => client.listStreams())
+			.then((streams) => {
+				dispatch(updateStreams(streams));
 			});
 
 		ws = {

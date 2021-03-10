@@ -20,6 +20,7 @@ import {
 	updateBrokerConnections,
 	updateDefaultACLAccess,
 	updateSettings,
+	updateStreams,
 	updateSystemStatus,
 	updateTopicTree
 } from '../actions/actions';
@@ -95,6 +96,8 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 			dispatch(updateRoles(roles));
 			const defaultACLAccess = await client.getDefaultACLAccess();
 			dispatch(updateDefaultACLAccess(defaultACLAccess));
+			const streams = await client.listStreams();
+			dispatch(updateStreams(streams));
 			setConnection(event.target.value);
 		} else {
 		}

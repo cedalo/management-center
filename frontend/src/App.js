@@ -78,9 +78,11 @@ import TopicTree from './components/TopicTree';
 import GroupDetail from './components/GroupDetail';
 import RoleDetail from './components/RoleDetail';
 import ClientDetail from './components/ClientDetail';
+import StreamDetail from './components/StreamDetail';
 import GroupNew from './components/GroupNew';
 import ClientNew from './components/ClientNew';
 import RoleNew from './components/RoleNew';
+import StreamNew from './components/StreamNew';
 import Clients from './components/Clients';
 import store from './store';
 import WebSocketProvider, { WebSocketContext } from './websockets/WebSocket';
@@ -603,6 +605,13 @@ export default function App(props) {
 													</Route>
 													<Route path="/terminal">
 														<Terminal />
+													</Route>
+													<Route
+														path="/streams/detail/:streamId"
+														component={StreamDetail}
+													/>
+													<Route path="/streams/new">
+														<StreamNew />
 													</Route>
 													<Route path="/streams">
 														<Streams />

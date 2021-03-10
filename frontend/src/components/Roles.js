@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Divider from '@material-ui/core/Divider';
 import EditIcon from '@material-ui/icons/Edit';
-import Fab from '@material-ui/core/Fab';
+// import Fab from '@material-ui/core/Fab';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
@@ -56,10 +56,13 @@ const useStyles = makeStyles((theme) => ({
 			margin: theme.spacing(0.5)
 		}
 	},
-	fab: {
-		position: 'absolute',
-		bottom: theme.spacing(2),
-		right: theme.spacing(2)
+	// fab: {
+	// 	position: 'absolute',
+	// 	bottom: theme.spacing(2),
+	// 	right: theme.spacing(2)
+	// },
+	button: {
+		marginRight: 10
 	},
 	breadcrumbItem: theme.palette.breadcrumbItem,
 	breadcrumbLink: theme.palette.breadcrumbLink
@@ -160,6 +163,31 @@ const Roles = (props) => {
 					Roles
 				</Typography>
 			</Breadcrumbs>
+			<br />
+			<Button
+				variant="outlined"
+				color="default"
+				size="small"
+				className={classes.button}
+				startIcon={<AddIcon />}
+				onClick={(event) => {
+					event.stopPropagation();
+					onNewRole();
+				}}
+			>
+				New Role
+			</Button>
+			<Button
+				variant="outlined"
+				color="default"
+				size="small"
+				className={classes.button}
+				startIcon={<EditIcon />}
+				onClick={onEditDefaultACLAccess}
+			>
+				Edit default ACL access
+			</Button>
+			<br />
 			<br />
 			{roles && roles.length > 0 ? (
 				<div>
@@ -265,16 +293,7 @@ const Roles = (props) => {
 				<div>No roles found</div>
 			)}
 			<br />
-			<Button
-				variant="contained"
-				color="primary"
-				className={classes.button}
-				startIcon={<EditIcon />}
-				onClick={onEditDefaultACLAccess}
-			>
-				Edit default ACL access
-			</Button>
-			<Fab
+			{/* <Fab
 				color="primary"
 				aria-label="add"
 				className={classes.fab}
@@ -284,7 +303,7 @@ const Roles = (props) => {
 				}}
 			>
 				<AddIcon />
-			</Fab>
+			</Fab> */}
 		</div>
 	);
 };

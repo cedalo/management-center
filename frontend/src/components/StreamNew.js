@@ -1,5 +1,16 @@
 import React, { useContext, useState } from 'react';
+import { JsonEditor as Editor } from 'jsoneditor-react';
+import 'jsoneditor-react/es/editor.min.css';
+import './jsoneditor-fix.css';
+import ace from 'brace';
+import 'brace/mode/json';
+import 'brace/theme/github'
+import 'brace/theme/monokai'
+import Ajv from 'ajv';
+import { useSnackbar } from 'notistack';
+
 import { connect, useDispatch } from 'react-redux';
+import { updateStreams } from '../actions/actions';
 
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Box from '@material-ui/core/Box';
@@ -24,9 +35,22 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { makeStyles } from '@material-ui/core/styles';
-import { updateRoles } from '../actions/actions';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
+import useLocalStorage from '../helpers/useLocalStorage';
+
+const ajv = new Ajv({
+	allErrors: true,
+	verbose: true,
+	// code: {
+	// 	// NEW
+	// 	es5: true,
+	// 	lines: true,
+	// 	source: true,
+	// 	process: undefined, // (code: string) => string
+	// 	optimize: true,
+	// },
+});
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -59,12 +83,30 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
-const RoleNew = (props) => {
+const StreamNew = (props) => {
 	const classes = useStyles();
+	const { enqueueSnackbar } = useSnackbar();
 
-	const [rolename, setRolename] = useState('');
-	const [textname, setTextname] = useState('');
-	const [textdescription, setTextdescription] = useState('');
+	const [streamname, setStreamname] = useState('');
+	const [sourceTopic, setSourceTopic] = useState('');
+	const [targetTopic, setTargetTopic] = useState('');
+	const [key, setKey] = useState('');
+	const [targetQoS, setTargetQoS] = useState(0);
+	const [ttl, setTTL] = useState(86400);
+	const [query, setQuery] = useState({});
+	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
+
+	const streamnameExists = props?.streams?.find((searchStream) => {
+		return searchStream.streamname === streamname;
+	});
+
+	const validate = () => {
+		const valid = !streamnameExists
+			&& streamname !== ''
+			&& sourceTopic !== ''
+			&& targetTopic !== '';
+		return valid;
+	};
 
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
@@ -72,22 +114,25 @@ const RoleNew = (props) => {
 	const confirm = useConfirm();
 	const { client } = context;
 
-	const validate = () => {
-		const valid = rolename !== '';
-		return valid;
-	};
-
-	const onSaveRole = async () => {
+	const onSaveStream = async () => {
 		try {
-			await client.createRole(rolename, textname, textdescription);
-			const roles = await client.listRoles();
-			dispatch(updateRoles(roles));
-			history.push(`/security/roles`);
-			enqueueSnackbar(`Role "${rolename}" successfully created.`, {
+			await client.createStream(
+				streamname, 
+				sourceTopic, 
+				targetTopic,
+				targetQoS,
+				ttl,
+				key,
+				query
+			);
+			const streams = await client.listStreams();
+			dispatch(updateStreams(streams));
+			history.push(`/streams`);
+			enqueueSnackbar(`Stream "${streamname}" successfully created.`, {
 				variant: 'success'
 			});
 		} catch(error) {
-			enqueueSnackbar(`Error creating role "${rolename}". Reason: ${error}`, {
+			enqueueSnackbar(`Error creating stream "${streamname}". Reason: ${error}`, {
 				variant: 'error'
 			});
 		}
@@ -95,8 +140,8 @@ const RoleNew = (props) => {
 
 	const onCancel = async () => {
 		await confirm({
-			title: 'Cancel role creation',
-			description: `Do you really want to cancel creating this role?`,
+			title: 'Cancel stream creation',
+			description: `Do you really want to cancel creating this stream?`,
 			cancellationButtonProps: {
 				variant: 'contained'
 			},
@@ -114,11 +159,8 @@ const RoleNew = (props) => {
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
 				</RouterLink>
-				<RouterLink className={classes.breadcrumbLink} to="/security">
-					Security
-				</RouterLink>
 				<Typography className={classes.breadcrumbItem} color="textPrimary">
-					Roles
+					Streams
 				</Typography>
 			</Breadcrumbs>
 			<br />
@@ -129,10 +171,12 @@ const RoleNew = (props) => {
 							<Grid container spacing={1} alignItems="flex-end">
 								<Grid item xs={12}>
 									<TextField
+										error={streamnameExists}
+										helperText={streamnameExists && 'A stream with this name already exists.'}
 										required
-										id="rolename"
-										label="Role name"
-										onChange={(event) => setRolename(event.target.value)}
+										id="streamname"
+										label="Stream name"
+										onChange={(event) => setStreamname(event.target.value)}
 										defaultValue=""
 										variant="outlined"
 										fullWidth
@@ -148,9 +192,10 @@ const RoleNew = (props) => {
 								</Grid>
 								<Grid item xs={12}>
 									<TextField
-										id="textname"
-										label="Text name"
-										onChange={(event) => setTextname(event.target.value)}
+										required
+										id="sourcetopic"
+										label="Source Topic"
+										onChange={(event) => setSourceTopic(event.target.value)}
 										defaultValue=""
 										variant="outlined"
 										fullWidth
@@ -159,13 +204,63 @@ const RoleNew = (props) => {
 								</Grid>
 								<Grid item xs={12}>
 									<TextField
-										id="textdescription"
-										label="Text description"
-										onChange={(event) => setTextdescription(event.target.value)}
+										required
+										id="targettopic"
+										label="Target topic"
+										onChange={(event) => setTargetTopic(event.target.value)}
 										defaultValue=""
 										variant="outlined"
 										fullWidth
 										className={classes.textField}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										id="targetqos"
+										label="Target QoS"
+										onChange={(event) => setTargetQoS(event.target.value)}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										className={classes.textField}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										id="ttl"
+										label="TTL"
+										onChange={(event) => setTTL(event.target.value)}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										className={classes.textField}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										id="key"
+										label="Key"
+										onChange={(event) => setKey(event.target.value)}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										className={classes.textField}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<Editor
+										className={classes.editor}
+										// value={}
+										ace={ace}
+										// onChange={this.handleChange}
+										ajv={ajv}
+										value={query}
+										theme={darkMode === 'true' ? "ace/theme/monokai" : "ace/theme/github"}
+										onChange={(json) => setQuery(json)}
+										mode="code"
+										navigationBar={false}
+										search={false}
+										allowedModes={[ 'code', 'view', 'form', 'tree']}
 									/>
 								</Grid>
 								<Grid container xs={12} alignItems="flex-start">
@@ -178,7 +273,7 @@ const RoleNew = (props) => {
 											startIcon={<SaveIcon />}
 											onClick={(event) => {
 												event.stopPropagation();
-												onSaveRole();
+												onSaveStream();
 											}}
 										>
 											Save
@@ -204,7 +299,9 @@ const RoleNew = (props) => {
 };
 
 const mapStateToProps = (state) => {
-	return {};
+	return {
+		streams: state.streams?.streams
+	};
 };
 
-export default connect(mapStateToProps)(RoleNew);
+export default connect(mapStateToProps)(StreamNew);

@@ -6,6 +6,7 @@ const createError = (code, message) => ({
 });
 
 const API_DYNAMIC_SECURITY = 'dynamic-security';
+const API_STREAMS_PROCESSING = 'stream-processing';
 
 // TODO: merge with method deletePendingRequest()
 const deletePendingRequest = (requestId, requests) => {
@@ -759,6 +760,174 @@ export default class BaseMosquittoProxyClient {
 			this._eventListeners.set(event, listeners);
 		}
 		listeners.push(listener);
+	}
+
+	/**
+	 * ******************************************************************************************
+	 * Methods for stream processing
+	 * ******************************************************************************************
+	 */
+
+	async listStreams(verbose = true) {
+		const data = await this.sendCommand(
+			{
+				command: 'listStreams',
+				verbose
+			},
+			API_STREAMS_PROCESSING
+		);
+		return data?.streams;
+	}
+
+	async getStream(streamname) {
+		const data = await this.sendCommand(
+			{
+				command: 'getStream',
+				streamname
+			},
+			API_STREAMS_PROCESSING
+		);
+		return data?.stream;
+	}
+
+	async deleteStream(streamname) {
+		return this.sendCommand(
+			{
+				command: 'deleteStream',
+				streamname
+			},
+			API_STREAMS_PROCESSING
+		);
+	}
+
+	async enableStream(streamname) {
+		return this.sendCommand(
+			{
+				command: 'enableStream',
+				streamname
+			},
+			API_STREAMS_PROCESSING
+		);
+	}
+
+	async disableStream(streamname) {
+		return this.sendCommand(
+			{
+				command: 'disableStream',
+				streamname
+			},
+			API_STREAMS_PROCESSING
+		);
+	}
+
+	async clearStreamMessages(streamname) {
+		return this.sendCommand(
+			{
+				command: 'clearStreamMessages',
+				streamname
+			},
+			API_STREAMS_PROCESSING
+		);
+	}
+
+	async getStreamMessageCount(streamname) {
+		return this.sendCommand(
+			{
+				command: 'getStreamMessageCount',
+				streamname
+			},
+			API_STREAMS_PROCESSING
+		);
+	}
+
+	async processStream(streamname, process) {
+		return this.sendCommand(
+			{
+				command: 'processStream',
+				streamname,
+				process
+			},
+			API_STREAMS_PROCESSING
+		);
+	}
+
+	async persistStream(streamname, persist) {
+		return this.sendCommand(
+			{
+				command: 'persistStream',
+				streamname,
+				persist
+			},
+			API_STREAMS_PROCESSING
+		);
+	}
+
+	async modifyStream({ streamname, sourcetopic, targettopic, targetQoS, ttl, key, query, active, persist, process }) {
+		return this.sendCommand(
+			{
+				command: 'createStream',
+				replace: true,
+				streamname,
+				sourcetopic,
+				targettopic,
+				targetQoS,
+				ttl,
+				key,
+				query,
+				active,
+				persist,
+				process
+			},
+			API_STREAMS_PROCESSING
+		);
+		// TODO: use native command when implemented
+		// return this.sendCommand(
+		// 	{
+		// 		command: 'modifyStream',
+		// 		streamname,
+		// 		sourceTopic,
+		// 		targetTopic,
+		// 		targetQoS,
+		// 		ttl,
+		// 		query,
+		// 		active,
+		// 		persist,
+		// 		process
+		// 	},
+		// 	API_STREAMS_PROCESSING
+		// );
+	}
+
+	async replayStream({ streamname, replayTopic, gte, lte, reverse, limit, speed }) {
+		return this.sendCommand(
+			{
+				command: 'replayStream',
+				streamname,
+				replayTopic,
+				gte,
+				lte,
+				reverse,
+				limit,
+				speed
+			},
+			API_STREAMS_PROCESSING
+		);
+	}
+
+	async createStream(streamname, sourceTopic, targetTopic, targetQoS, ttl, key, query) {
+		return this.sendCommand(
+			{
+				command: 'createStream',
+				streamname, 
+				sourceTopic, 
+				targetTopic,
+				targetqos: typeof targetQoS === 'string' ? parseInt(targetQoS) : targetQoS,
+				ttl: typeof ttl === 'string' ? parseInt(ttl) : ttl,
+				key,
+				query
+			},
+			API_STREAMS_PROCESSING
+		);
 	}
 
 	off(event, listener) {

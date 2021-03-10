@@ -155,7 +155,9 @@ module.exports = class BaseMosquittoClient {
 	}
 
 	_isResponse(topic, message) {
-		if (topic === '$CONTROL/dynamic-security/v1/response') {
+		if (topic === '$CONTROL/dynamic-security/v1/response'
+			|| topic === '$CONTROL/stream-processing/v1/response'
+		) {
 			return true;
 		}
 		try {

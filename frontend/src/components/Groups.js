@@ -7,12 +7,13 @@ import AddIcon from '@material-ui/icons/Add';
 import AnonymousGroupSelect from './AnonymousGroupSelect';
 import AutoSuggest from './AutoSuggest';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import ClientIcon from '@material-ui/icons/Person';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Divider from '@material-ui/core/Divider';
 import EditIcon from '@material-ui/icons/Edit';
-import Fab from '@material-ui/core/Fab';
+// import Fab from '@material-ui/core/Fab';
 import FormControl from '@material-ui/core/FormControl';
 import GroupIcon from '@material-ui/icons/Group';
 import Hidden from '@material-ui/core/Hidden';
@@ -58,11 +59,11 @@ const useStyles = makeStyles((theme) => ({
 			margin: theme.spacing(0.5)
 		}
 	},
-	fab: {
-		position: 'absolute',
-		bottom: theme.spacing(2),
-		right: theme.spacing(2)
-	},
+	// fab: {
+	// 	position: 'absolute',
+	// 	bottom: theme.spacing(2),
+	// 	right: theme.spacing(2)
+	// },
 	breadcrumbItem: theme.palette.breadcrumbItem,
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
@@ -151,7 +152,7 @@ const Groups = (props) => {
 			}
 		});
 		await client.deleteGroup(groupname);
-		enqueueSnackbar('Group successfully deleted', {
+		enqueueSnackbar(`Group "${groupname}" successfully deleted`, {
 			variant: 'success'
 		});
 		const groups = await client.listGroups();
@@ -198,6 +199,21 @@ const Groups = (props) => {
 					Groups
 				</Typography>
 			</Breadcrumbs>
+			<br />
+			<Button
+				variant="outlined"
+				color="default"
+				size="small"
+				className={classes.button}
+				startIcon={<AddIcon />}
+				onClick={(event) => {
+					event.stopPropagation();
+					onNewGroup();
+				}}
+			>
+				New Group
+			</Button>
+			<br />
 			<br />
 			{groups && groups.length > 0 ? (
 				<div>
@@ -356,7 +372,7 @@ const Groups = (props) => {
 			) : (
 				<div>No groups found</div>
 			)}
-			<Fab
+			{/* <Fab
 				color="primary"
 				aria-label="add"
 				className={classes.fab}
@@ -366,7 +382,7 @@ const Groups = (props) => {
 				}}
 			>
 				<AddIcon />
-			</Fab>
+			</Fab> */}
 		</div>
 	);
 };
