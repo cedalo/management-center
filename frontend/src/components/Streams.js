@@ -66,6 +66,7 @@ const useStyles = makeStyles((theme) => ({
 
 const STREAM_TABLE_COLUMNS = [
 	{ id: 'streamname', key: 'Stream name' },
+	{ id: 'textDescription', key: 'Description' },
 	{ id: 'sourcetopic', key: 'Source topic' },
 	{ id: 'targettopic', key: 'Target topic' },
 	{ id: 'targetqos', key: 'Target QoS' },
@@ -339,6 +340,7 @@ const Streams = (props) => {
 												style={{ cursor: 'pointer' }}
 											>
 												<TableCell>{stream.streamname}</TableCell>
+												<TableCell>{stream.textdescription}</TableCell>
 												<TableCell>{stream.sourcetopic}</TableCell>
 												<TableCell>{stream.targettopic}</TableCell>
 												<TableCell>{stream.targetqos}</TableCell>
