@@ -10,10 +10,10 @@ const axios = require('axios');
 const BrokerManager = require('./src/broker/BrokerManager');
 const NodeMosquittoClient = require('./src/client/NodeMosquittoClient');
 const PluginManager = require('./src/plugins/PluginManager');
-const UsageTracker = require("./src/usage/UsageTracker");
-const InstallationManager = require("./src/usage/InstallationManager");
-const SettingsManager = require("./src/settings/SettingsManager");
-const { loadInstallation } = require("./src/utils/utils");
+const UsageTracker = require('./src/usage/UsageTracker');
+const InstallationManager = require('./src/usage/InstallationManager');
+const SettingsManager = require('./src/settings/SettingsManager');
+const { loadInstallation } = require('./src/utils/utils');
 
 const version = {
 	name: process.env.CEDALO_MC_NAME || 'Cedalo Management Center',
@@ -133,7 +133,7 @@ const initConnections = (config) => {
 
 const addStreamsheetsConfig = (config) => {
 	if (!config.tools) {
-		config.tools = {}
+		config.tools = {};
 	}
 	if (!config.tools.streamsheets) {
 		config.tools.streamsheets = {};
@@ -142,16 +142,15 @@ const addStreamsheetsConfig = (config) => {
 		config.tools.streamsheets.instances = [];
 	}
 	// id and url are required parameters
-	if (process.env.CEDALO_STREAMSHEETS_ID
-		&& process.env.CEDALO_STREAMSHEETS_URL) {
-			config.tools.streamsheets.instances.push({
-				id: process.env.CEDALO_STREAMSHEETS_ID,
-				name: process.env.CEDALO_STREAMSHEETS_NAME,
-				description: process.env.CEDALO_STREAMSHEETS_DESCRIPTION,
-				url: process.env.CEDALO_STREAMSHEETS_URL
-			})
-		}
-}
+	if (process.env.CEDALO_STREAMSHEETS_ID && process.env.CEDALO_STREAMSHEETS_URL) {
+		config.tools.streamsheets.instances.push({
+			id: process.env.CEDALO_STREAMSHEETS_ID,
+			name: process.env.CEDALO_STREAMSHEETS_NAME,
+			description: process.env.CEDALO_STREAMSHEETS_DESCRIPTION,
+			url: process.env.CEDALO_STREAMSHEETS_URL
+		});
+	}
+};
 
 const loadConfig = () => {
 	const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, CEDALO_MC_PROXY_CONFIG_DIR)).toString());
@@ -162,12 +161,13 @@ const loadConfig = () => {
 const init = async (licenseContainer) => {
 	const installation = loadInstallation();
 	const usageTracker = new UsageTracker({ license: licenseContainer, version, installation });
-	const installationManager = new InstallationManager( { license: licenseContainer, version, installation });
+	const installationManager = new InstallationManager({ license: licenseContainer, version, installation });
 	await installationManager.verifyLicense();
 	const settingsManager = new SettingsManager();
 	const globalSystem = {};
 	const globalTopicTree = {};
 	const app = express();
+
 	app.use(cors());
 	app.use(express.json());
 	const server = http.createServer(app);
@@ -496,6 +496,23 @@ const init = async (licenseContainer) => {
 		});
 	});
 
+	context = {
+		...context,
+		app,
+		config,
+		globalSystem,
+		globalTopicTree,
+		licenseContainer,
+		actions: {
+			loadConfig,
+			sendSystemStatusUpdate,
+			sendTopicTreeUpdate
+		}
+	};
+
+	const pluginManager = new PluginManager();
+	pluginManager.init(config.plugins, context);
+
 	app.use(express.static(path.join(__dirname, 'public')));
 
 	app.get('/api/version', (request, response) => {
@@ -548,23 +565,6 @@ const init = async (licenseContainer) => {
 		response.json(licenseContainer.license);
 	});
 
-	context = {
-		...context,
-		app,
-		config,
-		globalSystem,
-		globalTopicTree,
-		licenseContainer,
-		actions: {
-			loadConfig,
-			sendSystemStatusUpdate,
-			sendTopicTreeUpdate
-		}
-	};
-
-	const pluginManager = new PluginManager();
-	pluginManager.init(config.plugins, context);
-
 	app.get('/api/plugins', (request, response) => {
 		response.json(
 			pluginManager.plugins.map((plugin) => ({
@@ -592,7 +592,7 @@ const init = async (licenseContainer) => {
 					cpus: os.cpus(),
 					platform: os.platform(),
 					release: os.release(),
-					version: os.version(),
+					version: os.version()
 				}
 			});
 		}
