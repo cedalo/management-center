@@ -854,7 +854,7 @@ export default class BaseMosquittoProxyClient {
 	async persistStream(streamname, persist) {
 		return this.sendCommand(
 			{
-				command: 'persistStream',
+				command: 'modifyStream',
 				streamname,
 				persist
 			},
