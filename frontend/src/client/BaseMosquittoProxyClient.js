@@ -862,7 +862,7 @@ export default class BaseMosquittoProxyClient {
 		);
 	}
 
-	async modifyStream({ streamname, sourcetopic, targettopic, targetQoS, ttl, key, query, active, persist, process }) {
+	async modifyStream({ streamname, sourcetopic, targettopic, targetQoS, ttl, key, query, active, persist, process, textname, textdescription }) {
 		return this.sendCommand(
 			{
 				command: 'createStream',
@@ -876,7 +876,9 @@ export default class BaseMosquittoProxyClient {
 				query,
 				active,
 				persist,
-				process
+				process,
+				textname,
+				textdescription
 			},
 			API_STREAMS_PROCESSING
 		);
@@ -914,7 +916,7 @@ export default class BaseMosquittoProxyClient {
 		);
 	}
 
-	async createStream(streamname, sourceTopic, targetTopic, targetQoS, ttl, key, query) {
+	async createStream({ streamname, sourceTopic, targetTopic, targetQoS, ttl, key, query, textname, textdescription }) {
 		return this.sendCommand(
 			{
 				command: 'createStream',
@@ -924,7 +926,9 @@ export default class BaseMosquittoProxyClient {
 				targetqos: typeof targetQoS === 'string' ? parseInt(targetQoS) : targetQoS,
 				ttl: typeof ttl === 'string' ? parseInt(ttl) : ttl,
 				key,
-				query
+				query,
+				textname,
+				textdescription
 			},
 			API_STREAMS_PROCESSING
 		);
