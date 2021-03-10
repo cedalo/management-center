@@ -88,6 +88,7 @@ const StreamNew = (props) => {
 	const { enqueueSnackbar } = useSnackbar();
 
 	const [streamname, setStreamname] = useState('');
+	const [textdescription, setTextdescription] = useState('');
 	const [sourceTopic, setSourceTopic] = useState('');
 	const [targetTopic, setTargetTopic] = useState('');
 	const [key, setKey] = useState('');
@@ -125,7 +126,7 @@ const StreamNew = (props) => {
 				ttl,
 				key,
 				query
-			);
+			});
 			const streams = await client.listStreams();
 			dispatch(updateStreams(streams));
 			history.push(`/streams`);
