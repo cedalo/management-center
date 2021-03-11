@@ -862,7 +862,7 @@ export default class BaseMosquittoProxyClient {
 		);
 	}
 
-	async modifyStream({ streamname, sourcetopic, targettopic, targetQoS, ttl, key, query, active, persist, process, textname, textdescription }) {
+	async modifyStream({ streamname, sourcetopic, targettopic, targetqos, ttl, key, query, active, persist, process, textname, textdescription }) {
 		return this.sendCommand(
 			{
 				command: 'createStream',
@@ -870,7 +870,7 @@ export default class BaseMosquittoProxyClient {
 				streamname,
 				sourcetopic,
 				targettopic,
-				targetQoS,
+				targetqos,
 				ttl,
 				key,
 				query,
