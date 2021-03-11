@@ -347,7 +347,7 @@ const TopicTree = ({ topicTree }) => {
 									{/* {selectedNode?._message && selectedNode?._message.startsWith('{') && ( */}
 									{selectedNode?._message && (
 										<TableRow>
-											<TableCell>
+											<TableCell style={{ verticalAlign: 'top' }}>
 												<strong>Payload</strong>
 											</TableCell>
 											<TableCell>
