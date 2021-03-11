@@ -80,6 +80,15 @@ export function updateBrokerConnections(update) {
 	};
 }
 
+export function updateProxyConnected(connected) {
+	return {
+		type: ActionTypes.UPDATE_PROXY_CONNECTED,
+		update: {
+			connected
+		}
+	};
+}
+
 export function updateSettings(update) {
 	return {
 		type: ActionTypes.UPDATE_SETTINGS,
