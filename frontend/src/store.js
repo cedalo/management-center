@@ -2,6 +2,7 @@
 import { createStore, combineReducers } from 'redux';
 import brokerConfigurationsReducer from './reducers/brokerConfigurationsReducer';
 import brokerConnectionsReducer from './reducers/brokerConnectionsReducer';
+import proxyConnectionReducer from './reducers/proxyConnectionReducer';
 import groupsReducer from './reducers/groupsReducer';
 import licenseReducer from './reducers/licenseReducer';
 import versionsReducer from './reducers/versionsReducer';
@@ -16,6 +17,7 @@ const store = createStore(
 	combineReducers({
 		brokerConfigurations: brokerConfigurationsReducer,
 		brokerConnections: brokerConnectionsReducer,
+		proxyConnection: proxyConnectionReducer,
 		groups: groupsReducer,
 		license: licenseReducer,
 		version: versionsReducer,
