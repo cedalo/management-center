@@ -232,7 +232,9 @@ const StreamNew = (props) => {
 										id="targetqos"
 										label="Target QoS"
 										onChange={(event) => setTargetQoS(event.target.value)}
-										defaultValue=""
+										defaultValue={2}
+										type="number"
+										InputProps={{ inputProps: { min: 0, max: 2 } }}
 										variant="outlined"
 										fullWidth
 										className={classes.textField}
