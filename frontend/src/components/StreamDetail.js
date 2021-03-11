@@ -342,6 +342,7 @@ const StreamDetail = (props) => {
 									variant="outlined"
 									fullWidth
 									type="number"
+									InputProps={{ inputProps: { min: 0, max: 2 } }}
 									className={classes.textField}
 									onChange={(event) => {
 										if (editMode) {
