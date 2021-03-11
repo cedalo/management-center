@@ -134,7 +134,7 @@ const StreamNew = (props) => {
 				variant: 'success'
 			});
 		} catch(error) {
-			enqueueSnackbar(`Error creating stream "${streamname}". Reason: ${error}`, {
+			enqueueSnackbar(`Error creating stream "${streamname}". Reason: ${error.message ? error.message : error}`, {
 				variant: 'error'
 			});
 		}
