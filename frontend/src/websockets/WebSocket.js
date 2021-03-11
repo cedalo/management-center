@@ -3,6 +3,7 @@ import {
 	updateBrokerConfigurations,
 	updateBrokerConnected,
 	updateBrokerConnections,
+	updateProxyConnected,
 	updateClients,
 	updateAnonymousGroup,
 	updateGroups,
@@ -37,9 +38,10 @@ export default ({ children }) => {
 	};
 
 	if (!client) {
-		// TOOD: integrate Mosquitto client
 		client = new WebMosquittoProxyClient({ logger: console });
-
+		client.closeHandler = (event) => {
+			dispatch(updateProxyConnected(false));
+		};
 		client.on('system_status', (message) => {
 			dispatch(updateSystemStatus(message.payload));
 		});
@@ -66,6 +68,7 @@ export default ({ children }) => {
 		// TODO: merge with code from BrokerSelect
 		client
 			.connect({ socketEndpointURL: WS_BASE.url })
+			.then(() => dispatch(updateProxyConnected(true)))
 			.then(() => client.getBrokerConnections())
 			.then((brokerConnections) => {
 				dispatch(updateBrokerConnections(brokerConnections));
