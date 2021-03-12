@@ -7,6 +7,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { WebSocketContext } from '../../websockets/WebSocket';
 
@@ -81,17 +83,18 @@ export default function ReplayStreamDialog({ stream, open, handleReplay, handleC
 							/>
 						</Grid>
 						<Grid item xs={12}>
-							<TextField
-								onChange={(event) => {
-									setReverse(event.target.value);
-								}}
-								id="reverse"
+							<FormControlLabel
+								control={
+								<Switch
+									checked={reverse}
+									onChange={(event) => {
+										setReverse(event.target.checked);
+									}}
+									name="reverse"
+									color="secondary"
+								/>
+								}
 								label="Reverse"
-								value={reverse}
-								defaultValue=""
-								variant="outlined"
-								fullWidth
-								className={classes.textField}
 							/>
 						</Grid>
 						<Grid item xs={12}>
