@@ -375,7 +375,7 @@ const StreamDetail = (props) => {
 									}}
 								/>
 							</Grid>
-							<Grid item xs={12}>
+							{ editMode && <Grid item xs={12}>
 								<Editor
 									ace={ace}
 									ajv={ajv}
@@ -400,6 +400,7 @@ const StreamDetail = (props) => {
 									allowedModes={[ 'code', 'view', 'form', 'tree']}
 								/>
 							</Grid>
+							}
 							<Grid item xs={12}>
 								<FormControlLabel
 									control={
