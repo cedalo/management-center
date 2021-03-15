@@ -191,15 +191,21 @@ const StreamDetail = (props) => {
 	};
 
 	const onUpdateStream = async () => {
-		await brokerClient.modifyStream(updatedStream);
-		enqueueSnackbar('Stream successfully updated', {
-			variant: 'success'
-		});
-		const streamObject = await brokerClient.getStream(updatedStream.streamname);
-		dispatch(updateStream(streamObject));
-		const streams = await brokerClient.listStreams();
-		dispatch(updateStreams(streams));
-		setEditMode(false);
+		try {
+			await brokerClient.modifyStream(updatedStream);
+			enqueueSnackbar('Stream successfully updated', {
+				variant: 'success'
+			});
+			const streamObject = await brokerClient.getStream(updatedStream.streamname);
+			dispatch(updateStream(streamObject));
+			const streams = await brokerClient.listStreams();
+			dispatch(updateStreams(streams));
+			setEditMode(false);
+		} catch (error) {
+			enqueueSnackbar(`Error modifying stream "${updatedStream.streamname}". Reason: ${error}`, {
+				variant: 'error'
+			});
+		}
 	};
 
 	const onCancelEdit = async () => {
