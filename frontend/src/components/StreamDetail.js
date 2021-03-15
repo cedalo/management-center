@@ -358,7 +358,7 @@ const StreamDetail = (props) => {
 										if (editMode) {
 											setUpdatedStream({
 												...updatedStream,
-												targetqos: event.target.value
+												targetqos: parseInt(event.target.value)
 											});
 										}
 									}}
