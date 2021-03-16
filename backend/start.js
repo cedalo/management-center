@@ -17,7 +17,7 @@ const { loadInstallation } = require('./src/utils/utils');
 
 const version = {
 	name: process.env.CEDALO_MC_NAME || 'Cedalo Management Center',
-	version: process.env.CEDALO_MC_VERSION || '2.1',
+	version: process.env.CEDALO_MC_VERSION || '2.2',
 	buildNumber: process.env.TRAVIS_BUILD_NUMBER || process.env.CEDALO_MC_BUILD_NUMBER || uuidv4(),
 	buildDate: process.env.CEDALO_MC_BUILD_DATE || Date.now()
 };
