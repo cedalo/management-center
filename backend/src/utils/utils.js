@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 
-const adapter = new FileSync('db.json');
+const adapter = new FileSync(path.join(process.env.CEDALO_MC_DIRECTORY_SETTINGS || __dirname, 'db.json'));
 const db = low(adapter);
 
 const initId = () => {
