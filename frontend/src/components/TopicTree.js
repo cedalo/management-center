@@ -388,7 +388,9 @@ const TopicTree = ({ topicTree }) => {
 											// if (entry?._message && entry?._message.startsWith('{')) {
 											if (entry?._message) {
 												return <TableRow>
-													<TableCell>
+													<TableCell 
+														className={classes.payloadHistory}
+													>
 														<strong>{moment(entry._received).format('HH:mm:ss:SSS')}</strong>
 													</TableCell>
 													<TableCell>
