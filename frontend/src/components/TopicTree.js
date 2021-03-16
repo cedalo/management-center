@@ -40,6 +40,9 @@ const useStyles = makeStyles((theme) => ({
 	payloadDetail: {
 		width: '100%'
 	},
+	payloadHistory: {
+		verticalAlign: 'top'
+	},
 	paper: {
 		padding: theme.spacing(2),
 		height: '100%'
@@ -347,7 +350,9 @@ const TopicTree = ({ topicTree }) => {
 									{/* {selectedNode?._message && selectedNode?._message.startsWith('{') && ( */}
 									{selectedNode?._message && (
 										<TableRow>
-											<TableCell style={{ verticalAlign: 'top' }}>
+											<TableCell 
+												className={classes.payloadHistory}
+											>
 												<strong>Payload</strong>
 											</TableCell>
 											<TableCell>
