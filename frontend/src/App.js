@@ -53,6 +53,7 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import Hidden from '@material-ui/core/Hidden';
 import { ConfirmProvider } from 'material-ui-confirm';
 import Logo from './components/Logo';
+import LogoutButton from './components/LogoutButton';
 import DisconnectedDialog from './components/DisconnectedDialog';
 import Groups from './components/Groups';
 import BrokerSelect from './components/BrokerSelect';
@@ -516,6 +517,8 @@ export default function App(props) {
 																<TourIcon />
 															</IconButton>
 														</Tooltip>
+
+														<LogoutButton />
 
 														{/* <IconButton
 						  edge="end"
