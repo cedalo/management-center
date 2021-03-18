@@ -23,12 +23,12 @@ module.exports = class PluginManager {
 	}
 
 	init(pluginConfigurations = [], context) {
+		this._loadOSPlugins(context);
 		if (!PLUGIN_DIR) {
 			console.log('"CEDALO_MC_PLUGIN_DIR" is not set. Skipping loading of plugins');
 			return;
 		}
 		this._context = context;
-		this._loadOSPlugins(context);
 		const { licenseContainer } = context;
 		pluginConfigurations.forEach((pluginConfiguration) => {
 			try {
