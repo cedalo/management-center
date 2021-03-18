@@ -6,6 +6,9 @@ const LocalStrategy = require('passport-local').Strategy;
 const BasePlugin = require('../../BasePlugin');
 const meta = require('./meta');
 
+const USERNAME = process.env.CEDALO_MC_USERNAME || 'cedalo';
+const PASSWORD = process.env.CEDALO_MC_PASSWORD || 'secret';
+
 
 module.exports = class Plugin extends BasePlugin {
 	constructor() {
@@ -22,7 +25,7 @@ module.exports = class Plugin extends BasePlugin {
 		passport.use(new LocalStrategy(
 			// function of username, password, done(callback)
 			(username, password, done) => {
-				if (username === process.env.CEDALO_MC_USERNAME && password === process.env.CEDALO_MC_PASSWORD) {
+				if (username === USERNAME && password === PASSWORD) {
 					return done(null, {
 						username: 'cedalo'
 					});
