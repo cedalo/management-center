@@ -27,7 +27,7 @@ module.exports = class Plugin extends BasePlugin {
 			(username, password, done) => {
 				if (username === USERNAME && password === PASSWORD) {
 					return done(null, {
-						username: 'cedalo'
+						username
 					});
 				} else {
 					return done(null, false, { message: 'Invalid credentials' });
