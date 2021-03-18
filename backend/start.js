@@ -170,7 +170,7 @@ const init = async (licenseContainer) => {
 	const globalTopicTree = {};
 	const app = express();
 
-	app.use(session({ secret: "cats" }));
+	app.use(session({ secret: process.env.CEDALO_MC_SESSION_SECRET || "secret" }));
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));
 	app.use(cors());
