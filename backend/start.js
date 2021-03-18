@@ -4,6 +4,10 @@ const path = require('path');
 const http = require('http');
 const { v4: uuidv4 } = require('uuid');
 const express = require('express');
+const passport = require('passport');
+const session = require("express-session");
+const bodyParser = require('body-parser');
+const LocalStrategy = require('passport-local').Strategy;
 const cors = require('cors');
 const WebSocket = require('ws');
 const axios = require('axios');
@@ -168,8 +172,41 @@ const init = async (licenseContainer) => {
 	const globalTopicTree = {};
 	const app = express();
 
-	app.use(cors());
+	app.use(session({ secret: "cats" }));
 	app.use(express.json());
+	app.use(express.urlencoded({ extended: true }));
+	app.use(passport.initialize());
+	app.use(passport.session());
+	app.use(cors());
+
+	passport.use(new LocalStrategy(
+		// function of username, password, done(callback)
+		(username, password, done) => {
+			if (username === process.env.CEDALO_MC_USERNAME && password === process.env.CEDALO_MC_PASSWORD) {
+				return done(null, {
+					username: 'cedalo'
+				});
+			} else {
+				return done(null, false, { message: 'Invalid credentials' });
+			}
+		}
+	));
+
+	passport.serializeUser(function(user, done) {
+		done(null, user);
+	});
+	
+	passport.deserializeUser(function(user, done) {
+		done(null, user);
+	});
+
+	const isLoggedIn = (request, response, next) => {
+		if (request.isAuthenticated()) {
+			return next();
+		}
+		response.redirect('/login');
+	}
+	
 	const server = http.createServer(app);
 
 	// TODO: add error handling
@@ -514,26 +551,42 @@ const init = async (licenseContainer) => {
 	pluginManager.init(config.plugins, context);
 
 	app.use(express.static(path.join(__dirname, 'public')));
+	app.use(express.static(path.join(__dirname, 'login')));
 
-	app.get('/api/version', (request, response) => {
+	app.get('/login', (request, response) => {
+		response.sendFile(path.join(__dirname, 'login', 'login.html'));
+	});
+
+	app.get('/logout', (request, response) => {
+		request.logout();
+		response.redirect('/login');
+	});
+
+	app.post('/auth', passport.authenticate('local', {
+			successRedirect: '/',
+			failureRedirect: '/login',
+		}
+	));
+
+	app.get('/api/version', isLoggedIn, (request, response) => {
 		response.json(version);
 	});
 
-	app.get('/api/update', async (request, response) => {
+	app.get('/api/update', isLoggedIn, async (request, response) => {
 		// const update = await axios.get('https://api.cedalo.cloud/rest/request/mosquitto-ui/version');
 		// response.json(update.data);
 		response.json({});
 	});
 
-	app.get('/api/config', (request, response) => {
+	app.get('/api/config', isLoggedIn, (request, response) => {
 		response.json(config);
 	});
 
-	app.get('/api/installation', (request, response) => {
+	app.get('/api/installation', isLoggedIn, (request, response) => {
 		response.json(installation);
 	});
 
-	app.get('/api/settings', (request, response) => {
+	app.get('/api/settings', isLoggedIn, (request, response) => {
 		response.json(settingsManager.settings);
 	});
 
@@ -553,7 +606,7 @@ const init = async (licenseContainer) => {
 			});
 	});
 
-	app.get('/api/config/tools/streamsheets', (request, response) => {
+	app.get('/api/config/tools/streamsheets', isLoggedIn, (request, response) => {
 		if (config?.tools?.streamsheets) {
 			response.json(config?.tools?.streamsheets);
 		} else {
@@ -561,11 +614,11 @@ const init = async (licenseContainer) => {
 		}
 	});
 
-	app.get('/api/license', (request, response) => {
+	app.get('/api/license', isLoggedIn, (request, response) => {
 		response.json(licenseContainer.license);
 	});
 
-	app.get('/api/plugins', (request, response) => {
+	app.get('/api/plugins', isLoggedIn, (request, response) => {
 		response.json(
 			pluginManager.plugins.map((plugin) => ({
 				...plugin.meta,
@@ -574,7 +627,7 @@ const init = async (licenseContainer) => {
 		);
 	});
 
-	app.get('*', (request, response) => {
+	app.get('*', isLoggedIn, (request, response) => {
 		response.sendFile(path.join(__dirname, 'public', 'index.html'));
 	});
 
