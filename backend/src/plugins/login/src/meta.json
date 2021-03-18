@@ -1,0 +1,13 @@
+{
+	"id": "cedalo_login",
+	"name": "Cedalo Login",
+	"version":"1.0",
+	"description":"Login for accessing the Management Center",
+	"feature": "Security",
+	"featureId": "security",
+	"type": "os",
+	"actions": {
+		"enable": false,
+		"disable": false
+	}
+}
