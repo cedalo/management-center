@@ -4,6 +4,8 @@ const path = require('path');
 const http = require('http');
 const { v4: uuidv4 } = require('uuid');
 const express = require('express');
+const session = require("express-session");
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const WebSocket = require('ws');
 const axios = require('axios');
@@ -168,8 +170,11 @@ const init = async (licenseContainer) => {
 	const globalTopicTree = {};
 	const app = express();
 
-	app.use(cors());
+	app.use(session({ secret: process.env.CEDALO_MC_SESSION_SECRET || "secret" }));
 	app.use(express.json());
+	app.use(express.urlencoded({ extended: true }));
+	app.use(cors());
+	
 	const server = http.createServer(app);
 
 	// TODO: add error handling
@@ -498,6 +503,11 @@ const init = async (licenseContainer) => {
 
 	context = {
 		...context,
+		security: {
+			isLoggedIn(request, response, next) {
+				return next();
+			}
+		},
 		app,
 		config,
 		globalSystem,
@@ -515,25 +525,25 @@ const init = async (licenseContainer) => {
 
 	app.use(express.static(path.join(__dirname, 'public')));
 
-	app.get('/api/version', (request, response) => {
+	app.get('/api/version', context.security.isLoggedIn, (request, response) => {
 		response.json(version);
 	});
 
-	app.get('/api/update', async (request, response) => {
+	app.get('/api/update', context.security.isLoggedIn, async (request, response) => {
 		// const update = await axios.get('https://api.cedalo.cloud/rest/request/mosquitto-ui/version');
 		// response.json(update.data);
 		response.json({});
 	});
 
-	app.get('/api/config', (request, response) => {
+	app.get('/api/config', context.security.isLoggedIn, (request, response) => {
 		response.json(config);
 	});
 
-	app.get('/api/installation', (request, response) => {
+	app.get('/api/installation', context.security.isLoggedIn, (request, response) => {
 		response.json(installation);
 	});
 
-	app.get('/api/settings', (request, response) => {
+	app.get('/api/settings', context.security.isLoggedIn, (request, response) => {
 		response.json(settingsManager.settings);
 	});
 
@@ -553,7 +563,7 @@ const init = async (licenseContainer) => {
 			});
 	});
 
-	app.get('/api/config/tools/streamsheets', (request, response) => {
+	app.get('/api/config/tools/streamsheets', context.security.isLoggedIn, (request, response) => {
 		if (config?.tools?.streamsheets) {
 			response.json(config?.tools?.streamsheets);
 		} else {
@@ -561,11 +571,11 @@ const init = async (licenseContainer) => {
 		}
 	});
 
-	app.get('/api/license', (request, response) => {
+	app.get('/api/license', context.security.isLoggedIn, (request, response) => {
 		response.json(licenseContainer.license);
 	});
 
-	app.get('/api/plugins', (request, response) => {
+	app.get('/api/plugins', context.security.isLoggedIn, (request, response) => {
 		response.json(
 			pluginManager.plugins.map((plugin) => ({
 				...plugin.meta,
@@ -574,7 +584,7 @@ const init = async (licenseContainer) => {
 		);
 	});
 
-	app.get('*', (request, response) => {
+	app.get('*', context.security.isLoggedIn, (request, response) => {
 		response.sendFile(path.join(__dirname, 'public', 'index.html'));
 	});
 
