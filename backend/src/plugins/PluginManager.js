@@ -7,12 +7,28 @@ module.exports = class PluginManager {
 		this._plugins = [];
 	}
 
+	_loadOSPlugins(context) {
+		// TODO: support multiple plugins
+		const { Plugin } = require('./login');
+		const plugin = new Plugin();
+		try {
+			plugin.init(context);
+			plugin.load(context);
+			plugin.setLoaded();
+			this._plugins.push(plugin);
+		} catch (error) {
+			plugin.setErrored(`Could not load plugin. Reason: ${error}`);
+			this._plugins.push(plugin);
+		}
+	}
+
 	init(pluginConfigurations = [], context) {
 		if (!PLUGIN_DIR) {
 			console.log('"CEDALO_MC_PLUGIN_DIR" is not set. Skipping loading of plugins');
 			return;
 		}
 		this._context = context;
+		this._loadOSPlugins(context);
 		const { licenseContainer } = context;
 		pluginConfigurations.forEach((pluginConfiguration) => {
 			try {
