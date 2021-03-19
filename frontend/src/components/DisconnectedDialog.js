@@ -11,6 +11,7 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import ReloadIcon from '@material-ui/icons/Replay';
 import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress'
 import { connect } from 'react-redux';
 
 // import MessagePage from './MessagePage';
@@ -19,8 +20,41 @@ const reloadPage = () => {
 	window.location.reload();
 }
 
-const getDialogContent = (connected, proxyConnected) => {
-	if (!connected) {
+const getDialogContent = (connected, proxyConnected, editDefaultClient) => {
+	if (editDefaultClient) {
+		return <>
+			<DialogTitle align="center" id="not-connected-dialog-title">
+				{ !connected ? 'Applying changes' : 'Changes applied' }
+			</DialogTitle>
+			<DialogContent>
+				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
+					<Grid item xs={12} align="center">
+						<DialogContentText id="alert-dialog-description">
+						{ 
+							!connected 
+							? 'Please wait while we are applying the changes to the broker.' 
+							: 'Please reload this page to synchronize with the Management Center server.'
+						}
+						</DialogContentText>
+						{ 
+							!connected 
+							? <CircularProgress color="secondary" />
+							: <Button
+								size="small" 
+								variant="contained"
+								color="primary"
+								startIcon={<ReloadIcon />}
+								onClick={() => reloadPage()}
+							>
+								Reload now
+							</Button>
+						}
+						
+					</Grid>
+				</Grid>
+			</DialogContent>
+		</>
+	} else if (!connected) {
 		return <>
 			<DialogTitle align="center" id="not-connected-dialog-title">
 				We could not connect to your broker
@@ -72,20 +106,20 @@ const getDialogContent = (connected, proxyConnected) => {
 		</>
 	}
 }
-const DisconnectedDialog = ({ connected, proxyConnected }) => {
+const DisconnectedDialog = ({ connected, proxyConnected, editDefaultClient }) => {
 	const handleClose = () => {
 		// setOpen(false);
 	};
 
 	return (
 		<Dialog
-			open={!connected || !proxyConnected}
+			open={editDefaultClient || !connected || !proxyConnected}
 			// onClose={handleClose}
 			aria-labelledby="not-connected-dialog-title"
 			aria-describedby="not-connected-dialog-description"
 		>
 			{
-				getDialogContent(connected, proxyConnected)
+				getDialogContent(connected, proxyConnected, editDefaultClient)
 			}
 		</Dialog>
 	);
@@ -94,6 +128,7 @@ const DisconnectedDialog = ({ connected, proxyConnected }) => {
 const mapStateToProps = (state) => {
 	return {
 		connected: state.brokerConnections?.connected,
+		editDefaultClient: state.brokerConnections?.editDefaultClient,
 		proxyConnected: state.proxyConnection?.connected
 	};
 };
