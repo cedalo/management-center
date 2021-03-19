@@ -10,6 +10,9 @@ export default function brokerConnections(state = {}, action) {
 		case ActionTypes.UPDATE_BROKER_CONNECTIONS:
 			newState.brokerConnections = action.update;
 			break;
+		case ActionTypes.UPDATE_EDIT_DEFAULT_CLIENT:
+			newState.editDefaultClient = action.edit;
+			break;
 		default:
 	}
 	if (newState.currentConnectionName && newState.brokerConnections) {
