@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Redirect, Link as RouterLink } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
-import { updateRole, updateRoles } from '../actions/actions';
+import { updateEditDefaultClient, updateRole, updateRoles } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
 import ACLIcon from '@material-ui/icons/Security';
@@ -127,6 +127,7 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
+
 const RoleDetail = (props) => {
 	const classes = useStyles();
 	const context = useContext(WebSocketContext);
@@ -135,7 +136,7 @@ const RoleDetail = (props) => {
 	const { enqueueSnackbar } = useSnackbar();
 	const { client: brokerClient } = context;
 
-	const { role = {}, onSort, sortBy, sortDirection } = props;
+	const { defaultClient, role = {}, onSort, sortBy, sortDirection } = props;
 
 	const [aclTypesHelpDialogOpen, setACLTypesHelpDialogOpen] = React.useState(false);
 
@@ -207,7 +208,27 @@ const RoleDetail = (props) => {
 		setEditMode(false);
 	};
 
+	const showConfirm = async () => {
+		const hasRole = await brokerClient.clientHasRole(defaultClient.username, role.rolename);
+		if (hasRole) {
+			await confirm({
+				title: 'Edit role',
+				description: `You are about to edit a role associated with the user that is used by the Management Center server to connect to your broker instance. 
+				The Management Center server will therefore be disconnected from the broker and automatically reconnected when the changes are applied.`,
+				cancellationButtonProps: {
+					variant: 'contained'
+				},
+				confirmationButtonProps: {
+					color: 'primary',
+					variant: 'contained'
+				}
+			});
+			dispatch(updateEditDefaultClient(true));
+		}
+	}
+
 	const onAddACL = async (acl) => {
+		await showConfirm();
 		await brokerClient.addRoleACL(role.rolename, acl);
 		const updatedRole = await brokerClient.getRole(role.rolename);
 		dispatch(updateRole(updatedRole));
@@ -217,23 +238,28 @@ const RoleDetail = (props) => {
 			topic: '',
 			priority: 0
 		});
+		const roles = await brokerClient.listRoles();
+		dispatch(updateRoles(roles));
 	};
 
 	const onRemoveACL = async (acl) => {
-		await confirm({
-			title: 'Confirm ACL deletion',
-			description: `Do you really want to delete the ACL "${acl.topic}"?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
-		});
+		// await confirm({
+		// 	title: 'Confirm ACL deletion',
+		// 	description: `Do you really want to delete the ACL "${acl.topic}"?`,
+		// 	cancellationButtonProps: {
+		// 		variant: 'contained'
+		// 	},
+		// 	confirmationButtonProps: {
+		// 		color: 'primary',
+		// 		variant: 'contained'
+		// 	}
+		// });
+		await showConfirm();
 		await brokerClient.removeRoleACL(role.rolename, acl);
 		const updatedRole = await brokerClient.getRole(role.rolename);
 		dispatch(updateRole(updatedRole));
+		const roles = await brokerClient.listRoles();
+		dispatch(updateRoles(roles));
 	};
 
 	return role.rolename ? (
@@ -672,7 +698,8 @@ RoleDetail.propTypes = {
 const mapStateToProps = (state) => {
 	return {
 		role: state.roles?.role,
-		roles: state.roles?.roles
+		roles: state.roles?.roles,
+		defaultClient: state.brokerConnections?.defaultClient
 	};
 };
 
