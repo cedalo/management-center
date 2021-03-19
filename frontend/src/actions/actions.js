@@ -144,3 +144,10 @@ export function deletedClient(update) {
 		update
 	};
 }
+
+export function updateEditDefaultClient(edit) {
+	return {
+		type: ActionTypes.UPDATE_EDIT_DEFAULT_CLIENT,
+		edit
+	};
+}
