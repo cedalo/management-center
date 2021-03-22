@@ -60,19 +60,27 @@ const getDialogContent = (connected, proxyConnected, editDefaultClient) => {
 				We could not connect to your broker
 			</DialogTitle>
 			<DialogContent>
-				{/* <MessagePage 
-					message="We could not find any Streamsheets installation."
-					buttonText="Get Streamsheets now!"
-				/> */}
 				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
 					<Grid item xs={12} align="center">
 						<img src="/disconnected.png" />
 					</Grid>
 					<Grid item xs={12} align="center">
-						<DialogContentText id="alert-dialog-description">
-							Please select another connection
-						</DialogContentText>
-						<BrokerSelect />
+						{
+							brokerConnections.length === 1
+							&& <>
+								<DialogContentText id="alert-dialog-description">
+									Please make sure that the connection information is correct.
+								</DialogContentText>
+							</>
+						}
+						{
+							brokerConnections.length > 1
+							&& <>
+								<DialogContentText id="alert-dialog-description">
+									Please make sure that the connection information is correct or select another connection
+								</DialogContentText>
+								<BrokerSelect />
+							</>
 					</Grid>
 				</Grid>
 			</DialogContent>
@@ -119,7 +127,7 @@ const DisconnectedDialog = ({ connected, proxyConnected, editDefaultClient }) =>
 			aria-describedby="not-connected-dialog-description"
 		>
 			{
-				getDialogContent(connected, proxyConnected, editDefaultClient)
+				getDialogContent(brokerConnections, connected, proxyConnected, editDefaultClient)
 			}
 		</Dialog>
 	);
@@ -127,6 +135,7 @@ const DisconnectedDialog = ({ connected, proxyConnected, editDefaultClient }) =>
 
 const mapStateToProps = (state) => {
 	return {
+		brokerConnections: state.brokerConnections?.brokerConnections,
 		connected: state.brokerConnections?.connected,
 		editDefaultClient: state.brokerConnections?.editDefaultClient,
 		proxyConnected: state.proxyConnection?.connected
