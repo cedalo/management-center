@@ -151,3 +151,10 @@ export function updateEditDefaultClient(edit) {
 		edit
 	};
 }
+
+export function updateSelectedConnection(update) {
+	return {
+		type: ActionTypes.UPDATE_SELECTED_CONNECTION,
+		update
+	};
+}
