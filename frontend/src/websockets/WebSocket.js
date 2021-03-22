@@ -14,7 +14,8 @@ import {
 	updateStreams,
 	updateSystemStatus,
 	updateTopicTree,
-	updateVersion
+	updateVersion,
+	updateEditDefaultClient
 } from '../actions/actions';
 
 import WS_BASE from './config';
