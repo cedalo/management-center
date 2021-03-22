@@ -54,7 +54,7 @@ export default ({ children }) => {
 		client.on('version', (message) => {
 			dispatch(updateVersion(message.payload));
 		});
-		client.on('connections', (message) => {
+		client.on('connections', async (message) => {
 			console.log('connections');
 			console.log(message);
 			dispatch(updateBrokerConnections(message.payload));
