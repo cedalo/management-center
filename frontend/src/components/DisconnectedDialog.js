@@ -13,6 +13,7 @@ import ReloadIcon from '@material-ui/icons/Replay';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { connect } from 'react-redux';
+import ConnectionNewComponent from './ConnectionNewComponent';
 
 // import MessagePage from './MessagePage';
 
@@ -20,7 +21,7 @@ const reloadPage = () => {
 	window.location.reload();
 }
 
-const getDialogContent = (connected, proxyConnected, editDefaultClient) => {
+const getDialogContent = (brokerConnections, connected, proxyConnected, editDefaultClient) => {
 	if (editDefaultClient) {
 		return <>
 			<DialogTitle align="center" id="not-connected-dialog-title">
@@ -54,6 +55,22 @@ const getDialogContent = (connected, proxyConnected, editDefaultClient) => {
 				</Grid>
 			</DialogContent>
 		</>
+	} else if (!brokerConnections || brokerConnections.length === 0) {
+		return <>
+			<DialogTitle align="center" id="not-connected-dialog-title">
+				You have not configured any broker.
+			</DialogTitle>
+			<DialogContent>
+				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
+					<Grid item xs={12} align="center">
+						<DialogContentText id="alert-dialog-description">
+							Please create a connection first.
+						</DialogContentText>
+						<ConnectionNewComponent />
+					</Grid>
+				</Grid>
+			</DialogContent>
+		</>
 	} else if (!connected) {
 		return <>
 			<DialogTitle align="center" id="not-connected-dialog-title">
@@ -81,6 +98,7 @@ const getDialogContent = (connected, proxyConnected, editDefaultClient) => {
 								</DialogContentText>
 								<BrokerSelect />
 							</>
+						}
 					</Grid>
 				</Grid>
 			</DialogContent>
