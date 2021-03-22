@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { green, red } from '@material-ui/core/colors';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-
+import { makeStyles, withStyles, useTheme } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
@@ -32,7 +31,9 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
-import { connect } from 'react-redux';
+import { updateSelectedConnection } from '../actions/actions';
+import { connect, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 // import {
 // 	colors,
 //   } from '@material-ui/core';
@@ -44,6 +45,15 @@ const GROUP_TABLE_COLUMNS = [
 	{ id: 'URL', key: 'URL' },
 	{ id: 'status', key: 'Status' }
 ];
+
+const StyledTableRow = withStyles((theme) => ({
+	root: {
+		'&:nth-of-type(odd)': {
+			backgroundColor: theme.palette.tables?.odd
+		},
+		cursor: 'pointer'
+	}
+}))(TableRow);
 
 const createStatusIcon = (status) =>
 	status && status.connected ? (
@@ -69,6 +79,8 @@ const useStyles = makeStyles((theme) => ({
 
 const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 	const classes = useStyles();
+	const history = useHistory();
+	const dispatch = useDispatch();
 	const theme = useTheme();
 	const context = useContext(WebSocketContext);
 	const [connection, setConnection] = React.useState('');
@@ -83,6 +95,11 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 	const handleClose = () => {
 		setOpenedPopoverId(null);
 		setAnchorEl(null);
+	};
+
+	const onSelectConnection = async (connection) => {
+		dispatch(updateSelectedConnection(connection));
+		history.push(`/config/detail/${connection.id}`);
 	};
 
 	return (
@@ -128,10 +145,10 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 										brokerConnections
 											.sort((a, b) => a.name.localeCompare(b.name))
 											.map((brokerConnection) => (
-												<TableRow
+												<StyledTableRow
 													hover
 													key={brokerConnection.name}
-													//   onClick={() => onSelectConfiguration(brokerConnection.name)}
+													onClick={() => onSelectConnection(brokerConnection)}
 													//   style={{ cursor: "pointer" }}
 												>
 													<TableCell>{brokerConnection.id}</TableCell>
@@ -251,7 +268,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
                           <DeleteIcon fontSize="small" />
                         </IconButton> */}
 													</TableCell>
-												</TableRow>
+												</StyledTableRow>
 											))}
 								</TableBody>
 							</Table>
