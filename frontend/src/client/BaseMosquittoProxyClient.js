@@ -648,6 +648,16 @@ export default class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
+	async modifyConnection(oldConnectionId, connection) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'modifyConnection',
+			oldConnectionId,
+			connection
+		});
+	}
+
 	async updateClientGroups(client, groupnames = []) {
 		if (!groupnames) {
 			groupnames = [];
