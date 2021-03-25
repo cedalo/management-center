@@ -132,7 +132,7 @@ const getDialogContent = (brokerConnections, connected, proxyConnected, editDefa
 		</>
 	}
 }
-const DisconnectedDialog = ({ connected, proxyConnected, editDefaultClient }) => {
+const DisconnectedDialog = ({ brokerConnections, connected, proxyConnected, editDefaultClient }) => {
 	const handleClose = () => {
 		// setOpen(false);
 	};
