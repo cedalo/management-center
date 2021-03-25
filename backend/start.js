@@ -158,7 +158,6 @@ const addStreamsheetsConfig = (config) => {
 const configManager = new ConfigManager();
 
 const loadConfig = () => {
-	const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, CEDALO_MC_PROXY_CONFIG_DIR)).toString());
 	// const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, CEDALO_MC_PROXY_CONFIG)).toString());
 	const config = configManager.config;
 	addStreamsheetsConfig(config);
