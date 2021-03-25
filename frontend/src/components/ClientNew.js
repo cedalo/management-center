@@ -28,6 +28,7 @@ import { WebSocketContext } from '../websockets/WebSocket';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
+import SaveCancelButtons from './SaveCancelButtons';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -74,7 +75,7 @@ const ClientNew = (props) => {
 	});
 
 	const validate = () => {
-		const valid = !usernameExists && password !== '';
+		const valid = !usernameExists && username !== '' && password !== '';
 		return valid;
 	};
 
@@ -98,6 +99,7 @@ const ClientNew = (props) => {
 			enqueueSnackbar(`Error creating client "${username}". Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
+			throw error;
 		}
 	};
 
@@ -218,28 +220,11 @@ const ClientNew = (props) => {
 								</Grid>
 								<Grid container xs={12} alignItems="flex-start">
 									<Grid item xs={12} className={classes.buttons}>
-										<Button
-											variant="contained"
-											disabled={!validate()}
-											color="primary"
-											className={classes.button}
-											startIcon={<SaveIcon />}
-											onClick={(event) => {
-												event.stopPropagation();
-												onSaveClient();
-											}}
-										>
-											Save
-										</Button>
-										<Button
-											variant="contained"
-											onClick={(event) => {
-												event.stopPropagation();
-												onCancel();
-											}}
-										>
-											Cancel
-										</Button>
+										<SaveCancelButtons
+											onSave={onSaveClient}
+											saveDisabled={!validate()}
+											onCancel={onCancel}
+										/>
 									</Grid>
 								</Grid>
 							</Grid>
