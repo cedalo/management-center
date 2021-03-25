@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { updateClient, updateClients } from '../actions/actions';
+import { useSnackbar } from 'notistack';
 
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Box from '@material-ui/core/Box';
@@ -77,6 +78,7 @@ const ClientNew = (props) => {
 		return valid;
 	};
 
+	const { enqueueSnackbar } = useSnackbar();
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
@@ -93,7 +95,7 @@ const ClientNew = (props) => {
 				variant: 'success'
 			});
 		} catch(error) {
-			enqueueSnackbar(`Error creating client "${username}". Reason: ${error}`, {
+			enqueueSnackbar(`Error creating client "${username}". Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
 		}
