@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
+import { useSnackbar } from 'notistack';
 
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Box from '@material-ui/core/Box';
@@ -66,6 +67,7 @@ const RoleNew = (props) => {
 	const [textname, setTextname] = useState('');
 	const [textdescription, setTextdescription] = useState('');
 
+	const { enqueueSnackbar } = useSnackbar();
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
@@ -87,7 +89,7 @@ const RoleNew = (props) => {
 				variant: 'success'
 			});
 		} catch(error) {
-			enqueueSnackbar(`Error creating role "${rolename}". Reason: ${error}`, {
+			enqueueSnackbar(`Error creating role "${rolename}". Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
 		}
