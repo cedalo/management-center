@@ -80,6 +80,7 @@ import GroupDetail from './components/GroupDetail';
 import RoleDetail from './components/RoleDetail';
 import ClientDetail from './components/ClientDetail';
 import StreamDetail from './components/StreamDetail';
+import ConnectionDetail from './components/ConnectionDetail';
 import GroupNew from './components/GroupNew';
 import ClientNew from './components/ClientNew';
 import RoleNew from './components/RoleNew';
@@ -627,6 +628,9 @@ export default function App(props) {
 													</Route>
 													<Route path="/system">
 														<System />
+													</Route>
+													<Route path="/config/connections/detail/:connectionId">
+														<ConnectionDetail />
 													</Route>
 													<Route path="/config/connections">
 														<Connections />
