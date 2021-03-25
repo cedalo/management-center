@@ -37,7 +37,7 @@ function Config() {
 			</Breadcrumbs>
 			<br />
 			<Grid container spacing={3}>
-				<Grid item lg={6} sm={6} xl={6} xs={12}>
+				<Grid item lg={4} sm={4} xl={4} xs={12}>
 					<HomeCard
 						title="Connections"
 						description="Manage connections"
@@ -45,14 +45,14 @@ function Config() {
 						link="/config/connections"
 					/>
 				</Grid>
-				{/* <Grid item lg={6} sm={6} xl={6} xs={12}>
-          <HomeCard
-            title="Settings"
-            description="Manage settings"
-            image={"settings.png"}
-            link="/config/settings"
-          />
-        </Grid> */}
+				<Grid item lg={4} sm={4} xl={4} xs={12}>
+					<HomeCard
+						title="Settings"
+						description="Manage settings"
+						image={"settings.png"}
+						link="/config/settings"
+					/>
+				</Grid>
 			</Grid>
 		</div>
 	);
