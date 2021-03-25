@@ -5,6 +5,8 @@ import { useSnackbar } from 'notistack';
 import useLocalStorage from '../helpers/useLocalStorage';
 
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import DisconnectedIcon from '@material-ui/icons/Cloud';
+import ConnectedIcon from '@material-ui/icons/CloudDone';
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
@@ -48,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ConnectionDetailComponent = (props) => {
+	const [connected, setConnected] = React.useState(false);
 	const { selectedConnectionToEdit: connection = {} } = props;
 	let editModeEnabledByDefault = false;
 	if (!connection.id) {
@@ -79,7 +82,45 @@ const ConnectionDetailComponent = (props) => {
 		}
 	};
 
+	const onTestConnection = async (connection) => {
+		try {
+			const response = await brokerClient.testConnection(connection);
+			if (response.connected) {
+				setConnected(response.connected);
+				enqueueSnackbar('Connection successfully tested', {
+					variant: 'success'
+				});
+			} else {
+				const { error } = response;
+				setConnected(false);
+				enqueueSnackbar(`Error connecting "${connection.name}". Reason: ${error.message || error}`, {
+					variant: 'error'
+				});
+			}
+		} catch (error) {
+			setConnected(false);
+			enqueueSnackbar(`Error connecting "${connection.name}". Reason: ${error.message || error}`, {
+				variant: 'error'
+			});
+		}
+	};
+
 	const onUpdateConnection = async () => {
+		try {
+			await brokerClient.testConnection(updatedConnection);
+		} catch (error) {
+			await confirm({
+				title: 'Connection failed',
+				description: `The connection could not be established. Save anyway?`,
+				cancellationButtonProps: {
+					variant: 'contained'
+				},
+				confirmationButtonProps: {
+					color: 'primary',
+					variant: 'contained'
+				}
+			});
+		}
 		try {
 			await brokerClient.modifyConnection(connection.id, updatedConnection);
 			const brokerConnections = await brokerClient.getBrokerConnections();
@@ -173,7 +214,7 @@ const ConnectionDetailComponent = (props) => {
 							<Grid item xs={12}>
 								<TextField
 									required={editMode}
-									disabled={true}
+									disabled={!editMode}
 									id="url"
 									label="URL"
 									value={updatedConnection.url}
@@ -187,13 +228,14 @@ const ConnectionDetailComponent = (props) => {
 												...updatedConnection,
 												url: event.target.value
 											});
+											setConnected(false);
 										}
 									}}
 								/>
 							</Grid>
 							<Grid item xs={12}>
 								<TextField
-									required={editMode}
+									required={false}
 									disabled={true}
 									id="username"
 									label="Username"
@@ -210,13 +252,14 @@ const ConnectionDetailComponent = (props) => {
 													username: event.target.value
 												}
 											});
+											setConnected(false);
 										}
 									}}
 								/>
 							</Grid>
 							<Grid item xs={12}>
 								<TextField
-									required={editMode}
+									required={false}
 									disabled={true}
 									id="password"
 									type="password"
@@ -234,6 +277,7 @@ const ConnectionDetailComponent = (props) => {
 													password: event.target.value
 												}
 											});
+											setConnected(false);
 										}
 									}}
 								/>
@@ -241,46 +285,59 @@ const ConnectionDetailComponent = (props) => {
 						</Grid>
 					</div>
 				</form>
-
-				{!editMode && (
-					<Grid item xs={12} className={classes.buttons}>
-						<Button
-							variant="contained"
-							color="primary"
-							className={classes.button}
-							startIcon={<EditIcon />}
-							onClick={() => setEditMode(true)}
-						>
-							Edit
-						</Button>
-					</Grid>
-				)}
-				{editMode && (
 					<Grid item xs={12} className={classes.buttons}>
 						<Button
 							variant="contained"
 							disabled={!validate()}
 							color="primary"
+							style={ connected ? { backgroundColor: 'green' } : {}}
 							className={classes.button}
-							startIcon={<SaveIcon />}
+							startIcon={connected ? <ConnectedIcon /> : <DisconnectedIcon />}
 							onClick={(event) => {
 								event.stopPropagation();
-								onUpdateConnection();
+								onTestConnection(updatedConnection);
 							}}
 						>
-							Save
+							Test connection
 						</Button>
-						<Button
-							variant="contained"
-							onClick={(event) => {
-								event.stopPropagation();
-								onCancelEdit();
-							}}
-						>
-							Cancel
-						</Button>
+						{!editMode && (
+							<Button
+								variant="contained"
+								color="primary"
+								className={classes.button}
+								startIcon={<EditIcon />}
+								onClick={() => setEditMode(true)}
+							>
+								Edit
+							</Button>
+						)}
+						{editMode && (
+							<>
+								<Button
+									variant="contained"
+									disabled={!validate()}
+									color="primary"
+									className={classes.button}
+									startIcon={<SaveIcon />}
+									onClick={(event) => {
+										event.stopPropagation();
+										onUpdateConnection();
+									}}
+								>
+									Save
+								</Button>
+								<Button
+									variant="contained"
+									onClick={(event) => {
+										event.stopPropagation();
+										onCancelEdit();
+									}}
+								>
+									Cancel
+								</Button>
+							</>
+						)}
 					</Grid>
-				)}
 			</Paper>
 		</div>
 	) : (
