@@ -212,7 +212,7 @@ const StreamDetail = (props) => {
 
 	const onCancelEdit = async () => {
 		await confirm({
-			title: 'Cancel stream editing',
+			title: 'Cancel editing stream',
 			description: `Do you really want to cancel editing this stream?`,
 			cancellationButtonProps: {
 				variant: 'contained'
