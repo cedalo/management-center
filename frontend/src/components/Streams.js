@@ -108,6 +108,8 @@ const Streams = (props) => {
 				limit,
 				speed
 			});
+			const streams = await brokerClient.listStreams();
+			dispatch(updateStreams(streams));
 			enqueueSnackbar(`Successfully started replay of stream "${stream.streamname}"`, {
 				variant: 'success'
 			});
