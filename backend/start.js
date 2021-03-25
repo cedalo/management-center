@@ -389,6 +389,22 @@ const init = async (licenseContainer) => {
 					connected: true
 				}
 			}
+			case 'createConnection': {
+				const { connection } = message;
+				try {
+					configManager.createConnection(connection);
+					await handleNewConnection(connection);
+				} catch (error) {
+					// TODO: handle error because Management Center crashes
+					console.error(error);
+				}
+				return configManager.connections;
+			}
+			case 'modifyConnection': {
+				const { oldConnectionId, connection } = message;
+				configManager.updateConnection(oldConnectionId, connection);
+				return configManager.connections;
+			}
 		}
 		return {};
 	};
