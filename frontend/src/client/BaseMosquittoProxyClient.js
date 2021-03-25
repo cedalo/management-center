@@ -577,13 +577,6 @@ export default class BaseMosquittoProxyClient {
 		// 	rolename,
 		// }, API_DYNAMIC_SECURITY);
 		return fetchedRole;
-		return this.sendCommand(
-			{
-				command: 'getRole',
-				rolename
-			},
-			API_DYNAMIC_SECURITY
-		);
 	}
 
 	async listRoles(verbose = true) {
