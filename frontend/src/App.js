@@ -10,21 +10,14 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import ListSubheader from '@material-ui/core/ListSubheader';
 import PluginsIcon from '@material-ui/icons/Power';
 import TerminalIcon from '@material-ui/icons/Computer';
 import ConnectionsIcon from '@material-ui/icons/SettingsInputComponent';
 import Badge from '@material-ui/core/Badge';
 import Button from '@material-ui/core/Button';
 import MenuIcon from '@material-ui/icons/Menu';
-import Drawer from '@material-ui/core/Drawer';
-import Link from '@material-ui/core/Link';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ListItem from '@material-ui/core/ListItem';
+import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import GroupIcon from '@material-ui/icons/Group';
@@ -96,6 +89,7 @@ import steps from './tutorial/steps';
 
 import { BrowserRouter as Router, Switch, Route, Link as RouterLink, Redirect } from 'react-router-dom';
 import DefaultACLAccess from './components/DefaultACLAccess';
+import CustomDrawer from './components/CustomDrawer';
 
 const tourOptions = {
 	defaultStepOptions: {
@@ -145,52 +139,11 @@ const useStyles = makeStyles((theme) => ({
 	hide: {
 		display: 'none'
 	},
-	drawer: {
-		width: drawerWidth,
-		flexShrink: 0,
-		whiteSpace: 'nowrap',
-		backgroundColor: theme.palette.drawer?.backgroundColor
-	},
-	drawerOpen: {
-		width: drawerWidth,
-		transition: theme.transitions.create('width', {
-			easing: theme.transitions.easing.sharp,
-			duration: theme.transitions.duration.enteringScreen
-		})
-	},
-	drawerClose: {
-		transition: theme.transitions.create('width', {
-			easing: theme.transitions.easing.sharp,
-			duration: theme.transitions.duration.leavingScreen
-		}),
-		overflowX: 'hidden',
-		width: theme.spacing(7) + 1,
-		[theme.breakpoints.up('sm')]: {
-			width: theme.spacing(9) + 1
-		}
-	},
-	toolbar: {
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'flex-end',
-		padding: theme.spacing(0, 1),
-		...theme.mixins.toolbar
-	},
 	rightToolbar: {
 		marginLeft: 'auto',
 		marginRight: -12,
 		alignItems: 'center',
 		alignContent: 'center'
-	},
-	menuItem: {
-		fontSize: '14px'
-	},
-	menuSubHeader: {
-		// color: 'white',
-		fontWeight: 'bold',
-		fontSize: '12px',
-		textTransform: 'uppercase',
-		lineHeight: '24px'
 	},
 	formControl: {
 		margin: theme.spacing(1),
@@ -208,24 +161,6 @@ const useStyles = makeStyles((theme) => ({
 		width: 500
 	}
 }));
-
-function ListItemLink(props) {
-	const { id, icon, primary, to, classes } = props;
-
-	const renderLink = React.useMemo(
-		() => React.forwardRef((itemProps, ref) => <RouterLink to={to} ref={ref} {...itemProps} />),
-		[to]
-	);
-
-	return (
-		<li id={id}>
-			<ListItem button component={renderLink}>
-				{icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
-				<ListItemText primary={primary} classes={{ primary: classes.menuItem }} />
-			</ListItem>
-		</li>
-	);
-}
 
 export default function App(props) {
 	// const { window } = props;
@@ -301,115 +236,6 @@ export default function App(props) {
 		};
 
 		//   const container = window !== undefined ? () => window().document.body : undefined;
-
-		const drawer = (
-			<div>
-				{/* <Divider />
-				<List>
-					<ListItemLink id="menu-item-home" classes={classes} to="/home" primary="Home" icon={<HomeIcon />} />
-				</List> */}
-				<Divider />
-				<List>
-					{open ? <ListSubheader className={classes.menuSubHeader}>Monitoring</ListSubheader> : null}
-					<ListItemLink
-						id="menu-item-status"
-						classes={classes}
-						to="/system/status"
-						primary="System Status"
-						icon={<EqualizerIcon />}
-					/>
-					<ListItemLink
-						id="menu-item-topics"
-						classes={classes}
-						to="/system/topics"
-						primary="Topic Tree"
-						icon={<TopicTreeIcon />}
-					/>
-				</List>
-				<Divider />
-				<List>
-					{open ? <ListSubheader className={classes.menuSubHeader}>Dynamic Security</ListSubheader> : null}
-					<ListItemLink
-						id="menu-item-clients"
-						classes={classes}
-						to="/security/clients"
-						primary="Clients"
-						icon={<PersonIcon />}
-					/>
-					<ListItemLink
-						id="menu-item-groups"
-						classes={classes}
-						to="/security/groups"
-						primary="Groups"
-						icon={<GroupIcon />}
-					/>
-					<ListItemLink
-						id="menu-item-roles"
-						classes={classes}
-						to="/security/roles"
-						primary="Roles"
-						icon={<RoleIcon />}
-					/>
-				</List>
-				<Divider />
-				{/* <List>
-		  <ListItemLink 
-			classes={classes}
-			to="/streams"
-			primary="🚧 Streams"
-			icon={<StreamsIcon />}
-		  />
-		</List>
-		<Divider /> */}
-
-				<Divider />
-				<List>
-					{open ? <ListSubheader className={classes.menuSubHeader}>Management</ListSubheader> : null}
-					<ListItemLink
-						id="menu-item-plugins"
-						classes={classes}
-						to="/plugins"
-						primary="Plugins"
-						icon={<PluginsIcon />}
-					/>
-					{/* <ListItemLink
-			classes={classes} 
-			to="/config/settings"
-			primary="Settings"
-			icon={<SettingsIcon />}
-		/> */}
-				</List>
-				<Divider />
-				<List id="menu-items-tools">
-					{open ? <ListSubheader className={classes.menuSubHeader}>Tools</ListSubheader> : null}
-					<ListItemLink
-						classes={classes}
-						to="/tools/streamsheets"
-						primary="Streamsheets"
-						icon={<StreamsheetsIcon />}
-					/>
-					<ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon />} />
-					<ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon />} />
-				</List>
-				<Divider />
-				<List>
-					{open ? <ListSubheader className={classes.menuSubHeader}>Admin</ListSubheader> : null}
-					<ListItemLink
-						classes={classes}
-						to="/config/connections"
-						primary="Connections"
-						icon={<ConnectionsIcon />}
-					/>
-					{/* <ListItemLink classes={classes} to="/config/settings" primary="Settings" icon={<SettingsIcon />} /> */}
-					<ListItemLink
-						classes={classes} 
-						to="/config/settings"
-						primary="Settings"
-						icon={<SettingsIcon />}
-					/>
-				</List>
-			</div>
-		);
 
 		return (
 			<ThemeProvider theme={appliedTheme}>
@@ -501,7 +327,7 @@ export default function App(props) {
 																color="inherit"
 																className={classes.toolbarButton}
 															>
-																<ThemeModeIcon />
+																<ThemeModeIcon fontSize="small" />
 															</IconButton>
 														</Tooltip>
 														<InfoButton />
@@ -515,7 +341,7 @@ export default function App(props) {
 																color="inherit"
 																className={classes.toolbarButton}
 															>
-																<TourIcon />
+																<TourIcon fontSize="small" />
 															</IconButton>
 														</Tooltip>
 
@@ -539,30 +365,7 @@ export default function App(props) {
 
 											<nav>
 												{/* <Hidden xsDown implementation="css"> */}
-												<Drawer
-													variant="permanent"
-													className={clsx(classes.drawer, {
-														[classes.drawerOpen]: open,
-														[classes.drawerClose]: !open
-													})}
-													classes={{
-														paper: clsx(classes.drawer, {
-															[classes.drawerOpen]: open,
-															[classes.drawerClose]: !open
-														})
-													}}
-												>
-													<div className={classes.toolbar}>
-														<IconButton onClick={handleDrawerClose}>
-															{theme.direction === 'rtl' ? (
-																<ChevronRightIcon />
-															) : (
-																<ChevronLeftIcon />
-															)}
-														</IconButton>
-													</div>
-													{drawer}
-												</Drawer>
+												<CustomDrawer open={open} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} />
 											</nav>
 											<DisconnectedDialog />
 
