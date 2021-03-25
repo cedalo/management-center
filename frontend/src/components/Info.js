@@ -10,8 +10,8 @@ const useStyles = makeStyles((theme) => ({
 	},
 	avatar: {
 		backgroundColor: theme.palette?.info?.icons || colors.green[600],
-		height: 56,
-		width: 56
+		height: 40,
+		width: 40
 	},
 	differenceIcon: {
 		color: colors.red[900]
@@ -33,7 +33,7 @@ const Info = ({ className, label, value, icon, ...rest }) => {
 						<Typography color="textSecondary" gutterBottom>
 							{label}
 						</Typography>
-						<Typography color="textPrimary" variant="h5">
+						<Typography color="textPrimary" variant="h6">
 							{value}
 						</Typography>
 					</Grid>

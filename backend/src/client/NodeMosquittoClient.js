@@ -38,6 +38,10 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		});
 	}
 
+	async _disconnectBroker() {
+		this._client.end();
+	}
+
 	on(event, callback) {
 		this._client.on(event, callback);
 	}

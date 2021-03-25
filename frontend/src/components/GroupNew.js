@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
+import { useSnackbar } from 'notistack';
 
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Box from '@material-ui/core/Box';
@@ -26,6 +27,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { updateGroups } from '../actions/actions';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
+import SaveCancelButtons from './SaveCancelButtons';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -65,6 +67,7 @@ const GroupNew = (props) => {
 	const [textname, setTextname] = useState('');
 	const [textdescription, setTextdescription] = useState('');
 
+	const { enqueueSnackbar } = useSnackbar();
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
@@ -90,9 +93,10 @@ const GroupNew = (props) => {
 				variant: 'success'
 			});
 		} catch(error) {
-			enqueueSnackbar(`Error creating group "${groupname}". Reason: ${error}`, {
+			enqueueSnackbar(`Error creating group "${groupname}". Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
+			throw error;
 		}
 	};
 
@@ -175,28 +179,11 @@ const GroupNew = (props) => {
 								</Grid>
 								<Grid container xs={12} alignItems="flex-start">
 									<Grid item xs={12} className={classes.buttons}>
-										<Button
-											variant="contained"
-											disabled={!validate()}
-											color="primary"
-											className={classes.button}
-											startIcon={<SaveIcon />}
-											onClick={(event) => {
-												event.stopPropagation();
-												onSaveGroup();
-											}}
-										>
-											Save
-										</Button>
-										<Button
-											variant="contained"
-											onClick={(event) => {
-												event.stopPropagation();
-												onCancel();
-											}}
-										>
-											Cancel
-										</Button>
+										<SaveCancelButtons
+											onSave={onSaveGroup}
+											saveDisabled={!validate()}
+											onCancel={onCancel}
+										/>
 									</Grid>
 								</Grid>
 							</Grid>

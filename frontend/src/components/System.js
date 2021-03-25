@@ -37,7 +37,7 @@ function Security() {
 			</Breadcrumbs>
 			<br />
 			<Grid container spacing={3}>
-				<Grid item lg={6} sm={6} xl={6} xs={12}>
+				<Grid item lg={4} sm={4} xl={4} xs={12}>
 					<HomeCard
 						title="Status"
 						description="Analyse system status"
@@ -45,7 +45,7 @@ function Security() {
 						link="/system/status"
 					/>
 				</Grid>
-				<Grid item lg={6} sm={6} xl={6} xs={12}>
+				<Grid item lg={4} sm={4} xl={4} xs={12}>
 					<HomeCard
 						title="Topic Tree"
 						description="Analyse topic tree"

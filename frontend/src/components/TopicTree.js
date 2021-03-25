@@ -283,12 +283,12 @@ const TopicTree = ({ topicTree }) => {
 						<TableContainer component={Paper} className={classes.table}>
 							<Table size="medium">
 								<TableBody>
-									{selectedNode?.name && (
+									{selectedNode?._name && (
 										<TableRow>
 											<TableCell>
 												<strong>Name</strong>
 											</TableCell>
-											<TableCell>{selectedNode?.name}</TableCell>
+											<TableCell>{selectedNode?._name}</TableCell>
 										</TableRow>
 									)}
 									{selectedNode?._topic && (

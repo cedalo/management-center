@@ -577,13 +577,6 @@ export default class BaseMosquittoProxyClient {
 		// 	rolename,
 		// }, API_DYNAMIC_SECURITY);
 		return fetchedRole;
-		return this.sendCommand(
-			{
-				command: 'getRole',
-				rolename
-			},
-			API_DYNAMIC_SECURITY
-		);
 	}
 
 	async listRoles(verbose = true) {
@@ -647,6 +640,43 @@ export default class BaseMosquittoProxyClient {
 	 * Additional methods not specified in the Mosquitto API
 	 * ******************************************************************************************
 	 */
+
+	async listPlugins() {
+		return this.sendCommand(
+			{
+				command: 'listPlugins',
+			}
+		);
+	}
+
+	async testConnection(connection) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'testConnection',
+			connection
+		});
+		return response?.response;
+	}
+
+	async createConnection(connection) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'createConnection',
+			connection
+		});
+	}
+
+	async modifyConnection(oldConnectionId, connection) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'modifyConnection',
+			oldConnectionId,
+			connection
+		});
+	}
 
 	async updateClientGroups(client, groupnames = []) {
 		if (!groupnames) {

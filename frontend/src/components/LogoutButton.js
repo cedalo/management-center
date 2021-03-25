@@ -43,7 +43,7 @@ const LogoutButton = (props) => {
 			color="inherit"
 			className={classes.toolbarButton}
 		>
-			<LogoutIcon />
+			<LogoutIcon fontSize="small" />
 		</IconButton>
 	</Tooltip>
 };

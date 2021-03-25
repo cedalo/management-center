@@ -51,7 +51,8 @@ const StyledTableRow = withStyles((theme) => ({
 	root: {
 		'&:nth-of-type(odd)': {
 			backgroundColor: theme.palette.tables?.odd
-		}
+		},
+		cursor: 'pointer'
 	}
 }))(TableRow);
 
@@ -107,6 +108,8 @@ const Streams = (props) => {
 				limit,
 				speed
 			});
+			const streams = await brokerClient.listStreams();
+			dispatch(updateStreams(streams));
 			enqueueSnackbar(`Successfully started replay of stream "${stream.streamname}"`, {
 				variant: 'success'
 			});
@@ -337,7 +340,6 @@ const Streams = (props) => {
 														onSelectStream(stream.streamname);
 													}
 												}}
-												style={{ cursor: 'pointer' }}
 											>
 												<TableCell>{stream.streamname}</TableCell>
 												<TableCell>{stream.textdescription}</TableCell>
@@ -345,6 +347,7 @@ const Streams = (props) => {
 												<TableCell>{stream.targettopic}</TableCell>
 												<TableCell>{stream.targetqos}</TableCell>
 												<TableCell>{stream.ttl}</TableCell>
+												{/* <TableCell>{stream.replaying ? "replaying" : "stopped"}</TableCell> */}
 												<TableCell>
 													<Tooltip title="Process stream">
 														<Switch

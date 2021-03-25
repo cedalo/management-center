@@ -15,6 +15,9 @@ const theme = createMuiTheme({
 			//   main: '#009688',
 			//   main: '#ffcd38',
 		},
+		menuItem: {
+			color: '#2697ed',
+		},
 		error: {
 			main: red.A400
 		},

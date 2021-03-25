@@ -14,7 +14,8 @@ import {
 	updateStreams,
 	updateSystemStatus,
 	updateTopicTree,
-	updateVersion
+	updateVersion,
+	updateEditDefaultClient
 } from '../actions/actions';
 
 import WS_BASE from './config';
@@ -54,7 +55,7 @@ export default ({ children }) => {
 		client.on('version', (message) => {
 			dispatch(updateVersion(message.payload));
 		});
-		client.on('connections', (message) => {
+		client.on('connections', async (message) => {
 			console.log('connections');
 			console.log(message);
 			dispatch(updateBrokerConnections(message.payload));
@@ -113,6 +114,10 @@ export default ({ children }) => {
 			.then((streams) => {
 				dispatch(updateStreams(streams));
 			});
+			// .then(() => client.listPlugins())
+			// .then((plugins) => {
+			// 	dispatch(updatePlugins(plugins));
+			// });
 
 		ws = {
 			client: client,

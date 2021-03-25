@@ -33,7 +33,7 @@ const HomeCard = ({ title, description, image, link, ...rest }) => {
 					title={title}
 				/>
 				<CardContent>
-					<Typography gutterBottom variant="h5" component="h2">
+					<Typography gutterBottom variant="h6" component="h2">
 						{title}
 					</Typography>
 					<Typography variant="body2" color="textSecondary" component="p">

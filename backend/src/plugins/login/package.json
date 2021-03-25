@@ -7,6 +7,6 @@
     "passport-local": "^1.0.0"
   },
   "peerDependencies": {
-		"express": "^4.17.1"
+    "express": "^4.17.1"
   }
 }

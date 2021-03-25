@@ -14,6 +14,7 @@ const NodeMosquittoClient = require('./src/client/NodeMosquittoClient');
 const PluginManager = require('./src/plugins/PluginManager');
 const UsageTracker = require('./src/usage/UsageTracker');
 const InstallationManager = require('./src/usage/InstallationManager');
+const ConfigManager = require('./src/config/ConfigManager');
 const SettingsManager = require('./src/settings/SettingsManager');
 const { loadInstallation } = require('./src/utils/utils');
 
@@ -24,7 +25,7 @@ const version = {
 	buildDate: process.env.CEDALO_MC_BUILD_DATE || Date.now()
 };
 
-const CEDALO_MC_PROXY_CONFIG_DIR = process.env.CEDALO_MC_PROXY_CONFIG_DIR || '../config/config.json';
+const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
 
@@ -154,8 +155,11 @@ const addStreamsheetsConfig = (config) => {
 	}
 };
 
+const configManager = new ConfigManager();
+
 const loadConfig = () => {
-	const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, CEDALO_MC_PROXY_CONFIG_DIR)).toString());
+	// const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, CEDALO_MC_PROXY_CONFIG)).toString());
+	const config = configManager.config;
 	addStreamsheetsConfig(config);
 	return config;
 };
@@ -187,7 +191,7 @@ const init = async (licenseContainer) => {
 
 	const connections = initConnections(config);
 
-	connections.forEach(async (connection) => {
+	const handleNewConnection = async (connection) => {
 		const system = {
 			_name: connection.name
 		};
@@ -280,6 +284,10 @@ const init = async (licenseContainer) => {
 			sendTopicTreeUpdate(topicTree, brokerClient);
 		});
 		context.brokerManager.handleNewBrokerConnection(connection, brokerClient, system, topicTree);
+	}
+
+	connections.forEach(async (connection) => {
+		handleNewConnection(connection);
 	});
 
 	console.log(`Started Mosquitto proxy at http://localhost:${CEDALO_MC_PROXY_PORT}`);
@@ -373,6 +381,37 @@ const init = async (licenseContainer) => {
 					});
 				}
 				return settingsManager.settings;
+			}
+			case 'testConnection': {
+				const { connection } = message;
+				const testClient = new NodeMosquittoClient({
+					/* logger: console */
+				});
+				await testClient.connect({
+					mqttEndpointURL: connection.url,
+					credentials: connection.credentials,
+					connectTimeout: process.env.CEDALO_MC_TIMOUT_MOSQUITTO_CONNECT || 5000
+				});
+				await testClient.disconnect();
+				return {
+					connected: true
+				}
+			}
+			case 'createConnection': {
+				const { connection } = message;
+				try {
+					configManager.createConnection(connection);
+					await handleNewConnection(connection);
+				} catch (error) {
+					// TODO: handle error because Management Center crashes
+					console.error(error);
+				}
+				return configManager.connections;
+			}
+			case 'modifyConnection': {
+				const { oldConnectionId, connection } = message;
+				configManager.updateConnection(oldConnectionId, connection);
+				return configManager.connections;
 			}
 		}
 		return {};
