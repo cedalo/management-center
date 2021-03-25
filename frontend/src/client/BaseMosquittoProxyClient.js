@@ -648,6 +648,16 @@ export default class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
+	async testConnection(connection) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'testConnection',
+			connection
+		});
+		return response?.response;
+	}
+
 	async createConnection(connection) {
 		return this.sendRequest({
 			id: createID(),
