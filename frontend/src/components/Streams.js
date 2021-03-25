@@ -348,6 +348,7 @@ const Streams = (props) => {
 												<TableCell>{stream.targettopic}</TableCell>
 												<TableCell>{stream.targetqos}</TableCell>
 												<TableCell>{stream.ttl}</TableCell>
+												{/* <TableCell>{stream.replaying ? "replaying" : "stopped"}</TableCell> */}
 												<TableCell>
 													<Tooltip title="Process stream">
 														<Switch
