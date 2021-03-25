@@ -5,6 +5,7 @@ import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import Drawer from '@material-ui/core/Drawer';
+import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -40,6 +41,8 @@ function ListItemLink(props) {
 
 	return (
 		<li id={id}>
+
+		<Tooltip title={primary}>
 			<MenuItem
 				button
 				component={renderLink}
@@ -54,6 +57,7 @@ function ListItemLink(props) {
 				}}>{icon}</ListItemIcon> : null}
 				<ListItemText primary={primary} classes={{ primary: classes.menuItem }} />
 			</MenuItem>
+			</Tooltip>
 		</li>
 	);
 }
