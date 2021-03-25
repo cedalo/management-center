@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
+import { useSnackbar } from 'notistack';
 
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Box from '@material-ui/core/Box';
@@ -65,6 +66,7 @@ const GroupNew = (props) => {
 	const [textname, setTextname] = useState('');
 	const [textdescription, setTextdescription] = useState('');
 
+	const { enqueueSnackbar } = useSnackbar();
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
@@ -90,7 +92,7 @@ const GroupNew = (props) => {
 				variant: 'success'
 			});
 		} catch(error) {
-			enqueueSnackbar(`Error creating group "${groupname}". Reason: ${error}`, {
+			enqueueSnackbar(`Error creating group "${groupname}". Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
 		}
