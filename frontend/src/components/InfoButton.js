@@ -32,7 +32,7 @@ const InfoButton = () => {
 				color="inherit"
 				className={classes.toolbarButton}
 			>
-				<InfoIcon />
+				<InfoIcon fontSize="small" />
 			</IconButton>
 		</Tooltip>
 	);
