@@ -369,6 +369,7 @@ const init = async (licenseContainer) => {
 				const { settings } = message;
 				settingsManager.updateSettings(settings);
 				if (settingsManager.settings.allowTrackingUsageData) {
+					const data = Object.values(globalSystem);
 					usageTracker.send({
 						data,
 						os: {
@@ -632,8 +633,8 @@ const init = async (licenseContainer) => {
 	});
 
 	setInterval(() => {
-		const data = Object.values(globalSystem);
 		if (settingsManager.settings.allowTrackingUsageData) {
+			const data = Object.values(globalSystem);
 			usageTracker.send({
 				data,
 				os: {
