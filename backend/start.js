@@ -14,6 +14,7 @@ const NodeMosquittoClient = require('./src/client/NodeMosquittoClient');
 const PluginManager = require('./src/plugins/PluginManager');
 const UsageTracker = require('./src/usage/UsageTracker');
 const InstallationManager = require('./src/usage/InstallationManager');
+const ConfigManager = require('./src/config/ConfigManager');
 const SettingsManager = require('./src/settings/SettingsManager');
 const { loadInstallation } = require('./src/utils/utils');
 
@@ -154,8 +155,12 @@ const addStreamsheetsConfig = (config) => {
 	}
 };
 
+const configManager = new ConfigManager();
+
 const loadConfig = () => {
 	const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, CEDALO_MC_PROXY_CONFIG_DIR)).toString());
+	// const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, CEDALO_MC_PROXY_CONFIG)).toString());
+	const config = configManager.config;
 	addStreamsheetsConfig(config);
 	return config;
 };
