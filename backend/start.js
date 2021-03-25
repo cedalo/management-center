@@ -187,7 +187,7 @@ const init = async (licenseContainer) => {
 
 	const connections = initConnections(config);
 
-	connections.forEach(async (connection) => {
+	const handleNewConnection = async (connection) => {
 		const system = {
 			_name: connection.name
 		};
@@ -280,6 +280,10 @@ const init = async (licenseContainer) => {
 			sendTopicTreeUpdate(topicTree, brokerClient);
 		});
 		context.brokerManager.handleNewBrokerConnection(connection, brokerClient, system, topicTree);
+	}
+
+	connections.forEach(async (connection) => {
+		handleNewConnection(connection);
 	});
 
 	console.log(`Started Mosquitto proxy at http://localhost:${CEDALO_MC_PROXY_PORT}`);
