@@ -138,7 +138,11 @@ module.exports = class BaseMosquittoClient {
 				if (!this._brokerClient) {
 					reject(new Error('Not connected to broker'));
 				} else {
-					this._brokerClient.publish(`$CONTROL/${feature}/v1`, JSON.stringify(request));
+					if (feature) {
+						this._brokerClient.publish(`$CONTROL/${feature}/v1`, JSON.stringify(request));
+					} else {
+						this._brokerClient.publish(`$CONTROL`, JSON.stringify(request));
+					}
 					resolve();
 				}
 			}).catch((error) => {
