@@ -51,7 +51,8 @@ const StyledTableRow = withStyles((theme) => ({
 	root: {
 		'&:nth-of-type(odd)': {
 			backgroundColor: theme.palette.tables?.odd
-		}
+		},
+		cursor: 'pointer'
 	}
 }))(TableRow);
 
