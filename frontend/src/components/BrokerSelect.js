@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { connect } from 'react-redux';
 import { useDispatch } from 'react-redux';
-import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -46,6 +46,7 @@ const useStyles = makeStyles((theme) => ({
 		backgroundColor: 'rgba(255,255,255,0.2)',
 		border: 'thin solid rgba(255,255,255,0.5)',
 		color: 'white',
+		fontSize: '14px'
 	},
 	label: {
 		fontSize: '12px',
@@ -58,12 +59,14 @@ const useStyles = makeStyles((theme) => ({
 		// height: "25px",
 		margin: theme.spacing(1),
 		minWidth: 120
+	},
+	select: {
+		fontSize: '14px',
 	}
 }));
 
 const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sendMessage }) => {
 	const classes = useStyles();
-	const theme = useTheme();
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const [connection, setConnection] = React.useState('');
@@ -99,6 +102,8 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 			dispatch(updateDefaultACLAccess(defaultACLAccess));
 			const streams = await client.listStreams();
 			dispatch(updateStreams(streams));
+			// const plugins = await client.listPlugins();
+			// dispatch(updatePlugins(plugins));
 			setConnection(event.target.value);
 		} else {
 		}
@@ -132,7 +137,14 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 					? brokerConnections
 							.filter((brokerConnection) => brokerConnection.status.connected)
 							.map((brokerConnection) => (
-								<MenuItem value={brokerConnection.name}>{brokerConnection.name}</MenuItem>
+								<MenuItem
+									value={brokerConnection.name}
+									classes={{
+										root: classes.select
+									}}
+								>
+									{brokerConnection.name}
+								</MenuItem>
 							))
 					: null}
 			</Select>
