@@ -43,6 +43,7 @@ const ConnectionDetail = (props) => {
 
 const mapStateToProps = (state) => {
 	return {
+		selectedConnectionToEdit: state.brokerConnections?.selectedConnectionToEdit
 	};
 };
 
