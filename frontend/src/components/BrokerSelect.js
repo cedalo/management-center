@@ -22,7 +22,8 @@ import {
 	updateSettings,
 	updateStreams,
 	updateSystemStatus,
-	updateTopicTree
+	updateTopicTree,
+	updateEditDefaultClient
 } from '../actions/actions';
 
 // import {
