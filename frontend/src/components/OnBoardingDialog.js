@@ -261,7 +261,7 @@ const OnBoardingDialog = ({ settings }) => {
 						</Grid>
 					</div>
 				) : null}
-				{subscribed === 'true' ? (
+				{steps[activeStep].newsletter && subscribed === 'true' ? (
 					<div style={{ textAlign: 'center' }}>
 						<SubscribedIcon style={{ color: green[500] }} />
 						<Typography>
@@ -296,14 +296,6 @@ const OnBoardingDialog = ({ settings }) => {
 								</FormGroup>
 							</Grid>
 						</Grid>
-					</div>
-				) : null}
-				{subscribed === 'true' ? (
-					<div style={{ textAlign: 'center' }}>
-						<SubscribedIcon style={{ color: green[500] }} />
-						<Typography>
-							<strong>Thanks for subscribing!</strong>
-						</Typography>
 					</div>
 				) : null}
 
