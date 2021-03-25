@@ -24,7 +24,7 @@ const version = {
 	buildDate: process.env.CEDALO_MC_BUILD_DATE || Date.now()
 };
 
-const CEDALO_MC_PROXY_CONFIG_DIR = process.env.CEDALO_MC_PROXY_CONFIG_DIR || '../config/config.json';
+const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
 
