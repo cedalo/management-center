@@ -99,7 +99,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 
 	const onSelectConnection = async (connection) => {
 		dispatch(updateSelectedConnection(connection));
-		history.push(`/config/detail/${connection.id}`);
+		history.push(`/config/connections/detail/${connection.id}`);
 	};
 
 	return (
