@@ -114,6 +114,10 @@ export default ({ children }) => {
 			.then((streams) => {
 				dispatch(updateStreams(streams));
 			});
+			// .then(() => client.listPlugins())
+			// .then((plugins) => {
+			// 	dispatch(updatePlugins(plugins));
+			// });
 
 		ws = {
 			client: client,
