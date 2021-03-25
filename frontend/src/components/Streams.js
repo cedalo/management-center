@@ -340,7 +340,6 @@ const Streams = (props) => {
 														onSelectStream(stream.streamname);
 													}
 												}}
-												style={{ cursor: 'pointer' }}
 											>
 												<TableCell>{stream.streamname}</TableCell>
 												<TableCell>{stream.textdescription}</TableCell>
