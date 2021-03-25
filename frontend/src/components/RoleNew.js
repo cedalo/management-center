@@ -28,6 +28,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { updateRoles } from '../actions/actions';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
+import SaveCancelButtons from './SaveCancelButtons';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -92,6 +93,7 @@ const RoleNew = (props) => {
 			enqueueSnackbar(`Error creating role "${rolename}". Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
+			throw error;
 		}
 	};
 
@@ -172,28 +174,11 @@ const RoleNew = (props) => {
 								</Grid>
 								<Grid container xs={12} alignItems="flex-start">
 									<Grid item xs={12} className={classes.buttons}>
-										<Button
-											variant="contained"
-											disabled={!validate()}
-											color="primary"
-											className={classes.button}
-											startIcon={<SaveIcon />}
-											onClick={(event) => {
-												event.stopPropagation();
-												onSaveRole();
-											}}
-										>
-											Save
-										</Button>
-										<Button
-											variant="contained"
-											onClick={(event) => {
-												event.stopPropagation();
-												onCancel();
-											}}
-										>
-											Cancel
-										</Button>
+										<SaveCancelButtons
+											onSave={onSaveRole}
+											saveDisabled={!validate()}
+											onCancel={onCancel}
+										/>
 									</Grid>
 								</Grid>
 							</Grid>
