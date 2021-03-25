@@ -374,6 +374,21 @@ const init = async (licenseContainer) => {
 				}
 				return settingsManager.settings;
 			}
+			case 'testConnection': {
+				const { connection } = message;
+				const testClient = new NodeMosquittoClient({
+					/* logger: console */
+				});
+				await testClient.connect({
+					mqttEndpointURL: connection.url,
+					credentials: connection.credentials,
+					connectTimeout: process.env.CEDALO_MC_TIMOUT_MOSQUITTO_CONNECT || 5000
+				});
+				await testClient.disconnect();
+				return {
+					connected: true
+				}
+			}
 		}
 		return {};
 	};
