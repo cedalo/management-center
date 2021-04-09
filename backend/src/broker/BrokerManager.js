@@ -5,13 +5,14 @@ module.exports = class BrokerManager {
 		this._brokerConnection = {};
 	}
 
-	handleNewBrokerConnection(connection, brokerClient, system, topicTree) {
+	handleNewBrokerConnection(connection, brokerClient, system, topicTree, proxyClient) {
 		this._brokerClient = brokerClient;
 		this._connection = connection;
 		this._brokerConnection = {
 			broker: brokerClient,
 			system,
-			topicTree
+			topicTree,
+			proxyClient
 		};
 	}
 

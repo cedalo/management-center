@@ -45,14 +45,14 @@ module.exports = class BaseMosquittoClient {
 	}
 
 	// eslint-disable-next-line consistent-return
-	async connect({ mqttEndpointURL, credentials } = {}) {
+	async connect({ mqttEndpointURL, credentials, connectTimeout } = {}) {
 		if (this._isConnected || this._isConnecting) {
 			return Promise.resolve({});
 		}
 		this._isConnecting = true;
 		this._mqttEndpointURL = mqttEndpointURL || this._mqttEndpointURL;
 		try {
-			const brokerClient = await this._connectBroker(mqttEndpointURL, credentials);
+			const brokerClient = await this._connectBroker(mqttEndpointURL, credentials, connectTimeout);
 			this._brokerClient = brokerClient;
 			this._isConnected = true;
 		} catch (error) {
@@ -123,7 +123,7 @@ module.exports = class BaseMosquittoClient {
 		return this.sendRequest(feature, commands, correlationData);
 	}
 
-	async sendRequest(feature, request, correlationData, timeout = this._timeout) {
+	async sendRequest(feature, request, correlationData = createID(), timeout = this._timeout) {
 		/* eslint-disable */
 		this.logger.debug('Sending request to Mosquitto', request);
 		return new Promise((resolve, reject) => {
