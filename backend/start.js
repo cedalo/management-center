@@ -31,6 +31,7 @@ const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
 
 // const LicenseManager = require("../src/LicenseManager");
 const LicenseChecker = require('./src/license/LicenseChecker');
+const NodeMosquittoProxyClient = require('../frontend/src/client/NodeMosquittoProxyClient');
 // const licenseManager = new LicenseManager();
 // await licenseManager.loadLicense();
 // const license = licenseManager.getLicenseAsJSON();
@@ -283,12 +284,28 @@ const init = async (licenseContainer) => {
 			updateTopicTree(topicTree, topic, message, packet);
 			sendTopicTreeUpdate(topicTree, brokerClient);
 		});
-		context.brokerManager.handleNewBrokerConnection(connection, brokerClient, system, topicTree);
+
+		const proxyClient = new NodeMosquittoProxyClient({
+			name: `Proxy client for "${connection.name}"`,
+			logger: console
+		});
+		proxyClient.on('error', (message) => {
+			console.error(message);
+		});
+		context.brokerManager.handleNewBrokerConnection(connection, brokerClient, system, topicTree, proxyClient);
+
+		try {
+			await proxyClient.connect({ socketEndpointURL: 'ws://localhost:8088' });
+			await proxyClient.connectToBroker(connection.name);
+			console.log("connected");
+		} catch (error) {
+			console.error(error);
+		}
 	}
 
-	connections.forEach(async (connection) => {
-		handleNewConnection(connection);
-	});
+	for (let i=0; i<connections.length; i++) {
+		handleNewConnection(connections[i]);
+	}
 
 	console.log(`Started Mosquitto proxy at http://localhost:${CEDALO_MC_PROXY_PORT}`);
 
@@ -540,6 +557,8 @@ const init = async (licenseContainer) => {
 			}
 		});
 	});
+
+	
 
 	context = {
 		...context,
