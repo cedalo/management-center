@@ -294,13 +294,13 @@ const init = async (licenseContainer) => {
 		// });
 		context.brokerManager.handleNewBrokerConnection(connection, brokerClient, system, topicTree /*, proxyClient */);
 
-		try {
-			await proxyClient.connect({ socketEndpointURL: 'ws://localhost:8088' });
-			await proxyClient.connectToBroker(connection.name);
-			console.log("connected");
-		} catch (error) {
-			console.error(error);
-		}
+		// try {
+		// 	await proxyClient.connect({ socketEndpointURL: 'ws://localhost:8088' });
+		// 	await proxyClient.connectToBroker(connection.name);
+		// 	console.log("connected");
+		// } catch (error) {
+		// 	console.error(error);
+		// }
 	}
 
 	for (let i=0; i<connections.length; i++) {
