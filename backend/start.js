@@ -31,7 +31,7 @@ const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
 
 // const LicenseManager = require("../src/LicenseManager");
 const LicenseChecker = require('./src/license/LicenseChecker');
-const NodeMosquittoProxyClient = require('../frontend/src/client/NodeMosquittoProxyClient');
+// const NodeMosquittoProxyClient = require('../frontend/src/client/NodeMosquittoProxyClient');
 // const licenseManager = new LicenseManager();
 // await licenseManager.loadLicense();
 // const license = licenseManager.getLicenseAsJSON();
@@ -285,14 +285,14 @@ const init = async (licenseContainer) => {
 			sendTopicTreeUpdate(topicTree, brokerClient);
 		});
 
-		const proxyClient = new NodeMosquittoProxyClient({
-			name: `Proxy client for "${connection.name}"`,
-			logger: console
-		});
-		proxyClient.on('error', (message) => {
-			console.error(message);
-		});
-		context.brokerManager.handleNewBrokerConnection(connection, brokerClient, system, topicTree, proxyClient);
+		// const proxyClient = new NodeMosquittoProxyClient({
+		// 	name: `Proxy client for "${connection.name}"`,
+		// 	logger: console
+		// });
+		// proxyClient.on('error', (message) => {
+		// 	console.error(message);
+		// });
+		context.brokerManager.handleNewBrokerConnection(connection, brokerClient, system, topicTree /*, proxyClient */);
 
 		try {
 			await proxyClient.connect({ socketEndpointURL: 'ws://localhost:8088' });
