@@ -367,6 +367,28 @@ const StreamDetail = (props) => {
 							<Grid item xs={12}>
 								<TextField
 									disabled={!editMode}
+									id="ttl"
+									label="TTL"
+									value={updatedStream.ttl}
+									defaultValue=""
+									variant="outlined"
+									fullWidth
+									type="number"
+									InputProps={{ inputProps: { min: 0 } }}
+									className={classes.textField}
+									onChange={(event) => {
+										if (editMode) {
+											setUpdatedStream({
+												...updatedStream,
+												ttl: parseInt(event.target.value)
+											});
+										}
+									}}
+								/>
+							</Grid>
+							<Grid item xs={12}>
+								<TextField
+									disabled={!editMode}
 									id="key"
 									label="Key"
 									value={updatedStream.key}
