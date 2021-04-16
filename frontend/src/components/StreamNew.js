@@ -104,8 +104,7 @@ const StreamNew = (props) => {
 	const validate = () => {
 		const valid = !streamnameExists
 			&& streamname !== ''
-			&& sourceTopic !== ''
-			&& targetTopic !== '';
+			&& sourceTopic !== '';
 		return valid;
 	};
 
@@ -217,7 +216,6 @@ const StreamNew = (props) => {
 								</Grid>
 								<Grid item xs={12}>
 									<TextField
-										required
 										id="targettopic"
 										label="Target topic"
 										onChange={(event) => setTargetTopic(event.target.value)}
