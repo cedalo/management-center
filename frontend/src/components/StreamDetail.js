@@ -152,8 +152,7 @@ const StreamDetail = (props) => {
 	const validate = () => {
 		if (editMode) {
 			return updatedStream.streamname !== ''
-				&& updatedStream.sourcetopic !== ''
-				&& updatedStream.targettopic !== '';
+				&& updatedStream.sourcetopic !== '';
 		} else {
 			return updatedStream.streamname !== '';
 		}
@@ -323,7 +322,6 @@ const StreamDetail = (props) => {
 							</Grid>
 							<Grid item xs={12}>
 								<TextField
-									required={editMode}
 									disabled={!editMode}
 									id="target-topic"
 									label="Target topic"
