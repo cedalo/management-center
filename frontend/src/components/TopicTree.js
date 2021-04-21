@@ -57,6 +57,8 @@ const prettifyJSON = (jsonString) => {
 	return prettifiedJSON;
 }
 
+const isJSON = (text) => text?.startsWith('{') || text?.startsWith('[');
+
 const useTreeItemStyles = makeStyles((theme) => ({
 	root: {
 		color: theme.palette.text.secondary
@@ -239,7 +241,7 @@ const TopicTree = ({ topicTree }) => {
 				onLabelClick(node);
 			}}
 			//   labelIcon={InfoIcon}
-			message={node._message?.startsWith('{') ? null : node._message}
+			message={isJSON(node._message) ? null : node._message}
 			topicsCounter={node._topicsCounter}
 			labelInfo={node._messagesCounter}
 			//   color="#e3742f"
@@ -360,7 +362,7 @@ const TopicTree = ({ topicTree }) => {
 													className={classes.payloadDetail}
 													rows={5}
 													value={
-														selectedNode?._message.startsWith('{') 
+														isJSON(selectedNode?._message)
 														? prettifyJSON(selectedNode?._message)
 														: selectedNode?._message
 													}
@@ -398,7 +400,7 @@ const TopicTree = ({ topicTree }) => {
 															className={classes.payloadDetail}
 															rows={5}
 															value={
-																entry?._message.startsWith('{') 
+																isJSON(entry?._message)
 																? prettifyJSON(entry?._message)
 																: entry?._message
 															}
