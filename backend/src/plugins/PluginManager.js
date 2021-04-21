@@ -37,7 +37,7 @@ module.exports = class PluginManager {
 				const plugin = new Plugin();
 				if (
 					licenseContainer.license.features &&
-					licenseContainer.license.features.includes(plugin.meta.featureId)
+					licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
 				) {
 					plugin.init(context);
 					plugin.load(context);
