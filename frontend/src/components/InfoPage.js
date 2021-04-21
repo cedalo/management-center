@@ -23,6 +23,7 @@ import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import useFetch from '../helpers/useFetch';
+import { TableHead } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
 	tableContainer: {
@@ -217,7 +218,7 @@ const InfoPage = (props) => {
 									</TableCell>
 									<TableCell>{license.maxBrokerConnenctions}</TableCell>
 								</TableRow>
-								<TableRow>
+								{/* <TableRow>
 									<TableCell>
 										<b>Advanced REST API</b>
 									</TableCell>
@@ -228,7 +229,7 @@ const InfoPage = (props) => {
 										<b>Custom Theme</b>
 									</TableCell>
 									<TableCell>{createFeatureIcon('white-labeling', license)}</TableCell>
-								</TableRow>
+								</TableRow> */}
 								{/* <TableRow>
                   <TableCell>
 				  	<b>🚧 Import / Export</b>
@@ -239,16 +240,58 @@ const InfoPage = (props) => {
 					}
                   </TableCell>
                 </TableRow> */}
-								<TableRow>
+								{/* <TableRow>
 									<TableCell>
 										<b>Multiple Connections</b>
 									</TableCell>
 									<TableCell>{createFeatureIcon('multiple-broker-connections', license)}</TableCell>
-								</TableRow>
+								</TableRow> */}
 							</TableBody>
 						</Table>
 					</TableContainer>
 				)}
+
+				<br />
+				{license?.features && 
+					<TableContainer component={Paper} className={classes.tableContainer}>
+						<Table size="medium">
+							<TableHead>
+								<TableRow>
+									<TableCell>
+										<b>Feature</b>
+									</TableCell>
+									<TableCell>
+										<b>Version</b>
+									</TableCell>
+									{/* <TableCell>
+										<b>Valid until</b>
+									</TableCell>
+									<TableCell>
+										<b>Valid since</b>
+									</TableCell> */}
+								</TableRow>
+								</TableHead>
+							<TableBody>
+							 {license?.features.map(feature => (
+								<TableRow>
+									<TableCell>
+										{feature.name}
+									</TableCell>
+									<TableCell>
+										{feature.version}
+									</TableCell>
+									{/* <TableCell>
+										{moment(feature.validSince).format('LLLL')}
+									</TableCell>
+									<TableCell>
+										{moment(feature.validUntil).format('LLLL')}
+									</TableCell> */}
+								</TableRow>
+							))}
+							</TableBody>
+						</Table>
+					</TableContainer>
+				}
 			</div>
 		);
 	} else {
