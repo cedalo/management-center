@@ -182,7 +182,11 @@ StyledTreeItem.propTypes = {
 	labelText: PropTypes.string.isRequired
 };
 
-const generateTreeData = (id, name, object) => {
+const generateTreeData = (id, name, object, index = 0) => {
+	// Ignore the topicTree object on top level
+	if (index === 0 && object.topicTree) {
+		object = object.topicTree
+	}
 	const node = {
 		id,
 		name,
@@ -192,7 +196,7 @@ const generateTreeData = (id, name, object) => {
 	const properties = Object.keys(object).filter((property) => !property.startsWith('_'));
 	if (properties.length > 0) {
 		properties.forEach((property) => {
-			node.children.push(generateTreeData(`${id}/${property}`, property, object[property]));
+			node.children.push(generateTreeData(`${id}/${property}`, property, object[property], index++));
 		});
 	}
 	//   const metaData = object._messagesCounter ? ` (${object._messagesCounter})` : '';
