@@ -22,6 +22,7 @@ import Typography from '@material-ui/core/Typography';
 import { colors } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core';
+import { Alert, AlertTitle } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
-const Status = ({ lastUpdated, systemStatus }) => {
+const Status = ({ lastUpdated, systemStatus, defaultClient }) => {
 	const classes = useStyles();
 
 	const totalMessages = parseInt(systemStatus?.$SYS?.broker?.messages?.sent);
@@ -84,7 +85,7 @@ const Status = ({ lastUpdated, systemStatus }) => {
 				</Typography>
 			</Breadcrumbs>
 			<br />
-			<Container maxWidth={false}>
+			{systemStatus?.$SYS ? <Container maxWidth={false}>
 				<Grid container spacing={3}>
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
@@ -243,15 +244,20 @@ const Status = ({ lastUpdated, systemStatus }) => {
             />
           </Grid> */}
 				</Grid>
-			</Container>
-			<div style={{
+			</Container> : <Alert severity="warning">
+				<AlertTitle>Info</AlertTitle>
+				We couldn't retrieve the system status information.
+				Please make sure that the user "{defaultClient?.username}" has the rights to read the "$SYS" topic on the selected broker.
+			</Alert>
+			}
+			{systemStatus?.$SYS && <div style={{
 				fontSize: '0.9em',
 				position: 'absolute',
 				right: '15px',
 				top: '70px'
 			}}>
 				Dashboard last updated at: {moment(lastUpdated).format('hh:mm:ss a')}
-			</div>
+			</div>}
 		</div>
 	);
 };
@@ -259,7 +265,8 @@ const Status = ({ lastUpdated, systemStatus }) => {
 const mapStateToProps = (state) => {
 	return {
 		lastUpdated: state.systemStatus.lastUpdated,
-		systemStatus: state.systemStatus.systemStatus
+		systemStatus: state.systemStatus.systemStatus,
+		defaultClient: state.brokerConnections?.defaultClient
 	};
 };
 
