@@ -161,7 +161,6 @@ const configManager = new ConfigManager();
 const loadConfig = () => {
 	// const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, CEDALO_MC_PROXY_CONFIG)).toString());
 	const config = configManager.config;
-	addStreamsheetsConfig(config);
 	return config;
 };
 
@@ -184,6 +183,7 @@ const init = async (licenseContainer) => {
 
 	// TODO: add error handling
 	const config = loadConfig();
+	addStreamsheetsConfig(config);
 
 	const wss = new WebSocket.Server({
 		//   port: CEDALO_MC_PROXY_PORT,
