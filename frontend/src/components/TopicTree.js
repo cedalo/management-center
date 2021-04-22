@@ -204,7 +204,7 @@ const generateTreeData = (id, name, object, index = 0) => {
 	return node;
 };
 
-const TopicTree = ({ topicTree }) => {
+const TopicTree = ({ topicTree, currentConnectionName }) => {
 	const classes = useStyles();
 	const [messageHistory, setMessageHistory] = React.useState([]);
 	const [selectedNode, setSelectedNode] = React.useState({});
@@ -220,8 +220,8 @@ const TopicTree = ({ topicTree }) => {
 		});
 		current = Object.assign({}, current);
 		current._received = Date.now();
-		if (current._message !== selectedNode._message // if new message
-			&& current._messagesCounter > selectedNode._messagesCounter) // quick fix
+		if (current._message !== selectedNode?._message // if new message
+			&& current._messagesCounter > selectedNode?._messagesCounter) // quick fix
 			{
 			console.log(current);
 			setSelectedNode(current);
@@ -237,6 +237,13 @@ const TopicTree = ({ topicTree }) => {
 	};
 
 	const data = generateTreeData('topic-tree-root', 'Topic Tree', topicTree);
+
+	useEffect(() => {
+		setSelectedNode(null);
+		setSelectedNodeId('');
+		setMessageHistory([]);
+	}, [currentConnectionName]);
+
 	const renderTree = (node) => (
 		<StyledTreeItem
 			nodeId={node.id}
@@ -279,6 +286,7 @@ const TopicTree = ({ topicTree }) => {
 							className={classes.root}
 							defaultCollapseIcon={<ExpandMoreIcon />}
 							defaultExpandIcon={<ChevronRightIcon />}
+							// defaultExpanded={["topic-tree-root"]}
 						>
 							{renderTree(data)}
 						</TreeView>
@@ -433,7 +441,8 @@ const TopicTree = ({ topicTree }) => {
 
 const mapStateToProps = (state) => {
 	return {
-		topicTree: state.topicTree
+		topicTree: state.topicTree,
+		currentConnectionName: state.brokerConnections.currentConnectionName
 	};
 };
 
