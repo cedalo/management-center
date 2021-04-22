@@ -314,7 +314,7 @@ const getDialogContent = (brokerConnections, connected, proxyConnected, editDefa
 			<DialogContent>
 				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
 					<Grid item xs={12} align="center">
-						<img src="/disconnected.png" />
+						<img src={disconnectedImage} />
 					</Grid>
 					<Grid item xs={12} align="center">
 						{
