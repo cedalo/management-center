@@ -202,11 +202,11 @@ export default function App(props) {
 			if (response?.dark?.palette?.tables) {
 				darkTheme.palette.tables = response?.dark?.palette?.tables;
 			}
-			if (response?.dark?.palette?.info) {
-				darkTheme.palette.info = response?.dark?.palette?.info;
+			if (response?.dark?.palette?.dashboard) {
+				darkTheme.palette.dashboard = response?.dark?.palette?.dashboard;
 			}
-			if (response?.light?.palette?.info) {
-				customTheme.palette.info = response?.light?.palette?.info;
+			if (response?.light?.palette?.dashboardIcons) {
+				customTheme.palette.dashboard = response?.light?.palette?.dashboard;
 			}
 			if (response?.dark?.palette?.drawer) {
 				darkTheme.palette.drawer = response?.dark?.palette?.drawer;
