@@ -212,7 +212,8 @@ const TopicTree = ({ topicTree, currentConnectionName }) => {
 
 	useEffect(() => {
 		const parts = selectedNodeId.split('/');
-		let current = topicTree;
+		parts.shift();
+		let current = topicTree.topicTree;
 		parts.forEach((part, index) => {
 			if (current[part]) {
 				current = current[part];
@@ -223,7 +224,6 @@ const TopicTree = ({ topicTree, currentConnectionName }) => {
 		if (current._message !== selectedNode?._message // if new message
 			&& current._messagesCounter > selectedNode?._messagesCounter) // quick fix
 			{
-			console.log(current);
 			setSelectedNode(current);
 			messageHistory.unshift(current);
 			setMessageHistory(messageHistory.slice(0, 51));
