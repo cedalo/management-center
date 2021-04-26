@@ -109,7 +109,9 @@ const updateTopicTree = (topicTree, topic, message, packet) => {
 	current = topicTree;
 	if (newTopic) {
 		parts.forEach((part, index) => {
-			current[part]._topicsCounter += 1;
+			if (index < parts.length - 1) {
+				current[part]._topicsCounter += 1;
+			}
 			current = current[part];
 		});
 	}

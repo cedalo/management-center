@@ -140,7 +140,7 @@ function StyledTreeItem(props) {
 							</Typography>
 						</Tooltip>
 					)}
-					{topicsCounter && (
+					{(topicsCounter || topicsCounter === 0) && (
 						<Tooltip title="Number of subtopics">
 							<Typography variant="caption" color="inherit" className={classes.label}>
 								{/* <strong>Topics:</strong><span>{topicsCounter} </span> */}
