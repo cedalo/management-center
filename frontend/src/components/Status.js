@@ -245,7 +245,7 @@ const Status = ({ lastUpdated, systemStatus, defaultClient }) => {
           </Grid> */}
 				</Grid>
 			</Container> : <Alert severity="warning">
-				<AlertTitle>Info</AlertTitle>
+				<AlertTitle>System status information not accessible</AlertTitle>
 				We couldn't retrieve the system status information.
 				Please make sure that the user "{defaultClient?.username}" has the rights to read the "$SYS" topic on the selected broker.
 			</Alert>
