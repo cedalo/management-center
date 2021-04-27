@@ -131,6 +131,13 @@ export function updateSystemStatus(update) {
 	};
 }
 
+export function updateFeatures(update) {
+	return {
+		type: ActionTypes.UPDATE_FEATURES,
+		update
+	};
+}
+
 export function updateTopicTree(update) {
 	return {
 		type: ActionTypes.UPDATE_TOPIC_TREE,

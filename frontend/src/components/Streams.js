@@ -11,6 +11,7 @@ import { updateStream, updateStreams } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
 import AddIcon from '@material-ui/icons/Add';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import ReloadIcon from '@material-ui/icons/Replay';
 import AutoSuggest from './AutoSuggest';
 import Box from '@material-ui/core/Box';
@@ -85,7 +86,7 @@ const Streams = (props) => {
 	const confirm = useConfirm();
 	const { enqueueSnackbar } = useSnackbar();
 	const { client: brokerClient } = context;
-	const { connectionID, streams = [], onSort, sortBy, sortDirection } = props;
+	const { streamsFeature, connectionID, streams = [], onSort, sortBy, sortDirection } = props;
 	const [replayStreamEditorOpen, setReplayStreamEditorOpen] = React.useState(false);
 	const [replayStream, setReplayStream] = React.useState({});
 
@@ -267,7 +268,12 @@ const Streams = (props) => {
 					Streams
 				</Typography>
 			</Breadcrumbs>
-			<Grid container spacing={1} alignItems="flex-end">
+			{/* TODO: Quick hack to detect whether feature is supported */}
+			{streamsFeature?.supported === false ? <><br/><Alert severity="warning">
+				<AlertTitle>Enterprise Solution feature</AlertTitle>
+				Streams are a premium feature. For more information visit <a href="cedalo.com">cedalo.com</a> or contact us at <a href="mailto:info@cedalo.com">info@cedalo.com</a>.
+			</Alert></> : null}
+			{streamsFeature?.supported !== false && <Grid container spacing={1} alignItems="flex-end">
 				<Grid item xs={6}>
 					<Button
 						variant="outlined"
@@ -300,8 +306,7 @@ const Streams = (props) => {
 						</Tooltip>
 					</Box>
 				</Grid>
-			</Grid>
-			
+			</Grid>}
 			<br />
 			{streams && streams.length > 0 ? (
 				<div>
@@ -511,7 +516,8 @@ const Streams = (props) => {
 
 const mapStateToProps = (state) => {
 	return {
-		streams: state.streams?.streams
+		streams: state.streams?.streams,
+		streamsFeature: state.systemStatus?.features?.streamprocessing
 	};
 };
 

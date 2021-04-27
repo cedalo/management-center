@@ -15,7 +15,8 @@ import {
 	updateSystemStatus,
 	updateTopicTree,
 	updateVersion,
-	updateEditDefaultClient
+	updateEditDefaultClient,
+	updateFeatures
 } from '../actions/actions';
 
 import WS_BASE from './config';
@@ -89,8 +90,8 @@ export default ({ children }) => {
 			.then(() => client.getSettings())
 			.then((settings) => {
 				dispatch(updateSettings(settings));
-			})
-			.then(() => client.listClients())
+			});
+		client.listClients()
 			.then((clients) => {
 				dispatch(updateClients(clients));
 			})
@@ -110,9 +111,40 @@ export default ({ children }) => {
 			.then((defaultACLAccess) => {
 				dispatch(updateDefaultACLAccess(defaultACLAccess));
 			})
-			.then(() => client.listStreams())
+			.then(() => {
+				dispatch(updateFeatures({
+					feature: 'dynamicsecurity',
+					status: 'ok'
+				}));
+			})
+			.catch((error) => {
+				// TODO: change when Mosquitto provides feature endpoint
+				// there was an error loading some dynamic security part
+				// --> we assume that feature has not been loaded
+				dispatch(updateFeatures({
+					feature: 'dynamicsecurity',
+					status: error
+				}));
+			});
+
+		client.listStreams()
 			.then((streams) => {
 				dispatch(updateStreams(streams));
+			})
+			.then(() => {
+				dispatch(updateFeatures({
+					feature: 'streamprocessing',
+					status: 'ok'
+				}));
+			})
+			.catch((error) => {
+				// TODO: change when Mosquitto provides feature endpoint
+				// there was an error loading the stream feature
+				// --> we assume that feature has not been loaded
+				dispatch(updateFeatures({
+					feature: 'streamprocessing',
+					status: error
+				}));
 			});
 			// .then(() => client.listPlugins())
 			// .then((plugins) => {

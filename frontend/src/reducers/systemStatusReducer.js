@@ -16,6 +16,13 @@ export default function systemStatus(state = {}, action) {
 		case ActionTypes.UPDATE_BROKER_CONNECTED:
 			currentTopicTreeConnectionName = action.update.connectionName;
 			break;
+		case ActionTypes.UPDATE_FEATURES:
+			newState.features = newState.features || {};
+			newState.features[action.update.feature] = {
+				// TODO: Quick hack to detect whether feature is supported
+				supported: action.update.status.message !== "BaseMosquittoProxyClient: Timeout"
+			};
+			break;
 		default:
 	}
 	return newState;
