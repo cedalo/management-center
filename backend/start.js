@@ -584,8 +584,6 @@ const init = async (licenseContainer) => {
 	const pluginManager = new PluginManager();
 	pluginManager.init(config.plugins, context);
 
-	app.use(express.static(path.join(__dirname, 'public')));
-
 	app.get('/api/version', context.security.isLoggedIn, (request, response) => {
 		response.json(version);
 	});
@@ -645,13 +643,11 @@ const init = async (licenseContainer) => {
 		);
 	});
 
-	app.get('/', context.security.isLoggedIn, (request, response) => {
-		response.sendFile(path.join(__dirname, 'public', 'index.html'));
+	app.get('*', context.security.isLoggedIn, (request, response) => {
+		response.sendFile(path.join(__dirname, 'public', request.path));
 	});
 
-	app.get('*', context.security.isLoggedIn, (request, response) => {
-		response.sendFile(path.join(__dirname, 'public', 'index.html'));
-	});
+	app.use(express.static(path.join(__dirname, 'public')));
 
 	server.listen(CEDALO_MC_PROXY_PORT, () => {
 		console.log(`Mosquitto proxy server started on port ${server.address().port}`);
