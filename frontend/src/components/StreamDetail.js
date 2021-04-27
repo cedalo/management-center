@@ -393,7 +393,6 @@ const StreamDetail = (props) => {
 									defaultValue=""
 									variant="outlined"
 									fullWidth
-									type="number"
 									className={classes.textField}
 									onChange={(event) => {
 										if (editMode) {
