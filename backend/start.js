@@ -645,6 +645,10 @@ const init = async (licenseContainer) => {
 		);
 	});
 
+	app.get('/', context.security.isLoggedIn, (request, response) => {
+		response.sendFile(path.join(__dirname, 'public', 'index.html'));
+	});
+
 	app.get('*', context.security.isLoggedIn, (request, response) => {
 		response.sendFile(path.join(__dirname, 'public', 'index.html'));
 	});
