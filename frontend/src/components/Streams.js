@@ -60,6 +60,9 @@ const StyledTableRow = withStyles((theme) => ({
 const useStyles = makeStyles((theme) => ({
 	breadcrumbItem: theme.palette.breadcrumbItem,
 	breadcrumbLink: theme.palette.breadcrumbLink,
+	link: {
+		color: 'inherit'
+	}
 	// tableContainer: {
 	// 	borderWidth: '1px',
 	// 	borderStyle: 'solid',
@@ -271,7 +274,7 @@ const Streams = (props) => {
 			{/* TODO: Quick hack to detect whether feature is supported */}
 			{streamsFeature?.supported === false ? <><br/><Alert severity="warning">
 				<AlertTitle>Enterprise Solution feature</AlertTitle>
-				Streams are a premium feature. For more information visit <a href="cedalo.com">cedalo.com</a> or contact us at <a href="mailto:info@cedalo.com">info@cedalo.com</a>.
+				Streams are a premium feature. For more information visit <a className={classes.link} href="cedalo.com">cedalo.com</a> or contact us at <a className={classes.link} href="mailto:info@cedalo.com">info@cedalo.com</a>.
 			</Alert></> : null}
 			{streamsFeature?.supported !== false && <Grid container spacing={1} alignItems="flex-end">
 				<Grid item xs={6}>
