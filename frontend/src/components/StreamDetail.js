@@ -384,7 +384,7 @@ const StreamDetail = (props) => {
 									}}
 								/>
 							</Grid>
-							<Grid item xs={12}>
+							{/* <Grid item xs={12}>
 								<TextField
 									disabled={!editMode}
 									id="key"
@@ -403,7 +403,7 @@ const StreamDetail = (props) => {
 										}
 									}}
 								/>
-							</Grid>
+							</Grid> */}
 							{ editMode && <Grid item xs={12}>
 								<Editor
 									ace={ace}

@@ -91,7 +91,7 @@ const StreamNew = (props) => {
 	const [textdescription, setTextdescription] = useState('');
 	const [sourceTopic, setSourceTopic] = useState('');
 	const [targetTopic, setTargetTopic] = useState('');
-	const [key, setKey] = useState('');
+	// const [key, setKey] = useState('');
 	const [targetQoS, setTargetQoS] = useState(2);
 	const [ttl, setTTL] = useState(86400);
 	const [query, setQuery] = useState({});
@@ -123,7 +123,7 @@ const StreamNew = (props) => {
 				targetTopic,
 				targetQoS,
 				ttl,
-				key,
+				// key,
 				query
 			});
 			const streams = await client.listStreams();
@@ -249,7 +249,7 @@ const StreamNew = (props) => {
 										className={classes.textField}
 									/>
 								</Grid>
-								<Grid item xs={12}>
+								{/* <Grid item xs={12}>
 									<TextField
 										id="key"
 										label="Key"
@@ -259,7 +259,7 @@ const StreamNew = (props) => {
 										fullWidth
 										className={classes.textField}
 									/>
-								</Grid>
+								</Grid> */}
 								<Grid item xs={12}>
 									<Editor
 										className={classes.editor}
