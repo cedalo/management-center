@@ -644,7 +644,12 @@ const init = async (licenseContainer) => {
 	});
 
 	app.get('*', context.security.isLoggedIn, (request, response) => {
-		response.sendFile(path.join(__dirname, 'public', request.path));
+		const filePath = path.join(__dirname, 'public', request.path);
+		if (fs.existsSync(filePath)) {
+			response.sendFile(filePath);
+		} else {
+			response.sendFile(path.join(__dirname, 'public', 'index.html'));
+		}
 	});
 
 	app.use(express.static(path.join(__dirname, 'public')));
