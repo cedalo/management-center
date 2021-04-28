@@ -4,6 +4,7 @@ import { updateClients, updateGroups, updateRole, updateRoles } from '../actions
 import { useSnackbar } from 'notistack';
 
 import AddIcon from '@material-ui/icons/Add';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -148,7 +149,7 @@ const Roles = (props) => {
 		history.push(`/security/roles/detail/${rolename}`);
 	};
 
-	const { defaultACLAccess, roles = [], onSort, sortBy, sortDirection } = props;
+	const { dynamicsecurityFeature, defaultACLAccess, roles = [], onSort, sortBy, sortDirection } = props;
 
 	return (
 		<div>
@@ -163,8 +164,12 @@ const Roles = (props) => {
 					Roles
 				</Typography>
 			</Breadcrumbs>
-			<br />
-			<Button
+			{/* TODO: Quick hack to detect whether feature is supported */}
+			{dynamicsecurityFeature?.supported === false ? <><br/><Alert severity="warning">
+				<AlertTitle>Feature not available</AlertTitle>
+				Make sure that the broker connected has the dynamic security enabled.
+			</Alert></> : null}
+			{dynamicsecurityFeature?.supported !== false && <><Button
 				variant="outlined"
 				color="default"
 				size="small"
@@ -188,8 +193,9 @@ const Roles = (props) => {
 				Edit default ACL access
 			</Button>
 			<br />
+			</>}
 			<br />
-			{roles && roles.length > 0 ? (
+			{dynamicsecurityFeature?.supported !== false && roles && roles.length > 0 ? (
 				<div>
 					<Hidden xsDown implementation="css">
 						<TableContainer component={Paper}>
@@ -292,7 +298,6 @@ const Roles = (props) => {
 			) : (
 				<div>No roles found</div>
 			)}
-			<br />
 			{/* <Fab
 				color="primary"
 				aria-label="add"
@@ -322,7 +327,8 @@ Roles.defaultProps = {
 
 const mapStateToProps = (state) => {
 	return {
-		roles: state.roles?.roles
+		roles: state.roles?.roles,
+		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity
 	};
 };
 
