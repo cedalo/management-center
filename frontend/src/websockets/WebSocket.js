@@ -5,6 +5,9 @@ import {
 	updateBrokerConnections,
 	updateProxyConnected,
 	updateClients,
+	updateWebSocketClients,
+	updateWebSocketClientConnected,
+	updateWebSocketClientDisconnected,
 	updateAnonymousGroup,
 	updateGroups,
 	updateLicense,
@@ -44,6 +47,15 @@ export default ({ children }) => {
 		client.closeHandler = (event) => {
 			dispatch(updateProxyConnected(false));
 		};
+		client.on('websocket-clients', (message) => {
+			dispatch(updateWebSocketClients(message.payload));
+		});
+		client.on('websocket-client-connected', (message) => {
+			dispatch(updateWebSocketClientConnected(message.payload));
+		});
+		client.on('websocket-client-disconnected', (message) => {
+			dispatch(updateWebSocketClientDisconnected(message.payload));
+		});
 		client.on('system_status', (message) => {
 			dispatch(updateSystemStatus(message.payload));
 		});

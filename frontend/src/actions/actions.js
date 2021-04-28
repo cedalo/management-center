@@ -14,6 +14,27 @@ export function updateClients(update) {
 	};
 }
 
+export function updateWebSocketClients(update) {
+	return {
+		type: ActionTypes.UPDATE_WEBSOCKET_CLIENTS,
+		update
+	};
+}
+
+export function updateWebSocketClientConnected(update) {
+	return {
+		type: ActionTypes.UPDATE_WEBSOCKET_CLIENT_CONNECTED,
+		update
+	};
+}
+
+export function updateWebSocketClientDisconnected(update) {
+	return {
+		type: ActionTypes.UPDATE_WEBSOCKET_CLIENT_DISCONNECTED,
+		update
+	};
+}
+
 export function updateAnonymousGroup(update) {
 	return {
 		type: ActionTypes.UPDATE_ANONYMOUS_GROUP,
