@@ -345,7 +345,7 @@ const TopicTree = ({ topicTree, currentConnectionName }) => {
 											<TableCell>{selectedNode?._retain ? 'yes' : 'no'}</TableCell>
 										</TableRow>
 									)}
-									{selectedNode?._topicsCounter && (
+									{selectedNode?._topicsCounter >= 0 && (
 										<TableRow>
 											<TableCell>
 												<strong>Sub topics</strong>
