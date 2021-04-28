@@ -90,66 +90,68 @@ export default ({ children }) => {
 			.then(() => client.getSettings())
 			.then((settings) => {
 				dispatch(updateSettings(settings));
-			});
-		client.listClients()
-			.then((clients) => {
-				dispatch(updateClients(clients));
-			})
-			.then(() => client.listGroups())
-			.then((groups) => {
-				dispatch(updateGroups(groups));
-			})
-			.then(() => client.getAnonymousGroup())
-			.then((group) => {
-				dispatch(updateAnonymousGroup(group));
-			})
-			.then(() => client.listRoles())
-			.then((roles) => {
-				dispatch(updateRoles(roles));
-			})
-			.then(() => client.getDefaultACLAccess())
-			.then((defaultACLAccess) => {
-				dispatch(updateDefaultACLAccess(defaultACLAccess));
 			})
 			.then(() => {
-				dispatch(updateFeatures({
-					feature: 'dynamicsecurity',
-					status: 'ok'
-				}));
-			})
-			.catch((error) => {
-				// TODO: change when Mosquitto provides feature endpoint
-				// there was an error loading some dynamic security part
-				// --> we assume that feature has not been loaded
-				dispatch(updateFeatures({
-					feature: 'dynamicsecurity',
-					status: error
-				}));
-			});
+				client.listClients()
+					.then((clients) => {
+						dispatch(updateClients(clients));
+					})
+					.then(() => client.listGroups())
+					.then((groups) => {
+						dispatch(updateGroups(groups));
+					})
+					.then(() => client.getAnonymousGroup())
+					.then((group) => {
+						dispatch(updateAnonymousGroup(group));
+					})
+					.then(() => client.listRoles())
+					.then((roles) => {
+						dispatch(updateRoles(roles));
+					})
+					.then(() => client.getDefaultACLAccess())
+					.then((defaultACLAccess) => {
+						dispatch(updateDefaultACLAccess(defaultACLAccess));
+					})
+					.then(() => {
+						dispatch(updateFeatures({
+							feature: 'dynamicsecurity',
+							status: 'ok'
+						}));
+					})
+					.catch((error) => {
+						// TODO: change when Mosquitto provides feature endpoint
+						// there was an error loading some dynamic security part
+						// --> we assume that feature has not been loaded
+						dispatch(updateFeatures({
+							feature: 'dynamicsecurity',
+							status: error
+						}));
+					});
 
-		client.listStreams()
-			.then((streams) => {
-				dispatch(updateStreams(streams));
-			})
-			.then(() => {
-				dispatch(updateFeatures({
-					feature: 'streamprocessing',
-					status: 'ok'
-				}));
-			})
-			.catch((error) => {
-				// TODO: change when Mosquitto provides feature endpoint
-				// there was an error loading the stream feature
-				// --> we assume that feature has not been loaded
-				dispatch(updateFeatures({
-					feature: 'streamprocessing',
-					status: error
-				}));
+				client.listStreams()
+					.then((streams) => {
+						dispatch(updateStreams(streams));
+					})
+					.then(() => {
+						dispatch(updateFeatures({
+							feature: 'streamprocessing',
+							status: 'ok'
+						}));
+					})
+					.catch((error) => {
+						// TODO: change when Mosquitto provides feature endpoint
+						// there was an error loading the stream feature
+						// --> we assume that feature has not been loaded
+						dispatch(updateFeatures({
+							feature: 'streamprocessing',
+							status: error
+						}));
+					});
+					// .then(() => client.listPlugins())
+					// .then((plugins) => {
+					// 	dispatch(updatePlugins(plugins));
+					// });
 			});
-			// .then(() => client.listPlugins())
-			// .then((plugins) => {
-			// 	dispatch(updatePlugins(plugins));
-			// });
 
 		ws = {
 			client: client,
