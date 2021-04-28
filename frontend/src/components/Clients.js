@@ -5,6 +5,7 @@ import { updateClient, updateClients, updateGroups } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
 import AddIcon from '@material-ui/icons/Add';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import AutoSuggest from './AutoSuggest';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
@@ -226,7 +227,7 @@ const Clients = (props) => {
 		dispatch(updateClients(clients));
 	};
 
-	const { connectionID, defaultClient, groups = [], roles = [], clients = [], onSort, sortBy, sortDirection } = props;
+	const { dynamicsecurityFeature, connectionID, defaultClient, groups = [], roles = [], clients = [], onSort, sortBy, sortDirection } = props;
 
 	const groupSuggestions = groups
 		.map((group) => group.groupname)
@@ -257,8 +258,13 @@ const Clients = (props) => {
 					Clients
 				</Typography>
 			</Breadcrumbs>
+			{/* TODO: Quick hack to detect whether feature is supported */}
+			{dynamicsecurityFeature?.supported === false ? <><br/><Alert severity="warning">
+				<AlertTitle>Feature not available</AlertTitle>
+				Make sure that the broker connected has the dynamic security enabled.
+			</Alert></> : null}
 			<br />
-			<Button
+			{dynamicsecurityFeature?.supported !== false && <><Button
 				variant="outlined"
 				color="default"
 				size="small"
@@ -273,7 +279,9 @@ const Clients = (props) => {
 			</Button>
 			<br />
 			<br />
-			{clients && clients.length > 0 ? (
+			</>}
+			
+			{dynamicsecurityFeature?.supported !== false && clients && clients.length > 0 ? (
 				<div>
 					<Hidden xsDown implementation="css">
 						<TableContainer component={Paper} className={classes.tableContainer}>
@@ -499,7 +507,8 @@ const mapStateToProps = (state) => {
 		groups: state.groups?.groups,
 		roles: state.roles?.roles,
 		clients: state.clients?.clients,
-		defaultClient: state.brokerConnections?.defaultClient
+		defaultClient: state.brokerConnections?.defaultClient,
+		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity
 	};
 };
 
