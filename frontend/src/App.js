@@ -80,7 +80,7 @@ import RoleNew from './components/RoleNew';
 import StreamNew from './components/StreamNew';
 import Clients from './components/Clients';
 import store from './store';
-import WebSocketProvider, { WebSocketContext } from './websockets/WebSocket';
+import WebSocketProvider from './websockets/WebSocket';
 // import NewsDrawer from "./components/NewsDrawer";
 import useFetch from './helpers/useFetch';
 import useLocalStorage from './helpers/useLocalStorage';
@@ -170,6 +170,7 @@ export default function App(props) {
 	const [showTour, setShowTour] = React.useState(false);
 	const [value, setValue] = React.useState('recents');
 	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
+
 	// TODO: make URL relative
 	const [response, loading, hasError] = useFetch(`http://${window.location.hostname}:8088/api/theme`);
 
