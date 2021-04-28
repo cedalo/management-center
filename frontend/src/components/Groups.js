@@ -4,6 +4,7 @@ import { updateAnonymousGroup, updateClients, updateGroup, updateGroups } from '
 import { useSnackbar } from 'notistack';
 
 import AddIcon from '@material-ui/icons/Add';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import AnonymousGroupSelect from './AnonymousGroupSelect';
 import AutoSuggest from './AutoSuggest';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
@@ -167,7 +168,7 @@ const Groups = (props) => {
 		dispatch(updateGroups(groups));
 	};
 
-	const { anonymousGroup, groups = [], roles = [], clients = [], onSort, sortBy, sortDirection } = props;
+	const { dynamicsecurityFeature, anonymousGroup, groups = [], roles = [], clients = [], onSort, sortBy, sortDirection } = props;
 
 	// TODO: probably extract into reducer
 	const clientSuggestions = clients
@@ -199,8 +200,13 @@ const Groups = (props) => {
 					Groups
 				</Typography>
 			</Breadcrumbs>
+			{/* TODO: Quick hack to detect whether feature is supported */}
+			{dynamicsecurityFeature?.supported === false ? <><br/><Alert severity="warning">
+				<AlertTitle>Feature not available</AlertTitle>
+				Make sure that the broker connected has the dynamic security enabled.
+			</Alert></> : null}
 			<br />
-			<Button
+			{dynamicsecurityFeature?.supported !== false && <><Button
 				variant="outlined"
 				color="default"
 				size="small"
@@ -215,7 +221,8 @@ const Groups = (props) => {
 			</Button>
 			<br />
 			<br />
-			{groups && groups.length > 0 ? (
+			</>}
+			{dynamicsecurityFeature?.supported !== false && groups && groups.length > 0 ? (
 				<div>
 					<Hidden xsDown implementation="css">
 						<TableContainer component={Paper} className={classes.tableContainer}>
@@ -404,7 +411,8 @@ const mapStateToProps = (state) => {
 		anonymousGroup: state.groups?.anonymousGroup,
 		groups: state.groups?.groups,
 		roles: state.roles?.roles,
-		clients: state.clients?.clients
+		clients: state.clients?.clients,
+		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity
 	};
 };
 
