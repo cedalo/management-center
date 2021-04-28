@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
-function Security() {
+function System() {
 	const classes = useStyles();
 	return (
 		<div>
@@ -58,4 +58,4 @@ function Security() {
 	);
 }
 
-export default Security;
+export default System;
