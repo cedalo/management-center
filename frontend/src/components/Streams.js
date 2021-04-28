@@ -89,7 +89,7 @@ const Streams = (props) => {
 	const confirm = useConfirm();
 	const { enqueueSnackbar } = useSnackbar();
 	const { client: brokerClient } = context;
-	const { streamsFeature, connectionID, streams = [], onSort, sortBy, sortDirection } = props;
+	const { streamprocessingFeature, connectionID, streams = [], onSort, sortBy, sortDirection } = props;
 	const [replayStreamEditorOpen, setReplayStreamEditorOpen] = React.useState(false);
 	const [replayStream, setReplayStream] = React.useState({});
 
@@ -272,11 +272,11 @@ const Streams = (props) => {
 				</Typography>
 			</Breadcrumbs>
 			{/* TODO: Quick hack to detect whether feature is supported */}
-			{streamsFeature?.supported === false ? <><br/><Alert severity="warning">
+			{streamprocessingFeature?.supported === false ? <><br/><Alert severity="warning">
 				<AlertTitle>Enterprise Solution feature</AlertTitle>
 				Streams are a premium feature. For more information visit <a className={classes.link} href="cedalo.com">cedalo.com</a> or contact us at <a className={classes.link} href="mailto:info@cedalo.com">info@cedalo.com</a>.
 			</Alert></> : null}
-			{streamsFeature?.supported !== false && <Grid container spacing={1} alignItems="flex-end">
+			{streamprocessingFeature?.supported !== false && <Grid container spacing={1} alignItems="flex-end">
 				<Grid item xs={6}>
 					<Button
 						variant="outlined"
@@ -311,7 +311,7 @@ const Streams = (props) => {
 				</Grid>
 			</Grid>}
 			<br />
-			{streams && streams.length > 0 ? (
+			{streamprocessingFeature?.supported !== false && streams && streams.length > 0 ? (
 				<div>
 					<Hidden xsDown implementation="css">
 						<TableContainer component={Paper} className={classes.tableContainer}>
@@ -520,7 +520,7 @@ const Streams = (props) => {
 const mapStateToProps = (state) => {
 	return {
 		streams: state.streams?.streams,
-		streamsFeature: state.systemStatus?.features?.streamprocessing
+		streamprocessingFeature: state.systemStatus?.features?.streamprocessing
 	};
 };
 
