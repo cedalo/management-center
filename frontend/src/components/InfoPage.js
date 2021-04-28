@@ -64,6 +64,7 @@ const InfoPage = (props) => {
 	const classes = useStyles();
 	const [open, setOpen] = React.useState(false);
 	const [response, loading, hasError] = useFetch(`http://${window.location.hostname}:8088/api/update`);
+	const { license, version, webSocketConnections } = props;
 
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -74,8 +75,6 @@ const InfoPage = (props) => {
 	};
 
 	if (response) {
-		const { license, version } = props;
-
 		return (
 			<div>
 				<Dialog
@@ -117,6 +116,21 @@ const InfoPage = (props) => {
 						Info
 					</Typography>
 				</Breadcrumbs>
+				<br />
+				{webSocketConnections && (
+					<TableContainer component={Paper} className={classes.tableContainer}>
+						<Table size="medium">
+							<TableBody>
+								<TableRow>
+									<TableCell>
+										<b>Management Center clients</b>
+									</TableCell>
+									<TableCell>{webSocketConnections?.webSocketClients}</TableCell>
+								</TableRow>
+							</TableBody>
+						</Table>
+					</TableContainer>
+				)}
 				<br />
 				{version && (
 					<TableContainer component={Paper} className={classes.tableContainer}>
@@ -302,7 +316,8 @@ const InfoPage = (props) => {
 const mapStateToProps = (state) => {
 	return {
 		license: state.license?.license,
-		version: state.version?.version
+		version: state.version?.version,
+		webSocketConnections: state.webSocketConnections?.webSocketConnections,
 	};
 };
 

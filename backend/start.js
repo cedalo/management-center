@@ -271,7 +271,7 @@ const init = async (licenseContainer) => {
 		brokerClient.on('message', (topic, message, packet) => {
 			if (topic.startsWith('$SYS')) {
 				updateSystemTopics(system, topic, message, packet);
-				sendSystemStatusUpdate(system, brokerClient);
+				sendSystemStatusUpdate(system, brokerClient, connection);
 			} else if (
 				// TODO: change topic
 				topic.startsWith('$CONTROL/dynamic-security/v1/response')
@@ -284,7 +284,7 @@ const init = async (licenseContainer) => {
 				// Nothing to do
 			}
 			updateTopicTree(topicTree, topic, message, packet);
-			sendTopicTreeUpdate(topicTree, brokerClient);
+			sendTopicTreeUpdate(topicTree, brokerClient, connection);
 		});
 
 		// const proxyClient = new NodeMosquittoProxyClient({
@@ -336,10 +336,10 @@ const init = async (licenseContainer) => {
 		const brokerConnection = context.brokerManager.getBrokerConnection(brokerName);
 		if (brokerConnection) {
 			const { broker, system, topicTree } = brokerConnection;
-			context.brokerManager.connectClient(client, broker);
+			context.brokerManager.connectClient(client, broker, brokerConnection);
 			if (broker.connected) {
-				sendSystemStatusUpdate(system, broker);
-				sendTopicTreeUpdate(topicTree, broker);
+				sendSystemStatusUpdate(system, broker, brokerConnection);
+				sendTopicTreeUpdate(topicTree, broker, brokerConnection);
 			} else {
 				throw new Error('Broker not connected');
 			}
@@ -495,7 +495,7 @@ const init = async (licenseContainer) => {
 		notifyWebSocketClients(messageObject, brokerClient);
 	};
 
-	const sendSystemStatusUpdate = (system, brokerClient) => {
+	const sendSystemStatusUpdate = (system, brokerClient, brokerConnection) => {
 		const messageObject = {
 			type: 'event',
 			event: {
@@ -503,10 +503,10 @@ const init = async (licenseContainer) => {
 				payload: system
 			}
 		};
-		notifyWebSocketClients(messageObject, brokerClient);
+		notifyWebSocketClients(messageObject, brokerClient, brokerConnection);
 	};
 
-	const sendTopicTreeUpdate = (topicTree, brokerClient) => {
+	const sendTopicTreeUpdate = (topicTree, brokerClient, brokerConnection) => {
 		const messageObject = {
 			type: 'event',
 			event: {
@@ -514,22 +514,69 @@ const init = async (licenseContainer) => {
 				payload: topicTree
 			}
 		};
-		notifyWebSocketClients(messageObject, brokerClient);
+		notifyWebSocketClients(messageObject, brokerClient, brokerConnection);
 	};
 
-	const notifyWebSocketClients = (message, brokerClient) => {
+	const notifyWebSocketClients = (message, brokerClient, brokerConnection) => {
 		wss.clients.forEach((client) => {
 			const broker = context.brokerManager.getBroker(client);
 			if (broker === brokerClient) {
+				// this WebSocket client is connected to this broker
 				client.send(JSON.stringify(message));
 			}
 		});
 	};
 
-	// TODO: handle disconnect of clients
+	const broadcastWebSocketMessage = (message) => {
+		wss.clients.forEach((client) => {
+			client.send(JSON.stringify(message));
+		});
+	}
 
+	const broadcastWebSocketConnectionConnected = () => {
+		const message = {
+			type: 'event',
+			event: {
+				type: 'websocket-client-connected',
+				payload: {
+					webSocketClients: context.brokerManager.getClientWebSocketConnections().size
+				}
+			}
+		}
+		broadcastWebSocketMessage(message);
+	}
+
+	const broadcastWebSocketConnectionDisconnected = () => {
+		const message = {
+			type: 'event',
+			event: {
+				type: 'websocket-client-disconnected',
+				payload: {
+					webSocketClients: context.brokerManager.getClientWebSocketConnections().size
+				}
+			}
+		}
+		broadcastWebSocketMessage(message);
+	}
+	
+	const broadcastWebSocketConnections = () => {
+		const message = {
+			type: 'event',
+			event: {
+				type: 'websocket-clients',
+				payload: {
+					webSocketClients: context.brokerManager.getClientWebSocketConnections().size
+				}
+			}
+		}
+		broadcastWebSocketMessage(message);
+	}
+
+	// TODO: handle disconnect of clients
 	wss.on('connection', (ws) => {
 		context.brokerManager.handleNewClientWebSocketConnection(ws);
+		broadcastWebSocketConnectionConnected();
+		broadcastWebSocketConnections();
 		// send license information
 		ws.send(
 			JSON.stringify({
@@ -557,6 +604,11 @@ const init = async (licenseContainer) => {
 			} catch (error) {
 				console.error(error);
 			}
+		});
+		ws.on('close', (message) => {
+			context.brokerManager.handleCloseClientWebSocketConnection(ws);
+			broadcastWebSocketConnectionDisconnected();
+			broadcastWebSocketConnections();
 		});
 	});
 

@@ -3,6 +3,7 @@ module.exports = class BrokerManager {
 		// TODO: merge _connection and _brokerConnection
 		this._connection = {};
 		this._brokerConnection = {};
+		this._clientConnections = new Map();
 	}
 
 	handleNewBrokerConnection(connection, brokerClient, system, topicTree, proxyClient) {
@@ -17,7 +18,17 @@ module.exports = class BrokerManager {
 		};
 	}
 
-	handleNewClientWebSocketConnection(ws) {}
+	handleNewClientWebSocketConnection(ws) {
+		this._clientConnections.set(ws, ws);
+	}
+
+	handleCloseClientWebSocketConnection(ws) {
+		this._clientConnections.delete(ws);
+	}
+
+	getClientWebSocketConnections() {
+		return this._clientConnections;
+	}
 
 	getBrokerConnection(brokerName) {
 		return this._brokerConnection;
@@ -37,5 +48,9 @@ module.exports = class BrokerManager {
 
 	getBroker(client) {
 		return this._brokerClient;
+	}
+
+	getBrokerConnectionByClient(client) {
+		return this._connection;
 	}
 };

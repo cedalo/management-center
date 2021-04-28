@@ -12,6 +12,7 @@ import systemStatusReducer from './reducers/systemStatusReducer';
 import topicTreeReducer from './reducers/topicTreeReducer';
 import clientsReducer from './reducers/clientsReducer';
 import settingsReducer from './reducers/settingsReducer';
+import webSocketConnectionsReducer from './reducers/webSocketConnectionsReducer';
 
 const store = createStore(
 	combineReducers({
@@ -23,6 +24,7 @@ const store = createStore(
 		version: versionsReducer,
 		roles: rolesReducer,
 		settings: settingsReducer,
+		webSocketConnections: webSocketConnectionsReducer,
 		streams: streamsReducer,
 		systemStatus: systemStatusReducer,
 		topicTree: topicTreeReducer,
