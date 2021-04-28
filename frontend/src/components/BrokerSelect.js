@@ -23,7 +23,8 @@ import {
 	updateStreams,
 	updateSystemStatus,
 	updateTopicTree,
-	updateEditDefaultClient
+	updateEditDefaultClient,
+	updateFeatures
 } from '../actions/actions';
 
 // import {
@@ -90,18 +91,40 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 			dispatch(updateBrokerConnections(brokerConnections));
 			const brokerConfigurations = await client.getBrokerConfigurations();
 			dispatch(updateBrokerConfigurations(brokerConfigurations));
-			const clients = await client.listClients();
-			dispatch(updateClients(clients));
-			const groups = await client.listGroups();
-			dispatch(updateGroups(groups));
-			const anonymousGroup = await client.getAnonymousGroup();
-			dispatch(updateAnonymousGroup(anonymousGroup));
-			const roles = await client.listRoles();
-			dispatch(updateRoles(roles));
-			const defaultACLAccess = await client.getDefaultACLAccess();
-			dispatch(updateDefaultACLAccess(defaultACLAccess));
-			const streams = await client.listStreams();
-			dispatch(updateStreams(streams));
+			try {
+				const clients = await client.listClients();
+				dispatch(updateClients(clients));
+				const groups = await client.listGroups();
+				dispatch(updateGroups(groups));
+				const anonymousGroup = await client.getAnonymousGroup();
+				dispatch(updateAnonymousGroup(anonymousGroup));
+				const roles = await client.listRoles();
+				dispatch(updateRoles(roles));
+				const defaultACLAccess = await client.getDefaultACLAccess();
+				dispatch(updateDefaultACLAccess(defaultACLAccess));
+				dispatch(updateFeatures({
+					feature: 'dynamicsecurity',
+					status: 'ok'
+				}));
+			} catch (error) {
+				dispatch(updateFeatures({
+					feature: 'dynamicsecurity',
+					status: error
+				}));
+			}
+			try {
+				const streams = await client.listStreams();
+				dispatch(updateStreams(streams));
+				dispatch(updateFeatures({
+					feature: 'streamprocessing',
+					status: 'ok'
+				}));
+			} catch (error) {
+				dispatch(updateFeatures({
+					feature: 'streamprocessing',
+					status: error
+				}));
+			}
 			// const plugins = await client.listPlugins();
 			// dispatch(updatePlugins(plugins));
 			setConnection(event.target.value);
