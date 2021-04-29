@@ -188,7 +188,7 @@ const OnBoardingDialog = ({ settings }) => {
 
 	const subscribeNewsletter = async () => {
 		try {
-			const response = await fetch(`http://${window.location.hostname}:8088/api/newsletter/subscribe`, {
+			const response = await fetch(`/api/newsletter/subscribe`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
