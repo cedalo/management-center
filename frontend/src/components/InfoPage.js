@@ -63,7 +63,7 @@ const getPremium = () => {
 const InfoPage = (props) => {
 	const classes = useStyles();
 	const [open, setOpen] = React.useState(false);
-	const [response, loading, hasError] = useFetch(`http://${window.location.hostname}:8088/api/update`);
+	const [response, loading, hasError] = useFetch(`/api/update`);
 	const { license, version, webSocketConnections } = props;
 
 	const handleClickOpen = () => {
@@ -266,7 +266,7 @@ const InfoPage = (props) => {
 				)}
 
 				<br />
-				{license?.features && 
+				{license?.features &&
 					<TableContainer component={Paper} className={classes.tableContainer}>
 						<Table size="medium">
 							<TableHead>

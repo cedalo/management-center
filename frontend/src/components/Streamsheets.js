@@ -67,7 +67,7 @@ const Streamsheets = (props) => {
 
 	const { client } = context;
 	const [response, loading, hasError] = useFetch(
-		`http://${window.location.hostname}:8088/api/config/tools/streamsheets`
+		`/api/config/tools/streamsheets`
 	);
 
 	const onPreviewInstance = async (instance) => {

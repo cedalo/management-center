@@ -43,7 +43,7 @@ const Plugins = (props) => {
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
 	const { client } = context;
-	const [response, loading, hasError] = useFetch(`http://${window.location.hostname}:8088/api/plugins`);
+	const [response, loading, hasError] = useFetch(`/api/plugins`);
 
 	const handlePluginLoad = async (pluginId, load) => {
 		if (load) {
