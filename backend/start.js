@@ -194,6 +194,8 @@ const init = async (licenseContainer) => {
 
 	const connections = initConnections(config);
 
+	config.connections = connections;
+
 	const handleNewConnection = async (connection) => {
 		const system = {
 			_name: connection.name
