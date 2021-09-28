@@ -17,7 +17,6 @@ module.exports = class PluginManager {
 			plugin.setLoaded();
 			this._plugins.push(plugin);
 		} catch (error) {
-			console.error(`Could not load plugin. Reason: ${error}`);
 			plugin.setErrored(`Could not load plugin. Reason: ${error}`);
 			this._plugins.push(plugin);
 		}
