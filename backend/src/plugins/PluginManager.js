@@ -9,16 +9,18 @@ module.exports = class PluginManager {
 
 	_loadOSPlugins(context) {
 		// TODO: support multiple plugins
-		const { Plugin } = require('./login');
-		const plugin = new Plugin();
-		try {
-			plugin.init(context);
-			plugin.load(context);
-			plugin.setLoaded();
-			this._plugins.push(plugin);
-		} catch (error) {
-			plugin.setErrored(`Could not load plugin. Reason: ${error}`);
-			this._plugins.push(plugin);
+		if (process.env.CEDALO_MC_DISABLE_LOGIN !== 'true') {
+			const { Plugin } = require('./login');
+			const plugin = new Plugin();
+			try {
+				plugin.init(context);
+				plugin.load(context);
+				plugin.setLoaded();
+				this._plugins.push(plugin);
+			} catch (error) {
+				plugin.setErrored(`Could not load plugin. Reason: ${error}`);
+				this._plugins.push(plugin);
+			}
 		}
 	}
 

@@ -9,7 +9,6 @@ const meta = require('./meta');
 const USERNAME = process.env.CEDALO_MC_USERNAME || 'cedalo';
 const PASSWORD = process.env.CEDALO_MC_PASSWORD || 'secret';
 
-
 module.exports = class Plugin extends BasePlugin {
 	constructor() {
 		super();
@@ -66,6 +65,7 @@ module.exports = class Plugin extends BasePlugin {
 				failureRedirect: '/login',
 			}
 		));
+
 	}
 
 	get meta() {
