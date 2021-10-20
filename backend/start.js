@@ -27,6 +27,7 @@ const version = {
 
 const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
+const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
 const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
 
 // const LicenseManager = require("../src/LicenseManager");
@@ -708,7 +709,10 @@ const init = async (licenseContainer) => {
 
 	app.use(express.static(path.join(__dirname, 'public')));
 
-	server.listen(CEDALO_MC_PROXY_PORT, () => {
+	server.listen({
+		host: CEDALO_MC_PROXY_HOST,
+		port: CEDALO_MC_PROXY_PORT
+	}, () => {
 		console.log(`Mosquitto proxy server started on port ${server.address().port}`);
 	});
 
