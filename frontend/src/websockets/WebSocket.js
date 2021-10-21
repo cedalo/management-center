@@ -1,5 +1,6 @@
 import React, { createContext } from 'react';
 import {
+	updateLicenseStatus,
 	updateBrokerConfigurations,
 	updateBrokerConnected,
 	updateBrokerConnections,
@@ -47,6 +48,18 @@ export default ({ children }) => {
 		client.closeHandler = (event) => {
 			dispatch(updateProxyConnected(false));
 		};
+		client.on('license-invalid', (message) => {
+			dispatch(updateLicenseStatus({
+				valid: false,
+				data: message.payload
+			}));
+		});
+		client.on('license-valid', (message) => {
+			dispatch(updateLicenseStatus({
+				valid: true,
+				data: message.payload
+			}));
+		});
 		client.on('websocket-clients', (message) => {
 			dispatch(updateWebSocketClients(message.payload));
 		});
