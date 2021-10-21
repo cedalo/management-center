@@ -230,7 +230,7 @@ const InfoPage = (props) => {
 									<TableCell>
 										<b>Max. broker connections</b>
 									</TableCell>
-									<TableCell>{license.maxBrokerConnenctions}</TableCell>
+									<TableCell>{license.maxBrokerConnections}</TableCell>
 								</TableRow>
 								{/* <TableRow>
 									<TableCell>
