@@ -177,8 +177,8 @@ export default function App(props) {
 
 	if ((hasError || response) && (hasErrorConfig || responseConfig)) {
 		let appliedTheme = darkMode === 'true' ? darkTheme : customTheme;
-
 		let hideConnections = (typeof responseConfig?.hideConnections === 'boolean') ? responseConfig?.hideConnections : false;
+		let hideInfoPage = (typeof responseConfig?.hideInfoPage === 'boolean') ? responseConfig?.hideInfoPage : false;
 		const onChangeTheme = () => {
 			setDarkMode(darkMode === 'true' ? 'false' : 'true');
 		};
@@ -333,7 +333,7 @@ export default function App(props) {
 																<ThemeModeIcon fontSize="small" />
 															</IconButton>
 														</Tooltip>
-														<InfoButton />
+														{ !hideInfoPage ? <InfoButton /> : null }
 														<Tooltip title="Start tour">
 															<IconButton
 																edge="end"
@@ -457,9 +457,9 @@ export default function App(props) {
 													<Route path="/home">
 														<Home />
 													</Route>
-													<Route path="/info">
+													{ !hideInfoPage ? <Route path="/info">
 														<InfoPage />
-													</Route>
+													</Route> : null }
 													<Route path="/">
 														<Redirect to="/system/status" />
 													</Route>
