@@ -28,6 +28,7 @@ const version = {
 const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
+const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '/mosquitto-management-center';
 const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
 
 // const LicenseManager = require("../src/LicenseManager");
@@ -615,7 +616,8 @@ const init = async (licenseContainer) => {
 		});
 	});
 
-	
+	const router = express.Router();
+	app.use(CEDALO_MC_PROXY_BASE_PATH, router);
 
 	context = {
 		...context,
@@ -625,6 +627,7 @@ const init = async (licenseContainer) => {
 			}
 		},
 		app,
+		router,
 		config,
 		globalSystem,
 		globalTopicTree,
@@ -639,30 +642,30 @@ const init = async (licenseContainer) => {
 	const pluginManager = new PluginManager();
 	pluginManager.init(config.plugins, context);
 
-	app.get('/api/version', context.security.isLoggedIn, (request, response) => {
+	router.get('/api/version', context.security.isLoggedIn, (request, response) => {
 		response.json(version);
 	});
 
-	app.get('/api/update', context.security.isLoggedIn, async (request, response) => {
+	router.get('/api/update', context.security.isLoggedIn, async (request, response) => {
 		// const update = await axios.get('https://api.cedalo.cloud/rest/request/mosquitto-ui/version');
 		// response.json(update.data);
 		response.json({});
 	});
 
-	app.get('/api/config', context.security.isLoggedIn, (request, response) => {
+	router.get('/api/config', context.security.isLoggedIn, (request, response) => {
 		response.json(config);
 	});
 
-	app.get('/api/installation', context.security.isLoggedIn, (request, response) => {
+	router.get('/api/installation', context.security.isLoggedIn, (request, response) => {
 		response.json(installation);
 	});
 
-	app.get('/api/settings', context.security.isLoggedIn, (request, response) => {
+	router.get('/api/settings', context.security.isLoggedIn, (request, response) => {
 		response.json(settingsManager.settings);
 	});
 
 	const NEWSLETTER_URL = 'https://api.cedalo.cloud/rest/api/v1.0/newsletter/subscribe';
-	app.post('/api/newsletter/subscribe', (request, response) => {
+	router.post('/api/newsletter/subscribe', (request, response) => {
 		const user = request.body;
 		axios
 			.post(NEWSLETTER_URL, user)
@@ -677,7 +680,7 @@ const init = async (licenseContainer) => {
 			});
 	});
 
-	app.get('/api/config/tools/streamsheets', context.security.isLoggedIn, (request, response) => {
+	router.get('/api/config/tools/streamsheets', context.security.isLoggedIn, (request, response) => {
 		if (config?.tools?.streamsheets) {
 			response.json(config?.tools?.streamsheets);
 		} else {
@@ -685,11 +688,11 @@ const init = async (licenseContainer) => {
 		}
 	});
 
-	app.get('/api/license', context.security.isLoggedIn, (request, response) => {
+	router.get('/api/license', context.security.isLoggedIn, (request, response) => {
 		response.json(licenseContainer.license);
 	});
 
-	app.get('/api/plugins', context.security.isLoggedIn, (request, response) => {
+	router.get('/api/plugins', context.security.isLoggedIn, (request, response) => {
 		response.json(
 			pluginManager.plugins.map((plugin) => ({
 				...plugin.meta,
@@ -698,8 +701,10 @@ const init = async (licenseContainer) => {
 		);
 	});
 
-	app.get('*', context.security.isLoggedIn, (request, response) => {
-		const filePath = path.join(__dirname, 'public', request.path);
+	router.get('/*', context.security.isLoggedIn, (request, response) => {
+		let filePath = path.join(__dirname, 'public', request.path);
+		// TODO: handle better
+		filePath = filePath.replace(CEDALO_MC_PROXY_BASE_PATH, '');
 		if (fs.existsSync(filePath)) {
 			response.sendFile(filePath);
 		} else {
@@ -707,7 +712,7 @@ const init = async (licenseContainer) => {
 		}
 	});
 
-	app.use(express.static(path.join(__dirname, 'public')));
+	router.use(express.static(path.join(__dirname, 'public')));
 
 	server.listen({
 		host: CEDALO_MC_PROXY_HOST,
