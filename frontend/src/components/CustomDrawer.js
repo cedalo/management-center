@@ -113,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const CustomDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
+const CustomDrawer = ({ hideConnections, open, handleDrawerOpen, handleDrawerClose }) => {
 
 	const classes = useStyles();
 	const theme = useTheme();
@@ -231,12 +231,12 @@ icon={<SettingsIcon />}
 			<Divider />
 			<List>
 				{open ? <ListSubheader className={classes.menuSubHeader}>Admin</ListSubheader> : null}
-				<ListItemLink
+				{!hideConnections ? <ListItemLink
 					classes={classes}
 					to="/config/connections"
 					primary="Connections"
 					icon={<ConnectionsIcon fontSize="small" />}
-				/>
+				/> : null}
 				{/* <ListItemLink classes={classes} to="/config/settings" primary="Settings" icon={<SettingsIcon />} /> */}
 				<ListItemLink
 					classes={classes}

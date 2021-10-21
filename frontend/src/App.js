@@ -173,10 +173,12 @@ export default function App(props) {
 	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
 
 	const [response, loading, hasError] = useFetch(`/api/theme`);
+	const [responseConfig, loadingConfig, hasErrorConfig] = useFetch(`/api/config`);
 
-	if (hasError || response) {
+	if ((hasError || response) && (hasErrorConfig || responseConfig)) {
 		let appliedTheme = darkMode === 'true' ? darkTheme : customTheme;
 
+		let hideConnections = (typeof responseConfig?.hideConnections === 'boolean') ? responseConfig?.hideConnections : false;
 		const onChangeTheme = () => {
 			setDarkMode(darkMode === 'true' ? 'false' : 'true');
 		};
@@ -366,7 +368,7 @@ export default function App(props) {
 
 											<nav>
 												{/* <Hidden xsDown implementation="css"> */}
-												<CustomDrawer open={open} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} />
+												<CustomDrawer hideConnections={hideConnections} open={open} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} />
 											</nav>
 											<LicenseErrorDialog />
 											<DisconnectedDialog />
@@ -437,9 +439,9 @@ export default function App(props) {
 													<Route path="/config/connections/detail/:connectionId">
 														<ConnectionDetail />
 													</Route>
-													<Route path="/config/connections">
+													{ !hideConnections ? <Route path="/config/connections">
 														<Connections />
-													</Route>
+													</Route> : null }
 													<Route path="/config/settings">
 														<Settings />
 													</Route>
