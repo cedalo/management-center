@@ -47,6 +47,7 @@ import Hidden from '@material-ui/core/Hidden';
 import { ConfirmProvider } from 'material-ui-confirm';
 import Logo from './components/Logo';
 import LogoutButton from './components/LogoutButton';
+import LicenseErrorDialog from './components/LicenseErrorDialog';
 import DisconnectedDialog from './components/DisconnectedDialog';
 import Groups from './components/Groups';
 import BrokerSelect from './components/BrokerSelect';
@@ -367,6 +368,7 @@ export default function App(props) {
 												{/* <Hidden xsDown implementation="css"> */}
 												<CustomDrawer open={open} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} />
 											</nav>
+											<LicenseErrorDialog />
 											<DisconnectedDialog />
 
 											<Container className={classes.container}>
