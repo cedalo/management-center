@@ -1,5 +1,12 @@
 import * as ActionTypes from '../constants/ActionTypes';
 
+export function updateLicenseStatus(update) {
+	return {
+		type: ActionTypes.UPDATE_LICENSE_STATUS,
+		update
+	};
+}
+
 export function updateClient(update) {
 	return {
 		type: ActionTypes.UPDATE_CLIENT,
