@@ -3,6 +3,7 @@
 	"version": "2.1.0",
 	"private": true,
 	"author": "Cedalo AG",
+	"homepage": ".",
 	"scripts": {
 		"start": "react-scripts start",
 		"build": "react-scripts build",
