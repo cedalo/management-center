@@ -28,6 +28,7 @@
 		"@material-ui/lab": "^4.0.0-alpha.56",
 		"chart.js": "^2.9.3",
 		"clsx": "latest",
+		"cross-env": "^7.0.3",
 		"jest": "24",
 		"material-ui-confirm": "^2.1.1",
 		"react": "latest",
