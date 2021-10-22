@@ -16,18 +16,21 @@ const valideCronTab = (crontab) => {
 const getCronTab = async (crontab, license) => valideCronTab(crontab) || msToCronTab(license.validUntil);
 
 const notify = (cb) => (license) => {
-	cb(license);
+	cb(null, license);
 	return license;
-};
-const checkLicense = (cb) => pipe(loadLicense, notify(cb));
+}
 
 class LicenseChecker {
 	constructor() {
 		this._task = undefined;
 	}
 
-	check(cb = noop) {
-		checkLicense(cb)();
+	async check(cb = noop) {
+		this.checkLicense(cb)();
+	}
+
+	checkLicense(cb) {
+		return pipe(loadLicense, notify(cb));
 	}
 
 	async schedule(cb = noop) {
@@ -36,7 +39,7 @@ class LicenseChecker {
 
 	async scheduleEvery(crontab = '', cb = noop) {
 		if (!this._task) {
-			const check = checkLicense(cb);
+			const check = this.checkLicense(cb);
 			const license = await check();
 			const every = await getCronTab(crontab, license);
 			this._task = cron.schedule(every, check);
