@@ -43,7 +43,7 @@ const Plugins = (props) => {
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
 	const { client } = context;
-	const [response, loading, hasError] = useFetch(`/api/plugins`);
+	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/plugins`);
 
 	const handlePluginLoad = async (pluginId, load) => {
 		if (load) {

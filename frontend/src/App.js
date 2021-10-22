@@ -172,8 +172,8 @@ export default function App(props) {
 	const [value, setValue] = React.useState('recents');
 	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
 
-	const [response, loading, hasError] = useFetch(`/api/theme`);
-	const [responseConfig, loadingConfig, hasErrorConfig] = useFetch(`/api/config`);
+	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/theme`);
+	const [responseConfig, loadingConfig, hasErrorConfig] = useFetch(`${process.env.PUBLIC_URL}/api/config`);
 
 	if ((hasError || response) && (hasErrorConfig || responseConfig)) {
 		let appliedTheme = darkMode === 'true' ? darkTheme : customTheme;
@@ -260,7 +260,7 @@ export default function App(props) {
 				/>
 				<ConfirmProvider>
 					<CssBaseline />
-					<Router>
+					<Router basename={process.env.PUBLIC_URL}>
 						<Provider store={store}>
 							<WebSocketProvider>
 								<div className={classes.root}>
