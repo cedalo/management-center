@@ -38,6 +38,7 @@ const LicenseChecker = require('./src/license/LicenseChecker');
 // await licenseManager.loadLicense();
 // const license = licenseManager.getLicenseAsJSON();
 
+const checker = new LicenseChecker();
 let context = {
 	brokerManager: new BrokerManager()
 };
@@ -736,12 +737,43 @@ const init = async (licenseContainer) => {
 			});
 		}
 	}, USAGE_TRACKER_INTERVAL);
+
+	await checker.scheduleEvery('*/10 * * * * *', async (error, license) => {
+		if (error) {
+			licenseContainer.license = license;
+			licenseContainer.isValid = false;
+			const message = {
+				type: 'event',
+				event: {
+					type: 'license',
+					payload: license
+				}
+			}
+			broadcastWebSocketMessage(message);
+		} else {
+			licenseContainer.license = license;
+			licenseContainer.isValid = true;
+			const message = {
+				type: 'event',
+				event: {
+					type: 'license',
+					payload: license
+				}
+			}
+			broadcastWebSocketMessage(message);
+		}
+	});
 };
 
 const licenseContainer = {};
-const checker = new LicenseChecker();
-checker.check(async (license) => {
-	licenseContainer.license = license;
-	licenseContainer.isValid = license.isValid;
-	await init(licenseContainer);
-});
+(async () => {
+	await checker.check(async (error, license) => {
+		if (error) {
+			console.error(error);
+			process.exit(-1);
+		}
+		licenseContainer.license = license;
+		licenseContainer.isValid = license.isValid;
+		await init(licenseContainer);
+	});
+})();
