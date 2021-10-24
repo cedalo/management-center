@@ -12,19 +12,26 @@ const LicenseErrorDialog = ({ license }) => {
 		// setOpen(false);
 	};
 
+	let error = null;
+	if (license && license.error) {
+		error = license.error;
+	} else if (license && license.integrations?.error) {
+		error = license.integrations.error;
+	}
+
 	return (
 		<Dialog
-			open={license && license.error}
+			open={error}
 			// onClose={handleClose}
 			aria-labelledby="license-error-dialog-title"
 			aria-describedby="license-error-dialog-description"
 		>
 			<DialogTitle align="center" id="license-error-dialog-title">
-				{ license?.error?.type }
+				{ error?.type }
 			</DialogTitle>
 			<DialogContent>
 				<DialogContentText id="license-error--dialog-description">
-				{ license?.error?.message }
+				{ error?.message }
 				</DialogContentText>
 			</DialogContent>
 		</Dialog>
