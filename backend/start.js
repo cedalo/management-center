@@ -637,6 +637,7 @@ const init = async (licenseContainer) => {
 		globalTopicTree,
 		licenseContainer,
 		actions: {
+			broadcastWebSocketMessage,
 			loadConfig,
 			sendSystemStatusUpdate,
 			sendTopicTreeUpdate
