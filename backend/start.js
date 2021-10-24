@@ -588,7 +588,10 @@ const init = async (licenseContainer) => {
 				type: 'event',
 				event: {
 					type: 'license',
-					payload: licenseContainer.license
+					payload: {
+						...licenseContainer.license,
+						...licenseContainer.integrations
+					}
 				}
 			})
 		);
