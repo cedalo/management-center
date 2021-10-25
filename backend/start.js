@@ -750,7 +750,12 @@ const init = async (licenseContainer) => {
 				type: 'event',
 				event: {
 					type: 'license',
-					payload: license
+					payload: {
+						...licenseContainer.license,
+						integrations: {
+							error: licenseContainer.integrations.error
+						}
+					}
 				}
 			}
 			broadcastWebSocketMessage(message);
@@ -761,7 +766,12 @@ const init = async (licenseContainer) => {
 				type: 'event',
 				event: {
 					type: 'license',
-					payload: license
+					payload: {
+						...licenseContainer.license,
+						integrations: {
+							error: licenseContainer?.integrations.error
+						}
+					}
 				}
 			}
 			broadcastWebSocketMessage(message);
