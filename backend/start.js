@@ -769,7 +769,7 @@ const init = async (licenseContainer) => {
 					payload: {
 						...licenseContainer.license,
 						integrations: {
-							error: licenseContainer?.integrations.error
+							error: licenseContainer?.integrations?.error
 						}
 					}
 				}
