@@ -179,6 +179,7 @@ export default function App(props) {
 		let appliedTheme = darkMode === 'true' ? darkTheme : customTheme;
 		let hideConnections = (typeof responseConfig?.hideConnections === 'boolean') ? responseConfig?.hideConnections : false;
 		let hideInfoPage = (typeof responseConfig?.hideInfoPage === 'boolean') ? responseConfig?.hideInfoPage : false;
+		let hideLogoutButton = (typeof responseConfig?.hideLogoutButton === 'boolean') ? responseConfig?.hideLogoutButton : false;
 		const onChangeTheme = () => {
 			setDarkMode(darkMode === 'true' ? 'false' : 'true');
 		};
@@ -348,7 +349,7 @@ export default function App(props) {
 															</IconButton>
 														</Tooltip>
 
-														<LogoutButton />
+														{ !hideLogoutButton ? <LogoutButton /> : null }
 
 														{/* <IconButton
 						  edge="end"
