@@ -8,6 +8,7 @@ const meta = require('./meta');
 
 const USERNAME = process.env.CEDALO_MC_USERNAME || 'cedalo';
 const PASSWORD = process.env.CEDALO_MC_PASSWORD || 'secret';
+const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '/mosquitto-management-center';
 
 module.exports = class Plugin extends BasePlugin {
 	constructor() {
@@ -16,7 +17,7 @@ module.exports = class Plugin extends BasePlugin {
 	}
 
 	init(context) {
-		const { actions, app, globalTopicTree, brokerManager } = context;
+		const { actions, app, globalTopicTree, brokerManager, router } = context;
 
 		app.use(passport.initialize());
 		app.use(passport.session());
@@ -46,23 +47,23 @@ module.exports = class Plugin extends BasePlugin {
 			if (request.isAuthenticated()) {
 				return next();
 			}
-			response.redirect('/login');
+			response.redirect(`${CEDALO_MC_PROXY_BASE_PATH}/login`);
 		}
 
-		app.use(express.static(path.join(__dirname, '..', 'component')));
+		router.use(express.static(path.join(__dirname, '..', 'component')));
 
-		app.get('/login', (request, response) => {
+		router.get('/login', (request, response) => {
 			response.sendFile(path.join(__dirname, '..', 'component', 'login.html'));
 		});
 	
-		app.get('/logout', (request, response) => {
+		router.get('/logout', (request, response) => {
 			request.logout();
 			response.redirect('/login');
 		});
 	
-		app.post('/auth', passport.authenticate('local', {
-				successRedirect: '/',
-				failureRedirect: '/login',
+		router.post('/auth', passport.authenticate('local', {
+				successRedirect: `${CEDALO_MC_PROXY_BASE_PATH}/`,
+				failureRedirect: `${CEDALO_MC_PROXY_BASE_PATH}/login`,
 			}
 		));
 
