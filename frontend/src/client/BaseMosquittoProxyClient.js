@@ -443,6 +443,9 @@ export default class BaseMosquittoProxyClient {
 	}
 
 	async clientHasRole(username, rolename) {
+		if (username === '') {
+			return false;
+		}
 		const client = await this.getClient(username);
 		const hasRole = !!client.roles.find(role => role.rolename === rolename);
 		return hasRole;
