@@ -9,7 +9,7 @@ const loadPublicKey = () =>
 const loadLicenseKey = () =>
 	readFile(process.env.CEDALO_MC_LICENSE_PATH || path.join(__dirname, 'config', 'license.lic'))
 	.then((key) =>
-		key.toString()
+		key.toString().trim()
 	)
 	.catch((error) => {
 		console.log('No license key found or provided.');
