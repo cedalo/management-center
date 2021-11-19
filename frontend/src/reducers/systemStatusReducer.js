@@ -20,7 +20,8 @@ export default function systemStatus(state = {}, action) {
 			newState.features = newState.features || {};
 			newState.features[action.update.feature] = {
 				// TODO: Quick hack to detect whether feature is supported
-				supported: action.update.status.message !== "BaseMosquittoProxyClient: Timeout"
+				supported: action.update.status.message !== "BaseMosquittoProxyClient: Timeout",
+				error: action.update.error
 			};
 			break;
 		default:
