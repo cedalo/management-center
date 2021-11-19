@@ -7,6 +7,13 @@ export function updateLicenseStatus(update) {
 	};
 }
 
+export function updateUserRoles(update) {
+	return {
+		type: ActionTypes.UPDATE_USER_ROLES,
+		update
+	};
+}
+
 export function updateUser(update) {
 	return {
 		type: ActionTypes.UPDATE_USER,
