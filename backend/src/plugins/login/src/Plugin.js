@@ -25,10 +25,12 @@ module.exports = class Plugin extends BasePlugin {
 		passport.use(new LocalStrategy(
 			// function of username, password, done(callback)
 			(username, password, done) => {
-				if (username === USERNAME && password === PASSWORD) {
-					return done(null, {
+				const valid = context.security.usersManager ? context.security.usersManager.checkUser(username, password) : username === USERNAME && password === PASSWORD;
+				if (valid) {
+					const user = context.security.usersManager ? context.security.usersManager.getUser(username) : {
 						username
-					});
+					};
+					return done(null, user);
 				} else {
 					return done(null, false, { message: 'Invalid credentials' });
 				}
