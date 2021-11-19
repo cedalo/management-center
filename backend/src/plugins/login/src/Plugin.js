@@ -8,7 +8,7 @@ const meta = require('./meta');
 
 const USERNAME = process.env.CEDALO_MC_USERNAME || 'cedalo';
 const PASSWORD = process.env.CEDALO_MC_PASSWORD || 'secret';
-const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '/mosquitto-management-center';
+const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 
 module.exports = class Plugin extends BasePlugin {
 	constructor() {
