@@ -42,11 +42,11 @@ export default class BaseMosquittoProxyClient {
 	constructor({ name, logger, defaultListener } = {}) {
 		this.name = name || 'Default Base Mosquitto Proxy Client';
 		this._logger = logger || {
-			log() {},
-			info() {},
-			warn() {},
-			debug() {},
-			error() {}
+			log() { },
+			info() { },
+			warn() { },
+			debug() { },
+			error() { }
 		};
 		this._eventHandler = (event) => this.logger.info(event);
 		this._closeHandler = () => this.logger.info('Close Mosquitto Proxy Client');
@@ -1034,8 +1034,8 @@ export default class BaseMosquittoProxyClient {
 		return this.sendCommand(
 			{
 				command: 'createStream',
-				streamname, 
-				sourceTopic, 
+				streamname,
+				sourceTopic,
 				targetTopic,
 				targetqos: typeof targetQoS === 'string' ? parseInt(targetQoS) : targetQoS,
 				ttl: typeof ttl === 'string' ? parseInt(ttl) : ttl,
