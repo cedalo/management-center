@@ -9,6 +9,15 @@ const API_DYNAMIC_SECURITY = 'dynamic-security';
 const API_STREAMS_PROCESSING = 'stream-processing';
 const ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED = 'You are not authorized to access the user management.';
 
+
+class APIError extends Error {
+	constructor(title, message) {
+		super(message);
+		this.name = 'APIError';
+		this.title = title;
+	}
+}
+
 // TODO: merge with method deletePendingRequest()
 const deletePendingRequest = (requestId, requests) => {
 	const request = requests.get(requestId);
