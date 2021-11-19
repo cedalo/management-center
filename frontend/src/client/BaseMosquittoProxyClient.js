@@ -112,6 +112,20 @@ export default class BaseMosquittoProxyClient {
 
 	/**
 	 * ******************************************************************************************
+	 * Methods for user management
+	 * ******************************************************************************************
+	 */
+	async listUsers() {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/users`;
+			const response = await axios.get(url);
+			return response.data;
+		} catch (error) {
+			throw new APIError('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+		}
+	}
+	/**
+	 * ******************************************************************************************
 	 * Methods for handling multiple broker connections
 	 * ******************************************************************************************
 	 */
