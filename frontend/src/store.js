@@ -11,6 +11,7 @@ import streamsReducer from './reducers/streamsReducer';
 import systemStatusReducer from './reducers/systemStatusReducer';
 import topicTreeReducer from './reducers/topicTreeReducer';
 import clientsReducer from './reducers/clientsReducer';
+import usersReducer from './reducers/usersReducer';
 import settingsReducer from './reducers/settingsReducer';
 import webSocketConnectionsReducer from './reducers/webSocketConnectionsReducer';
 
@@ -29,6 +30,7 @@ const store = createStore(
 		systemStatus: systemStatusReducer,
 		topicTree: topicTreeReducer,
 		clients: clientsReducer
+		users: usersReducer,
 	})
 );
 
