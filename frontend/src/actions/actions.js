@@ -7,6 +7,12 @@ export function updateLicenseStatus(update) {
 	};
 }
 
+export function updateUser(update) {
+	return {
+		type: ActionTypes.UPDATE_USER,
+		update
+	};
+}
 export function updateClient(update) {
 	return {
 		type: ActionTypes.UPDATE_CLIENT,
