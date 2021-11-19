@@ -139,6 +139,17 @@ export default class BaseMosquittoProxyClient {
 			throw new APIError('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
 		}
 	}
+
+	async deleteUser(username) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/users/${username}`;
+			const response = await axios.delete(url);
+			return response.data;
+		} catch (error) {
+			throw new APIError('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+		}
+	}
+
 	/**
 	 * ******************************************************************************************
 	 * Methods for handling multiple broker connections
