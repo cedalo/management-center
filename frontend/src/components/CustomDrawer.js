@@ -21,6 +21,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import GroupIcon from '@material-ui/icons/Group';
 import PersonIcon from '@material-ui/icons/Person';
 import RoleIcon from '@material-ui/icons/Policy';
+import UsersIcon from '@material-ui/icons/People';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StreamsheetsIcon from '@material-ui/icons/GridOn';
@@ -243,6 +244,12 @@ icon={<SettingsIcon />}
 					to="/config/settings"
 					primary="Settings"
 					icon={<SettingsIcon fontSize="small" />}
+				/>
+				<ListItemLink
+					classes={classes}
+					to="/admin/users"
+					primary="User Management"
+					icon={<UsersIcon fontSize="small" />}
 				/>
 			</List>
 		</div>
