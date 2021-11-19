@@ -59,13 +59,14 @@ export default class BaseMosquittoProxyClient {
 	}
 
 	// eslint-disable-next-line consistent-return
-	async connect({ socketEndpointURL } = {}) {
+	async connect({ socketEndpointURL, httpEndpointURL } = {}) {
 		if (this._isConnected || this._isConnecting) {
 			return Promise.resolve({});
 		}
 		this._isConnecting = true;
 		// TODO: handle default values
 		this._socketEndpointURL = socketEndpointURL || this._socketEndpointURL;
+		this._httpEndpointURL = httpEndpointURL || this._httpEndpointURL;
 		try {
 			const ws = await this._connectSocketServer(`${this._socketEndpointURL}?authToken=${this._token}`);
 			this._ws = ws;
