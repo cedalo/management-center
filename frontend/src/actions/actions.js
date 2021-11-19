@@ -13,6 +13,14 @@ export function updateUser(update) {
 		update
 	};
 }
+
+export function updateUsers(update) {
+	return {
+		type: ActionTypes.UPDATE_USERS,
+		update
+	};
+}
+
 export function updateClient(update) {
 	return {
 		type: ActionTypes.UPDATE_CLIENT,
