@@ -10,7 +10,6 @@ const API_DYNAMIC_SECURITY = 'dynamic-security';
 const API_STREAMS_PROCESSING = 'stream-processing';
 const ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED = 'You are not authorized to access the user management.';
 
-
 class APIError extends Error {
 	constructor(title, message) {
 		super(message);
@@ -71,6 +70,7 @@ export default class BaseMosquittoProxyClient {
 			const ws = await this._connectSocketServer(`${this._socketEndpointURL}?authToken=${this._token}`);
 			this._ws = ws;
 			this._isConnected = true;
+			this._keepAlive();
 		} catch (error) {
 			this._isConnected = false;
 			this.logger.error(error);
@@ -85,6 +85,7 @@ export default class BaseMosquittoProxyClient {
 	async disconnect() {
 		if (this._ws) {
 			this._ws.close();
+			this._cancelKeepAlive();
 		}
 		return Promise.resolve();
 	}
@@ -92,6 +93,26 @@ export default class BaseMosquittoProxyClient {
 	async resetConnection() {
 		await this.disconnect();
 		return this.reconnect();
+	}
+
+	_keepAlive() {
+		const interval = 8000;
+		if (this._ws && this._ws.readyState === this._ws.OPEN) {
+			this.logger.debug('Sending empty request.');
+			this._ws.send(
+				JSON.stringify({
+					type: 'ping',
+					interval
+				})
+			);
+		}
+		this._timerId = setTimeout(this._keepAlive.bind(this), interval);
+	}
+
+	_cancelKeepAlive() {
+		if (this._timerId) {
+			clearTimeout(this._timerId);
+		}
 	}
 
 	get logger() {
