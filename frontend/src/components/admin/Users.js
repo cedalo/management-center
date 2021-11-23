@@ -77,7 +77,7 @@ const USER_TABLE_COLUMNS = [
 	{ id: 'roles', key: 'User Roles' }
 ];
 
-const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles) => {
+const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles, onSelectUser) => {
 	const { userManagementFeature, userRoles = [], roles = [], onSort, sortBy, sortDirection } = props;
 
 	const roleSuggestions = userRoles
@@ -222,7 +222,7 @@ const Users = (props) => {
 	const { enqueueSnackbar } = useSnackbar();
 	const { client: brokerClient } = context;
 
-	const { userManagementFeature, roles = [], users = [], onSort, sortBy, sortDirection } = props;
+	const { userManagementFeature, userProfile, roles = [], users = [], onSort, sortBy, sortDirection } = props;
 
 	const onUpdateUserRoles = async (user, roles = []) => {
 		if (!roles) {
@@ -324,7 +324,7 @@ const Users = (props) => {
 			<br />
 			</>}
 			
-			{ createUserTable(users, classes, props, onDeleteUser, onUpdateUserRoles) }
+			{ createUserTable(users, classes, props, onDeleteUser, onUpdateUserRoles, onSelectUser) }
 		</div>
 	);
 };
@@ -343,6 +343,7 @@ Users.defaultProps = {
 
 const mapStateToProps = (state) => {
 	return {
+		userProfile: state.userProfile?.userProfile,
 		userRoles: state.userRoles?.userRoles,
 		users: state.users?.users,
 		userManagementFeature: state.systemStatus?.features?.usermanagement
