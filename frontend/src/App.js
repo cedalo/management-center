@@ -47,6 +47,7 @@ import Hidden from '@material-ui/core/Hidden';
 import { ConfirmProvider } from 'material-ui-confirm';
 import Logo from './components/Logo';
 import LogoutButton from './components/LogoutButton';
+import ProfileButton from './components/ProfileButton';
 import LicenseErrorDialog from './components/LicenseErrorDialog';
 import DisconnectedDialog from './components/DisconnectedDialog';
 import Groups from './components/Groups';
@@ -182,6 +183,7 @@ export default function App(props) {
 		let hideConnections = (typeof responseConfig?.hideConnections === 'boolean') ? responseConfig?.hideConnections : false;
 		let hideInfoPage = (typeof responseConfig?.hideInfoPage === 'boolean') ? responseConfig?.hideInfoPage : false;
 		let hideLogoutButton = (typeof responseConfig?.hideLogoutButton === 'boolean') ? responseConfig?.hideLogoutButton : false;
+		let hideProfileButton = (typeof responseConfig?.hideProfileButton === 'boolean') ? responseConfig?.hideProfileButton : false;
 		const onChangeTheme = () => {
 			setDarkMode(darkMode === 'true' ? 'false' : 'true');
 		};
@@ -351,6 +353,7 @@ export default function App(props) {
 															</IconButton>
 														</Tooltip>
 
+														{ !hideProfileButton ? <ProfileButton /> : null }
 														{ !hideLogoutButton ? <LogoutButton /> : null }
 
 														{/* <IconButton
