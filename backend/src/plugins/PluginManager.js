@@ -10,17 +10,21 @@ module.exports = class PluginManager {
 	_loadOSPlugins(context) {
 		// TODO: support multiple plugins
 		if (process.env.CEDALO_MC_DISABLE_LOGIN !== 'true') {
-			const { Plugin } = require('./login');
-			const plugin = new Plugin();
-			try {
-				plugin.init(context);
-				plugin.load(context);
-				plugin.setLoaded();
-				this._plugins.push(plugin);
-			} catch (error) {
-				plugin.setErrored(`Could not load plugin. Reason: ${error}`);
-				this._plugins.push(plugin);
-			}
+			this._loadLoginPlugin(context);
+		}
+	}
+
+	_loadLoginPlugin(context) {
+		const { Plugin } = require('./login');
+		const plugin = new Plugin();
+		try {
+			plugin.init(context);
+			plugin.load(context);
+			plugin.setLoaded();
+			this._plugins.push(plugin);
+		} catch (error) {
+			plugin.setErrored(`Could not load plugin. Reason: ${error}`);
+			this._plugins.push(plugin);
 		}
 	}
 
@@ -49,7 +53,7 @@ module.exports = class PluginManager {
 					this._plugins.push(plugin);
 				}
 			} catch (error) {
-				console.error(`Failed loading plugin`);
+				console.error(`Failed loading plugin.`);
 				console.error(error);
 				// plugin.setErrored();
 			}
