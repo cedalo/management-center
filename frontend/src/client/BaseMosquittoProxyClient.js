@@ -226,6 +226,16 @@ export default class BaseMosquittoProxyClient {
 		}
 	}
 
+	async updateUser(user) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/users/${user.username}`;
+			const response = await axios.put(url, user);
+			return response.data;
+		} catch (error) {
+			throw new APIError('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+		}
+	}
+
 	/**
 	 * ******************************************************************************************
 	 * Methods for handling multiple broker connections
