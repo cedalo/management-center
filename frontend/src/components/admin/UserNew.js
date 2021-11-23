@@ -69,9 +69,9 @@ const UserNew = (props) => {
 
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
+	const [passwordConfirm, setPasswordConfirm] = useState('');
+	const [roles, setRoles] = useState([]);
 
-	const usernameExists = props?.clients?.find((searchClient) => {
-		return searchClient.username === username;
 	const roleSuggestions = userRoles
 		.sort()
 		.map((rolename) => ({
@@ -86,7 +86,7 @@ const UserNew = (props) => {
 	const passwordsMatch = password === passwordConfirm;
 
 	const validate = () => {
-		const valid = !usernameExists && username !== '' && password !== '';
+		const valid = passwordsMatch && !usernameExists && username !== '' && password !== '';
 		return valid;
 	};
 
@@ -106,7 +106,7 @@ const UserNew = (props) => {
 			enqueueSnackbar(`User "${username}" successfully created.`, {
 				variant: 'success'
 			});
-		} catch(error) {
+		} catch (error) {
 			enqueueSnackbar(`Error creating user "${username}". Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
@@ -144,7 +144,7 @@ const UserNew = (props) => {
 			</Breadcrumbs>
 			<br />
 			{/* TODO: Quick hack to detect whether feature is supported */}
-			{userManagementFeature?.error ? <><br/><Alert severity="warning">
+			{userManagementFeature?.error ? <><br /><Alert severity="warning">
 				<AlertTitle>{userManagementFeature.error.title}</AlertTitle>
 				{userManagementFeature.error.message}
 			</Alert></> : null}
@@ -253,7 +253,7 @@ const mapStateToProps = (state) => {
 	return {
 		userRoles: state.userRoles?.userRoles,
 		users: state.users?.users,
-		userManagementFeature: state.systemStatus?.features?.usermanagement
+		userManagementFeature: state.systemStatus?.features?.usermanagement,
 	};
 };
 
