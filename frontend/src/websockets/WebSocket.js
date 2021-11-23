@@ -21,6 +21,7 @@ import {
 	updateVersion,
 	updateEditDefaultClient,
 	updateFeatures,
+	updateUserProfile,
 	updateUserRoles,
 	updateUsers,
 } from '../actions/actions';
@@ -39,6 +40,8 @@ const init = async (client, dispatch, connectionConfiguration) => {
 	await client.connect(connectionConfiguration)
 	dispatch(updateProxyConnected(true));
 	try {
+		const userProfile = await client.getUserProfile();
+		dispatch(updateUserProfile(userProfile));
 		const userRoles = await client.listUserRoles();
 		dispatch(updateUserRoles(userRoles));
 		const users = await client.listUsers();
