@@ -99,7 +99,7 @@ const UserNew = (props) => {
 
 	const onSaveUser = async () => {
 		try {
-			await client.createUser(username, password);
+			await client.createUser(username, password, roles);
 			const users = await client.listUsers();
 			dispatch(updateUsers(users));
 			history.push(`/user-management/users`);
