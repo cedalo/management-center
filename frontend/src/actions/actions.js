@@ -21,6 +21,13 @@ export function updateUser(update) {
 	};
 }
 
+export function updateUserProfile(update) {
+	return {
+		type: ActionTypes.UPDATE_USER_PROFILE,
+		update
+	};
+}
+
 export function updateUsers(update) {
 	return {
 		type: ActionTypes.UPDATE_USERS,
