@@ -158,6 +158,17 @@ export default class BaseMosquittoProxyClient {
 			throw new APIError('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
 		}
 	}
+
+	async getUserProfile() {
+		try {
+			const url = `${this._httpEndpointURL}/api/profile`;
+			const response = await axios.get(url);
+			return response.data;
+		} catch (error) {
+			throw new APIError('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+		}
+	}
+
 	async listUserRoles() {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/roles`;
