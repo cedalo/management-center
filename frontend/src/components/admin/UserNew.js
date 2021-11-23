@@ -73,6 +73,8 @@ const UserNew = (props) => {
 		return searchClient.username === username;
 	});
 
+	const passwordsMatch = password === passwordConfirm;
+
 	const validate = () => {
 		const valid = !usernameExists && username !== '' && password !== '';
 		return valid;
@@ -167,7 +169,31 @@ const UserNew = (props) => {
 										required
 										id="password"
 										label="Password"
+										error={!passwordsMatch}
+										helperText={!passwordsMatch && 'Passwords must match.'}
 										onChange={(event) => setPassword(event.target.value)}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										type="password"
+										className={classes.textField}
+										InputProps={{
+											startAdornment: (
+												<InputAdornment position="start">
+													<PasswordIcon />
+												</InputAdornment>
+											)
+										}}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										required
+										id="password-confirm"
+										label="Password Confirm"
+										error={!passwordsMatch}
+										helperText={!passwordsMatch && 'Passwords must match.'}
+										onChange={(event) => setPasswordConfirm(event.target.value)}
 										defaultValue=""
 										variant="outlined"
 										fullWidth
