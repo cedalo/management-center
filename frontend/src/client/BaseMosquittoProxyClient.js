@@ -79,7 +79,8 @@ export default class BaseMosquittoProxyClient {
 
 	async reconnect() {
 		const socketEndpointURL = this._socketEndpointURL;
-		this.connect({ socketEndpointURL });
+		const httpEndpointURL = this._httpEndpointURL;
+		this.connect({ socketEndpointURL, httpEndpointURL });
 	}
 
 	async disconnect() {
