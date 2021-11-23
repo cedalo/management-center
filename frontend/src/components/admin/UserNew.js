@@ -29,6 +29,7 @@ import { WebSocketContext } from '../../websockets/WebSocket';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
+import AutoSuggest from '../AutoSuggest';
 import SaveCancelButtons from '../SaveCancelButtons';
 
 const useStyles = makeStyles((theme) => ({
