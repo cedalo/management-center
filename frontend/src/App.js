@@ -83,6 +83,7 @@ import StreamNew from './components/StreamNew';
 import Clients from './components/Clients';
 import UserNew from './components/admin/UserNew';
 import UserDetail from './components/admin/UserDetail';
+import UserProfile from './components/UserProfile';
 import Users from './components/admin/Users';
 import store from './store';
 import WebSocketProvider from './websockets/WebSocket';
@@ -454,6 +455,9 @@ export default function App(props) {
 													</Route>
 													<Route path="/config">
 														<Config />
+													</Route>
+													<Route path="/profile">
+														<UserProfile />
 													</Route>
 													<Route
 														path="/admin/users/detail/:userId"
