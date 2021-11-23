@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const UserNew = (props) => {
-	const { userManagementFeature } = props;
+	const { users, userRoles = [], userManagementFeature } = props;
 	const classes = useStyles();
 
 	const [username, setUsername] = useState('');
@@ -71,6 +71,15 @@ const UserNew = (props) => {
 
 	const usernameExists = props?.clients?.find((searchClient) => {
 		return searchClient.username === username;
+	const roleSuggestions = userRoles
+		.sort()
+		.map((rolename) => ({
+			label: rolename,
+			value: rolename
+		}));
+
+	const usernameExists = props?.users?.find((searchUser) => {
+		return searchUser.username === username;
 	});
 
 	const passwordsMatch = password === passwordConfirm;
@@ -208,6 +217,19 @@ const UserNew = (props) => {
 										}}
 									/>
 								</Grid>
+								<Grid item xs={12}>
+									<AutoSuggest
+										placeholder="Select roles..."
+										suggestions={roleSuggestions}
+										values={roles?.map((role) => ({
+											label: role,
+											value: role
+										}))}
+										handleChange={(value) => {
+											setRoles(value.map((role) => role.value));
+										}}
+									/>
+								</Grid>
 								<Grid container xs={12} alignItems="flex-start">
 									<Grid item xs={12} className={classes.buttons}>
 										<SaveCancelButtons
@@ -228,6 +250,7 @@ const UserNew = (props) => {
 
 const mapStateToProps = (state) => {
 	return {
+		userRoles: state.userRoles?.userRoles,
 		users: state.users?.users,
 		userManagementFeature: state.systemStatus?.features?.usermanagement
 	};
