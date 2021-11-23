@@ -102,7 +102,7 @@ const UserNew = (props) => {
 			await client.createUser(username, password, roles);
 			const users = await client.listUsers();
 			dispatch(updateUsers(users));
-			history.push(`/user-management/users`);
+			history.push(`/admin/users`);
 			enqueueSnackbar(`User "${username}" successfully created.`, {
 				variant: 'success'
 			});
