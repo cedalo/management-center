@@ -149,6 +149,15 @@ export default class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
+	 async getUser(username) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/users/${username}`;
+			const response = await axios.get(url);
+			return response.data;
+		} catch (error) {
+			throw new APIError('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+		}
+	}
 	async listUserRoles() {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/roles`;
