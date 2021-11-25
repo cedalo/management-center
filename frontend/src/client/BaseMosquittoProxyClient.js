@@ -18,6 +18,13 @@ class APIError extends Error {
 	}
 }
 
+class NotAuthorizedError extends APIError {
+	constructor() {
+		super('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+		this.name = 'NotAuthorizedError';
+	}
+}
+
 // TODO: merge with method deletePendingRequest()
 const deletePendingRequest = (requestId, requests) => {
 	const request = requests.get(requestId);
@@ -156,7 +163,7 @@ export default class BaseMosquittoProxyClient {
 			const response = await axios.get(url);
 			return response.data;
 		} catch (error) {
-			throw new APIError('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+			throw new NotAuthorizedError()();
 		}
 	}
 
@@ -166,7 +173,7 @@ export default class BaseMosquittoProxyClient {
 			const response = await axios.get(url);
 			return response.data;
 		} catch (error) {
-			throw new APIError('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+			throw new NotAuthorizedError()();
 		}
 	}
 
@@ -176,7 +183,7 @@ export default class BaseMosquittoProxyClient {
 			const response = await axios.get(url);
 			return response.data;
 		} catch (error) {
-			throw new APIError('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+			throw new NotAuthorizedError()
 		}
 	}
 
@@ -188,7 +195,7 @@ export default class BaseMosquittoProxyClient {
 			});
 			return response.data;
 		} catch (error) {
-			throw new APIError('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+			throw new NotAuthorizedError()
 		}
 	}
 
@@ -198,7 +205,7 @@ export default class BaseMosquittoProxyClient {
 			const response = await axios.get(url);
 			return response.data;
 		} catch (error) {
-			throw new APIError('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+			throw new NotAuthorizedError()
 		}
 	}
 
@@ -213,7 +220,7 @@ export default class BaseMosquittoProxyClient {
 			const response = await axios.post(url, user);
 			return response.data;
 		} catch (error) {
-			throw new APIError('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+			throw new NotAuthorizedError()
 		}
 	}
 
@@ -223,7 +230,7 @@ export default class BaseMosquittoProxyClient {
 			const response = await axios.delete(url);
 			return response.data;
 		} catch (error) {
-			throw new APIError('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+			throw new NotAuthorizedError()
 		}
 	}
 
@@ -233,7 +240,7 @@ export default class BaseMosquittoProxyClient {
 			const response = await axios.put(url, user);
 			return response.data;
 		} catch (error) {
-			throw new APIError('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+			throw new NotAuthorizedError()
 		}
 	}
 
