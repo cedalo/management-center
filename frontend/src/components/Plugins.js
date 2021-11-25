@@ -80,8 +80,14 @@ const Plugins = (props) => {
 					variant: 'contained'
 				}
 			});
-			await client.unloadPlugin(pluginId);
-			window.location.reload();
+			try {
+				await client.unloadPlugin(pluginId);
+				window.location.reload();
+			} catch(error) {
+				enqueueSnackbar(`Error disabling plugin. Reason: ${error.message || error}.`, {
+					variant: 'error'
+				});
+			}
 		}
 	};
 	if (response) {
