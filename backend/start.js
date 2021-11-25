@@ -375,7 +375,7 @@ const init = async (licenseContainer) => {
 	};
 
 	// TODO: extract in separate WebSocket API class
-	const handleRequestMessage = async (message, client) => {
+	const handleRequestMessage = async (message, client, user = {}) => {
 		const { request } = message;
 		switch (request) {
 			case 'unloadPlugin': {
@@ -461,11 +461,11 @@ const init = async (licenseContainer) => {
 		return {};
 	};
 
-	const handleClientMessage = async (message, client) => {
+	const handleClientMessage = async (message, client, user = {}) => {
 		switch (message.type) {
 			case 'command': {
 				try {
-					const response = await handleCommandMessage(message, client);
+					const response = await handleCommandMessage(message, client, user);
 					const responseMessage = {
 						type: 'response',
 						command: message.command.command,
@@ -486,7 +486,7 @@ const init = async (licenseContainer) => {
 			}
 			case 'request': {
 				try {
-					const response = await handleRequestMessage(message, client);
+					const response = await handleRequestMessage(message, client, user);
 					const responseMessage = {
 						type: 'response',
 						requestId: message.id,
@@ -628,7 +628,7 @@ const init = async (licenseContainer) => {
 		ws.on('message', (message) => {
 			try {
 				const messageObject = JSON.parse(message);
-				handleClientMessage(messageObject, ws);
+				handleClientMessage(messageObject, ws, user);
 			} catch (error) {
 				console.error(error);
 			}
