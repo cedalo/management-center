@@ -23,7 +23,6 @@ import { useConfirm } from 'material-ui-confirm';
 
 const userShape = PropTypes.shape({
 	username: PropTypes.string,
-	roles: PropTypes.array
 });
 
 const useStyles = makeStyles((theme) => ({
