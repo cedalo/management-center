@@ -716,7 +716,7 @@ const init = async (licenseContainer) => {
 		response.json(licenseContainer.license);
 	});
 
-	router.get('/api/plugins', context.security.isLoggedIn, (request, response) => {
+	router.get('/api/plugins', context.security.isLoggedIn, context.security.acl.middleware.isAdmin, (request, response) => {
 		response.json(
 			pluginManager.plugins.map((plugin) => ({
 				...plugin.meta,
