@@ -597,7 +597,8 @@ const init = async (licenseContainer) => {
 	}
 
 	// TODO: handle disconnect of clients
-	wss.on('connection', (ws) => {
+	wss.on('connection', (ws, request) => {
+		const user = request.session?.passport?.user;
 		context.brokerManager.handleNewClientWebSocketConnection(ws);
 		broadcastWebSocketConnectionConnected();
 		broadcastWebSocketConnections();
