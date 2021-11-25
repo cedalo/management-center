@@ -34,6 +34,7 @@ const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
 
 // const LicenseManager = require("../src/LicenseManager");
 const LicenseChecker = require('./src/license/LicenseChecker');
+const acl = require('./src/security/acl');
 // const NodeMosquittoProxyClient = require('../frontend/src/client/NodeMosquittoProxyClient');
 // const licenseManager = new LicenseManager();
 // await licenseManager.loadLicense();
@@ -41,7 +42,12 @@ const LicenseChecker = require('./src/license/LicenseChecker');
 
 const checker = new LicenseChecker();
 let context = {
-	brokerManager: new BrokerManager()
+	brokerManager: new BrokerManager(),
+	security: {
+		acl: {
+			...acl
+		}
+	}
 };
 
 const deletePendingRequest = (requestId, requests) => {
