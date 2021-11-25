@@ -391,8 +391,12 @@ const init = async (licenseContainer) => {
 		switch (request) {
 			case 'unloadPlugin': {
 				const { pluginId } = message;
-				const response = pluginManager.unloadPlugin(pluginId);
-				return response;
+				if (context.security.acl.isAdmin(user)) {
+					const response = pluginManager.unloadPlugin(pluginId);
+					return response;
+				} else {
+					throw new Error('Not authorized');
+				}
 			}
 			case 'loadPlugin': {
 				const { pluginId } = message;
