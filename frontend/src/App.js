@@ -170,6 +170,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function App(props) {
+	const { userManagementFeature } = props;
 	// const { window } = props;
 	const classes = useStyles();
 	const theme = useTheme();
