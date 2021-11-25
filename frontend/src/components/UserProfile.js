@@ -19,7 +19,7 @@ import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
-import AutoSuggest from './AutoSuggest';
+// import AutoSuggest from './AutoSuggest';
 
 const userShape = PropTypes.shape({
 	username: PropTypes.string,
