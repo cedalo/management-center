@@ -96,6 +96,7 @@ import steps from './tutorial/steps';
 import { BrowserRouter as Router, Switch, Route, Link as RouterLink, Redirect } from 'react-router-dom';
 import DefaultACLAccess from './components/DefaultACLAccess';
 import CustomDrawer from './components/CustomDrawer';
+import AppRoutes from './AppRoutes';
 
 const tourOptions = {
 	defaultStepOptions: {
@@ -381,110 +382,8 @@ export default function App(props) {
 											<LicenseErrorDialog />
 											<DisconnectedDialog />
 
-											<Container className={classes.container}>
-												<Switch>
-													<Route
-														path="/security/clients/detail/:clientId"
-														component={ClientDetail}
-													/>
-													<Route path="/security/clients/new">
-														<ClientNew />
-													</Route>
-													<Route path="/security/clients">
-														<Clients />
-													</Route>
-													<Route
-														path="/security/groups/detail/:groupId"
-														component={GroupDetail}
-													/>
-													<Route path="/security/groups/new">
-														<GroupNew />
-													</Route>
-													<Route path="/security/groups">
-														<Groups />
-													</Route>
-													<Route
-														path="/security/roles/detail/:roleId"
-														component={RoleDetail}
-													/>
-													<Route path="/security/acl">
-														<DefaultACLAccess />
-													</Route>
-													<Route path="/security/roles/new">
-														<RoleNew />
-													</Route>
-													<Route path="/security/roles">
-														<Roles />
-													</Route>
-													<Route path="/security">
-														<Security />
-													</Route>
-													<Route path="/plugins">
-														<Plugins />
-													</Route>
-													<Route path="/terminal">
-														<Terminal />
-													</Route>
-													<Route
-														path="/streams/detail/:streamId"
-														component={StreamDetail}
-													/>
-													<Route path="/streams/new">
-														<StreamNew />
-													</Route>
-													<Route path="/streams">
-														<Streams />
-													</Route>
-													<Route path="/system/status">
-														<Status />
-													</Route>
-													<Route path="/system/topics">
-														<TopicTree />
-													</Route>
-													<Route path="/system">
-														<System />
-													</Route>
-													<Route path="/config/connections/detail/:connectionId">
-														<ConnectionDetail />
-													</Route>
-													{ !hideConnections ? <Route path="/config/connections">
-														<Connections />
-													</Route> : null }
-													<Route path="/config/settings">
-														<Settings />
-													</Route>
-													<Route path="/config">
-														<Config />
-													</Route>
-													<Route path="/profile">
-														<UserProfile />
-													</Route>
-													<Route
-														path="/admin/users/detail/:userId"
-														component={UserDetail}
-													/>
-													<Route path="/admin/users/new">
-														<UserNew />
-													</Route>
-													<Route path="/admin/users">
-														<Users />
-													</Route>
-													<Route path="/tools/streamsheets">
-														<Streamsheets />
-													</Route>
-													<Route path="/streams">
-														<Streams />
-													</Route>
-													<Route path="/home">
-														<Home />
-													</Route>
-													{ !hideInfoPage ? <Route path="/info">
-														<InfoPage />
-													</Route> : null }
-													<Route path="/">
-														<Redirect to="/system/status" />
-													</Route>
-												</Switch>
+											<Container className={classes.container}>											
+												<AppRoutes />
 											</Container>
 										</Route>
 									</Switch>
