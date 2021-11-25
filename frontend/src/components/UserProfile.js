@@ -5,6 +5,7 @@ import { updateUserProfile, updateUsers } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import PasswordIcon from '@material-ui/icons/VpnKey';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
 import EditIcon from '@material-ui/icons/Edit';
@@ -59,17 +60,14 @@ const UserProfile = (props) => {
 	const [editMode, setEditMode] = React.useState(false);
 	const { enqueueSnackbar } = useSnackbar();
 
-	const { userProfile, userRoles = [] } = props;
+	const { userProfile } = props;
+	const [password, setPassword] = useState('');
+	const [passwordConfirm, setPasswordConfirm] = useState('');
 	const [updatedUser, setUpdatedUser] = React.useState({
 		...userProfile,
 	});
 
-	const roleSuggestions = userRoles
-		.sort()
-		.map((rolename) => ({
-			label: rolename,
-			value: rolename
-		}));
+	const passwordsMatch = password === passwordConfirm;
 
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
@@ -78,7 +76,7 @@ const UserProfile = (props) => {
 
 	const validate = () => {
 		if (editMode) {
-			return updatedUser.username !== '';
+			return passwordsMatch && updatedUser.username !== '';
 		}
 	};
 
@@ -87,7 +85,10 @@ const UserProfile = (props) => {
 	};
 
 	const onUpdateUserProfile = async () => {
-		console.log(updatedUser)
+		updatedUser.password = password;
+		if (!updatedUser.username) {
+			updatedUser.username = userProfile?.username;
+		}
 		await brokerClient.updateUser(updatedUser);
 		enqueueSnackbar('User successfully updated', {
 			variant: 'success'
@@ -137,7 +138,7 @@ const UserProfile = (props) => {
 								disabled={true}
 								id="username"
 								label="username"
-								value={updatedUser?.username}
+								value={editMode ? updatedUser?.username : userProfile.username}
 								defaultValue=""
 								variant="outlined"
 								fullWidth
@@ -152,23 +153,60 @@ const UserProfile = (props) => {
 							/>
 						</Grid>
 						<Grid item xs={12}>
-							<AutoSuggest
+							<TextField
+								required
 								disabled={!editMode}
-								suggestions={roleSuggestions}
-								values={updatedUser?.roles?.map((role) => ({
-									label: role,
-									value: role
-								}))}
-								handleChange={(value) => {
-									if (editMode) {
-										setUpdatedUser({
-											...updatedUser,
-											roles: value.map((role) => role.value)
-										});
-									}
+								id="password"
+								label="Password"
+								error={!passwordsMatch}
+								helperText={!passwordsMatch && 'Passwords must match.'}
+								onChange={(event) => setPassword(event.target.value)}
+								defaultValue=""
+								variant="outlined"
+								fullWidth
+								type="password"
+								className={classes.textField}
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position="start">
+											<PasswordIcon />
+										</InputAdornment>
+									)
 								}}
 							/>
 						</Grid>
+						<Grid item xs={12}>
+							<TextField
+								required
+								disabled={!editMode}
+								id="password-confirm"
+								label="Password Confirm"
+								error={!passwordsMatch}
+								helperText={!passwordsMatch && 'Passwords must match.'}
+								onChange={(event) => setPasswordConfirm(event.target.value)}
+								defaultValue=""
+								variant="outlined"
+								fullWidth
+								type="password"
+								className={classes.textField}
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position="start">
+											<PasswordIcon />
+										</InputAdornment>
+									)
+								}}
+							/>
+						</Grid>
+						{/* <Grid item xs={12}>
+							<AutoSuggest
+								disabled
+								values={userProfile?.roles?.map((role) => ({
+									label: role,
+									value: role
+								}))}
+							/>
+						</Grid> */}
 					</Grid>
 				</div>
 			</form>
@@ -222,7 +260,6 @@ UserProfile.propTypes = {
 const mapStateToProps = (state) => {
 	return {
 		userProfile: state.userProfile?.userProfile,
-		userRoles: state.userRoles?.userRoles,
 	};
 };
 
