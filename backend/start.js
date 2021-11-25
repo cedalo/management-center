@@ -335,9 +335,20 @@ const init = async (licenseContainer) => {
 
 	console.log(`Started Mosquitto proxy at http://localhost:${CEDALO_MC_PROXY_PORT}`);
 
-	const handleCommandMessage = async (message, client) => {
+	// TODO: move somewhere else
+	const userCanAccessAPI = (user, api) => {
+		if (api === 'dynamic-security' && !user.roles.includes('admin') && !user.roles.includes('editor')) {
+			return false;
+		}
+		return true;
+	}
+
+	const handleCommandMessage = async (message, client, user = {}) => {
 		const { api, command } = message;
 		const broker = context.brokerManager.getBroker(client);
+		if (!userCanAccessAPI(user, api)) {
+			throw new Error('Not authorized');
+		}
 		if (broker) {
 			console.log(JSON.stringify(api));
 			console.log(JSON.stringify(command));
