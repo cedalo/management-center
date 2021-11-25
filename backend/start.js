@@ -400,8 +400,12 @@ const init = async (licenseContainer) => {
 			}
 			case 'loadPlugin': {
 				const { pluginId } = message;
-				const response = pluginManager.loadPlugin(pluginId);
-				return response;
+				if (context.security.acl.isAdmin(user)) {
+					const response = pluginManager.loadPlugin(pluginId);
+					return response;
+				} else {
+					throw new Error('Not authorized');
+				}
 			}
 			case 'connectToBroker': {
 				const { brokerName } = message;
