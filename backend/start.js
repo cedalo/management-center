@@ -186,7 +186,8 @@ const init = async (licenseContainer) => {
 	const globalTopicTree = {};
 	const app = express();
 
-	app.use(session({ secret: process.env.CEDALO_MC_SESSION_SECRET || "secret" }));
+	const sessionParser = session({ secret: process.env.CEDALO_MC_SESSION_SECRET || "secret" });
+	app.use(sessionParser);
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));
 	app.use(cors());
@@ -199,7 +200,18 @@ const init = async (licenseContainer) => {
 
 	const wss = new WebSocket.Server({
 		//   port: CEDALO_MC_PROXY_PORT,
-		server
+		// server,
+		noServer: true,
+		verifyClient: (info, done) => {
+			sessionParser(info.req, {}, () => {
+				const user = info.req.session?.passport?.user;
+				if (user) {
+					done(true);
+				} else {
+					done(false);
+				}
+			})
+		}
 	});
 
 	const connections = initConnections(config);
