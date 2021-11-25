@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { amber, green, red } from '@material-ui/core/colors';
 import { connect, useDispatch } from 'react-redux';
+import { useSnackbar } from 'notistack';
 
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import OpenSourcePluginIcon from '@material-ui/icons/Code';
@@ -42,6 +43,7 @@ const Plugins = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
+	const { enqueueSnackbar } = useSnackbar();
 	const { client } = context;
 	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/plugins`);
 
@@ -58,8 +60,14 @@ const Plugins = (props) => {
 					variant: 'contained'
 				}
 			});
-			await client.loadPlugin(pluginId);
-			window.location.reload();
+			try {
+				await client.loadPlugin(pluginId);
+				window.location.reload();
+			} catch(error) {
+				enqueueSnackbar(`Error enabling plugin. Reason: ${error.message || error}.`, {
+					variant: 'error'
+				});
+			}
 		} else {
 			await confirm({
 				title: 'Confirm disabling of plugin',
