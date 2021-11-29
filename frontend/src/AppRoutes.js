@@ -31,6 +31,7 @@ import UserNew from './components/admin/UserNew';
 import UserDetail from './components/admin/UserDetail';
 import UserProfile from './components/UserProfile';
 import Users from './components/admin/Users';
+import Clusters from './components/admin/clusters/Clusters';
 import useFetch from './helpers/useFetch';
 
 import { Switch, Route, Redirect } from 'react-router-dom';
@@ -141,6 +142,9 @@ function AppRoutes(props) {
 				</Route>
 				<Route path="/admin/users">
 					<Users />
+				</Route>
+				<Route path="/admin/clusters">
+					<Clusters />
 				</Route>
 				<Route path="/tools/streamsheets">
 					<Streamsheets />
