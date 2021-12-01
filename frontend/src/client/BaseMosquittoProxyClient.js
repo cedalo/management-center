@@ -8,6 +8,7 @@ const createError = (code, message) => ({
 
 const API_DYNAMIC_SECURITY = 'dynamic-security';
 const API_STREAMS_PROCESSING = 'stream-processing';
+const API_CLUSTER_MANAGEMENT = 'cluster-managament';
 const ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED = 'You are not authorized to access the user management.';
 
 class APIError extends Error {
@@ -244,6 +245,27 @@ export default class BaseMosquittoProxyClient {
 		}
 	}
 
+	/**
+	 * ******************************************************************************************
+	 * Methods for cluster management
+	 * ******************************************************************************************
+	 */
+
+	 async listClusters() {
+		 return [{
+			 clustername: 'example-cluster'
+		 }];
+		// const data = await this.sendCommand(
+		// 	{
+		// 		command: 'listClusters',
+		// 		verbose,
+		// 		count: -1,
+		// 		offset: 0
+		// 	},
+		// 	API_CLUSTER_MANAGEMENT
+		// );
+		// return data?.clusters;
+	}
 	/**
 	 * ******************************************************************************************
 	 * Methods for handling multiple broker connections
