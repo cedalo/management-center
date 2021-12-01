@@ -35,6 +35,7 @@ import UserDetail from './admin/users/components/UserDetail';
 import Users from './admin/users/components/Users';
 import ClusterNew from './admin/clusters/components/ClusterNew';
 import Clusters from './admin/clusters/components/Clusters';
+import ClusterDetail from './admin/clusters/components/ClusterDetail';
 
 import { Switch, Route, Redirect } from 'react-router-dom';
 import DefaultACLAccess from './components/DefaultACLAccess';
@@ -149,6 +150,9 @@ function AppRoutes(props) {
 					path="/admin/clusters/detail/:clusterId"
 					component={ClusterDetail}
 				/>
+				<Route path="/admin/clusters/new">
+					<ClusterNew />
+				</Route>
 				<Route path="/admin/clusters">
 					<Clusters />
 				</Route>
