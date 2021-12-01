@@ -289,6 +289,16 @@ export default class BaseMosquittoProxyClient {
 		);
 	}
 
+	async deleteCluster(clustername) {
+		return this.sendCommand(
+			{
+				command: 'deleteCluster',
+				clustername
+			},
+			API_CLUSTER_MANAGEMENT
+		);
+	}
+
 	/**
 	 * ******************************************************************************************
 	 * Methods for handling multiple broker connections
