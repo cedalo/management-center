@@ -33,6 +33,8 @@ import useFetch from './helpers/useFetch';
 import UserNew from './admin/users/components/UserNew';
 import UserDetail from './admin/users/components/UserDetail';
 import Users from './admin/users/components/Users';
+import Clusters from './admin/clusters/components/Clusters';
+
 import { Switch, Route, Redirect } from 'react-router-dom';
 import DefaultACLAccess from './components/DefaultACLAccess';
 
