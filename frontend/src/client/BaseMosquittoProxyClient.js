@@ -277,6 +277,18 @@ export default class BaseMosquittoProxyClient {
 		);
 		return data?.client;
 	}
+
+
+	async modifyCluster({ clustername }) {
+		return this.sendCommand(
+			{
+				command: 'modifyCluster',
+				clustername,
+			},
+			API_CLUSTER_MANAGEMENT
+		);
+	}
+
 	/**
 	 * ******************************************************************************************
 	 * Methods for handling multiple broker connections
