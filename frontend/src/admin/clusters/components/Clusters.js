@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { updateUser, updateClusters } from '../actions/actions';
+import { updateCluster, updateClusters } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
 import AddIcon from '@material-ui/icons/Add';
@@ -69,10 +69,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CLUSTER_TABLE_COLUMNS = [
-	{ id: 'clustername', key: 'Username' }
+	{ id: 'clustername', key: 'Clustername' }
 ];
 
-const createClusterTable = (clusters, classes, props, onDeleteUser, onUpdateUserRoles, onSelectUser) => {
+const createClusterTable = (clusters, classes, props, onDeleteCluster, onSelectCluster) => {
 	const { clusterManagementFeature, userRoles = [], roles = [], onSort, sortBy, sortDirection } = props;
 
 	if (!clusterManagementFeature?.error && clusterManagementFeature?.supported !== false && clusters && clusters.length > 0) {
@@ -209,10 +209,10 @@ const Clusters = (props) => {
 		history.push('/admin/clusters/new');
 	};
 
-	const onDeleteCluster = async (username) => {
+	const onDeleteCluster = async (clustername) => {
 		await confirm({
 			title: 'Confirm cluster deletion',
-			description: `Do you really want to delete cluster "${username}"?`,
+			description: `Do you really want to delete cluster "${clustername}"?`,
 			cancellationButtonProps: {
 				variant: 'contained'
 			},
