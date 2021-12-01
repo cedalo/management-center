@@ -22,6 +22,7 @@ import GroupIcon from '@material-ui/icons/Group';
 import PersonIcon from '@material-ui/icons/Person';
 import RoleIcon from '@material-ui/icons/Policy';
 import UsersIcon from '@material-ui/icons/People';
+import ClusterIcon from '@material-ui/icons/Storage';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StreamsheetsIcon from '@material-ui/icons/GridOn';
@@ -250,7 +251,19 @@ icon={<SettingsIcon />}
 					to="/admin/users"
 					primary="User Management"
 					icon={<UsersIcon fontSize="small" />}
-				/>
+				/> : null}
+				{/* {clusterManagementAccess(clusterManagementFeature) ? <ListItemLink
+					classes={classes}
+					to="/admin/cluster"
+					primary="Cluster Management"
+					icon={<ClusterIcon fontSize="small" />}
+				/> : null} */}
+				{<ListItemLink
+					classes={classes}
+					to="/admin/clusters"
+					primary="Cluster Management"
+					icon={<ClusterIcon fontSize="small" />}
+				/>}
 			</List>
 		</div>
 	</Drawer>
