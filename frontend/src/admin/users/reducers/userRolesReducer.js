@@ -1,4 +1,4 @@
-import * as ActionTypes from '../constants/ActionTypes';
+import * as ActionTypes from '../actions/ActionTypes';
 
 export default function userRoles(state = {}, action) {
 	const newState = { ...state };

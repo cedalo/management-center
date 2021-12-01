@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { updateUser, updateUsers } from '../../actions/actions';
+import { updateUser, updateUsers } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
 import AddIcon from '@material-ui/icons/Add';
 import { Alert, AlertTitle } from '@material-ui/lab';
-import AutoSuggest from '../AutoSuggest';
+import AutoSuggest from '../../../components/AutoSuggest';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
@@ -35,7 +35,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import { WebSocketContext } from '../../websockets/WebSocket';
+import { WebSocketContext } from '../../../websockets/WebSocket';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
 
@@ -67,10 +67,6 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbItem: theme.palette.breadcrumbItem,
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
-
-const userShape = PropTypes.shape({
-	username: PropTypes.string,
-});
 
 const USER_TABLE_COLUMNS = [
 	{ id: 'username', key: 'Username' },
@@ -242,12 +238,6 @@ const Users = (props) => {
 
 	const onNewUser = () => {
 		history.push('/admin/users/new');
-	};
-
-	const onEditUser = async (username) => {
-		const user = await brokerClient.getUser(username);
-		dispatch(updateUser(client));
-		history.push(`/admin/users/detail/${username}/?action=edit`);
 	};
 
 	const onDeleteUser = async (username) => {

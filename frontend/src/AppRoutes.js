@@ -27,13 +27,12 @@ import ClientNew from './components/ClientNew';
 import RoleNew from './components/RoleNew';
 import StreamNew from './components/StreamNew';
 import Clients from './components/Clients';
-import UserNew from './components/admin/UserNew';
-import UserDetail from './components/admin/UserDetail';
 import UserProfile from './components/UserProfile';
-import Users from './components/admin/Users';
-import Clusters from './components/admin/clusters/Clusters';
 import useFetch from './helpers/useFetch';
 
+import UserNew from './admin/users/components/UserNew';
+import UserDetail from './admin/users/components/UserDetail';
+import Users from './admin/users/components/Users';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import DefaultACLAccess from './components/DefaultACLAccess';
 

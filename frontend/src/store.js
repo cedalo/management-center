@@ -11,11 +11,13 @@ import streamsReducer from './reducers/streamsReducer';
 import systemStatusReducer from './reducers/systemStatusReducer';
 import topicTreeReducer from './reducers/topicTreeReducer';
 import clientsReducer from './reducers/clientsReducer';
-import userRolesReducer from './reducers/userRolesReducer';
 import userProfileReducer from './reducers/userProfileReducer';
-import usersReducer from './reducers/usersReducer';
 import settingsReducer from './reducers/settingsReducer';
 import webSocketConnectionsReducer from './reducers/webSocketConnectionsReducer';
+
+import userRolesReducer from './admin/users/reducers/userRolesReducer';
+import usersReducer from './admin/users/reducers/usersReducer';
+
 
 const store = createStore(
 	combineReducers({

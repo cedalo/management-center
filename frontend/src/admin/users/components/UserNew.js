@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
-import { updateUser, updateUsers } from '../../actions/actions';
+import { updateUser, updateUsers } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
 import { Alert, AlertTitle } from '@material-ui/lab';
@@ -25,12 +25,12 @@ import { Link as RouterLink } from 'react-router-dom';
 import SaveIcon from '@material-ui/icons/Save';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { WebSocketContext } from '../../websockets/WebSocket';
+import { WebSocketContext } from '../../../websockets/WebSocket';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
-import AutoSuggest from '../AutoSuggest';
-import SaveCancelButtons from '../SaveCancelButtons';
+import AutoSuggest from '../../../components/AutoSuggest';
+import SaveCancelButtons from '../../../components/SaveCancelButtons';
 
 const useStyles = makeStyles((theme) => ({
 	root: {

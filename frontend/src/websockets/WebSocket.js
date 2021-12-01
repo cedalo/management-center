@@ -22,6 +22,9 @@ import {
 	updateEditDefaultClient,
 	updateFeatures,
 	updateUserProfile,
+} from '../actions/actions';
+
+import {
 	updateUserRoles,
 	updateUsers,
 } from '../actions/actions';
