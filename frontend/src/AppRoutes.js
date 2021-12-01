@@ -33,6 +33,7 @@ import useFetch from './helpers/useFetch';
 import UserNew from './admin/users/components/UserNew';
 import UserDetail from './admin/users/components/UserDetail';
 import Users from './admin/users/components/Users';
+import ClusterNew from './admin/clusters/components/ClusterNew';
 import Clusters from './admin/clusters/components/Clusters';
 
 import { Switch, Route, Redirect } from 'react-router-dom';
@@ -144,6 +145,10 @@ function AppRoutes(props) {
 				<Route path="/admin/users">
 					<Users />
 				</Route>
+				<Route
+					path="/admin/clusters/detail/:clusterId"
+					component={ClusterDetail}
+				/>
 				<Route path="/admin/clusters">
 					<Clusters />
 				</Route>
