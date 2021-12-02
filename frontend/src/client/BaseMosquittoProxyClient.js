@@ -281,14 +281,17 @@ export default class BaseMosquittoProxyClient {
 	}
 
 	async getCluster(clustername) {
-		const data = await this.sendCommand(
-			{
-				command: 'getCluster',
-				clustername
-			},
-			API_CLUSTER_MANAGEMENT
-		);
-		return data?.client;
+		return {
+			clustername
+		}
+		// const data = await this.sendCommand(
+		// 	{
+		// 		command: 'getCluster',
+		// 		clustername
+		// 	},
+		// 	API_CLUSTER_MANAGEMENT
+		// );
+		// return data?.client;
 	}
 
 
