@@ -159,7 +159,7 @@ const UserNew = (props) => {
 										helperText={usernameExists && 'A user with this username already exists.'}
 										required
 										id="username"
-										label="username"
+										label="User name"
 										onChange={(event) => setUsername(event.target.value)}
 										defaultValue=""
 										variant="outlined"
