@@ -64,6 +64,16 @@ function ListItemLink(props) {
 	);
 }
 
+const access = (feature) => {
+	if (!feature || feature?.error?.name === 'NotAuthorizedError') {
+		return false;
+	} else {
+		return true;
+	}
+}
+const dynamicSecurityAccess = (dynamicSecurityFeature) => access(dynamicSecurityFeature);
+const userManagementAccess = (userManagementFeature) => access(userManagementFeature);
+const clusterManagementAccess = (clusterManagementFeature) => access(clusterManagementFeature);
 
 const useStyles = makeStyles((theme) => ({
 	toolbar: {
@@ -273,6 +283,9 @@ icon={<SettingsIcon />}
 
 const mapStateToProps = (state) => {
 	return {
+		userManagementFeature: state.systemStatus?.features?.usermanagement,
+		clusterManagementFeature: state.systemStatus?.features?.clusterManagement,
+		dynamicSecurityFeature: state.systemStatus?.features?.dynamicsecurity,
 		brokerConnections: state.brokerConnections.brokerConnections,
 		connected: state.brokerConnections.connected,
 		currentConnectionName: state.brokerConnections.currentConnectionName
