@@ -259,7 +259,7 @@ icon={<SettingsIcon />}
 					primary="Settings"
 					icon={<SettingsIcon fontSize="small" />}
 				/>
-				<ListItemLink
+				{userManagementAccess(userManagementFeature) ? <ListItemLink
 					classes={classes}
 					to="/admin/users"
 					primary="User Management"
