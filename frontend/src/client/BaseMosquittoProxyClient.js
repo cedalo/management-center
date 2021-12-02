@@ -296,13 +296,16 @@ export default class BaseMosquittoProxyClient {
 
 
 	async modifyCluster({ clustername }) {
-		return this.sendCommand(
-			{
-				command: 'modifyCluster',
-				clustername,
-			},
-			API_CLUSTER_MANAGEMENT
-		);
+		return {
+			clustername
+		}
+		// return this.sendCommand(
+		// 	{
+		// 		command: 'modifyCluster',
+		// 		clustername,
+		// 	},
+		// 	API_CLUSTER_MANAGEMENT
+		// );
 	}
 
 	async deleteCluster(clustername) {
