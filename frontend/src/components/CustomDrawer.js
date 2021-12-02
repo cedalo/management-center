@@ -83,6 +83,9 @@ const useStyles = makeStyles((theme) => ({
 		padding: theme.spacing(0, 1),
 		...theme.mixins.toolbar
 	},
+	menuItem: {
+		fontSize: '14px',
+	  },
 	menuItemRoot: {
 		fontSize: '14px',
 		"&$menuItemSelected, &$menuItemSelected:focus, &$menuItemSelected:hover": {
