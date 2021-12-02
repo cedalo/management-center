@@ -128,7 +128,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const CustomDrawer = ({ hideConnections, open, handleDrawerOpen, handleDrawerClose }) => {
+const CustomDrawer = ({ userProfile = {}, userManagementFeature, dynamicSecurityFeature, hideConnections, open, handleDrawerOpen, handleDrawerClose }) => {
 
 	const classes = useStyles();
 	const theme = useTheme();
