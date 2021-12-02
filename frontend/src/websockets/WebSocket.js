@@ -27,7 +27,11 @@ import {
 import {
 	updateUserRoles,
 	updateUsers,
-} from '../actions/actions';
+} from '../admin/users/actions/actions';
+
+import {
+	updateClusters
+} from '../admin/clusters/actions/actions';
 
 import WS_BASE from './config';
 import WebMosquittoProxyClient from '../client/WebMosquittoProxyClient';
