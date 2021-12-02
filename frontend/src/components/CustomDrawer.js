@@ -286,6 +286,7 @@ icon={<SettingsIcon />}
 
 const mapStateToProps = (state) => {
 	return {
+		userProfile: state.userProfile?.userProfile,
 		userManagementFeature: state.systemStatus?.features?.usermanagement,
 		clusterManagementFeature: state.systemStatus?.features?.clusterManagement,
 		dynamicSecurityFeature: state.systemStatus?.features?.dynamicsecurity,
