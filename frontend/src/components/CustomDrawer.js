@@ -215,7 +215,7 @@ icon={<StreamsIcon />}
 <Divider /> */}
 
 			<Divider />
-			<List>
+			{userProfile?.isAdmin && <><List>
 				{open ? <ListSubheader className={classes.menuSubHeader}>Management</ListSubheader> : null}
 				<ListItemLink
 					id="menu-item-plugins"
@@ -231,7 +231,7 @@ primary="Settings"
 icon={<SettingsIcon />}
 /> */}
 			</List>
-			<Divider />
+			<Divider /></>}
 			<List id="menu-items-tools">
 				{open ? <ListSubheader className={classes.menuSubHeader}>Tools</ListSubheader> : null}
 				<ListItemLink
