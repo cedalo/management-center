@@ -64,6 +64,22 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			error
 		}));
 	}
+
+	try {
+		const clusters = await client.listClusters();
+		dispatch(updateClusters(clusters));
+		dispatch(updateFeatures({
+			feature: 'clustermanagement',
+			status: 'ok'
+		}));
+	} catch (error) {
+		dispatch(updateFeatures({
+			feature: 'clustermanagement',
+			status: 'failed',
+			error
+		}));
+	}
+
 	const brokerConnections = await client.getBrokerConnections();
 	dispatch(updateBrokerConnections(brokerConnections));
 
