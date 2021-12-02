@@ -241,7 +241,7 @@ icon={<SettingsIcon />}
 					icon={<StreamsheetsIcon fontSize="small" />}
 				/>
 				<ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon />} />
-				<ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon />} />
+				{userProfile?.isAdmin && <ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon />} />}
 			</List>
 			<Divider />
 			<List>
