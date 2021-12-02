@@ -179,7 +179,7 @@ const CustomDrawer = ({ userProfile = {}, userManagementFeature, dynamicSecurity
 				/>
 			</List>
 			<Divider />
-			<List>
+			{(userProfile?.isAdmin || userProfile?.isEditor) && <><List>
 				{open ? <ListSubheader className={classes.menuSubHeader}>Dynamic Security</ListSubheader> : null}
 				<ListItemLink
 					id="menu-item-clients"
@@ -203,7 +203,7 @@ const CustomDrawer = ({ userProfile = {}, userManagementFeature, dynamicSecurity
 					icon={<RoleIcon fontSize="small" />}
 				/>
 			</List>
-			<Divider />
+			<Divider /></>}
 			{/* <List>
 <ListItemLink 
 classes={classes}
