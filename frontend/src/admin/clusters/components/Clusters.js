@@ -108,6 +108,7 @@ const createClusterTable = (clusters, classes, props, onDeleteCluster, onSelectC
 									>
 										<TableCell>{cluster.clustername}</TableCell>
 										<TableCell>{cluster.description}</TableCell>
+										<TableCell>{cluster.nodes?.length || 0}</TableCell>
 										<TableCell align="right">
 											<Tooltip title="Delete cluster">
 												<IconButton
