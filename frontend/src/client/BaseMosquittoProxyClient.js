@@ -301,17 +301,17 @@ export default class BaseMosquittoProxyClient {
 		return response.response;
 	}
 
-	async deleteCluster(clustername) {
-		return {
+	async joinCluster(clustername, brokerId) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'joinCluster',
+			clustername,
+			brokerId
+		});
+		return response.response;
+	}
 
-		};
-		// return this.sendCommand(
-		// 	{
-		// 		command: 'deleteCluster',
-		// 		clustername
-		// 	},
-		// 	API_CLUSTER_MANAGEMENT
-		// );
 	}
 
 	/**
