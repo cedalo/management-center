@@ -70,6 +70,10 @@ module.exports = class BaseMosquittoClient {
 		return this._logger;
 	}
 
+	get url() {
+		return this._mqttEndpointURL;
+	}
+
 	/**
 	 * ******************************************************************************************
 	 * Method for sending command messages
