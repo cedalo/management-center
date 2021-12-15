@@ -476,6 +476,13 @@ const init = async (licenseContainer) => {
 				configManager.updateConnection(oldConnectionId, connection);
 				return configManager.connections;
 			}
+			default: {
+				const handler = context.requestHandlers.get(request);
+				if (handler) {
+					const result = await handler[request](message);
+					return result;
+				}
+			}
 		}
 		return {};
 	};
