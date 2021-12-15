@@ -73,6 +73,20 @@ const ClusterDetail = (props) => {
 		}
 	};
 
+	const addNodeToCluster = async (nodeId) => {
+		await brokerClient.joinCluster(cluster.clustername, nodeId);
+		enqueueSnackbar('Node successfully added to cluster', {
+			variant: 'success'
+		});
+		const clusterObject = await brokerClient.getCluster(cluster.clustername);
+		dispatch(updateCluster(clusterObject));
+		setUpdatedCluster({
+			...clusterObject
+		});
+		const clusters = await brokerClient.listClusters();
+		dispatch(updateClusters(clusters));
+		setSelectNodeDialogOpen(false);
+	}
 	const onUpdateClusterDetail = async () => {
 		console.log(updatedCluster)
 		await brokerClient.modifyCluster(updatedCluster);
@@ -158,6 +172,15 @@ const ClusterDetail = (props) => {
 					>
 						Edit
 					</Button>
+					<Button
+						variant="contained"
+						color="primary"
+						className={classes.button}
+						startIcon={<AddIcon />}
+						onClick={() => setSelectNodeDialogOpen(true)}
+					>
+						Add node
+					</Button>
 				</Grid>
 			)}
 			{editMode && (
@@ -186,6 +209,12 @@ const ClusterDetail = (props) => {
 					</Button>
 				</Grid>
 			)}
+			<SelectNodeDialog
+				open={selectNodeDialogOpen}
+				handleClose={() => setSelectNodeDialogOpen(false)}
+				handleAddNode={(nodeId) => addNodeToCluster(nodeId)}
+				cluster={cluster}
+			/>
 		</Paper>
 	</div>) : (
 		<Redirect to="/admin/clusters" push />
