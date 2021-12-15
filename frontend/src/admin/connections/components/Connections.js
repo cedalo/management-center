@@ -143,6 +143,26 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 		}
 	};
 
+	const onDeleteConnection = async (id) => {
+		await confirm({
+			title: 'Confirm connection deletion',
+			description: `Do you really want to delete connection "${id}"?`,
+			cancellationButtonProps: {
+				variant: 'contained'
+			},
+			confirmationButtonProps: {
+				color: 'primary',
+				variant: 'contained'
+			}
+		});
+		await brokerClient.deleteConnection(id);
+		enqueueSnackbar(`Connection "${id}" successfully deleted`, {
+			variant: 'success'
+		});
+		const connections = await brokerClient.getBrokerConnections();
+		dispatch(updateBrokerConnections(connections));
+	};
+
 	return (
 		<div>
 			<Breadcrumbs aria-label="breadcrumb">
