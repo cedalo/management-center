@@ -114,6 +114,26 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 		const connections = await brokerClient.getBrokerConnections();
 		dispatch(updateBrokerConnections(connections));
 	}
+
+	const onDisconnectServerFromBroker = async (id) => {
+		await confirm({
+			title: 'Confirm disconnecting',
+			description: `Do you really want to disconnect the connection "${id}"?`,
+			cancellationButtonProps: {
+				variant: 'contained'
+			},
+			confirmationButtonProps: {
+				color: 'primary',
+				variant: 'contained'
+			}
+		});
+		await brokerClient.disconnectServerFromBroker(id);
+		enqueueSnackbar(`Connection "${id}" successfully closed`, {
+			variant: 'success'
+		});
+		const connections = await brokerClient.getBrokerConnections();
+		dispatch(updateBrokerConnections(connections));
+	}
 	return (
 		<div>
 			<Breadcrumbs aria-label="breadcrumb">
