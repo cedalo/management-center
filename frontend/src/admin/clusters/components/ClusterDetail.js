@@ -63,6 +63,7 @@ const ClusterDetail = (props) => {
 	const classes = useStyles();
 	const [value, setValue] = React.useState(0);
 	const [editMode, setEditMode] = React.useState(false);
+	const [selectNodeDialogOpen, setSelectNodeDialogOpen] = React.useState(false);
 	const { enqueueSnackbar } = useSnackbar();
 
 	const { cluster } = props;
