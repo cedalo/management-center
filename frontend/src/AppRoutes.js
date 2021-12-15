@@ -32,6 +32,7 @@ import useFetch from './helpers/useFetch';
 import UserNew from './admin/users/components/UserNew';
 import UserDetail from './admin/users/components/UserDetail';
 import Users from './admin/users/components/Users';
+import ConnectionNew from './admin/connections/components/ConnectionNew';
 import Connections from './admin/connections/components/Connections';
 import ClusterNew from './admin/clusters/components/ClusterNew';
 import Clusters from './admin/clusters/components/Clusters';
@@ -120,6 +121,9 @@ function AppRoutes(props) {
 				</Route>
 				<Route path="/system">
 					<System />
+				</Route>
+				<Route path="/config/connections/new">
+					<ConnectionNew />
 				</Route>
 				<Route path="/config/connections/detail/:connectionId">
 					<ConnectionDetail />
