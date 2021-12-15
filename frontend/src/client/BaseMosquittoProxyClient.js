@@ -329,6 +329,15 @@ export default class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
+	async connectServerToBroker(id) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'connectServerToBroker',
+			id
+		});
+	}
+
 	async connectToBroker(brokerName) {
 		return this.sendRequest({
 			id: createID(),
