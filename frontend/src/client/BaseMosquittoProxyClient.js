@@ -912,6 +912,15 @@ export default class BaseMosquittoProxyClient {
 		});
 	}
 
+	async deleteConnection(connectionId) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'deleteConnection',
+			id: connectionId
+		});
+	}
+
 	async updateClientGroups(client, groupnames = []) {
 		if (!groupnames) {
 			groupnames = [];
