@@ -158,6 +158,103 @@ const ClusterDetail = (props) => {
 								}}
 							/>
 						</Grid>
+					<Grid container spacing={1} alignItems="flex-end">
+						{cluster?.nodes?.map((node, index) => 
+							<Grid item xs={12} sm={4}>
+								<Card variant="outlined">
+									<CardHeader
+										subheader={node.id}
+									/>
+									<CardContent>
+										<Grid container spacing={1} alignItems="flex-end">
+												{/* <Grid item xs={12}>
+													<TextField
+														disabled={true}
+														id={node.id}
+														label="Name"
+														value={node?.id}
+														defaultValue=""
+														variant="outlined"
+														fullWidth
+														className={classes.textField}
+													/>
+												</Grid> */}
+												<Grid item xs={12}>
+													<TextField
+														disabled={true}
+														id={node?.connection?.url}
+														label="URL"
+														value={node?.connection?.url}
+														defaultValue=""
+														variant="outlined"
+														fullWidth
+														className={classes.textField}
+													/>
+												</Grid>
+												<Grid item xs={12}>
+													<TextField
+														disabled={true}
+														id={node.ha?.nodeid}
+														label="Node ID"
+														value={node.ha?.nodeid}
+														defaultValue=""
+														variant="outlined"
+														fullWidth
+														className={classes.textField}
+													/>
+												</Grid>
+												<Grid item xs={12}>
+													<TextField
+														disabled={true}
+														id={`${node.id}-redis-hostname`}
+														label="Redis Host"
+														value={node.ha?.redishosts[0]?.hostname}
+														defaultValue=""
+														variant="outlined"
+														fullWidth
+														className={classes.textField}
+													/>
+												</Grid>
+												<Grid item xs={12}>
+													<TextField
+														disabled={true}
+														id={`${node.id}-redis-port`}
+														label="Redis Port"
+														value={node.ha?.redishosts[0]?.port}
+														defaultValue=""
+														variant="outlined"
+														fullWidth
+														className={classes.textField}
+													/>
+												</Grid>
+												<Grid item xs={12}>
+													<Tooltip title="Use LTS">
+														<FormControlLabel
+															disabled={!editMode}
+															control={
+																<Switch
+																	disabled={!editMode}
+																	checked={
+																		node.ha?.uselts
+																	}
+																	onClick={(event) => {
+																		event.stopPropagation();
+																		if (event.target.checked) {
+																			onEnableLTS(cluster, node);
+																		} else {
+																			onDisableLTS(cluster, node);
+																		}
+																	}}
+																/>
+															}
+															label="Use LTS" 
+														/>
+													</Tooltip>
+												</Grid>
+										</Grid>
+									</CardContent>
+							</Grid>
+						)}
 					</Grid>
 				</div>
 			</form>
