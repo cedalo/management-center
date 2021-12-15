@@ -338,6 +338,15 @@ export default class BaseMosquittoProxyClient {
 		});
 	}
 
+	async disconnectServerFromBroker(id) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'disconnectServerFromBroker',
+			id
+		});
+	}
+
 	async connectToBroker(brokerName) {
 		return this.sendRequest({
 			id: createID(),
