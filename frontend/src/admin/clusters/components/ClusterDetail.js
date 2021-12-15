@@ -172,7 +172,7 @@ const ClusterDetail = (props) => {
 			<form className={classes.form} noValidate autoComplete="off">
 				<div className={classes.margin}>
 					<Grid container spacing={1} alignItems="flex-end">
-						<Grid item xs={12}>
+						<Grid item xs={12} sm={4}>
 							<TextField
 								required={editMode}
 								disabled={true}
