@@ -263,19 +263,12 @@ export default class BaseMosquittoProxyClient {
 	}
 
 	 async listClusters() {
-		 return [{
-			 clustername: 'example-cluster'
-		 }];
-		// const data = await this.sendCommand(
-		// 	{
-		// 		command: 'listClusters',
-		// 		verbose,
-		// 		count: -1,
-		// 		offset: 0
-		// 	},
-		// 	API_CLUSTER_MANAGEMENT
-		// );
-		// return data?.clusters;
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'listClusters'
+		});
+		return response.response;
 	}
 
 	async getCluster(clustername) {
