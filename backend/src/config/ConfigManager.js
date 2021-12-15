@@ -37,4 +37,10 @@ module.exports = class ConfigManager {
 			.assign(connection)
 			.write();
 	}
+
+	deleteConnection(id) {
+		db.get('connections')
+			.remove({ id })
+			.write();
+	}
 };
