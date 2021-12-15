@@ -281,6 +281,15 @@ export default class BaseMosquittoProxyClient {
 		return response.response;
 	}
 
+	async modifyCluster(cluster) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'modifyCluster',
+			cluster
+		});
+		return response.response;
+	}
 
 	async modifyCluster({ clustername }) {
 		return {
