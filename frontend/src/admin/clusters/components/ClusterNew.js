@@ -68,6 +68,7 @@ const ClusterNew = (props) => {
 	const classes = useStyles();
 
 	const [clustername, setClustername] = useState('');
+	const [clusterDescription, setClusterDescription] = useState('');
 
 	const clusternameExists = props?.clusters?.find((searchCluster) => {
 		return searchCluster.clustername === clustername;
@@ -87,7 +88,7 @@ const ClusterNew = (props) => {
 
 	const onSaveCluster = async () => {
 		try {
-			await client.createCluster(clustername);
+			await client.createCluster(clustername, clusterDescription);
 			const clusters = await client.listClusters();
 			dispatch(updateClusters(clusters));
 			history.push(`/admin/clusters`);
@@ -160,6 +161,18 @@ const ClusterNew = (props) => {
 												</InputAdornment>
 											)
 										}}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										required={false}
+										id="description"
+										label="Cluster description"
+										onChange={(event) => setClusterDescription(event.target.value)}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										className={classes.textField}
 									/>
 								</Grid>
 								<Grid container xs={12} alignItems="flex-start">
