@@ -8,7 +8,7 @@ const createError = (code, message) => ({
 
 const API_DYNAMIC_SECURITY = 'dynamic-security';
 const API_STREAMS_PROCESSING = 'stream-processing';
-const API_CLUSTER_MANAGEMENT = 'cluster-managament';
+const API_HIGH_AVAILABILITY = 'cedalo/ha';
 const ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED = 'You are not authorized to access the user management.';
 
 class APIError extends Error {
