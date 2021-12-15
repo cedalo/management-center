@@ -20,6 +20,11 @@ module.exports = class ConfigManager {
 		db.update('connections', (oldConnections) => connections).write();
 	}
 
+	getConnection(id) {
+		const connection = this.connections.find((connectionObject) => connectionObject.id === id);
+		return connection;
+	}
+
 	createConnection(connection) {
 		db.get('connections')
 			.push(connection)
