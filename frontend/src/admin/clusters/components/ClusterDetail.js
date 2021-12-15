@@ -183,15 +183,31 @@ const ClusterDetail = (props) => {
 								variant="outlined"
 								fullWidth
 								className={classes.textField}
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position="start">
-											<AccountCircle />
-										</InputAdornment>
-									)
-								}}
 							/>
 						</Grid>
+						<Grid item xs={12} sm={8}>
+							<TextField
+								disabled={!editMode}
+								id="description"
+								label="Description"
+								value={updatedCluster?.description}
+								onChange={(event) => {
+									if (editMode) {
+										setUpdatedCluster({
+											...updatedCluster,
+											description: event.target.value
+										});
+									}
+								}}
+								defaultValue=""
+								variant="outlined"
+								fullWidth
+								className={classes.textField}
+							/>
+						</Grid>
+						<br/>
+					</Grid>
+					<br/>
 					<Grid container spacing={1} alignItems="flex-end">
 						{cluster?.nodes?.map((node, index) => 
 							<Grid item xs={12} sm={4}>
