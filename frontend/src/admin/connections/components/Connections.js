@@ -134,6 +134,15 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 		const connections = await brokerClient.getBrokerConnections();
 		dispatch(updateBrokerConnections(connections));
 	}
+
+	const handleBrokerConnectionConnectDisconnect = async (id, connect) => {
+		if (connect) {
+			onConnectServerToBroker(id);
+		} else {
+			onDisconnectServerFromBroker(id);
+		}
+	};
+
 	return (
 		<div>
 			<Breadcrumbs aria-label="breadcrumb">
