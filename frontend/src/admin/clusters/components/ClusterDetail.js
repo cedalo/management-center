@@ -4,20 +4,28 @@ import { connect, useDispatch } from 'react-redux';
 import { updateCluster, updateClusters } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
-import AccountCircle from '@material-ui/icons/AccountCircle';
+import AddIcon from '@material-ui/icons/Add';
+import RemoveNodeIcon from '@material-ui/icons/RemoveCircle';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
 import EditIcon from '@material-ui/icons/Edit';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
 import SaveIcon from '@material-ui/icons/Save';
+import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../../../websockets/WebSocket';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
+import SelectNodeDialog from './SelectNodeDialog';
 
 const clusterShape = PropTypes.shape({
 	clustername: PropTypes.string,
