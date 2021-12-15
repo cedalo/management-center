@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { green, red } from '@material-ui/core/colors';
 import { makeStyles, withStyles, useTheme } from '@material-ui/core/styles';
+import { useSnackbar } from 'notistack';
 import AddIcon from '@material-ui/icons/Add';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
@@ -20,6 +21,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
+import Switch from '@material-ui/core/Switch';
+import Tooltip from '@material-ui/core/Tooltip';
 import Popover from '@material-ui/core/Popover';
 import { Link as RouterLink } from 'react-router-dom';
 import Table from '@material-ui/core/Table';
@@ -31,7 +34,8 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../../../websockets/WebSocket';
-import { updateSelectedConnection } from '../../../actions/actions';
+import { useConfirm } from 'material-ui-confirm';
+import { updateBrokerConnections, updateSelectedConnection } from '../../../actions/actions';
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 // import {
@@ -83,6 +87,9 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 	const dispatch = useDispatch();
 	const theme = useTheme();
 	const context = useContext(WebSocketContext);
+	const confirm = useConfirm();
+	const { enqueueSnackbar } = useSnackbar();
+	const { client: brokerClient } = context;
 	const [connection, setConnection] = React.useState('');
 	const [anchorEl, setAnchorEl] = React.useState(null);
 	const [openedPopoverId, setOpenedPopoverId] = React.useState(null);
@@ -246,7 +253,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 															}}
 														>
 															<Typography className={classes.typography}>
-																{brokerConnection.status.connected ? (
+																{brokerConnection.status?.connected ? (
 																	<Paper>Broker successfully connected</Paper>
 																) : (
 																	<TableContainer component={Paper}>
@@ -325,7 +332,6 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 														{}
 													</TableCell>
 													<TableCell align="right">
-														{/* <IconButton
 														<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}>
 															<Switch
 																checked={brokerConnection.status?.connected}
