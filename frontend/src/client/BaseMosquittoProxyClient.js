@@ -291,17 +291,14 @@ export default class BaseMosquittoProxyClient {
 		return response.response;
 	}
 
-	async modifyCluster({ clustername }) {
-		return {
+	async deleteCluster(clustername) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'deleteCluster',
 			clustername
-		}
-		// return this.sendCommand(
-		// 	{
-		// 		command: 'modifyCluster',
-		// 		clustername,
-		// 	},
-		// 	API_CLUSTER_MANAGEMENT
-		// );
+		});
+		return response.response;
 	}
 
 	async deleteCluster(clustername) {
