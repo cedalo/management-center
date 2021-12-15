@@ -87,6 +87,32 @@ const ClusterDetail = (props) => {
 		dispatch(updateClusters(clusters));
 		setSelectNodeDialogOpen(false);
 	}
+
+	const removeNodeFromCluster = async (nodeId) => {
+		await confirm({
+			title: 'Confirm node removal',
+			description: `Do you really want to remove the node "${nodeId}" from this cluster?`,
+			cancellationButtonProps: {
+				variant: 'contained'
+			},
+			confirmationButtonProps: {
+				color: 'primary',
+				variant: 'contained'
+			}
+		});
+		await brokerClient.leaveCluster(cluster.clustername, nodeId);
+		enqueueSnackbar('Node successfully removed from cluster', {
+			variant: 'success'
+		});
+		const clusterObject = await brokerClient.getCluster(cluster.clustername);
+		dispatch(updateCluster(clusterObject));
+		setUpdatedCluster({
+			...clusterObject
+		});
+		const clusters = await brokerClient.listClusters();
+		dispatch(updateClusters(clusters));
+	}
+
 	const onUpdateClusterDetail = async () => {
 		console.log(updatedCluster)
 		await brokerClient.modifyCluster(updatedCluster);
@@ -253,6 +279,17 @@ const ClusterDetail = (props) => {
 												</Grid>
 										</Grid>
 									</CardContent>
+									<CardActions>
+										<Button
+											disabled={!editMode}
+											size="small"
+											onClick={() => removeNodeFromCluster(node.id)}
+											startIcon={<RemoveNodeIcon />}
+										>
+											Remove
+										</Button>
+									</CardActions>
+								</Card>
 							</Grid>
 						)}
 					</Grid>
