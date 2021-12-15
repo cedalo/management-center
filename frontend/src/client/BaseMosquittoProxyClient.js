@@ -312,6 +312,15 @@ export default class BaseMosquittoProxyClient {
 		return response.response;
 	}
 
+	async leaveCluster(clustername, brokerId) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'leaveCluster',
+			clustername,
+			brokerId
+		});
+		return response.response;
 	}
 
 	/**
