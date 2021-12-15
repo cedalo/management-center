@@ -106,6 +106,14 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 		history.push(`/config/connections/detail/${connection.id}`);
 	};
 
+	const onConnectServerToBroker = async (id) => {
+		await brokerClient.connectServerToBroker(id);
+		enqueueSnackbar(`Connection "${id}" successfully established`, {
+			variant: 'success'
+		});
+		const connections = await brokerClient.getBrokerConnections();
+		dispatch(updateBrokerConnections(connections));
+	}
 	return (
 		<div>
 			<Breadcrumbs aria-label="breadcrumb">
@@ -269,23 +277,27 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 													</TableCell>
 													<TableCell align="right">
 														{/* <IconButton
-						  size="small"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            onDeleteConfiguration(brokerConnection.name);
-                          }}
-                        >
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton
-						  size="small"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            onDeleteConfiguration(brokerConnection.name);
-                          }}
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton> */}
+														<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}>
+															<Switch
+																checked={brokerConnection.status?.connected}
+																name="connectionConnected"
+																onClick={(event) => {
+																	event.stopPropagation();
+																	handleBrokerConnectionConnectDisconnect(brokerConnection.id, event.target.checked);
+																}}
+																inputProps={{ 'aria-label': 'Connection connected' }}
+															/>
+														</Tooltip>
+														<IconButton
+														disabled={brokerConnection.status?.connected}
+														size="small"
+														onClick={(event) => {
+															event.stopPropagation();
+															onDeleteConnection(brokerConnection.id);
+														}}
+														>
+														<DeleteIcon fontSize="small" />
+														</IconButton>
 													</TableCell>
 												</StyledTableRow>
 											))}
