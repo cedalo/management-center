@@ -177,7 +177,7 @@ const ClusterDetail = (props) => {
 								required={editMode}
 								disabled={true}
 								id="clustername"
-								label="clustername"
+								label="Clustername"
 								value={updatedCluster?.clustername}
 								defaultValue=""
 								variant="outlined"
