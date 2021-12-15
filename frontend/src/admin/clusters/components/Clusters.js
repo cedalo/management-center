@@ -69,7 +69,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CLUSTER_TABLE_COLUMNS = [
-	{ id: 'clustername', key: 'Clustername' }
+	{ id: 'clustername', key: 'Clustername' },
+	{ id: 'description', key: 'Description' },
+	{ id: 'numberOfNodes', key: 'Nodes' },
 ];
 
 const createClusterTable = (clusters, classes, props, onDeleteCluster, onSelectCluster) => {
@@ -105,6 +107,7 @@ const createClusterTable = (clusters, classes, props, onDeleteCluster, onSelectC
 										style={{ cursor: 'pointer' }}
 									>
 										<TableCell>{cluster.clustername}</TableCell>
+										<TableCell>{cluster.description}</TableCell>
 										<TableCell align="right">
 											<Tooltip title="Delete cluster">
 												<IconButton
@@ -221,7 +224,7 @@ const Clusters = (props) => {
 				variant: 'contained'
 			}
 		});
-		await brokerClient.deleteUser(clustername);
+		await brokerClient.deleteCluster(clustername);
 		enqueueSnackbar(`Cluster "${clustername}" successfully deleted`, {
 			variant: 'success'
 		});
