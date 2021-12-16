@@ -418,7 +418,8 @@ const init = async (licenseContainer) => {
 				return response;
 			}
 			case 'getBrokerConnections': {
-				const connections = context.brokerManager.getBrokerConnections();
+				// const connections = context.brokerManager.getBrokerConnections();
+				const connections = configManager.connections;
 				return connections;
 			}
 			case 'getBrokerConfigurations': {
