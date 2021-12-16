@@ -475,6 +475,11 @@ const init = async (licenseContainer) => {
 				configManager.updateConnection(oldConnectionId, connection);
 				return configManager.connections;
 			}
+			case 'deleteConnection': {
+				const { id } = message;
+				configManager.deleteConnection(id);
+				return configManager.connections;
+			}
 			default: {
 				const handler = context.requestHandlers.get(request);
 				if (handler) {
