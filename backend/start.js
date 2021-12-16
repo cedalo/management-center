@@ -43,6 +43,7 @@ const acl = require('./src/security/acl');
 const checker = new LicenseChecker();
 let context = {
 	brokerManager: new BrokerManager(),
+	requestHandlers: new Map(),
 	security: {
 		acl: {
 			...acl
