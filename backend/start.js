@@ -350,8 +350,6 @@ const init = async (licenseContainer) => {
 			throw new Error('Not authorized');
 		}
 		if (broker) {
-			console.log(JSON.stringify(api));
-			console.log(JSON.stringify(command));
 			const result = await broker.sendCommandMessage(api, command);
 			console.log(JSON.stringify(result));
 			const response = {
