@@ -321,7 +321,7 @@ const ClusterDetail = (props) => {
 														disabled={true}
 														id={`${node.id}-redis-hostname`}
 														label="Redis Host"
-														value={node.ha?.redishosts[0]?.hostname}
+														value={node.ha?.backendhosts[0]?.hostname}
 														defaultValue=""
 														variant="outlined"
 														fullWidth
@@ -333,7 +333,7 @@ const ClusterDetail = (props) => {
 														disabled={true}
 														id={`${node.id}-redis-port`}
 														label="Redis Port"
-														value={node.ha?.redishosts[0]?.port}
+														value={node.ha?.backendhosts[0]?.port}
 														defaultValue=""
 														variant="outlined"
 														fullWidth
