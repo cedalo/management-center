@@ -83,17 +83,23 @@ const ClusterDetail = (props) => {
 	};
 
 	const addNodeToCluster = async (nodeId) => {
-		await brokerClient.joinCluster(cluster.clustername, nodeId);
-		enqueueSnackbar('Node successfully added to cluster', {
-			variant: 'success'
-		});
-		const clusterObject = await brokerClient.getCluster(cluster.clustername);
-		dispatch(updateCluster(clusterObject));
-		setUpdatedCluster({
-			...clusterObject
-		});
-		const clusters = await brokerClient.listClusters();
-		dispatch(updateClusters(clusters));
+		try {
+			await brokerClient.joinCluster(cluster.clustername, nodeId);
+			enqueueSnackbar('Node successfully added to cluster', {
+				variant: 'success'
+			});
+			const clusterObject = await brokerClient.getCluster(cluster.clustername);
+			dispatch(updateCluster(clusterObject));
+			setUpdatedCluster({
+				...clusterObject
+			});
+			const clusters = await brokerClient.listClusters();
+			dispatch(updateClusters(clusters));
+		} catch (error) {
+			enqueueSnackbar(`Error adding node "${nodeId}" to cluster. Reason: ${error.message || error}`, {
+				variant: 'error'
+			});
+		}
 		setSelectNodeDialogOpen(false);
 	}
 
