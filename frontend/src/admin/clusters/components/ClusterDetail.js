@@ -219,6 +219,55 @@ const ClusterDetail = (props) => {
 								className={classes.textField}
 							/>
 						</Grid>
+						<Grid item xs={12} sm={12}>
+							<TextField
+								disabled
+								id="backend-username"
+								label="Backend Username"
+								value={cluster?.backendhosts[0]?.username}
+								defaultValue=""
+								variant="outlined"
+								fullWidth
+								className={classes.textField}
+							/>
+						</Grid>
+						<Grid item xs={12} sm={12}>
+							<TextField
+								disabled
+								type="password"
+								id="backend-password"
+								label="Backend Password"
+								value={cluster?.backendhosts[0]?.password}
+								defaultValue=""
+								variant="outlined"
+								fullWidth
+								className={classes.textField}
+							/>
+						</Grid>
+						<Grid item xs={12} sm={8}>
+							<TextField
+								disabled
+								id="backend-hostname"
+								label="Backend Hostname"
+								value={cluster?.backendhosts[0]?.hostname}
+								defaultValue=""
+								variant="outlined"
+								fullWidth
+								className={classes.textField}
+							/>
+						</Grid>
+						<Grid item xs={12} sm={4}>
+							<TextField
+								disabled
+								id="backend-port"
+								label="Backend Port"
+								value={cluster?.backendhosts[0]?.port}
+								defaultValue=""
+								variant="outlined"
+								fullWidth
+								className={classes.textField}
+							/>
+						</Grid>
 						<br/>
 					</Grid>
 					<br/>
