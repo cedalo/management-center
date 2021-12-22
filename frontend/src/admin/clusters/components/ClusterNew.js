@@ -93,7 +93,18 @@ const ClusterNew = (props) => {
 
 	const onSaveCluster = async () => {
 		try {
-			await client.createCluster(clustername, clusterDescription);
+			await client.createCluster({
+				clustername, 
+				description: clusterDescription,
+				backendhosts: [
+					{
+						hostname,
+						port,
+						username: backendUsername,
+						password: backendPassword,
+					}
+				]
+			});
 			const clusters = await client.listClusters();
 			dispatch(updateClusters(clusters));
 			history.push(`/admin/clusters`);
