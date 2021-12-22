@@ -251,13 +251,12 @@ export default class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	async createCluster(clustername, description) {
+	async createCluster(clusterConfiguration) {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
 			request: 'createCluster',
-			clustername,
-			description
+			clusterConfiguration
 		});
 		return response.response;
 	}
