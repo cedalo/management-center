@@ -148,6 +148,14 @@ const ClusterDetail = (props) => {
 		setEditMode(false);
 	};
 
+	const onEnableLTS = async (cluster, node) => {
+		// TODO
+	};
+
+	const onDisableLTS = async (cluster, node) => {
+		// TODO
+	};
+
 	const onCancelEdit = async () => {
 		await confirm({
 			title: 'Cancel cluster editing',
