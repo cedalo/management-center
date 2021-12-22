@@ -30,13 +30,25 @@ const clusterDoesNotContainNode = (brokerConnection, cluster) => {
 	return result ? false : true;
 }
 
-const getDialogContent = (brokerConnections, cluster, handleAddNode, handleSelectBroker, selectedBroker, classes) => {
+const getDialogContent = ({
+	brokerConnections, 
+	cluster, 
+	handleAddNode, 
+	handleSelectBroker, 
+	selectedBroker, 
+	classes, 
+	handleClose
+}) => {
 
 	const availableBrokerConnections = brokerConnections.filter((brokerConnection) => clusterDoesNotContainNode(brokerConnection, cluster));
 
+	if (!selectedBroker && availableBrokerConnections[0]) {
+		handleSelectBroker(availableBrokerConnections[0].id);
+	}
+
 	if (!brokerConnections || brokerConnections.length === 0) {
 		return <>
-			<DialogTitle align="center" id="not-connected-dialog-title">
+			<DialogTitle align="center" id="not-connected-dialog-title" onClose={handleClose}>
 				You have not configured any broker.
 			</DialogTitle>
 			<DialogContent>
@@ -60,7 +72,7 @@ const getDialogContent = (brokerConnections, cluster, handleAddNode, handleSelec
 					<InputLabel htmlFor="broker">Broker</InputLabel>
 					<Select
 						autoFocus
-						defaultValue={availableBrokerConnections[0]}
+						defaultValue={availableBrokerConnections[0]?.id}
 						value={selectedBroker}
 						onChange={(event) => handleSelectBroker(event.target.value)}
 						label="Broker"
@@ -105,7 +117,15 @@ const SelectNodeDialog = ({ brokerConnections, cluster, open, handleClose, handl
 			aria-describedby="add-node-dialog-description"
 		>
 			{
-				getDialogContent(brokerConnections, cluster, handleAddNode, handleSelectBroker, selectedBroker, classes)
+				getDialogContent({
+					brokerConnections, 
+					cluster, 
+					handleAddNode, 
+					handleSelectBroker, 
+					selectedBroker, 
+					classes, 
+					handleClose
+				})
 			}
 		</Dialog>
 	);
