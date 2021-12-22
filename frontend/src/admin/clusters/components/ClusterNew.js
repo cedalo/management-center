@@ -5,6 +5,7 @@ import { useSnackbar } from 'notistack';
 
 import { Alert, AlertTitle } from '@material-ui/lab';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import ClusterIcon from '@material-ui/icons/Storage';
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
@@ -161,7 +162,7 @@ const ClusterNew = (props) => {
 										InputProps={{
 											startAdornment: (
 												<InputAdornment position="start">
-													<AccountCircle />
+													<ClusterIcon />
 												</InputAdornment>
 											)
 										}}
