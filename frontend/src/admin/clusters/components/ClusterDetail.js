@@ -115,17 +115,24 @@ const ClusterDetail = (props) => {
 				variant: 'contained'
 			}
 		});
-		await brokerClient.leaveCluster(cluster.clustername, nodeId);
-		enqueueSnackbar('Node successfully removed from cluster', {
-			variant: 'success'
-		});
-		const clusterObject = await brokerClient.getCluster(cluster.clustername);
-		dispatch(updateCluster(clusterObject));
-		setUpdatedCluster({
-			...clusterObject
-		});
-		const clusters = await brokerClient.listClusters();
-		dispatch(updateClusters(clusters));
+
+		try {
+			await brokerClient.leaveCluster(cluster.clustername, nodeId);
+			enqueueSnackbar('Node successfully removed from cluster', {
+				variant: 'success'
+			});
+			const clusterObject = await brokerClient.getCluster(cluster.clustername);
+			dispatch(updateCluster(clusterObject));
+			setUpdatedCluster({
+				...clusterObject
+			});
+			const clusters = await brokerClient.listClusters();
+			dispatch(updateClusters(clusters));
+		} catch (error) {
+			enqueueSnackbar(`Error removing node "${nodeId}" from cluster. Reason: ${error.message || error}`, {
+				variant: 'error'
+			});
+		}
 	}
 
 	const onUpdateClusterDetail = async () => {
