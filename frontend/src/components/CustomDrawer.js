@@ -57,7 +57,10 @@ function ListItemLink(props) {
 				{icon ? <ListItemIcon style={{
 					color: isSelected ? theme.palette.menuItem.color : ''
 				}}>{icon}</ListItemIcon> : null}
-				<ListItemText primary={primary} classes={{ primary: classes.menuItem }} />
+				<ListItemText primary={primary} classes={{ 
+					root: classes.menuItem,
+					primary: classes.menuItem
+				}} />
 			</MenuItem>
 			</Tooltip>
 		</li>
