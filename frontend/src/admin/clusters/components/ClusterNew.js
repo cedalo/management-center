@@ -191,6 +191,71 @@ const ClusterNew = (props) => {
 										className={classes.textField}
 									/>
 								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										required={false}
+										id="backend-username"
+										label="Backend username"
+										onChange={(event) => setBackendUsername(event.target.value)}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										className={classes.textField}
+										InputProps={{
+											startAdornment: (
+												<InputAdornment position="start">
+													<AccountCircle />
+												</InputAdornment>
+											)
+										}}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										required={false}
+										type="password"
+										id="backend-password"
+										label="Backend password"
+										onChange={(event) => setBackendPassword(event.target.value)}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										className={classes.textField}
+										InputProps={{
+											startAdornment: (
+												<InputAdornment position="start">
+													<PasswordIcon />
+												</InputAdornment>
+											)
+										}}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										required={false}
+										type="url"
+										id="backend-hosts-hostname"
+										label="Backend Hostname"
+										onChange={(event) => setBackendHostname(event.target.value)}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										className={classes.textField}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										required={false}
+										type="number"
+										id="backend-hosts-port"
+										label="Backend Port"
+										onChange={(event) => setBackendPort(parseInt(event.target.value))}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										className={classes.textField}
+									/>
+								</Grid>
 								<Grid container xs={12} alignItems="flex-start">
 									<Grid item xs={12} className={classes.buttons}>
 										<SaveCancelButtons
