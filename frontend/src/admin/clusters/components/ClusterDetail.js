@@ -393,42 +393,46 @@ const ClusterDetail = (props) => {
 					>
 						Edit
 					</Button>
-					<Button
-						variant="contained"
-						color="primary"
-						className={classes.button}
-						startIcon={<AddIcon />}
-						onClick={() => setSelectNodeDialogOpen(true)}
-					>
-						Add node
-					</Button>
 				</Grid>
 			)}
 			{editMode && (
-				<Grid item xs={12} className={classes.buttons}>
-					<Button
-						variant="contained"
-						disabled={!validate()}
-						color="primary"
-						className={classes.button}
-						startIcon={<SaveIcon />}
-						onClick={(event) => {
-							event.stopPropagation();
-							onUpdateClusterDetail();
-						}}
-					>
-						Save
-					</Button>
-					<Button
-						variant="contained"
-						onClick={(event) => {
-							event.stopPropagation();
-							onCancelEdit();
-						}}
-					>
-						Cancel
-					</Button>
-				</Grid>
+				<>
+					<Grid item xs={12} className={classes.buttons}>
+						<Button
+							variant="contained"
+							color="primary"
+							className={classes.button}
+							startIcon={<AddIcon />}
+							onClick={() => setSelectNodeDialogOpen(true)}
+						>
+							Add node
+						</Button>
+					</Grid>
+					<Grid item xs={12} className={classes.buttons}>
+						<Button
+							variant="contained"
+							disabled={!validate()}
+							color="primary"
+							className={classes.button}
+							startIcon={<SaveIcon />}
+							onClick={(event) => {
+								event.stopPropagation();
+								onUpdateClusterDetail();
+							}}
+						>
+							Save
+						</Button>
+						<Button
+							variant="contained"
+							onClick={(event) => {
+								event.stopPropagation();
+								onCancelEdit();
+							}}
+						>
+							Cancel
+						</Button>
+					</Grid>
+				</>
 			)}
 			<SelectNodeDialog
 				open={selectNodeDialogOpen}
