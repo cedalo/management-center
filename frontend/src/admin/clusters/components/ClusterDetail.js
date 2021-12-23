@@ -348,7 +348,7 @@ const ClusterDetail = (props) => {
 														className={classes.textField}
 													/>
 												</Grid>
-												<Grid item xs={12}>
+												{/* <Grid item xs={12}>
 													<Tooltip title="Use LTS">
 														<FormControlLabel
 															disabled={!editMode}
@@ -371,7 +371,7 @@ const ClusterDetail = (props) => {
 															label="Use LTS" 
 														/>
 													</Tooltip>
-												</Grid>
+												</Grid> */}
 										</Grid>
 									</CardContent>
 									<CardActions>
