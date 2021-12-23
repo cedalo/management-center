@@ -465,7 +465,12 @@ const init = async (licenseContainer) => {
 				const { connection } = message;
 				try {
 					configManager.createConnection(connection);
-					await handleNewConnection(connection);
+				} catch (error) {
+					// TODO: handle error because Management Center crashes
+					console.error(error);
+				}
+				return configManager.connections;
+			}
 				} catch (error) {
 					// TODO: handle error because Management Center crashes
 					console.error(error);
