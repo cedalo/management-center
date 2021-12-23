@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { green, red } from '@material-ui/core/colors';
 import { makeStyles, withStyles, useTheme } from '@material-ui/core/styles';
+import { useSnackbar } from 'notistack';
 import AddIcon from '@material-ui/icons/Add';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
@@ -20,6 +21,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
+import Switch from '@material-ui/core/Switch';
+import Tooltip from '@material-ui/core/Tooltip';
 import Popover from '@material-ui/core/Popover';
 import { Link as RouterLink } from 'react-router-dom';
 import Table from '@material-ui/core/Table';
@@ -30,8 +33,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Typography from '@material-ui/core/Typography';
-import { WebSocketContext } from '../websockets/WebSocket';
-import { updateSelectedConnection } from '../actions/actions';
+import { WebSocketContext } from '../../../websockets/WebSocket';
+import { useConfirm } from 'material-ui-confirm';
+import { updateBrokerConnections, updateSelectedConnection } from '../../../actions/actions';
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 // import {
@@ -83,9 +87,16 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 	const dispatch = useDispatch();
 	const theme = useTheme();
 	const context = useContext(WebSocketContext);
+	const confirm = useConfirm();
+	const { enqueueSnackbar } = useSnackbar();
+	const { client: brokerClient } = context;
 	const [connection, setConnection] = React.useState('');
 	const [anchorEl, setAnchorEl] = React.useState(null);
 	const [openedPopoverId, setOpenedPopoverId] = React.useState(null);
+
+	const onNewConnection = () => {
+		history.push('/config/connections/new');
+	};
 
 	const handlePopoverOpen = (target, id) => {
 		setOpenedPopoverId(id);
@@ -102,6 +113,63 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 		history.push(`/config/connections/detail/${connection.id}`);
 	};
 
+	const onConnectServerToBroker = async (id) => {
+		await brokerClient.connectServerToBroker(id);
+		enqueueSnackbar(`Connection "${id}" successfully established`, {
+			variant: 'success'
+		});
+		const connections = await brokerClient.getBrokerConnections();
+		dispatch(updateBrokerConnections(connections));
+	}
+
+	const onDisconnectServerFromBroker = async (id) => {
+		await confirm({
+			title: 'Confirm disconnecting',
+			description: `Do you really want to disconnect the connection "${id}"?`,
+			cancellationButtonProps: {
+				variant: 'contained'
+			},
+			confirmationButtonProps: {
+				color: 'primary',
+				variant: 'contained'
+			}
+		});
+		await brokerClient.disconnectServerFromBroker(id);
+		enqueueSnackbar(`Connection "${id}" successfully closed`, {
+			variant: 'success'
+		});
+		const connections = await brokerClient.getBrokerConnections();
+		dispatch(updateBrokerConnections(connections));
+	}
+
+	const handleBrokerConnectionConnectDisconnect = async (id, connect) => {
+		if (connect) {
+			onConnectServerToBroker(id);
+		} else {
+			onDisconnectServerFromBroker(id);
+		}
+	};
+
+	const onDeleteConnection = async (id) => {
+		await confirm({
+			title: 'Confirm connection deletion',
+			description: `Do you really want to delete connection "${id}"?`,
+			cancellationButtonProps: {
+				variant: 'contained'
+			},
+			confirmationButtonProps: {
+				color: 'primary',
+				variant: 'contained'
+			}
+		});
+		await brokerClient.deleteConnection(id);
+		enqueueSnackbar(`Connection "${id}" successfully deleted`, {
+			variant: 'success'
+		});
+		const connections = await brokerClient.getBrokerConnections();
+		dispatch(updateBrokerConnections(connections));
+	};
+
 	return (
 		<div>
 			<Breadcrumbs aria-label="breadcrumb">
@@ -115,6 +183,21 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 					Connections
 				</Typography>
 			</Breadcrumbs>
+			<br />
+			<Button
+				variant="outlined"
+				color="default"
+				size="small"
+				className={classes.button}
+				startIcon={<AddIcon />}
+				onClick={(event) => {
+					event.stopPropagation();
+					onNewConnection();
+				}}
+			>
+				New Connection
+			</Button>
+			<br />
 			<br />
 			{brokerConnections && brokerConnections?.length > 0 ? (
 				<div>
@@ -170,7 +253,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 															}}
 														>
 															<Typography className={classes.typography}>
-																{brokerConnection.status.connected ? (
+																{brokerConnection.status?.connected ? (
 																	<Paper>Broker successfully connected</Paper>
 																) : (
 																	<TableContainer component={Paper}>
@@ -249,24 +332,27 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 														{}
 													</TableCell>
 													<TableCell align="right">
-														{/* <IconButton
-						  size="small"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            onDeleteConfiguration(brokerConnection.name);
-                          }}
-                        >
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton
-						  size="small"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            onDeleteConfiguration(brokerConnection.name);
-                          }}
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton> */}
+														<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}>
+															<Switch
+																checked={brokerConnection.status?.connected}
+																name="connectionConnected"
+																onClick={(event) => {
+																	event.stopPropagation();
+																	handleBrokerConnectionConnectDisconnect(brokerConnection.id, event.target.checked);
+																}}
+																inputProps={{ 'aria-label': 'Connection connected' }}
+															/>
+														</Tooltip>
+														<IconButton
+														disabled={brokerConnection.status?.connected}
+														size="small"
+														onClick={(event) => {
+															event.stopPropagation();
+															onDeleteConnection(brokerConnection.id);
+														}}
+														>
+														<DeleteIcon fontSize="small" />
+														</IconButton>
 													</TableCell>
 												</StyledTableRow>
 											))}

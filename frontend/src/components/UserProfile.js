@@ -1,7 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { Redirect, Link as RouterLink } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
-import { updateUserProfile, updateUsers } from '../actions/actions';
+import { updateUserProfile } from '../actions/actions';
+import { updateUsers } from '../admin/users/actions/actions';
 import { useSnackbar } from 'notistack';
 
 import AccountCircle from '@material-ui/icons/AccountCircle';

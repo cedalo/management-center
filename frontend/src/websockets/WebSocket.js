@@ -27,7 +27,11 @@ import {
 import {
 	updateUserRoles,
 	updateUsers,
-} from '../actions/actions';
+} from '../admin/users/actions/actions';
+
+import {
+	updateClusters
+} from '../admin/clusters/actions/actions';
 
 import WS_BASE from './config';
 import WebMosquittoProxyClient from '../client/WebMosquittoProxyClient';
@@ -60,6 +64,22 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			error
 		}));
 	}
+
+	try {
+		const clusters = await client.listClusters();
+		dispatch(updateClusters(clusters));
+		dispatch(updateFeatures({
+			feature: 'clustermanagement',
+			status: 'ok'
+		}));
+	} catch (error) {
+		dispatch(updateFeatures({
+			feature: 'clustermanagement',
+			status: 'failed',
+			error
+		}));
+	}
+
 	const brokerConnections = await client.getBrokerConnections();
 	dispatch(updateBrokerConnections(brokerConnections));
 

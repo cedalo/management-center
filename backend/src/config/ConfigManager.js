@@ -20,6 +20,11 @@ module.exports = class ConfigManager {
 		db.update('connections', (oldConnections) => connections).write();
 	}
 
+	getConnection(id) {
+		const connection = this.connections.find((connectionObject) => connectionObject.id === id);
+		return connection;
+	}
+
 	createConnection(connection) {
 		db.get('connections')
 			.push(connection)
@@ -30,6 +35,12 @@ module.exports = class ConfigManager {
 		db.get('connections')
 			.find({ id: oldConnectionId })
 			.assign(connection)
+			.write();
+	}
+
+	deleteConnection(id) {
+		db.get('connections')
+			.remove({ id })
 			.write();
 	}
 };

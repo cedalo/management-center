@@ -5,6 +5,7 @@ import { useSnackbar } from 'notistack';
 
 import { Alert, AlertTitle } from '@material-ui/lab';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import ClusterIcon from '@material-ui/icons/Storage';
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
@@ -68,6 +69,11 @@ const ClusterNew = (props) => {
 	const classes = useStyles();
 
 	const [clustername, setClustername] = useState('');
+	const [clusterDescription, setClusterDescription] = useState('');
+	const [backendUsername, setBackendUsername] = useState('');
+	const [backendPassword, setBackendPassword] = useState('');
+	const [hostname, setBackendHostname] = useState('');
+	const [port, setBackendPort] = useState(0);
 
 	const clusternameExists = props?.clusters?.find((searchCluster) => {
 		return searchCluster.clustername === clustername;
@@ -87,7 +93,18 @@ const ClusterNew = (props) => {
 
 	const onSaveCluster = async () => {
 		try {
-			await client.createCluster(clustername);
+			await client.createCluster({
+				clustername, 
+				description: clusterDescription,
+				backendhosts: [
+					{
+						hostname,
+						port,
+						username: backendUsername,
+						password: backendPassword,
+					}
+				]
+			});
 			const clusters = await client.listClusters();
 			dispatch(updateClusters(clusters));
 			history.push(`/admin/clusters`);
@@ -156,10 +173,87 @@ const ClusterNew = (props) => {
 										InputProps={{
 											startAdornment: (
 												<InputAdornment position="start">
+													<ClusterIcon />
+												</InputAdornment>
+											)
+										}}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										required={false}
+										id="description"
+										label="Cluster description"
+										onChange={(event) => setClusterDescription(event.target.value)}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										className={classes.textField}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										required={false}
+										id="backend-username"
+										label="Backend username"
+										onChange={(event) => setBackendUsername(event.target.value)}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										className={classes.textField}
+										InputProps={{
+											startAdornment: (
+												<InputAdornment position="start">
 													<AccountCircle />
 												</InputAdornment>
 											)
 										}}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										required={false}
+										type="password"
+										id="backend-password"
+										label="Backend password"
+										onChange={(event) => setBackendPassword(event.target.value)}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										className={classes.textField}
+										InputProps={{
+											startAdornment: (
+												<InputAdornment position="start">
+													<PasswordIcon />
+												</InputAdornment>
+											)
+										}}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										required={false}
+										type="url"
+										id="backend-hosts-hostname"
+										label="Backend Hostname"
+										onChange={(event) => setBackendHostname(event.target.value)}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										className={classes.textField}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										required={false}
+										type="number"
+										id="backend-hosts-port"
+										label="Backend Port"
+										onChange={(event) => setBackendPort(parseInt(event.target.value))}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										className={classes.textField}
 									/>
 								</Grid>
 								<Grid container xs={12} alignItems="flex-start">

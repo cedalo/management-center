@@ -57,13 +57,26 @@ function ListItemLink(props) {
 				{icon ? <ListItemIcon style={{
 					color: isSelected ? theme.palette.menuItem.color : ''
 				}}>{icon}</ListItemIcon> : null}
-				<ListItemText primary={primary} classes={{ primary: classes.menuItem }} />
+				<ListItemText primary={primary} classes={{ 
+					root: classes.menuItem,
+					primary: classes.menuItem
+				}} />
 			</MenuItem>
 			</Tooltip>
 		</li>
 	);
 }
 
+const access = (feature) => {
+	if (!feature || feature?.error?.name === 'NotAuthorizedError') {
+		return false;
+	} else {
+		return true;
+	}
+}
+const dynamicSecurityAccess = (dynamicSecurityFeature) => access(dynamicSecurityFeature);
+const userManagementAccess = (userManagementFeature) => access(userManagementFeature);
+const clusterManagementAccess = (clusterManagementFeature) => access(clusterManagementFeature);
 
 const useStyles = makeStyles((theme) => ({
 	toolbar: {
@@ -73,6 +86,9 @@ const useStyles = makeStyles((theme) => ({
 		padding: theme.spacing(0, 1),
 		...theme.mixins.toolbar
 	},
+	menuItem: {
+		fontSize: '14px',
+	  },
 	menuItemRoot: {
 		fontSize: '14px',
 		"&$menuItemSelected, &$menuItemSelected:focus, &$menuItemSelected:hover": {
@@ -115,7 +131,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const CustomDrawer = ({ hideConnections, open, handleDrawerOpen, handleDrawerClose }) => {
+const CustomDrawer = ({ userProfile = {}, userManagementFeature, dynamicSecurityFeature, hideConnections, open, handleDrawerOpen, handleDrawerClose }) => {
 
 	const classes = useStyles();
 	const theme = useTheme();
@@ -166,7 +182,7 @@ const CustomDrawer = ({ hideConnections, open, handleDrawerOpen, handleDrawerClo
 				/>
 			</List>
 			<Divider />
-			<List>
+			{(userProfile?.isAdmin || userProfile?.isEditor) && <><List>
 				{open ? <ListSubheader className={classes.menuSubHeader}>Dynamic Security</ListSubheader> : null}
 				<ListItemLink
 					id="menu-item-clients"
@@ -190,7 +206,7 @@ const CustomDrawer = ({ hideConnections, open, handleDrawerOpen, handleDrawerClo
 					icon={<RoleIcon fontSize="small" />}
 				/>
 			</List>
-			<Divider />
+			<Divider /></>}
 			{/* <List>
 <ListItemLink 
 classes={classes}
@@ -202,7 +218,7 @@ icon={<StreamsIcon />}
 <Divider /> */}
 
 			<Divider />
-			<List>
+			{userProfile?.isAdmin && <><List>
 				{open ? <ListSubheader className={classes.menuSubHeader}>Management</ListSubheader> : null}
 				<ListItemLink
 					id="menu-item-plugins"
@@ -218,7 +234,7 @@ primary="Settings"
 icon={<SettingsIcon />}
 /> */}
 			</List>
-			<Divider />
+			<Divider /></>}
 			<List id="menu-items-tools">
 				{open ? <ListSubheader className={classes.menuSubHeader}>Tools</ListSubheader> : null}
 				<ListItemLink
@@ -228,7 +244,7 @@ icon={<SettingsIcon />}
 					icon={<StreamsheetsIcon fontSize="small" />}
 				/>
 				<ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon />} />
-				<ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon />} />
+				{userProfile?.isAdmin && <ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon />} />}
 			</List>
 			<Divider />
 			<List>
@@ -246,7 +262,7 @@ icon={<SettingsIcon />}
 					primary="Settings"
 					icon={<SettingsIcon fontSize="small" />}
 				/>
-				<ListItemLink
+				{userManagementAccess(userManagementFeature) ? <ListItemLink
 					classes={classes}
 					to="/admin/users"
 					primary="User Management"
@@ -273,6 +289,10 @@ icon={<SettingsIcon />}
 
 const mapStateToProps = (state) => {
 	return {
+		userProfile: state.userProfile?.userProfile,
+		userManagementFeature: state.systemStatus?.features?.usermanagement,
+		clusterManagementFeature: state.systemStatus?.features?.clusterManagement,
+		dynamicSecurityFeature: state.systemStatus?.features?.dynamicsecurity,
 		brokerConnections: state.brokerConnections.brokerConnections,
 		connected: state.brokerConnections.connected,
 		currentConnectionName: state.brokerConnections.currentConnectionName

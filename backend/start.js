@@ -43,6 +43,7 @@ const acl = require('./src/security/acl');
 const checker = new LicenseChecker();
 let context = {
 	brokerManager: new BrokerManager(),
+	requestHandlers: new Map(),
 	security: {
 		acl: {
 			...acl
@@ -218,7 +219,7 @@ const init = async (licenseContainer) => {
 
 	config.connections = connections;
 
-	const handleNewConnection = async (connection) => {
+	const handleConnectServerToBroker = async (connection) => {
 		const system = {
 			_name: connection.name
 		};
@@ -330,7 +331,7 @@ const init = async (licenseContainer) => {
 	}
 
 	for (let i=0; i<connections.length; i++) {
-		handleNewConnection(connections[i]);
+		handleConnectServerToBroker(connections[i]);
 	}
 
 	console.log(`Started Mosquitto proxy at http://localhost:${CEDALO_MC_PROXY_PORT}`);
@@ -350,8 +351,6 @@ const init = async (licenseContainer) => {
 			throw new Error('Not authorized');
 		}
 		if (broker) {
-			console.log(JSON.stringify(api));
-			console.log(JSON.stringify(command));
 			const result = await broker.sendCommandMessage(api, command);
 			console.log(JSON.stringify(result));
 			const response = {
@@ -418,7 +417,8 @@ const init = async (licenseContainer) => {
 				return response;
 			}
 			case 'getBrokerConnections': {
-				const connections = context.brokerManager.getBrokerConnections();
+				// const connections = context.brokerManager.getBrokerConnections();
+				const connections = configManager.connections;
 				return connections;
 			}
 			case 'getBrokerConfigurations': {
@@ -475,6 +475,18 @@ const init = async (licenseContainer) => {
 				const { oldConnectionId, connection } = message;
 				configManager.updateConnection(oldConnectionId, connection);
 				return configManager.connections;
+			}
+			case 'deleteConnection': {
+				const { id } = message;
+				configManager.deleteConnection(id);
+				return configManager.connections;
+			}
+			default: {
+				const handler = context.requestHandlers.get(request);
+				if (handler) {
+					const result = await handler[request](message);
+					return result;
+				}
 			}
 		}
 		return {};

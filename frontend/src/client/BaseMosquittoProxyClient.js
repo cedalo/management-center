@@ -8,7 +8,7 @@ const createError = (code, message) => ({
 
 const API_DYNAMIC_SECURITY = 'dynamic-security';
 const API_STREAMS_PROCESSING = 'stream-processing';
-const API_CLUSTER_MANAGEMENT = 'cluster-managament';
+const API_HIGH_AVAILABILITY = 'cedalo/ha';
 const ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED = 'You are not authorized to access the user management.';
 
 class APIError extends Error {
@@ -62,7 +62,7 @@ export default class BaseMosquittoProxyClient {
 		this._requests = new Map();
 		// TODO: make timeout configurable
 		// request timeout in ms:
-		this._timeout = 3000;
+		this._timeout = 5000;
 	}
 
 	// eslint-disable-next-line consistent-return
@@ -251,52 +251,75 @@ export default class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
+	async createCluster(clusterConfiguration) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'createCluster',
+			clusterConfiguration
+		});
+		return response.response;
+	}
+
 	 async listClusters() {
-		 return [{
-			 clustername: 'example-cluster'
-		 }];
-		// const data = await this.sendCommand(
-		// 	{
-		// 		command: 'listClusters',
-		// 		verbose,
-		// 		count: -1,
-		// 		offset: 0
-		// 	},
-		// 	API_CLUSTER_MANAGEMENT
-		// );
-		// return data?.clusters;
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'listClusters'
+		});
+		return response.response;
 	}
 
 	async getCluster(clustername) {
-		const data = await this.sendCommand(
-			{
-				command: 'getCluster',
-				clustername
-			},
-			API_CLUSTER_MANAGEMENT
-		);
-		return data?.client;
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'getCluster',
+			clustername
+		});
+		return response.response;
 	}
 
-
-	async modifyCluster({ clustername }) {
-		return this.sendCommand(
-			{
-				command: 'modifyCluster',
-				clustername,
-			},
-			API_CLUSTER_MANAGEMENT
-		);
+	async modifyCluster(cluster) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'modifyCluster',
+			cluster
+		});
+		return response.response;
 	}
 
 	async deleteCluster(clustername) {
-		return this.sendCommand(
-			{
-				command: 'deleteCluster',
-				clustername
-			},
-			API_CLUSTER_MANAGEMENT
-		);
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'deleteCluster',
+			clustername
+		});
+		return response.response;
+	}
+
+	async joinCluster(clustername, brokerId) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'joinCluster',
+			clustername,
+			brokerId
+		});
+		return response.response;
+	}
+
+	async leaveCluster(clustername, brokerId) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'leaveCluster',
+			clustername,
+			brokerId
+		});
+		return response.response;
 	}
 
 	/**
@@ -304,6 +327,24 @@ export default class BaseMosquittoProxyClient {
 	 * Methods for handling multiple broker connections
 	 * ******************************************************************************************
 	 */
+
+	async connectServerToBroker(id) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'connectServerToBroker',
+			id
+		});
+	}
+
+	async disconnectServerFromBroker(id) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'disconnectServerFromBroker',
+			id
+		});
+	}
 
 	async connectToBroker(brokerName) {
 		return this.sendRequest({
@@ -867,6 +908,15 @@ export default class BaseMosquittoProxyClient {
 			request: 'modifyConnection',
 			oldConnectionId,
 			connection
+		});
+	}
+
+	async deleteConnection(connectionId) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'deleteConnection',
+			id: connectionId
 		});
 	}
 

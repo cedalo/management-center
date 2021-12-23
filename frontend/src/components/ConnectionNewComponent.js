@@ -21,6 +21,7 @@ import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
+import { useHistory } from 'react-router-dom';
 import { updateBrokerConfigurations, updateBrokerConnected, updateBrokerConnections } from '../actions/actions';
 
 const useStyles = makeStyles((theme) => ({
@@ -49,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-const ConnectionNewComponent = (props) => {
+const ConnectionNewComponent = ({ connections }) => {
 	const classes = useStyles();
 	const [connection, setConnection] = React.useState({
 		id: 'mosquitto',
@@ -62,14 +63,19 @@ const ConnectionNewComponent = (props) => {
 	});
 	const [connected, setConnected] = React.useState(false);
 	const { enqueueSnackbar } = useSnackbar();
-
+	const history = useHistory();
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
 	const { client: brokerClient } = context;
 
+	const connectionExists = connections?.find((searchConnection) => {
+		return searchConnection.id === connection.id;
+	});
+
 	const validate = () => {
-		return connection.id !== ''
+		return !connectionExists
+			&& connection.id !== ''
 			&& connection.name !== ''
 			&& connection.url !== '';
 	};
@@ -109,6 +115,7 @@ const ConnectionNewComponent = (props) => {
 			enqueueSnackbar('Connection successfully created', {
 				variant: 'success'
 			});
+			history.push(`/config/connections`);
 		} catch (error) {
 			enqueueSnackbar(`Error creating connection "${connection.name}". Reason: ${error.message || error}`, {
 				variant: 'error'
@@ -124,6 +131,8 @@ const ConnectionNewComponent = (props) => {
 						<Grid container spacing={1} alignItems="flex-end">
 							<Grid item xs={12}>
 								<TextField
+									error={connectionExists}
+									helperText={connectionExists && 'A connection with this ID already exists.'}
 									required={true}
 									onChange={(event) => {
 										setConnection({
@@ -268,6 +277,7 @@ const ConnectionNewComponent = (props) => {
 
 const mapStateToProps = (state) => {
 	return {
+		connections: state.brokerConnections?.brokerConnections,
 		selectedConnectionToEdit: state.brokerConnections?.selectedConnectionToEdit
 	};
 };

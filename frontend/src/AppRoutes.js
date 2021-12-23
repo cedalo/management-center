@@ -9,7 +9,6 @@ import System from './components/System';
 import InfoPage from './components/InfoPage';
 // import Login from "./components/Login";
 import Roles from './components/Roles';
-import Connections from './components/Connections';
 import Plugins from './components/Plugins';
 import Terminal from './components/Terminal';
 import Settings from './components/Settings';
@@ -33,6 +32,8 @@ import useFetch from './helpers/useFetch';
 import UserNew from './admin/users/components/UserNew';
 import UserDetail from './admin/users/components/UserDetail';
 import Users from './admin/users/components/Users';
+import ConnectionNew from './admin/connections/components/ConnectionNew';
+import Connections from './admin/connections/components/Connections';
 import ClusterNew from './admin/clusters/components/ClusterNew';
 import Clusters from './admin/clusters/components/Clusters';
 import ClusterDetail from './admin/clusters/components/ClusterDetail';
@@ -120,6 +121,9 @@ function AppRoutes(props) {
 				</Route>
 				<Route path="/system">
 					<System />
+				</Route>
+				<Route path="/config/connections/new">
+					<ConnectionNew />
 				</Route>
 				<Route path="/config/connections/detail/:connectionId">
 					<ConnectionDetail />

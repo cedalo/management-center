@@ -41,7 +41,7 @@ module.exports = class BaseMosquittoClient {
 		this._requests = new Map();
 		// TODO: make timeout configurable
 		// request timeout in ms:
-		this._timeout = 3000;
+		this._timeout = 2000;
 	}
 
 	// eslint-disable-next-line consistent-return
@@ -68,6 +68,10 @@ module.exports = class BaseMosquittoClient {
 
 	get logger() {
 		return this._logger;
+	}
+
+	get url() {
+		return this._mqttEndpointURL;
 	}
 
 	/**
@@ -165,6 +169,7 @@ module.exports = class BaseMosquittoClient {
 	_isResponse(topic, message) {
 		if (topic === '$CONTROL/dynamic-security/v1/response'
 			|| topic === '$CONTROL/stream-processing/v1/response'
+			|| topic === '$CONTROL/cedalo/ha/v1/response'
 		) {
 			return true;
 		}
