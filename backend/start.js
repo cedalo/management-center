@@ -320,6 +320,7 @@ const init = async (licenseContainer) => {
 		// 	console.error(message);
 		// });
 		context.brokerManager.handleNewBrokerConnection(connection, brokerClient, system, topicTree /*, proxyClient */);
+		configManager.updateConnection(connection);
 
 		// try {
 		// 	await proxyClient.connect({ socketEndpointURL: 'ws://localhost:8088' });
