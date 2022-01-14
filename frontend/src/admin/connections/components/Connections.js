@@ -38,6 +38,7 @@ import { useConfirm } from 'material-ui-confirm';
 import { updateBrokerConnections, updateSelectedConnection } from '../../../actions/actions';
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import PremiumFeatureDialog from '../../../components/PremiumFeatureDialog';
 // import {
 // 	colors,
 //   } from '@material-ui/core';
@@ -93,6 +94,11 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 	const [connection, setConnection] = React.useState('');
 	const [anchorEl, setAnchorEl] = React.useState(null);
 	const [openedPopoverId, setOpenedPopoverId] = React.useState(null);
+	const [premiumFeatureDialogOpen, setPremiumFeatureDialogOpen] = React.useState(false);
+
+	const handleClosePremiumFeatureDialog = () => {
+		setPremiumFeatureDialogOpen(false);
+	}
 
 	const onNewConnection = () => {
 		history.push('/config/connections/new');
@@ -114,32 +120,47 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 	};
 
 	const onConnectServerToBroker = async (id) => {
-		await brokerClient.connectServerToBroker(id);
-		enqueueSnackbar(`Connection "${id}" successfully established`, {
-			variant: 'success'
-		});
-		const connections = await brokerClient.getBrokerConnections();
-		dispatch(updateBrokerConnections(connections));
+		try {
+			await brokerClient.connectServerToBroker(id);
+			enqueueSnackbar(`Connection "${id}" successfully established`, {
+				variant: 'success'
+			});
+			const connections = await brokerClient.getBrokerConnections();
+			dispatch(updateBrokerConnections(connections));
+		} catch (error) {
+			console.log(error);
+			setPremiumFeatureDialogOpen(true);
+			// enqueueSnackbar(`Error connecting broker. Note that this feature is only available in the premium version.`, {
+			// 	variant: 'error'
+			// });
+		}
 	}
 
 	const onDisconnectServerFromBroker = async (id) => {
-		await confirm({
-			title: 'Confirm disconnecting',
-			description: `Do you really want to disconnect the connection "${id}"?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
-		});
-		await brokerClient.disconnectServerFromBroker(id);
-		enqueueSnackbar(`Connection "${id}" successfully closed`, {
-			variant: 'success'
-		});
-		const connections = await brokerClient.getBrokerConnections();
-		dispatch(updateBrokerConnections(connections));
+		try {
+			await confirm({
+				title: 'Confirm disconnecting',
+				description: `Do you really want to disconnect the connection "${id}"?`,
+				cancellationButtonProps: {
+					variant: 'contained'
+				},
+				confirmationButtonProps: {
+					color: 'primary',
+					variant: 'contained'
+				}
+			});
+			await brokerClient.disconnectServerFromBroker(id);
+			enqueueSnackbar(`Connection "${id}" successfully closed`, {
+				variant: 'success'
+			});
+			const connections = await brokerClient.getBrokerConnections();
+			dispatch(updateBrokerConnections(connections));
+		} catch (error) {
+			setPremiumFeatureDialogOpen(true);
+			// enqueueSnackbar(`Error disconnecting broker. Note that this feature is only available in the premium version.`, {
+			// 	variant: 'error'
+			// });
+		}
 	}
 
 	const handleBrokerConnectionConnectDisconnect = async (id, connect) => {
@@ -172,6 +193,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 
 	return (
 		<div>
+			<PremiumFeatureDialog open={premiumFeatureDialogOpen} handleClose={handleClosePremiumFeatureDialog} />
 			<Breadcrumbs aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -232,7 +254,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 													hover
 													key={brokerConnection.name}
 													onClick={() => onSelectConnection(brokerConnection)}
-													//   style={{ cursor: "pointer" }}
+												//   style={{ cursor: "pointer" }}
 												>
 													<TableCell>{brokerConnection.id}</TableCell>
 													<TableCell>{brokerConnection.name}</TableCell>
@@ -329,7 +351,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 														>
 															{createStatusIcon(brokerConnection.status)}
 														</IconButton>
-														{}
+														{ }
 													</TableCell>
 													<TableCell align="right">
 														<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}>
@@ -344,14 +366,14 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 															/>
 														</Tooltip>
 														<IconButton
-														disabled={brokerConnection.status?.connected}
-														size="small"
-														onClick={(event) => {
-															event.stopPropagation();
-															onDeleteConnection(brokerConnection.id);
-														}}
+															disabled={brokerConnection.status?.connected}
+															size="small"
+															onClick={(event) => {
+																event.stopPropagation();
+																onDeleteConnection(brokerConnection.id);
+															}}
 														>
-														<DeleteIcon fontSize="small" />
+															<DeleteIcon fontSize="small" />
 														</IconButton>
 													</TableCell>
 												</StyledTableRow>
@@ -365,24 +387,24 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 							<List className={classes.root}>
 								{brokerConnections && Array.isArray(brokerConnections)
 									? brokerConnections.map((brokerConnection) => (
-											<React.Fragment>
-												<ListItem alignItems="flex-start">
-													<ListItemText
-														primary={<span>{brokerConnection.name}</span>}
-														secondary={
-															<React.Fragment>
-																<Typography
-																	component="span"
-																	variant="body2"
-																	className={classes.inline}
-																	color="textPrimary"
-																>
-																	{brokerConnection.url}
-																</Typography>
-															</React.Fragment>
-														}
-													/>
-													{/* <ListItemSecondaryAction>
+										<React.Fragment>
+											<ListItem alignItems="flex-start">
+												<ListItemText
+													primary={<span>{brokerConnection.name}</span>}
+													secondary={
+														<React.Fragment>
+															<Typography
+																component="span"
+																variant="body2"
+																className={classes.inline}
+																color="textPrimary"
+															>
+																{brokerConnection.url}
+															</Typography>
+														</React.Fragment>
+													}
+												/>
+												{/* <ListItemSecondaryAction>
 					  <IconButton edge="end" aria-label="edit">
 						<EditIcon />
 					  </IconButton>
@@ -390,10 +412,10 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 						<DeleteIcon />
 					  </IconButton>
 					</ListItemSecondaryAction> */}
-												</ListItem>
-												<Divider />
-											</React.Fragment>
-									  ))
+											</ListItem>
+											<Divider />
+										</React.Fragment>
+									))
 									: null}
 							</List>
 						</Paper>
