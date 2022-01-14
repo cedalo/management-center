@@ -331,6 +331,14 @@ const init = async (licenseContainer) => {
 		// }
 	}
 
+	const handleDisconnectServerFromBroker = async (connection) => {
+		const client = context.brokerManager.getBrokerConnectionById(connection.id);
+		client.broker.disconnect();
+		context.brokerManager.handleDeleteBrokerConnection(connection);
+		connection.status.connected = false;
+		configManager.updateConnection(connection);
+	}
+
 	for (let i=0; i<connections.length; i++) {
 		handleConnectServerToBroker(connections[i]);
 	}
@@ -471,12 +479,6 @@ const init = async (licenseContainer) => {
 				}
 				return configManager.connections;
 			}
-				} catch (error) {
-					// TODO: handle error because Management Center crashes
-					console.error(error);
-				}
-				return configManager.connections;
-			}
 			case 'modifyConnection': {
 				const { oldConnectionId, connection } = message;
 				configManager.updateConnection(oldConnectionId, connection);
@@ -492,6 +494,8 @@ const init = async (licenseContainer) => {
 				if (handler) {
 					const result = await handler[request](message);
 					return result;
+				} else {
+					throw new Error(`Unsupported request: ${request}`);
 				}
 			}
 		}
@@ -499,6 +503,7 @@ const init = async (licenseContainer) => {
 	};
 
 	const handleClientMessage = async (message, client, user = {}) => {
+		console.log(message);
 		switch (message.type) {
 			case 'command': {
 				try {
@@ -687,6 +692,7 @@ const init = async (licenseContainer) => {
 				return next();
 			}
 		},
+		configManager,
 		app,
 		router,
 		config,
@@ -696,6 +702,8 @@ const init = async (licenseContainer) => {
 		actions: {
 			broadcastWebSocketMessage,
 			loadConfig,
+			handleConnectServerToBroker,
+			handleDisconnectServerFromBroker,
 			sendSystemStatusUpdate,
 			sendTopicTreeUpdate
 		}
@@ -783,6 +791,7 @@ const init = async (licenseContainer) => {
 		console.log(`Mosquitto proxy server started on port ${server.address().port}`);
 	});
 	server.on('upgrade', (request, socket, head) => {
+		console.log(request.isAuthenticated());
 		wss.handleUpgrade(request, socket, head, socket => {
 			wss.emit('connection', socket, request);
 		});
