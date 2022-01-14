@@ -1,5 +1,6 @@
 import React, { createContext } from 'react';
 import {
+	updateLicenseStatus,
 	updateBrokerConfigurations,
 	updateBrokerConnected,
 	updateBrokerConnections,
@@ -19,8 +20,18 @@ import {
 	updateTopicTree,
 	updateVersion,
 	updateEditDefaultClient,
-	updateFeatures
+	updateFeatures,
+	updateUserProfile,
 } from '../actions/actions';
+
+import {
+	updateUserRoles,
+	updateUsers,
+} from '../admin/users/actions/actions';
+
+import {
+	updateClusters
+} from '../admin/clusters/actions/actions';
 
 import WS_BASE from './config';
 import WebMosquittoProxyClient from '../client/WebMosquittoProxyClient';
@@ -29,6 +40,105 @@ import { useDispatch } from 'react-redux';
 const WebSocketContext = createContext(null);
 
 export { WebSocketContext };
+
+
+const init = async (client, dispatch, connectionConfiguration) => {
+	// TODO: merge with code from BrokerSelect
+	await client.connect(connectionConfiguration)
+	dispatch(updateProxyConnected(true));
+	try {
+		const userProfile = await client.getUserProfile();
+		dispatch(updateUserProfile(userProfile));
+		const userRoles = await client.listUserRoles();
+		dispatch(updateUserRoles(userRoles));
+		const users = await client.listUsers();
+		dispatch(updateUsers(users));
+		dispatch(updateFeatures({
+			feature: 'usermanagement',
+			status: 'ok'
+		}));
+	} catch (error) {
+		dispatch(updateFeatures({
+			feature: 'usermanagement',
+			status: 'failed',
+			error
+		}));
+	}
+
+	try {
+		const clusters = await client.listClusters();
+		dispatch(updateClusters(clusters));
+		dispatch(updateFeatures({
+			feature: 'clustermanagement',
+			status: 'ok'
+		}));
+	} catch (error) {
+		dispatch(updateFeatures({
+			feature: 'clustermanagement',
+			status: 'failed',
+			error
+		}));
+	}
+
+	const brokerConnections = await client.getBrokerConnections();
+	dispatch(updateBrokerConnections(brokerConnections));
+
+	// Select first broker that is connected to the MMC
+	for(let i=0; i<brokerConnections.length; i++) {
+		const connection = brokerConnections[i];
+		if(connection.status.connected) {
+			const connectionName = connection.name;
+			await client.connectToBroker(connectionName);
+			dispatch(updateBrokerConnected(true, connectionName));
+			break;
+		}
+	}
+	
+	const brokerConfigurations = await client.getBrokerConfigurations();
+	dispatch(updateBrokerConfigurations(brokerConfigurations));
+	const settings = await client.getSettings();
+	dispatch(updateSettings(settings));
+	try {
+		const clients = await client.listClients();
+		dispatch(updateClients(clients));
+		const groups = await client.listGroups();
+		dispatch(updateGroups(groups));
+		const anonymousGroup = await client.getAnonymousGroup();
+		dispatch(updateAnonymousGroup(anonymousGroup));
+		const roles = await client.listRoles();
+		dispatch(updateRoles(roles));
+		const defaultACLAccess = await client.getDefaultACLAccess();
+		dispatch(updateDefaultACLAccess(defaultACLAccess));
+		dispatch(updateFeatures({
+			feature: 'dynamicsecurity',
+			status: 'ok'
+		}));
+	} catch(error) {
+		// TODO: change when Mosquitto provides feature endpoint
+		// there was an error loading some dynamic security part
+		// --> we assume that feature has not been loaded
+		dispatch(updateFeatures({
+			feature: 'dynamicsecurity',
+			status: error
+		}));
+	}
+	try {
+		const streams = await client.listStreams();
+		dispatch(updateStreams(streams));
+		dispatch(updateFeatures({
+			feature: 'streamprocessing',
+			status: 'ok'
+		}));
+	} catch (error) {
+		// TODO: change when Mosquitto provides feature endpoint
+		// there was an error loading the stream feature
+		// --> we assume that feature has not been loaded
+		dispatch(updateFeatures({
+			feature: 'streamprocessing',
+			status: error
+		}));
+	}
+}
 
 export default ({ children }) => {
 	let client;
@@ -47,6 +157,18 @@ export default ({ children }) => {
 		client.closeHandler = (event) => {
 			dispatch(updateProxyConnected(false));
 		};
+		client.on('license-invalid', (message) => {
+			dispatch(updateLicenseStatus({
+				valid: false,
+				data: message.payload
+			}));
+		});
+		client.on('license-valid', (message) => {
+			dispatch(updateLicenseStatus({
+				valid: true,
+				data: message.payload
+			}));
+		});
 		client.on('websocket-clients', (message) => {
 			dispatch(updateWebSocketClients(message.payload));
 		});
@@ -79,91 +201,8 @@ export default ({ children }) => {
 		client.on('error', (message) => {
 			console.error(message);
 		});
-		// TODO: merge with code from BrokerSelect
-		client
-			.connect({ socketEndpointURL: WS_BASE.url })
-			.then(() => dispatch(updateProxyConnected(true)))
-			.then(() => client.getBrokerConnections())
-			.then((brokerConnections) => {
-				dispatch(updateBrokerConnections(brokerConnections));
-				return brokerConnections;
-			})
-			.then(async (brokerConnections) => {
-				if (brokerConnections[0]) {
-					const connectionName = brokerConnections[0]?.name;
-					await client.connectToBroker(connectionName);
-					dispatch(updateBrokerConnected(true, connectionName));
-				}
-			})
-			.then(() => client.getBrokerConfigurations())
-			.then((brokerConfigurations) => {
-				dispatch(updateBrokerConfigurations(brokerConfigurations));
-			})
-			.then(() => client.getSettings())
-			.then((settings) => {
-				dispatch(updateSettings(settings));
-			})
-			.then(() => {
-				client.listClients()
-					.then((clients) => {
-						dispatch(updateClients(clients));
-					})
-					.then(() => client.listGroups())
-					.then((groups) => {
-						dispatch(updateGroups(groups));
-					})
-					.then(() => client.getAnonymousGroup())
-					.then((group) => {
-						dispatch(updateAnonymousGroup(group));
-					})
-					.then(() => client.listRoles())
-					.then((roles) => {
-						dispatch(updateRoles(roles));
-					})
-					.then(() => client.getDefaultACLAccess())
-					.then((defaultACLAccess) => {
-						dispatch(updateDefaultACLAccess(defaultACLAccess));
-					})
-					.then(() => {
-						dispatch(updateFeatures({
-							feature: 'dynamicsecurity',
-							status: 'ok'
-						}));
-					})
-					.catch((error) => {
-						// TODO: change when Mosquitto provides feature endpoint
-						// there was an error loading some dynamic security part
-						// --> we assume that feature has not been loaded
-						dispatch(updateFeatures({
-							feature: 'dynamicsecurity',
-							status: error
-						}));
-					});
-
-				client.listStreams()
-					.then((streams) => {
-						dispatch(updateStreams(streams));
-					})
-					.then(() => {
-						dispatch(updateFeatures({
-							feature: 'streamprocessing',
-							status: 'ok'
-						}));
-					})
-					.catch((error) => {
-						// TODO: change when Mosquitto provides feature endpoint
-						// there was an error loading the stream feature
-						// --> we assume that feature has not been loaded
-						dispatch(updateFeatures({
-							feature: 'streamprocessing',
-							status: error
-						}));
-					});
-					// .then(() => client.listPlugins())
-					// .then((plugins) => {
-					// 	dispatch(updatePlugins(plugins));
-					// });
-			});
+		
+		init(client, dispatch, { socketEndpointURL: WS_BASE.url, httpEndpointURL: WS_BASE.urlHTTP });
 
 		ws = {
 			client: client,

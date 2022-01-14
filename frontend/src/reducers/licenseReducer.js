@@ -6,6 +6,9 @@ export default function license(state = {}, action) {
 		case ActionTypes.UPDATE_LICENSE:
 			newState.license = action.update;
 			break;
+		case ActionTypes.UPDATE_LICENSE_STATUS:
+			newState.licenseStatus = action.update;
+			break;
 		default:
 	}
 	return newState;

@@ -1,84 +1,31 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { SnackbarProvider } from 'notistack';
 import clsx from 'clsx';
 import { Provider, useSelector, useDispatch } from 'react-redux';
 import Joyride from 'react-joyride';
-import { fade, makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import PluginsIcon from '@material-ui/icons/Power';
-import TerminalIcon from '@material-ui/icons/Computer';
-import ConnectionsIcon from '@material-ui/icons/SettingsInputComponent';
-import Badge from '@material-ui/core/Badge';
-import Button from '@material-ui/core/Button';
 import MenuIcon from '@material-ui/icons/Menu';
 import IconButton from '@material-ui/core/IconButton';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import GroupIcon from '@material-ui/icons/Group';
-import HomeIcon from '@material-ui/icons/Home';
-import PersonIcon from '@material-ui/icons/Person';
-import RoleIcon from '@material-ui/icons/Policy';
-import EqualizerIcon from '@material-ui/icons/Equalizer';
-import SettingsIcon from '@material-ui/icons/Settings';
 import TourIcon from '@material-ui/icons/Slideshow';
 import ThemeModeIcon from '@material-ui/icons/Brightness4';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import SvgIcon from '@material-ui/core/SvgIcon';
-import ConfigurationIcon from '@material-ui/icons/Tune';
-import StreamsheetsIcon from '@material-ui/icons/GridOn';
-import StreamsIcon from '@material-ui/icons/Timeline';
-import TopicTreeIcon from '@material-ui/icons/AccountTree';
 import Container from '@material-ui/core/Container';
-import SearchIcon from '@material-ui/icons/Search';
-import InputBase from '@material-ui/core/InputBase';
-import BottomNavigation from '@material-ui/core/BottomNavigation';
-import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
-import FolderIcon from '@material-ui/icons/Folder';
-import RestoreIcon from '@material-ui/icons/Restore';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import Hidden from '@material-ui/core/Hidden';
 import { ConfirmProvider } from 'material-ui-confirm';
-import Logo from './components/Logo';
 import LogoutButton from './components/LogoutButton';
+import ProfileButton from './components/ProfileButton';
+import LicenseErrorDialog from './components/LicenseErrorDialog';
 import DisconnectedDialog from './components/DisconnectedDialog';
-import Groups from './components/Groups';
 import BrokerSelect from './components/BrokerSelect';
 import InfoButton from './components/InfoButton';
 import customTheme from './theme';
 import darkTheme from './theme-dark';
-import Home from './components/Home';
-import Security from './components/Security';
-import Config from './components/Config';
-import System from './components/System';
-import InfoPage from './components/InfoPage';
 import NewsletterPopup from './components/NewsletterPopup';
 // import Login from "./components/Login";
-import Roles from './components/Roles';
-import Connections from './components/Connections';
-import Plugins from './components/Plugins';
-import Terminal from './components/Terminal';
-import Settings from './components/Settings';
-import Streams from './components/Streams';
-import Streamsheets from './components/Streamsheets';
-import Status from './components/Status';
-import TopicTree from './components/TopicTree';
-import GroupDetail from './components/GroupDetail';
-import RoleDetail from './components/RoleDetail';
-import ClientDetail from './components/ClientDetail';
-import StreamDetail from './components/StreamDetail';
-import ConnectionDetail from './components/ConnectionDetail';
-import GroupNew from './components/GroupNew';
-import ClientNew from './components/ClientNew';
-import RoleNew from './components/RoleNew';
-import StreamNew from './components/StreamNew';
-import Clients from './components/Clients';
 import store from './store';
 import WebSocketProvider from './websockets/WebSocket';
 // import NewsDrawer from "./components/NewsDrawer";
@@ -88,8 +35,8 @@ import OnBoardingDialog from './components/OnBoardingDialog';
 import steps from './tutorial/steps';
 
 import { BrowserRouter as Router, Switch, Route, Link as RouterLink, Redirect } from 'react-router-dom';
-import DefaultACLAccess from './components/DefaultACLAccess';
 import CustomDrawer from './components/CustomDrawer';
+import AppRoutes from './AppRoutes';
 
 const tourOptions = {
 	defaultStepOptions: {
@@ -171,11 +118,15 @@ export default function App(props) {
 	const [value, setValue] = React.useState('recents');
 	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
 
-	const [response, loading, hasError] = useFetch(`/api/theme`);
+	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/theme`);
+	const [responseConfig, loadingConfig, hasErrorConfig] = useFetch(`${process.env.PUBLIC_URL}/api/config`);
 
-	if (hasError || response) {
+	if ((hasError || response) && (hasErrorConfig || responseConfig)) {
 		let appliedTheme = darkMode === 'true' ? darkTheme : customTheme;
-
+		let hideConnections = (typeof responseConfig?.hideConnections === 'boolean') ? responseConfig?.hideConnections : false;
+		let hideInfoPage = (typeof responseConfig?.hideInfoPage === 'boolean') ? responseConfig?.hideInfoPage : false;
+		let hideLogoutButton = (typeof responseConfig?.hideLogoutButton === 'boolean') ? responseConfig?.hideLogoutButton : false;
+		let hideProfileButton = (typeof responseConfig?.hideProfileButton === 'boolean') ? responseConfig?.hideProfileButton : false;
 		const onChangeTheme = () => {
 			setDarkMode(darkMode === 'true' ? 'false' : 'true');
 		};
@@ -257,7 +208,7 @@ export default function App(props) {
 				/>
 				<ConfirmProvider>
 					<CssBaseline />
-					<Router>
+					<Router basename={process.env.PUBLIC_URL}>
 						<Provider store={store}>
 							<WebSocketProvider>
 								<div className={classes.root}>
@@ -330,7 +281,7 @@ export default function App(props) {
 																<ThemeModeIcon fontSize="small" />
 															</IconButton>
 														</Tooltip>
-														<InfoButton />
+														{ !hideInfoPage ? <InfoButton /> : null }
 														<Tooltip title="Start tour">
 															<IconButton
 																edge="end"
@@ -345,7 +296,8 @@ export default function App(props) {
 															</IconButton>
 														</Tooltip>
 
-														<LogoutButton />
+														{ !hideProfileButton ? <ProfileButton /> : null }
+														{ !hideLogoutButton ? <LogoutButton /> : null }
 
 														{/* <IconButton
 						  edge="end"
@@ -365,101 +317,13 @@ export default function App(props) {
 
 											<nav>
 												{/* <Hidden xsDown implementation="css"> */}
-												<CustomDrawer open={open} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} />
+												<CustomDrawer hideConnections={hideConnections} open={open} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} />
 											</nav>
+											<LicenseErrorDialog />
 											<DisconnectedDialog />
 
-											<Container className={classes.container}>
-												<Switch>
-													<Route
-														path="/security/clients/detail/:clientId"
-														component={ClientDetail}
-													/>
-													<Route path="/security/clients/new">
-														<ClientNew />
-													</Route>
-													<Route path="/security/clients">
-														<Clients />
-													</Route>
-													<Route
-														path="/security/groups/detail/:groupId"
-														component={GroupDetail}
-													/>
-													<Route path="/security/groups/new">
-														<GroupNew />
-													</Route>
-													<Route path="/security/groups">
-														<Groups />
-													</Route>
-													<Route
-														path="/security/roles/detail/:roleId"
-														component={RoleDetail}
-													/>
-													<Route path="/security/acl">
-														<DefaultACLAccess />
-													</Route>
-													<Route path="/security/roles/new">
-														<RoleNew />
-													</Route>
-													<Route path="/security/roles">
-														<Roles />
-													</Route>
-													<Route path="/security">
-														<Security />
-													</Route>
-													<Route path="/plugins">
-														<Plugins />
-													</Route>
-													<Route path="/terminal">
-														<Terminal />
-													</Route>
-													<Route
-														path="/streams/detail/:streamId"
-														component={StreamDetail}
-													/>
-													<Route path="/streams/new">
-														<StreamNew />
-													</Route>
-													<Route path="/streams">
-														<Streams />
-													</Route>
-													<Route path="/system/status">
-														<Status />
-													</Route>
-													<Route path="/system/topics">
-														<TopicTree />
-													</Route>
-													<Route path="/system">
-														<System />
-													</Route>
-													<Route path="/config/connections/detail/:connectionId">
-														<ConnectionDetail />
-													</Route>
-													<Route path="/config/connections">
-														<Connections />
-													</Route>
-													<Route path="/config/settings">
-														<Settings />
-													</Route>
-													<Route path="/config">
-														<Config />
-													</Route>
-													<Route path="/tools/streamsheets">
-														<Streamsheets />
-													</Route>
-													<Route path="/streams">
-														<Streams />
-													</Route>
-													<Route path="/home">
-														<Home />
-													</Route>
-													<Route path="/info">
-														<InfoPage />
-													</Route>
-													<Route path="/">
-														<Redirect to="/system/status" />
-													</Route>
-												</Switch>
+											<Container className={classes.container}>											
+												<AppRoutes />
 											</Container>
 										</Route>
 									</Switch>

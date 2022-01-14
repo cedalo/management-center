@@ -266,7 +266,7 @@ const components = {
 	ValueContainer
 };
 
-export default function AutoSuggest({ disabled, handleDelete, handleChange, suggestions, values }) {
+export default function AutoSuggest({ disabled, handleDelete, handleChange, suggestions, values, placeholder }) {
 	const classes = useStyles();
 	const theme = useTheme();
 
@@ -294,7 +294,7 @@ export default function AutoSuggest({ disabled, handleDelete, handleChange, sugg
 							shrink: true
 						}
 					}}
-					placeholder=""
+					placeholder={placeholder || 'Select...'}
 					options={suggestions}
 					components={components}
 					value={values}

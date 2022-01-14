@@ -63,7 +63,7 @@ const getPremium = () => {
 const InfoPage = (props) => {
 	const classes = useStyles();
 	const [open, setOpen] = React.useState(false);
-	const [response, loading, hasError] = useFetch(`/api/update`);
+	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/update`);
 	const { license, version, webSocketConnections } = props;
 
 	const handleClickOpen = () => {

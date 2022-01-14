@@ -11,8 +11,14 @@ import streamsReducer from './reducers/streamsReducer';
 import systemStatusReducer from './reducers/systemStatusReducer';
 import topicTreeReducer from './reducers/topicTreeReducer';
 import clientsReducer from './reducers/clientsReducer';
+import userProfileReducer from './reducers/userProfileReducer';
 import settingsReducer from './reducers/settingsReducer';
 import webSocketConnectionsReducer from './reducers/webSocketConnectionsReducer';
+
+import userRolesReducer from './admin/users/reducers/userRolesReducer';
+import usersReducer from './admin/users/reducers/usersReducer';
+import clustersReducer from './admin/clusters/reducers/clustersReducer';
+
 
 const store = createStore(
 	combineReducers({
@@ -28,7 +34,11 @@ const store = createStore(
 		streams: streamsReducer,
 		systemStatus: systemStatusReducer,
 		topicTree: topicTreeReducer,
-		clients: clientsReducer
+		clients: clientsReducer,
+		userRoles: userRolesReducer,
+		userProfile: userProfileReducer,
+		users: usersReducer,
+		clusters: clustersReducer,
 	})
 );
 

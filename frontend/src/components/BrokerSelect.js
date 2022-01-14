@@ -158,7 +158,7 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 			>
 				{brokerConnections && Array.isArray(brokerConnections)
 					? brokerConnections
-							.filter((brokerConnection) => brokerConnection.status.connected)
+							.filter((brokerConnection) => brokerConnection.status ? brokerConnection.status.connected : false)
 							.map((brokerConnection) => (
 								<MenuItem
 									value={brokerConnection.name}

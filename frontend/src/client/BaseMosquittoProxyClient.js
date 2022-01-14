@@ -1,4 +1,5 @@
-const uuid = require('uuid/v1');
+const { v1: uuid } = require('uuid');
+const axios = require('axios');
 
 const createError = (code, message) => ({
 	code,
@@ -7,6 +8,23 @@ const createError = (code, message) => ({
 
 const API_DYNAMIC_SECURITY = 'dynamic-security';
 const API_STREAMS_PROCESSING = 'stream-processing';
+const API_HIGH_AVAILABILITY = 'cedalo/ha';
+const ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED = 'You are not authorized to access the user management.';
+
+class APIError extends Error {
+	constructor(title, message) {
+		super(message);
+		this.name = 'APIError';
+		this.title = title;
+	}
+}
+
+class NotAuthorizedError extends APIError {
+	constructor() {
+		super('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+		this.name = 'NotAuthorizedError';
+	}
+}
 
 // TODO: merge with method deletePendingRequest()
 const deletePendingRequest = (requestId, requests) => {
@@ -31,11 +49,11 @@ export default class BaseMosquittoProxyClient {
 	constructor({ name, logger, defaultListener } = {}) {
 		this.name = name || 'Default Base Mosquitto Proxy Client';
 		this._logger = logger || {
-			log() {},
-			info() {},
-			warn() {},
-			debug() {},
-			error() {}
+			log() { },
+			info() { },
+			warn() { },
+			debug() { },
+			error() { }
 		};
 		this._eventHandler = (event) => this.logger.info(event);
 		this._closeHandler = () => this.logger.info('Close Mosquitto Proxy Client');
@@ -44,21 +62,23 @@ export default class BaseMosquittoProxyClient {
 		this._requests = new Map();
 		// TODO: make timeout configurable
 		// request timeout in ms:
-		this._timeout = 3000;
+		this._timeout = 5000;
 	}
 
 	// eslint-disable-next-line consistent-return
-	async connect({ socketEndpointURL } = {}) {
+	async connect({ socketEndpointURL, httpEndpointURL } = {}) {
 		if (this._isConnected || this._isConnecting) {
 			return Promise.resolve({});
 		}
 		this._isConnecting = true;
 		// TODO: handle default values
 		this._socketEndpointURL = socketEndpointURL || this._socketEndpointURL;
+		this._httpEndpointURL = httpEndpointURL || this._httpEndpointURL;
 		try {
 			const ws = await this._connectSocketServer(`${this._socketEndpointURL}?authToken=${this._token}`);
 			this._ws = ws;
 			this._isConnected = true;
+			this._keepAlive();
 		} catch (error) {
 			this._isConnected = false;
 			this.logger.error(error);
@@ -67,12 +87,14 @@ export default class BaseMosquittoProxyClient {
 
 	async reconnect() {
 		const socketEndpointURL = this._socketEndpointURL;
-		this.connect({ socketEndpointURL });
+		const httpEndpointURL = this._httpEndpointURL;
+		this.connect({ socketEndpointURL, httpEndpointURL });
 	}
 
 	async disconnect() {
 		if (this._ws) {
 			this._ws.close();
+			this._cancelKeepAlive();
 		}
 		return Promise.resolve();
 	}
@@ -80,6 +102,26 @@ export default class BaseMosquittoProxyClient {
 	async resetConnection() {
 		await this.disconnect();
 		return this.reconnect();
+	}
+
+	_keepAlive() {
+		const interval = 8000;
+		if (this._ws && this._ws.readyState === this._ws.OPEN) {
+			this.logger.debug('Sending empty request.');
+			this._ws.send(
+				JSON.stringify({
+					type: 'ping',
+					interval
+				})
+			);
+		}
+		this._timerId = setTimeout(this._keepAlive.bind(this), interval);
+	}
+
+	_cancelKeepAlive() {
+		if (this._timerId) {
+			clearTimeout(this._timerId);
+		}
 	}
 
 	get logger() {
@@ -112,9 +154,197 @@ export default class BaseMosquittoProxyClient {
 
 	/**
 	 * ******************************************************************************************
+	 * Methods for user management
+	 * ******************************************************************************************
+	 */
+
+	 async getUser(username) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/users/${username}`;
+			const response = await axios.get(url);
+			return response.data;
+		} catch (error) {
+			throw new NotAuthorizedError()();
+		}
+	}
+
+	async getUserProfile() {
+		try {
+			const url = `${this._httpEndpointURL}/api/profile`;
+			const response = await axios.get(url);
+			return response.data;
+		} catch (error) {
+			throw new NotAuthorizedError()();
+		}
+	}
+
+	async listUserRoles() {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/roles`;
+			const response = await axios.get(url);
+			return response.data;
+		} catch (error) {
+			throw new NotAuthorizedError()
+		}
+	}
+
+	async updateUserRoles(user, roles) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/users/${user.username}`;
+			const response = await axios.put(url, {
+				roles
+			});
+			return response.data;
+		} catch (error) {
+			throw new NotAuthorizedError()
+		}
+	}
+
+	async listUsers() {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/users`;
+			const response = await axios.get(url);
+			return response.data;
+		} catch (error) {
+			throw new NotAuthorizedError()
+		}
+	}
+
+	async createUser(username, password, roles = []) {
+		try {
+			const user = {
+				username,
+				password,
+				roles
+			}
+			const url = `${this._httpEndpointURL}/api/user-management/users`;
+			const response = await axios.post(url, user);
+			return response.data;
+		} catch (error) {
+			throw new NotAuthorizedError()
+		}
+	}
+
+	async deleteUser(username) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/users/${username}`;
+			const response = await axios.delete(url);
+			return response.data;
+		} catch (error) {
+			throw new NotAuthorizedError()
+		}
+	}
+
+	async updateUser(user) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/users/${user.username}`;
+			const response = await axios.put(url, user);
+			return response.data;
+		} catch (error) {
+			throw new NotAuthorizedError()
+		}
+	}
+
+	/**
+	 * ******************************************************************************************
+	 * Methods for cluster management
+	 * ******************************************************************************************
+	 */
+
+	async createCluster(clusterConfiguration) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'createCluster',
+			clusterConfiguration
+		});
+		return response.response;
+	}
+
+	 async listClusters() {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'listClusters'
+		});
+		return response.response;
+	}
+
+	async getCluster(clustername) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'getCluster',
+			clustername
+		});
+		return response.response;
+	}
+
+	async modifyCluster(cluster) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'modifyCluster',
+			cluster
+		});
+		return response.response;
+	}
+
+	async deleteCluster(clustername) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'deleteCluster',
+			clustername
+		});
+		return response.response;
+	}
+
+	async joinCluster(clustername, brokerId) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'joinCluster',
+			clustername,
+			brokerId
+		});
+		return response.response;
+	}
+
+	async leaveCluster(clustername, brokerId) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'leaveCluster',
+			clustername,
+			brokerId
+		});
+		return response.response;
+	}
+
+	/**
+	 * ******************************************************************************************
 	 * Methods for handling multiple broker connections
 	 * ******************************************************************************************
 	 */
+
+	async connectServerToBroker(id) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'connectServerToBroker',
+			id
+		});
+	}
+
+	async disconnectServerFromBroker(id) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'disconnectServerFromBroker',
+			id
+		});
+	}
 
 	async connectToBroker(brokerName) {
 		return this.sendRequest({
@@ -443,6 +673,9 @@ export default class BaseMosquittoProxyClient {
 	}
 
 	async clientHasRole(username, rolename) {
+		if (username === '') {
+			return false;
+		}
 		const client = await this.getClient(username);
 		const hasRole = !!client.roles.find(role => role.rolename === rolename);
 		return hasRole;
@@ -675,6 +908,15 @@ export default class BaseMosquittoProxyClient {
 			request: 'modifyConnection',
 			oldConnectionId,
 			connection
+		});
+	}
+
+	async deleteConnection(connectionId) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'deleteConnection',
+			id: connectionId
 		});
 	}
 
@@ -956,8 +1198,8 @@ export default class BaseMosquittoProxyClient {
 		return this.sendCommand(
 			{
 				command: 'createStream',
-				streamname, 
-				sourceTopic, 
+				streamname,
+				sourceTopic,
 				targetTopic,
 				targetqos: typeof targetQoS === 'string' ? parseInt(targetQoS) : targetQoS,
 				ttl: typeof ttl === 'string' ? parseInt(ttl) : ttl,

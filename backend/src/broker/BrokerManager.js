@@ -18,6 +18,14 @@ module.exports = class BrokerManager {
 		};
 	}
 
+	handleDeleteBrokerConnection(connection) {
+		this._brokerClient = null;
+		this._brokerConnection = null;
+		this._connection = {};
+		this._brokerConnection = {};
+		this._clientConnections = new Map();
+	}
+
 	handleNewClientWebSocketConnection(ws) {
 		this._clientConnections.set(ws, ws);
 	}

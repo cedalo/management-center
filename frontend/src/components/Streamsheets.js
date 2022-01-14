@@ -67,7 +67,7 @@ const Streamsheets = (props) => {
 
 	const { client } = context;
 	const [response, loading, hasError] = useFetch(
-		`/api/config/tools/streamsheets`
+		`${process.env.PUBLIC_URL}/api/config/tools/streamsheets`
 	);
 
 	const onPreviewInstance = async (instance) => {

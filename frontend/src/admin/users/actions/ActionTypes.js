@@ -1,0 +1,3 @@
+export const UPDATE_USER = 'UPDATE_USER';
+export const UPDATE_USERS = 'UPDATE_USERS';
+export const UPDATE_USER_ROLES = 'UPDATE_USER_ROLES';
