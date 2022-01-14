@@ -24,7 +24,7 @@ class License {
 		this.issuedBy = 'Cedalo AG';
 		this.issuedTo = undefined;
 		this.maxInstallations = -1;
-		this.maxBrokerConnenctions = 1;
+		this.maxBrokerConnections = 1;
 		this.validSince = Date.now();
 		this.validUntil = undefined;
 	}
