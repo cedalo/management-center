@@ -1,5 +1,7 @@
 .DS_Store
 
+public-with-basepath
+
 # Logs
 logs
 *.log
