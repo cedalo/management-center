@@ -19,6 +19,10 @@ module.exports = class Plugin extends BasePlugin {
 	init(context) {
 		const { actions, app, globalTopicTree, brokerManager, router } = context;
 
+		// app.use(passport.initialize());
+		// app.use(passport.session());
+	
+
 		router.use(passport.initialize());
 		router.use(passport.session());
 	
