@@ -195,6 +195,7 @@ module.exports = class BaseMosquittoClient {
 						// if (response.error) {
 						// 	request.reject(response);
 						// }
+						delete response.correlationData;
 						request.resolve(response);
 					}
 				});
