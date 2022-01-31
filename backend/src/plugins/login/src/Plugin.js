@@ -73,7 +73,7 @@ module.exports = class Plugin extends BasePlugin {
 	
 		router.post('/auth', passport.authenticate('local', {
 				successRedirect: `${CEDALO_MC_PROXY_BASE_PATH}/`,
-				failureRedirect: `${CEDALO_MC_PROXY_BASE_PATH}/login`,
+				failureRedirect: `${CEDALO_MC_PROXY_BASE_PATH}/login?error=authentication-failed`,
 			}
 		));
 
