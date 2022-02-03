@@ -169,20 +169,21 @@ const addStreamsheetsConfig = (config) => {
 	}
 };
 
-const configManager = new ConfigManager();
-
-const loadConfig = () => {
-	// const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, CEDALO_MC_PROXY_CONFIG)).toString());
-	const config = configManager.config;
-	return config;
-};
-
 const init = async (licenseContainer) => {
 	const installation = loadInstallation();
 	const usageTracker = new UsageTracker({ license: licenseContainer, version, installation });
 	const installationManager = new InstallationManager({ license: licenseContainer, version, installation });
 	await installationManager.verifyLicense();
 	const settingsManager = new SettingsManager();
+	const maxBrokerConnections = licenseContainer?.license?.maxBrokerConnections ? parseInt(licenseContainer.license.maxBrokerConnections) : 1;
+	const configManager = new ConfigManager(maxBrokerConnections);
+
+	const loadConfig = () => {
+		// const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, CEDALO_MC_PROXY_CONFIG)).toString());
+		const config = configManager.config;
+		return config;
+	};
+
 	const globalSystem = {};
 	const globalTopicTree = {};
 	const app = express();
@@ -333,14 +334,18 @@ const init = async (licenseContainer) => {
 
 	const handleDisconnectServerFromBroker = async (connection) => {
 		const client = context.brokerManager.getBrokerConnectionById(connection.id);
-		client.broker.disconnect();
+		if (client) {
+			client.broker.disconnect();
+		}
 		context.brokerManager.handleDeleteBrokerConnection(connection);
 		connection.status.connected = false;
 		configManager.updateConnection(connection);
 	}
 
 	for (let i=0; i<connections.length; i++) {
-		handleConnectServerToBroker(connections[i]);
+		if (i < maxBrokerConnections) {
+			handleConnectServerToBroker(connections[i]);
+		}
 	}
 
 	console.log(`Started Mosquitto proxy at http://localhost:${CEDALO_MC_PROXY_PORT}`);
@@ -476,6 +481,7 @@ const init = async (licenseContainer) => {
 				} catch (error) {
 					// TODO: handle error because Management Center crashes
 					console.error(error);
+					throw error;
 				}
 				return configManager.connections;
 			}

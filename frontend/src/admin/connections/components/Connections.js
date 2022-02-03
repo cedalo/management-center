@@ -156,7 +156,10 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 			const connections = await brokerClient.getBrokerConnections();
 			dispatch(updateBrokerConnections(connections));
 		} catch (error) {
-			setPremiumFeatureDialogOpen(true);
+			// setPremiumFeatureDialogOpen(true);
+			enqueueSnackbar(`Error disconnecting broker. Reason: ${error.message ? error.message : error}`, {
+				variant: 'error'
+			});
 			// enqueueSnackbar(`Error disconnecting broker. Note that this feature is only available in the premium version.`, {
 			// 	variant: 'error'
 			// });
