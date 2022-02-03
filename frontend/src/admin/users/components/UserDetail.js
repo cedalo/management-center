@@ -60,6 +60,9 @@ const UserDetail = (props) => {
 	const { enqueueSnackbar } = useSnackbar();
 
 	const { user, userRoles = [] } = props;
+	if (user) {
+		user.password = null;
+	}
 	const [updatedUser, setUpdatedUser] = React.useState({
 		...user,
 	});
@@ -154,6 +157,28 @@ const UserDetail = (props) => {
 											<AccountCircle />
 										</InputAdornment>
 									)
+								}}
+							/>
+						</Grid>
+						<Grid item xs={12}>
+							<TextField
+								disabled={!editMode}
+								required
+								id="password"
+								label="Password"
+								value={updatedUser?.password}
+								defaultValue=""
+								variant="outlined"
+								fullWidth
+								type="password"
+								className={classes.textField}
+								onChange={(event) => {
+									if (editMode) {
+										setUpdatedUser({
+											...updatedUser,
+											password: event.target.value
+										});
+									}
 								}}
 							/>
 						</Grid>
