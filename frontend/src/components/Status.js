@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
-const Status = ({ lastUpdated, systemStatus, defaultClient }) => {
+const Status = ({ lastUpdated, systemStatus, defaultClient, currentConnection, currentConnectionName }) => {
 	const classes = useStyles();
 
 	const totalMessages = parseInt(systemStatus?.$SYS?.broker?.messages?.sent);
@@ -71,6 +71,8 @@ const Status = ({ lastUpdated, systemStatus, defaultClient }) => {
 		}
 	];
 
+	console.log(currentConnection)
+
 	return (
 		<div>
 			<Breadcrumbs aria-label="breadcrumb">
@@ -87,6 +89,11 @@ const Status = ({ lastUpdated, systemStatus, defaultClient }) => {
 			<br />
 			{systemStatus?.$SYS ? <Container maxWidth={false}>
 				<Grid container spacing={3}>
+					<Grid item xs={12}>
+						<Typography variant="h5" component="div" gutterBottom>
+							{currentConnectionName}
+						</Typography>
+					</Grid>
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
 							label="Clients total"
@@ -161,6 +168,12 @@ const Status = ({ lastUpdated, systemStatus, defaultClient }) => {
 											Uptime
 										</TableCell>
 										<TableCell align="right">{systemStatus?.$SYS?.broker?.uptime}</TableCell>
+									</TableRow>
+									<TableRow key="url">
+										<TableCell component="th" scope="row">
+											URL
+										</TableCell>
+										<TableCell align="right">{currentConnection?.url}</TableCell>
 									</TableRow>
 								</TableBody>
 							</Table>
@@ -266,7 +279,9 @@ const mapStateToProps = (state) => {
 	return {
 		lastUpdated: state.systemStatus.lastUpdated,
 		systemStatus: state.systemStatus.systemStatus,
-		defaultClient: state.brokerConnections?.defaultClient
+		defaultClient: state.brokerConnections?.defaultClient,
+		currentConnection: state.brokerConnections.currentConnection,
+		currentConnectionName: state.brokerConnections.currentConnectionName,
 	};
 };
 
