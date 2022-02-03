@@ -108,6 +108,7 @@ const ConnectionNewComponent = ({ connections }) => {
 			await brokerClient.createConnection(connection);
 			await brokerClient.connectToBroker(connection.name);
 			dispatch(updateBrokerConnected(true, connection.id));
+			await brokerClient.connectServerToBroker(connection.id);
 			const brokerConnections = await brokerClient.getBrokerConnections();
 			dispatch(updateBrokerConnections(brokerConnections));
 			const brokerConfigurations = await brokerClient.getBrokerConfigurations();
