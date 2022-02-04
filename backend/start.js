@@ -484,13 +484,18 @@ const init = async (licenseContainer) => {
 				}
 			}
 			case 'createConnection': {
-				const { connection } = message;
-				try {
-					configManager.createConnection(connection);
-				} catch (error) {
-					// TODO: handle error because Management Center crashes
-					console.error(error);
-					throw error;
+				if (context.security.acl.isAdmin(user)) {
+					const { connection } = message;
+					try {
+						configManager.createConnection(connection);
+					} catch (error) {
+						// TODO: handle error because Management Center crashes
+						console.error(error);
+						throw error;
+					}
+					return configManager.connections;
+				} else {
+					throw new NotAuthorizedError();
 				}
 				return configManager.connections;
 			}
