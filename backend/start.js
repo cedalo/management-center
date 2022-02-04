@@ -497,12 +497,15 @@ const init = async (licenseContainer) => {
 				} else {
 					throw new NotAuthorizedError();
 				}
-				return configManager.connections;
 			}
 			case 'modifyConnection': {
-				const { oldConnectionId, connection } = message;
-				configManager.updateConnection(oldConnectionId, connection);
-				return configManager.connections;
+				if (context.security.acl.isAdmin(user)) {
+					const { oldConnectionId, connection } = message;
+					configManager.updateConnection(oldConnectionId, connection);
+					return configManager.connections;
+				} else {
+					throw new NotAuthorizedError();
+				}
 			}
 			case 'deleteConnection': {
 				const { id } = message;
