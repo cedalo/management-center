@@ -160,12 +160,15 @@ const addStreamsheetsConfig = (config) => {
 	}
 	// id and url are required parameters
 	if (process.env.CEDALO_STREAMSHEETS_ID && process.env.CEDALO_STREAMSHEETS_URL) {
-		config.tools.streamsheets.instances.push({
-			id: process.env.CEDALO_STREAMSHEETS_ID,
-			name: process.env.CEDALO_STREAMSHEETS_NAME,
-			description: process.env.CEDALO_STREAMSHEETS_DESCRIPTION,
-			url: process.env.CEDALO_STREAMSHEETS_URL
-		});
+		const exists = config.tools.streamsheets.instances.find(instance => instance.id === process.env.CEDALO_STREAMSHEETS_ID);
+		if (!exists) {
+			config.tools.streamsheets.instances.push({
+				id: process.env.CEDALO_STREAMSHEETS_ID,
+				name: process.env.CEDALO_STREAMSHEETS_NAME,
+				description: process.env.CEDALO_STREAMSHEETS_DESCRIPTION,
+				url: process.env.CEDALO_STREAMSHEETS_URL
+			});
+		}
 	}
 };
 
