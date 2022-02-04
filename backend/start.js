@@ -17,6 +17,7 @@ const InstallationManager = require('./src/usage/InstallationManager');
 const ConfigManager = require('./src/config/ConfigManager');
 const SettingsManager = require('./src/settings/SettingsManager');
 const { loadInstallation } = require('./src/utils/utils');
+const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
 
 const version = {
 	name: process.env.CEDALO_MC_NAME || 'Cedalo Management Center',
@@ -365,7 +366,7 @@ const init = async (licenseContainer) => {
 		const { api, command } = message;
 		const broker = context.brokerManager.getBroker(client);
 		if (!userCanAccessAPI(user, api)) {
-			throw new Error('Not authorized');
+			throw new NotAuthorizedError();
 		}
 		if (broker) {
 			const result = await broker.sendCommandMessage(api, command);
@@ -411,7 +412,7 @@ const init = async (licenseContainer) => {
 					const response = pluginManager.unloadPlugin(pluginId);
 					return response;
 				} else {
-					throw new Error('Not authorized');
+					throw new NotAuthorizedError();
 				}
 			}
 			case 'loadPlugin': {
@@ -420,7 +421,7 @@ const init = async (licenseContainer) => {
 					const response = pluginManager.loadPlugin(pluginId);
 					return response;
 				} else {
-					throw new Error('Not authorized');
+					throw new NotAuthorizedError();
 				}
 			}
 			case 'connectToBroker': {
