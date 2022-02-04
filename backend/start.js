@@ -518,7 +518,7 @@ const init = async (licenseContainer) => {
 			default: {
 				const handler = context.requestHandlers.get(request);
 				if (handler) {
-					const result = await handler[request](message);
+					const result = await handler[request](message, user);
 					return result;
 				} else {
 					throw new Error(`Unsupported request: ${request}`);
