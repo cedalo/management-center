@@ -466,7 +466,6 @@ const init = async (licenseContainer) => {
 				} else {
 					throw new NotAuthorizedError();
 				}
-				return settingsManager.settings;
 			}
 			case 'testConnection': {
 				const { connection } = message;
@@ -508,9 +507,13 @@ const init = async (licenseContainer) => {
 				}
 			}
 			case 'deleteConnection': {
-				const { id } = message;
-				configManager.deleteConnection(id);
-				return configManager.connections;
+				if (context.security.acl.isAdmin(user)) {
+					const { id } = message;
+					configManager.deleteConnection(id);
+					return configManager.connections;
+				} else {
+					throw new NotAuthorizedError();
+				}
 			}
 			default: {
 				const handler = context.requestHandlers.get(request);
