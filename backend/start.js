@@ -446,20 +446,25 @@ const init = async (licenseContainer) => {
 				return settingsManager.settings;
 			}
 			case 'updateSettings': {
-				const { settings } = message;
-				settingsManager.updateSettings(settings);
-				if (settingsManager.settings.allowTrackingUsageData) {
-					const data = Object.values(globalSystem);
-					usageTracker.send({
-						data,
-						os: {
-							arch: os.arch(),
-							cpus: os.cpus(),
-							platform: os.platform(),
-							release: os.release(),
-							version: os.version(),
-						}
-					});
+				if (context.security.acl.isAdmin(user)) {
+					const { settings } = message;
+					settingsManager.updateSettings(settings);
+					if (settingsManager.settings.allowTrackingUsageData) {
+						const data = Object.values(globalSystem);
+						usageTracker.send({
+							data,
+							os: {
+								arch: os.arch(),
+								cpus: os.cpus(),
+								platform: os.platform(),
+								release: os.release(),
+								version: os.version(),
+							}
+						});
+					}
+					return settingsManager.settings;
+				} else {
+					throw new NotAuthorizedError();
 				}
 				return settingsManager.settings;
 			}
