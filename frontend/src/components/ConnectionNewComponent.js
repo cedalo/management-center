@@ -122,6 +122,22 @@ const ConnectionNewComponent = ({ connections }) => {
 		}
 	};
 
+
+	const onCancel = async () => {
+		await confirm({
+			title: 'Cancel connection creation',
+			description: `Do you really want to cancel creating this connection?`,
+			cancellationButtonProps: {
+				variant: 'contained'
+			},
+			confirmationButtonProps: {
+				color: 'primary',
+				variant: 'contained'
+			}
+		});
+		history.goBack();
+	};
+
 	return connection ? (
 		<div>
 			<Paper className={classes.paper}>
@@ -253,6 +269,8 @@ const ConnectionNewComponent = ({ connections }) => {
 					>
 						Test connection
 					</Button>
+				</Grid>
+				<Grid item xs={12} className={classes.buttons}>
 					<Button
 						variant="contained"
 						disabled={!validate()}
@@ -265,6 +283,15 @@ const ConnectionNewComponent = ({ connections }) => {
 						}}
 					>
 						Save
+					</Button>
+					<Button
+						variant="contained"
+						onClick={(event) => {
+							event.stopPropagation();
+							onCancel();
+						}}
+					>
+						Cancel
 					</Button>
 				</Grid>
 			</Paper>
