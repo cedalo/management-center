@@ -150,7 +150,7 @@ function AppRoutes(props) {
 				<Route path="/admin/users">
 					<Users />
 				</Route>
-				<Route
+				{/* <Route
 					path="/admin/clusters/detail/:clusterId"
 					component={ClusterDetail}
 				/>
@@ -159,7 +159,7 @@ function AppRoutes(props) {
 				</Route>
 				<Route path="/admin/clusters">
 					<Clusters />
-				</Route>
+				</Route> */}
 				<Route path="/tools/streamsheets">
 					<Streamsheets />
 				</Route>
