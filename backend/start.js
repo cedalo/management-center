@@ -348,7 +348,10 @@ const init = async (licenseContainer) => {
 
 	for (let i=0; i<connections.length; i++) {
 		if (i < maxBrokerConnections) {
-			handleConnectServerToBroker(connections[i]);
+			const connection = connections[i];
+			if (connection.status?.connected) {
+				handleConnectServerToBroker(connections[i]);
+			}
 		}
 	}
 
