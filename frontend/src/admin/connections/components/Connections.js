@@ -175,23 +175,33 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 	};
 
 	const onDeleteConnection = async (id) => {
-		await confirm({
-			title: 'Confirm connection deletion',
-			description: `Do you really want to delete connection "${id}"?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
-		});
-		await brokerClient.deleteConnection(id);
-		enqueueSnackbar(`Connection "${id}" successfully deleted`, {
-			variant: 'success'
-		});
-		const connections = await brokerClient.getBrokerConnections();
-		dispatch(updateBrokerConnections(connections));
+		try {
+			await confirm({
+				title: 'Confirm connection deletion',
+				description: `Do you really want to delete connection "${id}"?`,
+				cancellationButtonProps: {
+					variant: 'contained'
+				},
+				confirmationButtonProps: {
+					color: 'primary',
+					variant: 'contained'
+				}
+			});
+			await brokerClient.deleteConnection(id);
+			enqueueSnackbar(`Connection "${id}" successfully deleted`, {
+				variant: 'success'
+			});
+			const connections = await brokerClient.getBrokerConnections();
+			dispatch(updateBrokerConnections(connections));
+		} catch (error) {
+			// setPremiumFeatureDialogOpen(true);
+			enqueueSnackbar(`Error deleting connection. Reason: ${error.message ? error.message : error}`, {
+				variant: 'error'
+			});
+			// enqueueSnackbar(`Error disconnecting broker. Note that this feature is only available in the premium version.`, {
+			// 	variant: 'error'
+			// });
+		}
 	};
 
 	return (
