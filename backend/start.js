@@ -21,7 +21,7 @@ const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
 
 const version = {
 	name: process.env.CEDALO_MC_NAME || 'Cedalo Management Center',
-	version: process.env.CEDALO_MC_VERSION || '2.2',
+	version: process.env.CEDALO_MC_VERSION || '2.3',
 	buildNumber: process.env.TRAVIS_BUILD_NUMBER || process.env.CEDALO_MC_BUILD_NUMBER || uuidv4(),
 	buildDate: process.env.CEDALO_MC_BUILD_DATE || Date.now()
 };
