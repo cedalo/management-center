@@ -39,7 +39,7 @@ function ListItemLink(props) {
 		[to]
 	);
 
-	const isSelected = to === location.pathname;
+	const isSelected = (to === location.pathname) || location.pathname.startsWith(`${to}/`);
 
 	return (
 		<li id={id}>
