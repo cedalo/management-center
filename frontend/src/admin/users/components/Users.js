@@ -105,6 +105,7 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 							{users &&
 								users.map((user) => (
 									<StyledTableRow
+										disabled={user.editable === false}
 										hover
 										key={user.username}
 										onClick={(event) => {
@@ -115,6 +116,7 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 										<TableCell>{user.username}</TableCell>
 										<TableCell className={classes.badges}>
 											<AutoSuggest
+												disabled={user.editable === false}
 												suggestions={roleSuggestions}
 												values={user.roles?.map((role) => ({
 													label: role,
@@ -128,6 +130,7 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 										<TableCell align="right">
 											<Tooltip title="Delete user">
 												<IconButton
+													disabled={user.editable === false}
 													size="small"
 													onClick={(event) => {
 														event.stopPropagation();
