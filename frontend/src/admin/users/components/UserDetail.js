@@ -206,6 +206,7 @@ const UserDetail = (props) => {
 			{!editMode && (
 				<Grid item xs={12} className={classes.buttons}>
 					<Button
+						disabled={updatedUser.editable === false}
 						variant="contained"
 						color="primary"
 						className={classes.button}
