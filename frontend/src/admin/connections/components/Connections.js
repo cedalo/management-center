@@ -138,6 +138,16 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 
 	const onDisconnectServerFromBroker = async (id) => {
 		try {
+
+			let connections = await brokerClient.getBrokerConnections();
+			const connected = connections.filter(connection => connection.status.connected);
+			if (connected.length === 1) {
+				enqueueSnackbar(`Error disconnecting broker. Reason: at least one broker needs to be connected.`, {
+					variant: 'error'
+				});
+				return;
+			}
+			
 			await confirm({
 				title: 'Confirm disconnecting',
 				description: `Do you really want to disconnect the connection "${id}"?`,
@@ -149,14 +159,6 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 					variant: 'contained'
 				}
 			});
-			let connections = await brokerClient.getBrokerConnections();
-			const connected = connections.filter(connection => connection.status.connected);
-			if (connected.length === 1) {
-				enqueueSnackbar(`Error disconnecting broker. Reason: at least one broker needs to be connected.`, {
-					variant: 'error'
-				});
-				return;
-			}
 
 			await brokerClient.disconnectServerFromBroker(id);
 			enqueueSnackbar(`Connection "${id}" successfully closed`, {
