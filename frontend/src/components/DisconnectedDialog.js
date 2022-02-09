@@ -3,10 +3,13 @@ import React, { useContext } from 'react';
 import BrokerSelect from './BrokerSelect';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 import Paper from '@material-ui/core/Paper';
 import ReloadIcon from '@material-ui/icons/Replay';
 import Typography from '@material-ui/core/Typography';
@@ -254,7 +257,7 @@ XAAtQ92423UBVChIQNNRXyfcD7wH68D+4i4DPUpA9tgl3x5kC6PCKUrKjP4OOAdmf/G4faap84+8p
 H7Q0IIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBC
 CCGEEEIIIYQQHvx/U3pMvcXL4PYAAAAASUVORK5CYII=`;
 
-const getDialogContent = (brokerConnections, connected, proxyConnected, editDefaultClient) => {
+const getDialogContent = (handleClose, brokerConnections, connected, proxyConnected, editDefaultClient) => {
 
 	if (editDefaultClient) {
 		return <>
@@ -309,6 +312,20 @@ const getDialogContent = (brokerConnections, connected, proxyConnected, editDefa
 		return <>
 			<DialogTitle align="center" id="not-connected-dialog-title">
 				We could not connect to your broker
+				{handleClose ? (
+					<IconButton
+					aria-label="close"
+					onClick={handleClose}
+					sx={{
+						position: 'absolute',
+						right: 8,
+						top: 8,
+						color: (theme) => theme.palette.grey[500],
+					}}
+					>
+					<CloseIcon />
+					</IconButton>
+				) : null}
 			</DialogTitle>
 			<DialogContent>
 				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
@@ -367,19 +384,21 @@ const getDialogContent = (brokerConnections, connected, proxyConnected, editDefa
 	}
 }
 const DisconnectedDialog = ({ brokerConnections, connected, proxyConnected, editDefaultClient }) => {
+
+	const [open, setOpen] = React.useState(true);
+
 	const handleClose = () => {
-		// setOpen(false);
+		setOpen(false);
 	};
 
 	return (
 		<Dialog
-			open={editDefaultClient || !connected || !proxyConnected}
-			// onClose={handleClose}
+			open={open && (editDefaultClient || !connected || !proxyConnected)}
 			aria-labelledby="not-connected-dialog-title"
 			aria-describedby="not-connected-dialog-description"
 		>
 			{
-				getDialogContent(brokerConnections, connected, proxyConnected, editDefaultClient)
+				getDialogContent(handleClose, brokerConnections, connected, proxyConnected, editDefaultClient)
 			}
 		</Dialog>
 	);
