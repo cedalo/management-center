@@ -103,10 +103,30 @@ const ConnectionNewComponent = ({ connections }) => {
 		}
 	};
 
-	const onNewConnection = async () => {
+	const doConnect = async (connection) => {
+		const response = await brokerClient.testConnection(connection);
+		if (response.connected) {
+			setConnected(response.connected);
+			enqueueSnackbar('Connection successfully tested', {
+				variant: 'success'
+			});
+		} else {
+			const { error } = response;
+			throw error;
+		}
+	}
+
+	const onNewConnection = async (connect) => {
 		try {
 			await brokerClient.createConnection(connection);
-			await brokerClient.connectServerToBroker(connection.id);
+			if (connect) {
+				try {
+					await doConnect(connection);
+					await brokerClient.connectServerToBroker(connection.id);
+				} catch (error) {
+					throw error;
+				}
+			}
 			const brokerConnections = await brokerClient.getBrokerConnections();
 			dispatch(updateBrokerConnections(brokerConnections));
 			const brokerConfigurations = await brokerClient.getBrokerConfigurations();
@@ -254,7 +274,7 @@ const ConnectionNewComponent = ({ connections }) => {
 						</Grid>
 					</div>
 				</form>
-				<Grid item xs={12} className={classes.buttons}>
+				{/* <Grid item xs={12} className={classes.buttons}>
 					<Button
 						variant="contained"
 						disabled={!validate()}
@@ -269,7 +289,7 @@ const ConnectionNewComponent = ({ connections }) => {
 					>
 						Test connection
 					</Button>
-				</Grid>
+				</Grid> */}
 				<Grid item xs={12} className={classes.buttons}>
 					<Button
 						variant="contained"
@@ -279,10 +299,23 @@ const ConnectionNewComponent = ({ connections }) => {
 						startIcon={<SaveIcon />}
 						onClick={(event) => {
 							event.stopPropagation();
-							onNewConnection();
+							onNewConnection(true);
 						}}
 					>
-						Save
+						{`Connect & Save`}
+					</Button>
+					<Button
+						variant="contained"
+						disabled={!validate()}
+						color="primary"
+						className={classes.button}
+						startIcon={<SaveIcon />}
+						onClick={(event) => {
+							event.stopPropagation();
+							onNewConnection(false);
+						}}
+					>
+						{`Save`}
 					</Button>
 					<Button
 						variant="contained"
