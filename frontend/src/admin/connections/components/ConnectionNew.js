@@ -56,8 +56,8 @@ const ConnectionNew = (props) => {
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
 				</RouterLink>
-				<RouterLink className={classes.breadcrumbLink} to="/security">
-					Admin
+				<RouterLink className={classes.breadcrumbLink} to="/config">
+					Config
 				</RouterLink>
 				<Typography className={classes.breadcrumbItem} color="textPrimary">
 					Connections
