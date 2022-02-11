@@ -321,6 +321,19 @@ const ConnectionDetailComponent = (props) => {
 									startIcon={<SaveIcon />}
 									onClick={(event) => {
 										event.stopPropagation();
+										onUpdateConnection(true);
+									}}
+								>
+									{`Connect & Save`}
+								</Button>
+								<Button
+									variant="contained"
+									disabled={!validate()}
+									color="primary"
+									className={classes.button}
+									startIcon={<SaveIcon />}
+									onClick={(event) => {
+										event.stopPropagation();
 										onUpdateConnection();
 									}}
 								>
