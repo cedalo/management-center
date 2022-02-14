@@ -117,13 +117,17 @@ const ConnectionDetailComponent = (props) => {
 		}
 	}
 
+	const loadConnections = async () => {
+		const brokerConnections = await brokerClient.getBrokerConnections();
+		dispatch(updateBrokerConnections(brokerConnections));
+		const brokerConfigurations = await brokerClient.getBrokerConfigurations();
+		dispatch(updateBrokerConfigurations(brokerConfigurations));
+	}
+
 	const onUpdateConnection = async (connect) => {
 		try {
 			await brokerClient.modifyConnection(connection.id, updatedConnection);
-			const brokerConnections = await brokerClient.getBrokerConnections();
-			dispatch(updateBrokerConnections(brokerConnections));
-			const brokerConfigurations = await brokerClient.getBrokerConfigurations();
-			dispatch(updateBrokerConfigurations(brokerConfigurations));
+			await loadConnections();
 			enqueueSnackbar('Connection successfully updated', {
 				variant: 'success'
 			});
@@ -132,6 +136,7 @@ const ConnectionDetailComponent = (props) => {
 				try {
 					await doConnect(connection);
 					await brokerClient.connectServerToBroker(connection.id);
+					await loadConnections();
 					history.push(`/config/connections`);
 				} catch (error) {
 					enqueueSnackbar(`Error creating connection "${connection.name}". Reason: ${error.message || error}`, {
