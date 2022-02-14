@@ -197,7 +197,7 @@ const init = async (licenseContainer) => {
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));
 	app.use(cors());
-	
+
 	const server = http.createServer(app);
 
 	// TODO: add error handling
@@ -346,7 +346,7 @@ const init = async (licenseContainer) => {
 		configManager.updateConnection(connection);
 	}
 
-	for (let i=0; i<connections.length; i++) {
+	for (let i = 0; i < connections.length - 1; i++) {
 		if (i < maxBrokerConnections) {
 			const connection = connections[i];
 			if (connection.status?.connected) {
@@ -656,7 +656,7 @@ const init = async (licenseContainer) => {
 		}
 		broadcastWebSocketMessage(message);
 	}
-	
+
 	const broadcastWebSocketConnections = () => {
 		const message = {
 			type: 'event',

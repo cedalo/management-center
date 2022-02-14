@@ -50,9 +50,9 @@ module.exports = class BrokerManager {
 		return [this._connection];
 	}
 
-	connectClient(client, broker) {}
+	connectClient(client, broker) { }
 
-	disconnectClient(client) {}
+	disconnectClient(client) { }
 
 	getBroker(client) {
 		return this._brokerClient;
