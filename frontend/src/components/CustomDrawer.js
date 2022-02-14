@@ -249,7 +249,7 @@ icon={<SettingsIcon />}
 			</List>
 			<Divider />
 			<List>
-				{open ? <ListSubheader className={classes.menuSubHeader}>Admin</ListSubheader> : null}
+				{(userProfile?.isAdmin && open) ? <ListSubheader className={classes.menuSubHeader}>Admin</ListSubheader> : null}
 				{(userProfile?.isAdmin && !hideConnections) ? <ListItemLink
 					classes={classes}
 					to="/config/connections"
