@@ -107,35 +107,41 @@ const ConnectionNewComponent = ({ connections }) => {
 		const response = await brokerClient.testConnection(connection);
 		if (response.connected) {
 			setConnected(response.connected);
-			enqueueSnackbar('Connection successfully tested', {
-				variant: 'success'
-			});
 		} else {
 			const { error } = response;
 			throw error;
 		}
 	}
 
+	const loadConnections = async () => {
+		const brokerConnections = await brokerClient.getBrokerConnections();
+		dispatch(updateBrokerConnections(brokerConnections));
+		const brokerConfigurations = await brokerClient.getBrokerConfigurations();
+		dispatch(updateBrokerConfigurations(brokerConfigurations));
+	}
+
 	const onNewConnection = async (connect) => {
 		try {
 			await brokerClient.createConnection(connection);
+			await loadConnections();
+			enqueueSnackbar('Connection successfully created', {
+				variant: 'success'
+			});
 			if (connect) {
 				try {
 					await doConnect(connection);
 					await brokerClient.connectServerToBroker(connection.id);
+					await loadConnections();
 				} catch (error) {
-					throw error;
+					enqueueSnackbar(`Error creating connection "${connection.name}". Reason: ${error.message || error}`, {
+						variant: 'error'
+					});
 				}
 			}
-			const brokerConnections = await brokerClient.getBrokerConnections();
-			dispatch(updateBrokerConnections(brokerConnections));
-			const brokerConfigurations = await brokerClient.getBrokerConfigurations();
-			dispatch(updateBrokerConfigurations(brokerConfigurations));
-			enqueueSnackbar('Connection successfully created', {
-				variant: 'success'
-			});
 			history.push(`/config/connections`);
 		} catch (error) {
+			console.log(error);
+			console.log(connection);
 			enqueueSnackbar(`Error creating connection "${connection.name}". Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
