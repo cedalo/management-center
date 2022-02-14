@@ -21,6 +21,7 @@ import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
+import { useHistory } from 'react-router-dom';
 import { updateBrokerConfigurations, updateBrokerConnections } from '../actions/actions';
 
 const useStyles = makeStyles((theme) => ({
@@ -71,6 +72,7 @@ const ConnectionDetailComponent = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
+	const history = useHistory();
 	const { client: brokerClient } = context;
 
 	const validate = () => {
@@ -105,22 +107,17 @@ const ConnectionDetailComponent = (props) => {
 		}
 	};
 
-	const onUpdateConnection = async (connect) => {
-		try {
-			await brokerClient.testConnection(updatedConnection);
-		} catch (error) {
-			await confirm({
-				title: 'Connection failed',
-				description: `The connection could not be established. Save anyway?`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary',
-					variant: 'contained'
-				}
-			});
+	const doConnect = async (connection) => {
+		const response = await brokerClient.testConnection(connection);
+		if (response.connected) {
+			setConnected(response.connected);
+		} else {
+			const { error } = response;
+			throw error;
 		}
+	}
+
+	const onUpdateConnection = async (connect) => {
 		try {
 			await brokerClient.modifyConnection(connection.id, updatedConnection);
 			const brokerConnections = await brokerClient.getBrokerConnections();
@@ -131,8 +128,19 @@ const ConnectionDetailComponent = (props) => {
 				variant: 'success'
 			});
 			setEditMode(false);
+			if (connect) {
+				try {
+					await doConnect(connection);
+					await brokerClient.connectServerToBroker(connection.id);
+					history.push(`/config/connections`);
+				} catch (error) {
+					enqueueSnackbar(`Error creating connection "${connection.name}". Reason: ${error.message || error}`, {
+						variant: 'error'
+					});
+				}
+			}
 		} catch (error) {
-			enqueueSnackbar(`Error modifying connection "${updatedConnection.name}". Reason: ${error}`, {
+			enqueueSnackbar(`Error creating connection "${connection.name}". Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
 		}
@@ -236,7 +244,7 @@ const ConnectionDetailComponent = (props) => {
 							<Grid item xs={12}>
 								<TextField
 									required={false}
-									disabled={true}
+									disabled={!editMode}
 									id="username"
 									label="Username"
 									value={updatedConnection.credentials?.username}
@@ -249,7 +257,8 @@ const ConnectionDetailComponent = (props) => {
 											setUpdatedConnection({
 												...updatedConnection,
 												credentials: {
-													username: event.target.value
+													username: event.target.value,
+													password: updatedConnection.credentials.password,
 												}
 											});
 											setConnected(false);
@@ -260,7 +269,7 @@ const ConnectionDetailComponent = (props) => {
 							<Grid item xs={12}>
 								<TextField
 									required={false}
-									disabled={true}
+									disabled={!editMode}
 									id="password"
 									type="password"
 									label="Password"
@@ -274,6 +283,7 @@ const ConnectionDetailComponent = (props) => {
 											setUpdatedConnection({
 												...updatedConnection,
 												credentials: {
+													username: updatedConnection.credentials.username,
 													password: event.target.value
 												}
 											});
@@ -286,7 +296,7 @@ const ConnectionDetailComponent = (props) => {
 					</div>
 				</form>
 					<Grid item xs={12} className={classes.buttons}>
-						<Button
+						{/* <Button
 							variant="contained"
 							disabled={!validate()}
 							color="primary"
@@ -299,7 +309,7 @@ const ConnectionDetailComponent = (props) => {
 							}}
 						>
 							Test connection
-						</Button>
+						</Button> */}
 						{!editMode && (
 							<Button
 								variant="contained"
