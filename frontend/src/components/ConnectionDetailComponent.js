@@ -105,7 +105,7 @@ const ConnectionDetailComponent = (props) => {
 		}
 	};
 
-	const onUpdateConnection = async () => {
+	const onUpdateConnection = async (connect) => {
 		try {
 			await brokerClient.testConnection(updatedConnection);
 		} catch (error) {
