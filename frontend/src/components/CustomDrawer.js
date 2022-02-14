@@ -250,19 +250,19 @@ icon={<SettingsIcon />}
 			<Divider />
 			<List>
 				{open ? <ListSubheader className={classes.menuSubHeader}>Admin</ListSubheader> : null}
-				{!hideConnections ? <ListItemLink
+				{(userProfile?.isAdmin && !hideConnections) ? <ListItemLink
 					classes={classes}
 					to="/config/connections"
 					primary="Connections"
 					icon={<ConnectionsIcon fontSize="small" />}
 				/> : null}
 				{/* <ListItemLink classes={classes} to="/config/settings" primary="Settings" icon={<SettingsIcon />} /> */}
-				<ListItemLink
+				{userProfile?.isAdmin && <ListItemLink
 					classes={classes}
 					to="/config/settings"
 					primary="Settings"
 					icon={<SettingsIcon fontSize="small" />}
-				/>
+				/>}
 				{userManagementAccess(userManagementFeature) ? <ListItemLink
 					classes={classes}
 					to="/admin/users"

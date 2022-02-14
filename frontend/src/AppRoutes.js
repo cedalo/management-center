@@ -121,18 +121,18 @@ function AppRoutes(props) {
 				<Route path="/system">
 					<System />
 				</Route>
-				<Route path="/config/connections/new">
+				{userProfile?.isAdmin && <Route path="/config/connections/new">
 					<ConnectionNew />
-				</Route>
-				<Route path="/config/connections/detail/:connectionId">
+				</Route>}
+				{userProfile?.isAdmin && <Route path="/config/connections/detail/:connectionId">
 					<ConnectionDetail />
-				</Route>
+				</Route>}
 				{ !hideConnections ? <Route path="/config/connections">
 					<Connections />
 				</Route> : null }
-				<Route path="/config/settings">
+				{userProfile?.isAdmin && <Route path="/config/settings">
 					<Settings />
-				</Route>
+				</Route>}
 				<Route path="/config">
 					<Config />
 				</Route>
