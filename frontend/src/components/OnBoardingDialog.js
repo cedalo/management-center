@@ -39,6 +39,7 @@ import { green } from '@material-ui/core/colors';
 import useLocalStorage from '../helpers/useLocalStorage';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { updateSettings } from '../actions/actions';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -148,6 +149,7 @@ function getSteps() {
 const OnBoardingDialog = ({ settings }) => {
 	const classes = useStyles();
 	const theme = useTheme();
+	const { enqueueSnackbar } = useSnackbar();
 	const dispatch = useDispatch();
 	const context = useContext(WebSocketContext);
 	const { client: brokerClient } = context;
@@ -160,10 +162,16 @@ const OnBoardingDialog = ({ settings }) => {
 	);
 
 	const onChangeAllowTrackingUsageData = async (allowTrackingUsageData) => {
-		const updatedSettings = await brokerClient.updateSettings({
-			allowTrackingUsageData
-		});
-		dispatch(updateSettings(updatedSettings));
+		try {
+			const updatedSettings = await brokerClient.updateSettings({
+				allowTrackingUsageData
+			});
+			dispatch(updateSettings(updatedSettings));
+		} catch (error) {
+			enqueueSnackbar(`Error disconnecting broker. Reason: ${error.message ? error.message : error}`, {
+				variant: 'error'
+			});
+		}
 	};
 
 	const handleClose = () => {

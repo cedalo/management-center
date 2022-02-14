@@ -36,6 +36,7 @@ import Typography from '@material-ui/core/Typography';
 import UserIcon from '@material-ui/icons/Person';
 import { WebSocketContext } from '../websockets/WebSocket';
 import useLocalStorage from '../helpers/useLocalStorage';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
 	breadcrumbItem: theme.palette.breadcrumbItem,
@@ -45,6 +46,7 @@ const useStyles = makeStyles((theme) => ({
 const Settings = ({ settings, sendMessage }) => {
 	const classes = useStyles();
 	const theme = useTheme();
+	const { enqueueSnackbar } = useSnackbar();
 	const dispatch = useDispatch();
 	const context = useContext(WebSocketContext);
 	const { client: brokerClient } = context;
@@ -55,10 +57,16 @@ const Settings = ({ settings, sendMessage }) => {
 	};
 
 	const onChangeAllowTrackingUsageData = async (allowTrackingUsageData) => {
-		const updatedSettings = await brokerClient.updateSettings({
-			allowTrackingUsageData
-		});
-		dispatch(updateSettings(updatedSettings));
+		try {
+			const updatedSettings = await brokerClient.updateSettings({
+				allowTrackingUsageData
+			});
+			dispatch(updateSettings(updatedSettings));
+		} catch (error) {
+			enqueueSnackbar(`Error disconnecting broker. Reason: ${error.message ? error.message : error}`, {
+				variant: 'error'
+			});
+		}
 	};
 
 	return (
