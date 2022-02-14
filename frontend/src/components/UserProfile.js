@@ -89,7 +89,7 @@ const UserProfile = (props) => {
 		if (!updatedUser.username) {
 			updatedUser.username = userProfile?.username;
 		}
-		await brokerClient.updateUser(updatedUser);
+		await brokerClient.updateUserProfile(updatedUser);
 		enqueueSnackbar('User successfully updated', {
 			variant: 'success'
 		});

@@ -246,6 +246,16 @@ export default class BaseMosquittoProxyClient {
 		}
 	}
 
+	async updateUserProfile(user) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/userprofile/${user.username}`;
+			const response = await axios.put(url, user);
+			return response.data;
+		} catch (error) {
+			throw new NotAuthorizedError()
+		}
+	}
+
 	/**
 	 * ******************************************************************************************
 	 * Methods for cluster management
