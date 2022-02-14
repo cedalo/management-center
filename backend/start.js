@@ -359,6 +359,9 @@ const init = async (licenseContainer) => {
 
 	// TODO: move somewhere else
 	const userCanAccessAPI = (user, api) => {
+		if (api === 'stream-processing' && !user.roles.includes('admin')) {
+			return false;
+		}
 		if (api === 'dynamic-security' && !user.roles.includes('admin') && !user.roles.includes('editor')) {
 			return false;
 		}

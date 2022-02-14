@@ -47,8 +47,7 @@ const useStyles = makeStyles((theme) => ({
 
 function AppRoutes(props) {
 
-	const { userManagementFeature } = props;
-	console.log(userManagementFeature);
+	const { userProfile, userManagementFeature } = props;
 	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/theme`);
 	const [responseConfig, loadingConfig, hasErrorConfig] = useFetch(`${process.env.PUBLIC_URL}/api/config`);
 
@@ -103,16 +102,16 @@ function AppRoutes(props) {
 				<Route path="/terminal">
 					<Terminal />
 				</Route>
-				<Route
+				{userProfile?.isAdmin && <Route
 					path="/streams/detail/:streamId"
 					component={StreamDetail}
-				/>
-				<Route path="/streams/new">
+				/>}
+				{userProfile?.isAdmin && <Route path="/streams/new">
 					<StreamNew />
-				</Route>
-				<Route path="/streams">
+				</Route>}
+				{userProfile?.isAdmin && <Route path="/streams">
 					<Streams />
-				</Route>
+				</Route>}
 				<Route path="/system/status">
 					<Status />
 				</Route>
@@ -184,6 +183,7 @@ function AppRoutes(props) {
 
 const mapStateToProps = (state) => {
 	return {
+		userProfile: state.userProfile?.userProfile,
 		userManagementFeature: state.systemStatus?.features?.usermanagement
 	};
 };
