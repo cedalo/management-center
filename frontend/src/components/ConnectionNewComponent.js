@@ -73,8 +73,13 @@ const ConnectionNewComponent = ({ connections }) => {
 		return searchConnection.id === connection.id;
 	});
 
+	const connectionWithNameExists = connections?.find((searchConnection) => {
+		return searchConnection.name === connection.name;
+	});
+
 	const validate = () => {
 		return !connectionExists
+			&& !connectionWithNameExists
 			&& connection.id !== ''
 			&& connection.name !== ''
 			&& connection.url !== '';
@@ -198,6 +203,8 @@ const ConnectionNewComponent = ({ connections }) => {
 							</Grid>
 							<Grid item xs={12}>
 								<TextField
+									error={connectionWithNameExists}
+									helperText={connectionWithNameExists && 'A connection with this name already exists.'}
 									required={true}
 									id="name"
 									label="Name"
