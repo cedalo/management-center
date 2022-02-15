@@ -34,7 +34,7 @@ module.exports = class ConfigManager {
 	}
 
 	createConnection(connection) {
-		if (db.get('connections').value().length > this._maxBrokerConnections) {
+		if (db.get('connections').value().length >= this._maxBrokerConnections) {
 			throw new Error('Max broker connections reached.');
 		}
 		db.get('connections')
