@@ -126,6 +126,7 @@ const ConnectionDetailComponent = (props) => {
 
 	const onUpdateConnection = async (connect) => {
 		try {
+			await brokerClient.disconnectServerFromBroker(connection.id);
 			await brokerClient.modifyConnection(connection.id, updatedConnection);
 			await loadConnections();
 			enqueueSnackbar('Connection successfully updated', {
