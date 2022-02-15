@@ -35,7 +35,7 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../../../websockets/WebSocket';
 import { useConfirm } from 'material-ui-confirm';
-import { updateBrokerConnections, updateSelectedConnection } from '../../../actions/actions';
+import { updateBrokerConfigurations, updateBrokerConnections, updateSelectedConnection } from '../../../actions/actions';
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import PremiumFeatureDialog from '../../../components/PremiumFeatureDialog';
@@ -114,6 +114,13 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 		setAnchorEl(null);
 	};
 
+	const loadConnections = async () => {
+		const brokerConnections = await brokerClient.getBrokerConnections();
+		dispatch(updateBrokerConnections(brokerConnections));
+		const brokerConfigurations = await brokerClient.getBrokerConfigurations();
+		dispatch(updateBrokerConfigurations(brokerConfigurations));
+	}
+
 	const onSelectConnection = async (connection) => {
 		dispatch(updateSelectedConnection(connection));
 		history.push(`/config/connections/detail/${connection.id}`);
@@ -125,14 +132,13 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 			enqueueSnackbar(`Connection "${id}" successfully established`, {
 				variant: 'success'
 			});
-			const connections = await brokerClient.getBrokerConnections();
-			dispatch(updateBrokerConnections(connections));
 		} catch (error) {
 			// setPremiumFeatureDialogOpen(true);
 			enqueueSnackbar(`Error disconnecting broker. Reason: ${error.message ? error.message : error}`, {
 				variant: 'error'
 			});
 		}
+		await loadConnections();
 	}
 
 	const onDisconnectServerFromBroker = async (id) => {
@@ -174,13 +180,14 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 			// 	variant: 'error'
 			// });
 		}
+		await loadConnections();
 	}
 
 	const handleBrokerConnectionConnectDisconnect = async (id, connect) => {
 		if (connect) {
-			onConnectServerToBroker(id);
+			await onConnectServerToBroker(id);
 		} else {
-			onDisconnectServerFromBroker(id);
+			await onDisconnectServerFromBroker(id);
 		}
 	};
 
