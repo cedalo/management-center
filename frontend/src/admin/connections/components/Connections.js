@@ -128,11 +128,10 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 			const connections = await brokerClient.getBrokerConnections();
 			dispatch(updateBrokerConnections(connections));
 		} catch (error) {
-			console.log(error);
-			setPremiumFeatureDialogOpen(true);
-			// enqueueSnackbar(`Error connecting broker. Note that this feature is only available in the premium version.`, {
-			// 	variant: 'error'
-			// });
+			// setPremiumFeatureDialogOpen(true);
+			enqueueSnackbar(`Error disconnecting broker. Reason: ${error.message ? error.message : error}`, {
+				variant: 'error'
+			});
 		}
 	}
 
@@ -147,7 +146,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 				});
 				return;
 			}
-			
+
 			await confirm({
 				title: 'Confirm disconnecting',
 				description: `Do you really want to disconnect the connection "${id}"?`,
@@ -255,12 +254,12 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 										{GROUP_TABLE_COLUMNS.map((column) => (
 											<TableCell
 												key={column.id}
-												sortDirection={sortBy === column.id ? sortDirection : false}
+												// sortDirection={sortBy === column.id ? sortDirection : false}
 											>
 												<TableSortLabel
 													active={sortBy === column.id}
 													direction={sortDirection}
-													onClick={() => onSort(column.id)}
+													// onClick={() => onSort(column.id)}
 												>
 													{column.key}
 												</TableSortLabel>
