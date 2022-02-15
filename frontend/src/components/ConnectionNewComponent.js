@@ -123,21 +123,20 @@ const ConnectionNewComponent = ({ connections }) => {
 	const onNewConnection = async (connect) => {
 		try {
 			await brokerClient.createConnection(connection);
-			await loadConnections();
-			enqueueSnackbar('Connection successfully created', {
-				variant: 'success'
-			});
 			if (connect) {
 				try {
 					await doConnect(connection);
 					await brokerClient.connectServerToBroker(connection.id);
-					await loadConnections();
 				} catch (error) {
 					enqueueSnackbar(`Error creating connection "${connection.name}". Reason: ${error.message || error}`, {
 						variant: 'error'
 					});
 				}
 			}
+			await loadConnections();
+			enqueueSnackbar('Connection successfully created', {
+				variant: 'success'
+			});
 			history.push(`/config/connections`);
 		} catch (error) {
 			console.log(error);
