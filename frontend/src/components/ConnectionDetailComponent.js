@@ -78,7 +78,8 @@ const ConnectionDetailComponent = (props) => {
 	const validate = () => {
 		if (editMode) {
 			return connection.id !== ''
-				&& connection.name !== '';
+			&& connection.name !== ''
+			&& connection.url !== '';
 		} else {
 			return connection.id !== '';
 		}
