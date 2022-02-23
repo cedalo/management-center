@@ -179,7 +179,7 @@ const ConnectionDetailComponent = (props) => {
 							<Grid item xs={12}>
 								<TextField
 									required={editMode}
-									disabled={!editMode}
+									disabled
 									onChange={(event) => {
 										if (editMode) {
 											setUpdatedConnection({
@@ -207,7 +207,7 @@ const ConnectionDetailComponent = (props) => {
 							<Grid item xs={12}>
 								<TextField
 									required={editMode}
-									disabled={!editMode}
+									disabled
 									id="name"
 									label="Name"
 									value={updatedConnection.name}
