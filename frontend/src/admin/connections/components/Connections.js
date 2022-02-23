@@ -145,8 +145,8 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 		try {
 
 			let connections = await brokerClient.getBrokerConnections();
-			const connected = connections.filter(connection => connection.status.connected);
-			if (connected.length === 1) {
+			const connected = connections.filter(connection => connection?.status?.connected);
+			if (connected?.length === 1) {
 				enqueueSnackbar(`Error disconnecting broker. Reason: at least one broker needs to be connected.`, {
 					variant: 'error'
 				});
