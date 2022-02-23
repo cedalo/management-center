@@ -263,13 +263,14 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 												key={column.id}
 												// sortDirection={sortBy === column.id ? sortDirection : false}
 											>
-												<TableSortLabel
+												{/* <TableSortLabel
 													active={sortBy === column.id}
 													direction={sortDirection}
 													// onClick={() => onSort(column.id)}
 												>
 													{column.key}
-												</TableSortLabel>
+												</TableSortLabel> */}
+												{column.key}
 											</TableCell>
 										))}
 										<TableCell />
