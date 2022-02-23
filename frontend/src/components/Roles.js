@@ -169,6 +169,7 @@ const Roles = (props) => {
 				<AlertTitle>Feature not available</AlertTitle>
 				Make sure that the broker connected has the dynamic security enabled.
 			</Alert></> : null}
+			<br />
 			{dynamicsecurityFeature?.supported !== false && <><Button
 				variant="outlined"
 				color="default"
