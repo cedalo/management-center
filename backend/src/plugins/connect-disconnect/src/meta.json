@@ -1,0 +1,13 @@
+{
+	"id": "cedalo_connect_disconnect",
+	"name": "Cedalo Connect / Disconnect",
+	"version":"1.0",
+	"description":"Connect and disconnect brokers",
+	"feature": "Security",
+	"featureId": "security",
+	"type": "os",
+	"actions": {
+		"enable": false,
+		"disable": false
+	}
+}

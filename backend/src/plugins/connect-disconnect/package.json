@@ -1,0 +1,12 @@
+{
+  "name": "@cedalo/management-center-plugin-connect-disconnect",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0"
+  },
+  "peerDependencies": {
+    "express": "^4.17.1"
+  }
+}
