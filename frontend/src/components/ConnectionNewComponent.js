@@ -144,8 +144,6 @@ const ConnectionNewComponent = ({ connections }) => {
 			});
 			history.push(`/config/connections`);
 		} catch (error) {
-			console.log(error);
-			console.log(connection);
 			enqueueSnackbar(`Error creating connection "${connection.name}". Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
