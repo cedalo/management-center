@@ -1,0 +1,13 @@
+{
+	"id": "cedalo_user_profile",
+	"name": "Cedalo User Profile",
+	"version":"1.0",
+	"description":"Access to the user profile",
+	"feature": "User Management",
+	"featureId": "user-management",
+	"type": "os",
+	"actions": {
+		"enable": false,
+		"disable": false
+	}
+}
