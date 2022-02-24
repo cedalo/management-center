@@ -492,7 +492,11 @@ const init = async (licenseContainer) => {
 				if (context.security.acl.isAdmin(user)) {
 					const { connection } = message;
 					try {
-						configManager.createConnection(connection);
+						if (configManager.connections.length < context.licenseContainer.license.maxBrokerConnections) {
+							configManager.createConnection(connection);
+						} else {
+							throw new Error('Maximum number of connections reached.');
+						}
 					} catch (error) {
 						// TODO: handle error because Management Center crashes
 						console.error(error);
