@@ -10,6 +10,7 @@ const API_DYNAMIC_SECURITY = 'dynamic-security';
 const API_STREAMS_PROCESSING = 'stream-processing';
 const API_HIGH_AVAILABILITY = 'cedalo/ha';
 const ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED = 'You are not authorized to access the user management.';
+const ERROR_MESSAGE_API_NOT_FOUND = 'API not found. Note that this is a premium feature.';
 
 class APIError extends Error {
 	constructor(title, message) {
@@ -23,6 +24,13 @@ class NotAuthorizedError extends APIError {
 	constructor() {
 		super('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
 		this.name = 'NotAuthorizedError';
+	}
+}
+
+class APINotFoundError extends APIError {
+	constructor() {
+		super('API not found', ERROR_MESSAGE_API_NOT_FOUND);
+		this.name = 'APINotFoundError';
 	}
 }
 
@@ -187,9 +195,8 @@ export default class BaseMosquittoProxyClient {
 				JSON.parse(response.data);
 				return response.data;
 			} catch (error) {
-				throw new NotAuthorizedError();
+				throw new APINotFoundError();
 			}
-			return response.data;
 		} catch (error) {
 			throw new NotAuthorizedError();
 		}
@@ -258,7 +265,11 @@ export default class BaseMosquittoProxyClient {
 			const response = await axios.put(url, user);
 			return response.data;
 		} catch (error) {
-			throw new NotAuthorizedError()
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
 		}
 	}
 
