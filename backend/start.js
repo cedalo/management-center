@@ -720,6 +720,7 @@ const init = async (licenseContainer) => {
 	context = {
 		...context,
 		security: {
+			...context.security,
 			isLoggedIn(request, response, next) {
 				return next();
 			}
