@@ -17,6 +17,8 @@ module.exports = class PluginManager {
 	_loadLoginPlugin(context) {
 		const { Plugin } = require('./login');
 		const plugin = new Plugin();
+		this._loadPlugin(plugin, context);
+	_loadPlugin(plugin, context) {
 		try {
 			plugin.init(context);
 			plugin.load(context);
