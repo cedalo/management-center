@@ -85,19 +85,25 @@ const UserProfile = (props) => {
 	};
 
 	const onUpdateUserProfile = async () => {
-		updatedUser.password = password;
-		if (!updatedUser.username) {
-			updatedUser.username = userProfile?.username;
+		try {
+			updatedUser.password = password;
+			if (!updatedUser.username) {
+				updatedUser.username = userProfile?.username;
+			}
+			await brokerClient.updateUserProfile(updatedUser);
+			enqueueSnackbar('User successfully updated', {
+				variant: 'success'
+			});
+			const userProfileObject = await brokerClient.getUserProfile();
+			dispatch(updateUserProfile(userProfileObject));
+			const users = await brokerClient.listUsers();
+			dispatch(updateUsers(users));
+			setEditMode(false);
+		} catch (error) {
+			enqueueSnackbar(`Error editing user profile. Reason: ${error.message ? error.message : error}`, {
+				variant: 'error'
+			});
 		}
-		await brokerClient.updateUserProfile(updatedUser);
-		enqueueSnackbar('User successfully updated', {
-			variant: 'success'
-		});
-		const userProfileObject = await brokerClient.getUserProfile();
-		dispatch(updateUserProfile(userProfileObject));
-		const users = await brokerClient.listUsers();
-		dispatch(updateUsers(users));
-		setEditMode(false);
 	};
 
 	const onCancelEdit = async () => {
