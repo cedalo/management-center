@@ -11,6 +11,7 @@ module.exports = class PluginManager {
 		// TODO: support multiple plugins
 		if (process.env.CEDALO_MC_DISABLE_LOGIN !== 'true') {
 			this._loadLoginPlugin(context);
+			this._loadConnectDisconnectPlugin(context);
 		}
 	}
 
@@ -18,6 +19,13 @@ module.exports = class PluginManager {
 		const { Plugin } = require('./login');
 		const plugin = new Plugin();
 		this._loadPlugin(plugin, context);
+	}
+
+	_loadConnectDisconnectPlugin(context) {
+		const { Plugin } = require('./connect-disconnect');
+		const plugin = new Plugin();
+		this._loadPlugin(plugin, context);
+	}
 	_loadPlugin(plugin, context) {
 		try {
 			plugin.init(context);
