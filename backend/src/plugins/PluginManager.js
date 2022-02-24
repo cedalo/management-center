@@ -12,6 +12,7 @@ module.exports = class PluginManager {
 		if (process.env.CEDALO_MC_DISABLE_LOGIN !== 'true') {
 			this._loadLoginPlugin(context);
 			this._loadConnectDisconnectPlugin(context);
+			this._loadUserProfilePlugin(context);
 		}
 	}
 
@@ -26,6 +27,13 @@ module.exports = class PluginManager {
 		const plugin = new Plugin();
 		this._loadPlugin(plugin, context);
 	}
+
+	_loadUserProfilePlugin(context) {
+		const { Plugin } = require('./user-profile');
+		const plugin = new Plugin();
+		this._loadPlugin(plugin, context);
+	}
+
 	_loadPlugin(plugin, context) {
 		try {
 			plugin.init(context);
