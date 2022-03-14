@@ -132,19 +132,42 @@ const updateTopicTree = (topicTree, topic, message, packet) => {
 
 const initConnections = (config) => {
 	const connections = config.connections || [];
-	if (process.env.CEDALO_MC_BROKER_NAME && process.env.CEDALO_MC_BROKER_URL) {
-		const connection = {
-			name: process.env.CEDALO_MC_BROKER_NAME,
-			url: process.env.CEDALO_MC_BROKER_URL
-		};
-		connection.id = process.env.CEDALO_MC_BROKER_ID || uuidv4();
-		if (process.env.CEDALO_MC_BROKER_USERNAME && process.env.CEDALO_MC_BROKER_PASSWORD) {
-			connection.credentials = {
-				username: process.env.CEDALO_MC_BROKER_USERNAME,
-				password: process.env.CEDALO_MC_BROKER_PASSWORD
-			};
+	if (process.env.CEDALO_MC_BROKER_NAME && process.env.CEDALO_MC_BROKER_URL && process.env.CEDALO_MC_BROKER_ID) {
+		let connection = connections.find((connection) => {
+			return connection.name === process.env.CEDALO_MC_BROKER_NAME && connection.id === process.env.CEDALO_MC_BROKER_ID;
+		});
+		const connectionExisted = !!connection;
+		if (connectionExisted) {
+
 		}
-		connections.push(connection);
+		if (!connection) {
+			// connection did not exist previously in configuration file
+			connection = {
+				name: process.env.CEDALO_MC_BROKER_NAME,
+				url: process.env.CEDALO_MC_BROKER_URL
+			};
+			connection.id = process.env.CEDALO_MC_BROKER_ID || uuidv4();
+			if (process.env.CEDALO_MC_BROKER_USERNAME && process.env.CEDALO_MC_BROKER_PASSWORD) {
+				connection.credentials = {
+					username: process.env.CEDALO_MC_BROKER_USERNAME,
+					password: process.env.CEDALO_MC_BROKER_PASSWORD
+				};
+			}
+			connection.status = {
+				connected: true
+			}
+			connections.push(connection);
+		} else {
+			// connection did exist previously in configuration file
+			// configuration file needs to be updated from environment variables
+			connection.url = process.env.CEDALO_MC_BROKER_URL
+			if (process.env.CEDALO_MC_BROKER_USERNAME && process.env.CEDALO_MC_BROKER_PASSWORD) {
+				connection.credentials = {
+					username: process.env.CEDALO_MC_BROKER_USERNAME,
+					password: process.env.CEDALO_MC_BROKER_PASSWORD
+				};
+			}
+		}
 	}
 	return connections;
 };
