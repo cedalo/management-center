@@ -71,8 +71,6 @@ const Status = ({ lastUpdated, systemStatus, defaultClient, currentConnection, c
 		}
 	];
 
-	console.log(currentConnection)
-
 	return (
 		<div>
 			<Breadcrumbs aria-label="breadcrumb">

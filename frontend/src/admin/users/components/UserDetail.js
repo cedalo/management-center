@@ -90,7 +90,6 @@ const UserDetail = (props) => {
 	};
 
 	const onUpdateUserDetail = async () => {
-		console.log(updatedUser)
 		await brokerClient.updateUser(updatedUser);
 		enqueueSnackbar('User successfully updated', {
 			variant: 'success'

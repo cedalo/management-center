@@ -135,7 +135,6 @@ const GroupDetail = (props) => {
 	};
 
 	const onUpdateGroup = async () => {
-		console.log(updatedGroup);
 		await brokerClient.modifyGroup(updatedGroup);
 		enqueueSnackbar('Group successfully updated', {
 			variant: 'success'

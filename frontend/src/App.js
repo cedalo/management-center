@@ -165,7 +165,6 @@ export default function App(props) {
 		}
 
 		const onTourStateChange = (event) => {
-			console.log(event);
 			if (event.action === 'close' || event.action === 'reset') {
 				// TODO: this is a hack to prevent the
 				// strange main menu behavior when the

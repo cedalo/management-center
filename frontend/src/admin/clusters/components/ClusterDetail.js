@@ -136,7 +136,6 @@ const ClusterDetail = (props) => {
 	}
 
 	const onUpdateClusterDetail = async () => {
-		console.log(updatedCluster)
 		await brokerClient.modifyCluster(updatedCluster);
 		enqueueSnackbar('Cluster successfully updated', {
 			variant: 'success'
