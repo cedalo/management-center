@@ -346,10 +346,12 @@ const init = async (licenseContainer) => {
 		configManager.updateConnection(connection);
 	}
 
-	for (let i = 0; i < connections.length - 1; i++) {
+	for (let i = 0; i < connections.length; i++) {
 		if (i < maxBrokerConnections) {
 			const connection = connections[i];
-			if (connection.status?.connected) {
+			const wasNotConnected = connection.status && (connection.status?.connected === false);
+			const wasConnected = !wasNotConnected;
+			if (wasConnected) {
 				handleConnectServerToBroker(connections[i]);
 			}
 		}
