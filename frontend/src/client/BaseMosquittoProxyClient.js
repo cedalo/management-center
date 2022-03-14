@@ -116,7 +116,6 @@ export default class BaseMosquittoProxyClient {
 	_keepAlive() {
 		const interval = 8000;
 		if (this._ws && this._ws.readyState === this._ws.OPEN) {
-			this.logger.debug('Sending empty request.');
 			this._ws.send(
 				JSON.stringify({
 					type: 'ping',
