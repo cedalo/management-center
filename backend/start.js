@@ -853,7 +853,6 @@ const init = async (licenseContainer) => {
 		console.log(`Mosquitto proxy server started on port ${server.address().port}`);
 	});
 	server.on('upgrade', (request, socket, head) => {
-		console.log(request.isAuthenticated());
 		wss.handleUpgrade(request, socket, head, socket => {
 			wss.emit('connection', socket, request);
 		});
