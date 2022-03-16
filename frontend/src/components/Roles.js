@@ -194,8 +194,8 @@ const Roles = (props) => {
 				Edit default ACL access
 			</Button>
 			<br />
-			</>}
 			<br />
+			</>}
 			{dynamicsecurityFeature?.supported !== false && roles && roles.length > 0 ? (
 				<div>
 					<Hidden xsDown implementation="css">
