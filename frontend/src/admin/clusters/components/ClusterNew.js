@@ -95,15 +95,7 @@ const ClusterNew = (props) => {
 		try {
 			await client.createCluster({
 				clustername, 
-				description: clusterDescription,
-				backendhosts: [
-					{
-						hostname,
-						port,
-						username: backendUsername,
-						password: backendPassword,
-					}
-				]
+				description: clusterDescription
 			});
 			const clusters = await client.listClusters();
 			dispatch(updateClusters(clusters));
@@ -191,7 +183,7 @@ const ClusterNew = (props) => {
 										className={classes.textField}
 									/>
 								</Grid>
-								<Grid item xs={12}>
+								{/* <Grid item xs={12}>
 									<TextField
 										required={false}
 										id="backend-username"
@@ -255,7 +247,7 @@ const ClusterNew = (props) => {
 										fullWidth
 										className={classes.textField}
 									/>
-								</Grid>
+								</Grid> */}
 								<Grid container xs={12} alignItems="flex-start">
 									<Grid item xs={12} className={classes.buttons}>
 										<SaveCancelButtons

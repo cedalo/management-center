@@ -226,7 +226,7 @@ const ClusterDetail = (props) => {
 								className={classes.textField}
 							/>
 						</Grid>
-						<Grid item xs={12} sm={12}>
+						{/* <Grid item xs={12} sm={12}>
 							<TextField
 								disabled
 								id="backend-username"
@@ -274,7 +274,7 @@ const ClusterDetail = (props) => {
 								fullWidth
 								className={classes.textField}
 							/>
-						</Grid>
+						</Grid> */}
 						<br/>
 					</Grid>
 					<br/>
@@ -323,7 +323,7 @@ const ClusterDetail = (props) => {
 														className={classes.textField}
 													/>
 												</Grid>
-												<Grid item xs={12}>
+												{/* <Grid item xs={12}>
 													<TextField
 														disabled={true}
 														id={`${node.id}-redis-hostname`}
@@ -346,7 +346,7 @@ const ClusterDetail = (props) => {
 														fullWidth
 														className={classes.textField}
 													/>
-												</Grid>
+												</Grid> */}
 												{/* <Grid item xs={12}>
 													<Tooltip title="Use LTS">
 														<FormControlLabel
