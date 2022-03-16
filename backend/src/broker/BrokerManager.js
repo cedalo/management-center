@@ -10,6 +10,7 @@ module.exports = class BrokerManager {
 		this._brokerClient = brokerClient;
 		this._connection = connection;
 		this._brokerConnection = {
+			connection,
 			name: connection.name,
 			broker: brokerClient,
 			system,
