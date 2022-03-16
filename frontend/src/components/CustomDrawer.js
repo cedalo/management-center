@@ -275,12 +275,12 @@ icon={<SettingsIcon />}
 					primary="Cluster Management"
 					icon={<ClusterIcon fontSize="small" />}
 				/> : null} */}
-				{/* {<ListItemLink
+				{<ListItemLink
 					classes={classes}
 					to="/admin/clusters"
 					primary="Cluster Management"
 					icon={<ClusterIcon fontSize="small" />}
-				/>} */}
+				/>}
 			</List>
 		</div>
 	</Drawer>
