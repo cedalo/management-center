@@ -170,6 +170,7 @@ module.exports = class BaseMosquittoClient {
 		if (topic === '$CONTROL/dynamic-security/v1/response'
 			|| topic === '$CONTROL/stream-processing/v1/response'
 			|| topic === '$CONTROL/cedalo/ha/v1/response'
+			|| topic === '$CONTROL/inspect/v1/response'
 		) {
 			return true;
 		}
