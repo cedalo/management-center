@@ -95,7 +95,7 @@ const ClusterNew = (props) => {
 		try {
 			await client.createCluster({
 				clustername, 
-				description: clusterDescription
+				description: clusterDescription,
 			});
 			const clusters = await client.listClusters();
 			dispatch(updateClusters(clusters));
