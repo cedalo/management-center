@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 		padding: '15px'
 	},
 	form: {
-		display: 'flex',
+		// display: 'flex',
 		flexWrap: 'wrap'
 	},
 	textField: {
@@ -82,9 +82,9 @@ const ClusterDetail = (props) => {
 		}
 	};
 
-	const addNodeToCluster = async (nodeId) => {
+	const addNodeToCluster = async (nodeId, privateIPAddress) => {
 		try {
-			await brokerClient.joinCluster(cluster.clustername, nodeId);
+			await brokerClient.joinCluster(cluster.clustername, nodeId, privateIPAddress);
 			enqueueSnackbar('Node successfully added to cluster', {
 				variant: 'success'
 			});
@@ -280,7 +280,7 @@ const ClusterDetail = (props) => {
 					<br/>
 					<Grid container spacing={1} alignItems="flex-end">
 						{cluster?.nodes?.map((node, index) => 
-							<Grid item xs={12} sm={4}>
+							<Grid item xs={12} md={4}>
 								<Card variant="outlined">
 									<CardHeader
 										subheader={node.id}
@@ -314,9 +314,33 @@ const ClusterDetail = (props) => {
 												<Grid item xs={12}>
 													<TextField
 														disabled={true}
-														id={node.ha?.nodeid}
+														id={node?.nodeid}
 														label="Node ID"
-														value={node.ha?.nodeid}
+														value={node?.nodeid}
+														defaultValue=""
+														variant="outlined"
+														fullWidth
+														className={classes.textField}
+													/>
+												</Grid>
+												<Grid item xs={12}>
+													<TextField
+														disabled={true}
+														id={node?.address}
+														label="Address"
+														value={node?.address}
+														defaultValue=""
+														variant="outlined"
+														fullWidth
+														className={classes.textField}
+													/>
+												</Grid>
+												<Grid item xs={12}>
+													<TextField
+														disabled={true}
+														id={node?.port}
+														label="Port"
+														value={node?.port}
 														defaultValue=""
 														variant="outlined"
 														fullWidth
@@ -444,7 +468,7 @@ const ClusterDetail = (props) => {
 			<SelectNodeDialog
 				open={selectNodeDialogOpen}
 				handleClose={() => setSelectNodeDialogOpen(false)}
-				handleAddNode={(nodeId) => addNodeToCluster(nodeId)}
+				handleAddNode={(nodeId, privateIPAddress) => addNodeToCluster(nodeId, privateIPAddress)}
 				cluster={cluster}
 			/>
 		</Paper>
