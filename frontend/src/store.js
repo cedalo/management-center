@@ -18,6 +18,7 @@ import webSocketConnectionsReducer from './reducers/webSocketConnectionsReducer'
 import userRolesReducer from './admin/users/reducers/userRolesReducer';
 import usersReducer from './admin/users/reducers/usersReducer';
 import clustersReducer from './admin/clusters/reducers/clustersReducer';
+import inspectClientsReducer from './admin/inspect/reducers/inspectClientsReducer';
 
 
 const store = createStore(
@@ -39,6 +40,7 @@ const store = createStore(
 		userProfile: userProfileReducer,
 		users: usersReducer,
 		clusters: clustersReducer,
+		inspectClients: inspectClientsReducer
 	})
 );
 
