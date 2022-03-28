@@ -26,6 +26,7 @@ const version = {
 	buildDate: process.env.CEDALO_MC_BUILD_DATE || Date.now()
 };
 
+const CEDALO_MC_TOPIC_TREE_UPDATE_INTERVAL = process.env.CEDALO_MC_TOPIC_TREE_UPDATE_INTERVAL || 5000;
 const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
@@ -321,6 +322,8 @@ const init = async (licenseContainer) => {
 			}
 		});
 		//   });
+
+		let lastUpdatedTopicTree = Date.now();
 		brokerClient.on('message', (topic, message, packet) => {
 			if (topic.startsWith('$SYS')) {
 				updateSystemTopics(system, topic, message, packet);
@@ -336,8 +339,14 @@ const init = async (licenseContainer) => {
 			} else if (topic.startsWith('$CONTROL')) {
 				// Nothing to do
 			}
+			// in any case update the topic tree
 			updateTopicTree(topicTree, topic, message, packet);
 			sendTopicTreeUpdate(topicTree, brokerClient, connection);
+			let now = Date.now();
+			if (now - lastUpdatedTopicTree > CEDALO_MC_TOPIC_TREE_UPDATE_INTERVAL) {
+				lastUpdatedTopicTree = Date.now();
+				sendTopicTreeUpdate(topicTree, brokerClient, connection);
+			}
 		});
 
 		// const proxyClient = new NodeMosquittoProxyClient({
