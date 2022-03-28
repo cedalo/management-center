@@ -6,6 +6,7 @@ const createError = (code, message) => ({
 	message
 });
 
+const API_INSPECT = 'inspect';
 const API_DYNAMIC_SECURITY = 'dynamic-security';
 const API_STREAMS_PROCESSING = 'stream-processing';
 const API_HIGH_AVAILABILITY = 'cedalo/ha';
@@ -1348,5 +1349,36 @@ export default class BaseMosquittoProxyClient {
 
 	_handleSocketError(event) {
 		this.logger.info('Websocket error', event);
+	}
+
+
+	/**
+	 * ******************************************************************************************
+	 * Methods for inspect
+	 * ******************************************************************************************
+	 */
+
+	 async inspectGetClient(clientid) {
+		const data = await this.sendCommand(
+			{
+				command: 'getClient',
+				clientid
+			},
+			API_INSPECT
+		);
+		return data;
+	}
+
+	async inspectListClients(verbose = true) {
+		const data = await this.sendCommand(
+			{
+				command: 'listClients',
+				verbose,
+				count: -1,
+				offset: 0
+			},
+			API_INSPECT
+		);
+		return data?.clients;
 	}
 }
