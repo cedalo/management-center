@@ -341,7 +341,6 @@ const init = async (licenseContainer) => {
 			}
 			// in any case update the topic tree
 			updateTopicTree(topicTree, topic, message, packet);
-			sendTopicTreeUpdate(topicTree, brokerClient, connection);
 			let now = Date.now();
 			if (now - lastUpdatedTopicTree > CEDALO_MC_TOPIC_TREE_UPDATE_INTERVAL) {
 				lastUpdatedTopicTree = Date.now();
