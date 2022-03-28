@@ -21,7 +21,7 @@ import {
 	updateVersion,
 	updateEditDefaultClient,
 	updateFeatures,
-	updateUserProfile,
+	updateUserProfile
 } from '../actions/actions';
 
 import {
@@ -32,6 +32,10 @@ import {
 import {
 	updateClusters
 } from '../admin/clusters/actions/actions';
+
+import {
+	updateInspectClients
+} from '../admin/inspect/actions/actions';
 
 import WS_BASE from './config';
 import WebMosquittoProxyClient from '../client/WebMosquittoProxyClient';
@@ -119,6 +123,22 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		// --> we assume that feature has not been loaded
 		dispatch(updateFeatures({
 			feature: 'dynamicsecurity',
+			status: error
+		}));
+	}
+	try {
+		const inspectClients = await client.inspectListClients();
+		dispatch(updateInspectClients(inspectClients));
+		dispatch(updateFeatures({
+			feature: 'inspect',
+			status: 'ok'
+		}));
+	} catch (error) {
+		// TODO: change when Mosquitto provides feature endpoint
+		// there was an error loading the stream feature
+		// --> we assume that feature has not been loaded
+		dispatch(updateFeatures({
+			feature: 'inspect',
 			status: error
 		}));
 	}
