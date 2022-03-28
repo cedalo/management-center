@@ -37,6 +37,8 @@ import Connections from './admin/connections/components/Connections';
 import ClusterNew from './admin/clusters/components/ClusterNew';
 import Clusters from './admin/clusters/components/Clusters';
 import ClusterDetail from './admin/clusters/components/ClusterDetail';
+import InspectClients from './admin/inspect/components/InspectClients';
+import InspectClientDetail from './admin/inspect/components/InspectClientDetail';
 
 import { Switch, Route, Redirect } from 'react-router-dom';
 import DefaultACLAccess from './components/DefaultACLAccess';
@@ -158,6 +160,13 @@ function AppRoutes(props) {
 				</Route>
 				<Route path="/admin/clusters">
 					<Clusters />
+				</Route>
+				<Route
+					path="/admin/inspect/clients/detail/:clientId"
+					component={InspectClientDetail}
+				/>
+				<Route path="/admin/inspect/clients">
+					<InspectClients />
 				</Route>
 				<Route path="/tools/streamsheets">
 					<Streamsheets />
