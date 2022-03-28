@@ -12,10 +12,32 @@ import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
+import TextField from '@material-ui/core/TextField';
 import { connect } from 'react-redux';
 import ConnectionNewComponent from '../../../components/ConnectionNewComponent';
 
 const useStyles = makeStyles((theme) => ({
+	root: {
+		'& > *': {
+			margin: theme.spacing(1)
+		},
+		'& .MuiTextField-root': {
+			margin: theme.spacing(1),
+			width: '75ch'
+		}
+	},
+	form: {
+		display: 'flex',
+		flexWrap: 'wrap'
+	},
+	textField: {
+		// marginLeft: theme.spacing(1),
+		// marginRight: theme.spacing(1),
+		// width: 200,
+	},
+	margin: {
+		margin: theme.spacing(2)
+	},
 	formControl: {
 	  margin: theme.spacing(1),
 	  minWidth: 120,
@@ -34,7 +56,9 @@ const getDialogContent = ({
 	brokerConnections, 
 	cluster, 
 	handleAddNode, 
+	privateIPAddress,
 	handleSelectBroker, 
+	setPrivateIPAddress,
 	selectedBroker, 
 	classes, 
 	handleClose
@@ -68,33 +92,51 @@ const getDialogContent = ({
 				Select the broker to add as node
 			</DialogTitle>
 			<DialogContent>
-				<FormControl variant="outlined">
-					<InputLabel htmlFor="broker">Broker</InputLabel>
-					<Select
-						autoFocus
-						defaultValue={availableBrokerConnections[0]?.id}
-						value={selectedBroker}
-						onChange={(event) => handleSelectBroker(event.target.value)}
-						label="Broker"
-					>
-						{
-							availableBrokerConnections.map(brokerConnection => 
-								<MenuItem
-									value={brokerConnection.id}
-									classes={{
-										root: classes.select
-									}}
-								>
-									{`${brokerConnection.name} (${brokerConnection.id})`}
-								</MenuItem>
-							)
-						}
-					</Select>
-				</FormControl>
+				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
+					<Grid item xs={12} align="center">
+						<FormControl variant="outlined">
+							<InputLabel htmlFor="broker">Broker</InputLabel>
+							<Select
+								autoFocus
+								defaultValue={availableBrokerConnections[0]?.id}
+								value={selectedBroker}
+								onChange={(event) => handleSelectBroker(event.target.value)}
+								label="Broker"
+							>
+								{
+									availableBrokerConnections.map(brokerConnection => 
+										<MenuItem
+											value={brokerConnection.id}
+											classes={{
+												root: classes.select
+											}}
+										>
+											{`${brokerConnection.name} (${brokerConnection.id})`}
+										</MenuItem>
+									)
+								}
+							</Select>
+						</FormControl>
+					</Grid>
+					<br />
+					<Grid item xs={12} align="center">
+						<TextField
+							required={true}
+							id="private-ip-address"
+							label="Private IP address"
+							onChange={(event) => setPrivateIPAddress(event.target.value)}
+							defaultValue=""
+							variant="outlined"
+							fullWidth
+							className={classes.textField}
+						/>
+					</Grid>
+				</Grid>
 			</DialogContent>
 			<DialogActions>
 				<Button
-					onClick={() => handleAddNode(selectedBroker)}>
+					disabled={privateIPAddress === ''}
+					onClick={() => handleAddNode(selectedBroker, privateIPAddress)}>
 					Add node
 				</Button>
 			</DialogActions>
@@ -104,6 +146,7 @@ const getDialogContent = ({
 const SelectNodeDialog = ({ brokerConnections, cluster, open, handleClose, handleAddNode }) => {
 	const classes = useStyles();
 	const [selectedBroker, setSelectedBroker] = React.useState('');
+	const [privateIPAddress, setPrivateIPAddress] = React.useState('');
 
 	const handleSelectBroker = (broker) => {
 		setSelectedBroker(broker);
@@ -122,6 +165,8 @@ const SelectNodeDialog = ({ brokerConnections, cluster, open, handleClose, handl
 					cluster, 
 					handleAddNode, 
 					handleSelectBroker, 
+					privateIPAddress,
+					setPrivateIPAddress,
 					selectedBroker, 
 					classes, 
 					handleClose
