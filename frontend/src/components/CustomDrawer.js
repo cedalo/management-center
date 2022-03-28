@@ -23,6 +23,7 @@ import PersonIcon from '@material-ui/icons/Person';
 import RoleIcon from '@material-ui/icons/Policy';
 import UsersIcon from '@material-ui/icons/People';
 import ClusterIcon from '@material-ui/icons/Storage';
+import InspectClientsIcon from '@material-ui/icons/Search';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StreamsheetsIcon from '@material-ui/icons/GridOn';
@@ -180,6 +181,12 @@ const CustomDrawer = ({ userProfile = {}, userManagementFeature, dynamicSecurity
 					primary="Topic Tree"
 					icon={<TopicTreeIcon fontSize="small" />}
 				/>
+				{<ListItemLink
+					classes={classes}
+					to="/admin/inspect/clients"
+					primary="Clients"
+					icon={<InspectClientsIcon fontSize="small" />}
+				/>}
 			</List>
 			<Divider />
 			{(userProfile?.isAdmin || userProfile?.isEditor) && <><List>
