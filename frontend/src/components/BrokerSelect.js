@@ -27,6 +27,10 @@ import {
 	updateFeatures
 } from '../actions/actions';
 
+import {
+	updateInspectClients
+} from '../admin/inspect/actions/actions';
+
 // import {
 // 	colors,
 //   } from '@material-ui/core';
@@ -109,6 +113,19 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 			} catch (error) {
 				dispatch(updateFeatures({
 					feature: 'dynamicsecurity',
+					status: error
+				}));
+			}
+			try {
+				const inspectClients = await client.inspectListClients();
+				dispatch(updateInspectClients(inspectClients));
+				dispatch(updateFeatures({
+					feature: 'inspect',
+					status: 'ok'
+				}));
+			} catch (error) {
+				dispatch(updateFeatures({
+					feature: 'inspect',
 					status: error
 				}));
 			}
