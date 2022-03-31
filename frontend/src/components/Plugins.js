@@ -1,45 +1,60 @@
 import React, { useContext } from 'react';
-import { amber, green, red } from '@material-ui/core/colors';
+import { styled } from '@mui/material/styles';
+import { amber, green, red } from '@mui/material/colors';
 import { connect, useDispatch } from 'react-redux';
 import { useSnackbar } from 'notistack';
 
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import OpenSourcePluginIcon from '@material-ui/icons/Code';
-import Paper from '@material-ui/core/Paper';
-import PluginDisabledIcon from '@material-ui/icons/Cancel';
-import PluginEnabledIcon from '@material-ui/icons/CheckCircle';
-import PremiumPluginIcon from '@material-ui/icons/Stars';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import OpenSourcePluginIcon from '@mui/icons-material/Code';
+import Paper from '@mui/material/Paper';
+import PluginDisabledIcon from '@mui/icons-material/Cancel';
+import PluginEnabledIcon from '@mui/icons-material/CheckCircle';
+import PremiumPluginIcon from '@mui/icons-material/Stars';
 import { Link as RouterLink } from 'react-router-dom';
-import Switch from '@material-ui/core/Switch';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import Switch from '@mui/material/Switch';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
-import { makeStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import { useConfirm } from 'material-ui-confirm';
 import useFetch from '../helpers/useFetch';
 
-const useStyles = makeStyles((theme) => ({
-	updateButton: {
+const PREFIX = 'Plugins';
+
+const classes = {
+    updateButton: `${PREFIX}-updateButton`,
+    badges: `${PREFIX}-badges`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.updateButton}`]: {
 		marginLeft: '20px'
 	},
-	badges: {
+
+    [`& .${classes.badges}`]: {
 		'& > *': {
 			margin: theme.spacing(0.3)
 		}
 	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
 }));
 
 const Plugins = (props) => {
-	const classes = useStyles();
+
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
@@ -92,7 +107,7 @@ const Plugins = (props) => {
 	};
 	if (response) {
 		return (
-			<div>
+            <Root>
 				<Breadcrumbs aria-label="breadcrumb">
 					<RouterLink className={classes.breadcrumbLink} to="/home">
 						Home
@@ -158,8 +173,8 @@ const Plugins = (props) => {
 						</TableBody>
 					</Table>
 				</TableContainer>
-			</div>
-		);
+			</Root>
+        );
 	} else {
 		return null;
 	}

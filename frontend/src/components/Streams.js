@@ -1,73 +1,80 @@
 import React, { useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import { connect, useDispatch } from 'react-redux';
 
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 import MessagePage from './MessagePage';
 import { Link as RouterLink } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import Typography from '@mui/material/Typography';
 
 import { updateStream, updateStreams } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
-import AddIcon from '@material-ui/icons/Add';
-import { Alert, AlertTitle } from '@material-ui/lab';
-import ReloadIcon from '@material-ui/icons/Replay';
+import AddIcon from '@mui/icons-material/Add';
+import { Alert, AlertTitle } from '@mui/material';
+import ReloadIcon from '@mui/icons-material/Replay';
 import AutoSuggest from './AutoSuggest';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
-import ClientIcon from '@material-ui/icons/Person';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Divider from '@material-ui/core/Divider';
-import EditIcon from '@material-ui/icons/Edit';
-import Grid from '@material-ui/core/Grid';
-import GroupIcon from '@material-ui/icons/Group';
-import Hidden from '@material-ui/core/Hidden';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
+import ClientIcon from '@mui/icons-material/Person';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Divider from '@mui/material/Divider';
+import EditIcon from '@mui/icons-material/Edit';
+import Grid from '@mui/material/Grid';
+import GroupIcon from '@mui/icons-material/Group';
+import Hidden from '@mui/material/Hidden';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
-import ClearStreamIcon from '@material-ui/icons/ClearAll';
-import ReplayIcon from '@material-ui/icons/PlayCircleFilled';
-import Switch from '@material-ui/core/Switch';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Tooltip from '@material-ui/core/Tooltip';
+import ClearStreamIcon from '@mui/icons-material/ClearAll';
+import ReplayIcon from '@mui/icons-material/PlayCircleFilled';
+import Switch from '@mui/material/Switch';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Tooltip from '@mui/material/Tooltip';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
 
 import ReplayStreamDialog from './streams/ReplayStreamDialog';
 
-const StyledTableRow = withStyles((theme) => ({
-	root: {
-		'&:nth-of-type(odd)': {
-			backgroundColor: theme.palette.tables?.odd
-		},
-		cursor: 'pointer'
-	}
-}))(TableRow);
+const PREFIX = 'Streams';
 
-const useStyles = makeStyles((theme) => ({
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink,
-	link: {
+const classes = {
+    root: `${PREFIX}-root`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`,
+    link: `${PREFIX}-link`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink,
+
+    // tableContainer: {
+    // 	borderWidth: '1px',
+    // 	borderStyle: 'solid',
+    // }
+    [`& .${classes.link}`]: {
 		color: 'inherit'
 	}
-	// tableContainer: {
-	// 	borderWidth: '1px',
-	// 	borderStyle: 'solid',
-	// }
 }));
+
+const StyledTableRow = TableRow;
 
 const STREAM_TABLE_COLUMNS = [
 	{ id: 'streamname', key: 'Stream name' },
@@ -82,7 +89,7 @@ const STREAM_TABLE_COLUMNS = [
 ];
 
 const Streams = (props) => {
-	const classes = useStyles();
+
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
@@ -256,7 +263,7 @@ const Streams = (props) => {
 	};
 
 	return (
-		<div>
+        <Root>
 			<ReplayStreamDialog 
 				stream={replayStream} 
 				open={replayStreamEditorOpen} 
@@ -279,16 +286,14 @@ const Streams = (props) => {
 			{streamprocessingFeature?.supported !== false && <Grid container spacing={1} alignItems="flex-end">
 				<Grid item xs={6}>
 					<Button
-						variant="outlined"
-						color="default"
-						size="small"
-						className={classes.button}
-						startIcon={<AddIcon />}
-						onClick={(event) => {
+                        variant="outlined"
+                        size="small"
+                        className={classes.button}
+                        startIcon={<AddIcon />}
+                        onClick={(event) => {
 							event.stopPropagation();
 							onNewStream();
-						}}
-					>
+						}}>
 						New Stream
 					</Button>
 				</Grid>
@@ -296,14 +301,14 @@ const Streams = (props) => {
 					<Box display="flex" flexDirection="row-reverse">
 						<Tooltip title="Reload streams">
 							<IconButton
-								color="secondary"
-								aria-label="Reload streams"
-								component="span"
-								onClick={(event) => {
+                                color="secondary"
+                                aria-label="Reload streams"
+                                component="span"
+                                onClick={(event) => {
 									event.stopPropagation();
 									onReload();
 								}}
-							>
+                                size="large">
 								<ReloadIcon />
 							</IconButton>
 						</Tooltip>
@@ -313,7 +318,7 @@ const Streams = (props) => {
 			<br />
 			{streamprocessingFeature?.supported !== false && streams && streams.length > 0 ? (
 				<div>
-					<Hidden xsDown implementation="css">
+					<Hidden smDown implementation="css">
 						<TableContainer component={Paper} className={classes.tableContainer}>
 							<Table size="medium">
 								<TableHead>
@@ -339,16 +344,18 @@ const Streams = (props) => {
 									{streams &&
 										streams.map((stream) => (
 											<StyledTableRow
-												hover
-												key={stream.streamname}
-												onClick={(event) => {
+                                                hover
+                                                key={stream.streamname}
+                                                onClick={(event) => {
 													if (
 														event.target.nodeName?.toLowerCase() === 'td'
 													) {
 														onSelectStream(stream.streamname);
 													}
 												}}
-											>
+                                                classes={{
+                                                    root: classes.root
+                                                }}>
 												<TableCell>{stream.streamname}</TableCell>
 												<TableCell>{stream.textdescription}</TableCell>
 												<TableCell>{stream.sourcetopic}</TableCell>
@@ -513,8 +520,8 @@ const Streams = (props) => {
 			) : (
 				<div>No streams found</div>
 			)}
-		</div>
-	);
+		</Root>
+    );
 };
 
 const mapStateToProps = (state) => {

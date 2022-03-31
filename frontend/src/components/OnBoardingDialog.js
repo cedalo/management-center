@@ -1,58 +1,82 @@
 import React, { useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import { connect, useDispatch } from 'react-redux';
-import { emphasize, makeStyles, useTheme } from '@material-ui/core/styles';
+import { emphasize, useTheme } from '@mui/material/styles';
 
-import AppBar from '@material-ui/core/AppBar';
-import Button from '@material-ui/core/Button';
-import CloseIcon from '@material-ui/icons/Close';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Divider from '@material-ui/core/Divider';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import MobileStepper from '@material-ui/core/MobileStepper';
-import Paper from '@material-ui/core/Paper';
+import AppBar from '@mui/material/AppBar';
+import Button from '@mui/material/Button';
+import CloseIcon from '@mui/icons-material/Close';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Divider from '@mui/material/Divider';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import MobileStepper from '@mui/material/MobileStepper';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
-import Slide from '@material-ui/core/Slide';
-import Step from '@material-ui/core/Step';
-import StepContent from '@material-ui/core/StepContent';
-import StepLabel from '@material-ui/core/StepLabel';
-import Stepper from '@material-ui/core/Stepper';
-import SubscribedIcon from '@material-ui/icons/CheckCircle';
-import Switch from '@material-ui/core/Switch';
-import TextField from '@material-ui/core/TextField';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
+import Slide from '@mui/material/Slide';
+import Step from '@mui/material/Step';
+import StepContent from '@mui/material/StepContent';
+import StepLabel from '@mui/material/StepLabel';
+import Stepper from '@mui/material/Stepper';
+import SubscribedIcon from '@mui/icons-material/CheckCircle';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import clsx from 'clsx';
-import { green } from '@material-ui/core/colors';
+import { green } from '@mui/material/colors';
 import useLocalStorage from '../helpers/useLocalStorage';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { updateSettings } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
-const useStyles = makeStyles((theme) => ({
-	root: {
+const PREFIX = 'OnBoardingDialog';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    input: `${PREFIX}-input`,
+    valueContainer: `${PREFIX}-valueContainer`,
+    chip: `${PREFIX}-chip`,
+    chipFocused: `${PREFIX}-chipFocused`,
+    noOptionsMessage: `${PREFIX}-noOptionsMessage`,
+    singleValue: `${PREFIX}-singleValue`,
+    placeholder: `${PREFIX}-placeholder`,
+    paper: `${PREFIX}-paper`,
+    divider: `${PREFIX}-divider`,
+    header: `${PREFIX}-header`,
+    img: `${PREFIX}-img`
+};
+
+const StyledDialog = styled(Dialog)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
 		flexGrow: 1,
 		minWidth: 290,
 		width: 550
 	},
-	input: {
+
+    [`& .${classes.input}`]: {
 		display: 'flex',
 		padding: 0,
 		height: 'auto'
 	},
-	valueContainer: {
+
+    [`& .${classes.valueContainer}`]: {
 		display: 'flex',
 		flexWrap: 'wrap',
 		flex: 1,
@@ -62,45 +86,54 @@ const useStyles = makeStyles((theme) => ({
 			margin: theme.spacing(0.3)
 		}
 	},
-	chip: {
+
+    [`& .${classes.chip}`]: {
 		margin: theme.spacing(1, 1)
 	},
-	chipFocused: {
+
+    [`& .${classes.chipFocused}`]: {
 		backgroundColor: emphasize(
-			theme.palette.type === 'light' ? theme.palette.grey[300] : theme.palette.grey[700],
+			theme.palette.mode === 'light' ? theme.palette.grey[300] : theme.palette.grey[700],
 			0.08
 		)
 	},
-	noOptionsMessage: {
+
+    [`& .${classes.noOptionsMessage}`]: {
 		padding: theme.spacing(1, 2)
 	},
-	singleValue: {
+
+    [`& .${classes.singleValue}`]: {
 		fontSize: 16
 	},
-	placeholder: {
+
+    [`& .${classes.placeholder}`]: {
 		position: 'absolute',
 		left: 2,
 		bottom: 6,
 		fontSize: 16
 	},
-	paper: {
+
+    [`& .${classes.paper}`]: {
 		position: 'absolute',
 		zIndex: 1,
 		marginTop: theme.spacing(1),
 		left: 0,
 		right: 0
 	},
-	divider: {
+
+    [`& .${classes.divider}`]: {
 		height: theme.spacing(2)
 	},
-	header: {
+
+    [`& .${classes.header}`]: {
 		display: 'flex',
 		alignItems: 'center',
 		height: 50,
 		paddingLeft: theme.spacing(4),
 		backgroundColor: theme.palette.background.default
 	},
-	img: {
+
+    [`& .${classes.img}`]: {
 		height: 255,
 		// maxWidth: 400,
 		overflow: 'hidden',
@@ -147,7 +180,7 @@ function getSteps() {
 }
 
 const OnBoardingDialog = ({ settings }) => {
-	const classes = useStyles();
+
 	const theme = useTheme();
 	const { enqueueSnackbar } = useSnackbar();
 	const dispatch = useDispatch();
@@ -213,7 +246,7 @@ const OnBoardingDialog = ({ settings }) => {
 	};
 
 	return (
-		<Dialog
+        <StyledDialog
 			open={showOnBoardingDialog === '' || showOnBoardingDialog === 'true'}
 			// onClose={handleClose}
 			aria-labelledby="alert-dialog-title"
@@ -372,8 +405,8 @@ const OnBoardingDialog = ({ settings }) => {
 					Get started!
 				</Button>
 			</DialogActions>
-		</Dialog>
-	);
+		</StyledDialog>
+    );
 }
 
 const mapStateToProps = (state) => {

@@ -1,19 +1,29 @@
 import React from 'react';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Grid from '@material-ui/core/Grid';
-import { amber } from '@material-ui/core/colors';
-import PremiumPluginIcon from '@material-ui/icons/Stars';
-import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
 
-const useStyles = makeStyles((theme) => ({
-	actions: {
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Grid from '@mui/material/Grid';
+import { amber } from '@mui/material/colors';
+import PremiumPluginIcon from '@mui/icons-material/Stars';
+import { connect } from 'react-redux';
+const PREFIX = 'PremiumFeatureDialog';
+
+const classes = {
+    actions: `${PREFIX}-actions`
+};
+
+const StyledDialog = styled(Dialog)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.actions}`]: {
         justifyContent: 'center'
     }
 }));
@@ -258,7 +268,7 @@ const getDialogContent = () => {
 				Premium feature
 			</DialogTitle>
 			<DialogContent>
-				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
+				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
 					<Grid item xs={12} align="center">
 						<img src={image} />
 					</Grid>
@@ -269,14 +279,14 @@ const getDialogContent = () => {
 					</Grid>
 				</Grid>
 			</DialogContent>
-		</>
+		</>;
 }
 const PremiumFeatureDialog = ({ open, handleClose }) => {
 
-	const classes = useStyles();
+
 
 	return (
-		<Dialog
+        <StyledDialog
 			open={open}
 			onClose={handleClose}
 			aria-labelledby="not-connected-dialog-title"
@@ -288,18 +298,16 @@ const PremiumFeatureDialog = ({ open, handleClose }) => {
 
 			<DialogActions classes={{root: classes.actions}}>
 				<Button
-					variant="outlined"
-					color="default"
-					size="small"
-					href="https://www.cedalo.com"
-					target="_blank"
-					startIcon={<PremiumPluginIcon style={{ color: amber[500] }} fontSize="small" />}
-				>
+                    variant="outlined"
+                    size="small"
+                    href="https://www.cedalo.com"
+                    target="_blank"
+                    startIcon={<PremiumPluginIcon style={{ color: amber[500] }} fontSize="small" />}>
 						Get premium version
 				</Button>
 			</DialogActions>
-		</Dialog>
-	);
+		</StyledDialog>
+    );
 };
 
 const mapStateToProps = (state) => {

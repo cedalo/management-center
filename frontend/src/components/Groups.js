@@ -1,72 +1,90 @@
 import React, { useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import { connect, useDispatch } from 'react-redux';
 import { updateAnonymousGroup, updateClients, updateGroup, updateGroups } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
-import AddIcon from '@material-ui/icons/Add';
-import { Alert, AlertTitle } from '@material-ui/lab';
+import AddIcon from '@mui/icons-material/Add';
+import { Alert, AlertTitle } from '@mui/material';
 import AnonymousGroupSelect from './AnonymousGroupSelect';
 import AutoSuggest from './AutoSuggest';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
-import ClientIcon from '@material-ui/icons/Person';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Divider from '@material-ui/core/Divider';
-import EditIcon from '@material-ui/icons/Edit';
-// import Fab from '@material-ui/core/Fab';
-import FormControl from '@material-ui/core/FormControl';
-import GroupIcon from '@material-ui/icons/Group';
-import Hidden from '@material-ui/core/Hidden';
-import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
+import ClientIcon from '@mui/icons-material/Person';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Divider from '@mui/material/Divider';
+import EditIcon from '@mui/icons-material/Edit';
+// import Fab from '@mui/material/Fab';
+import FormControl from '@mui/material/FormControl';
+import GroupIcon from '@mui/icons-material/Group';
+import Hidden from '@mui/material/Hidden';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';
-import Select from '@material-ui/core/Select';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import Select from '@mui/material/Select';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
-import { makeStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
 
-const useStyles = makeStyles((theme) => ({
-	tableContainer: {
+const PREFIX = 'Groups';
+
+const classes = {
+    tableContainer: `${PREFIX}-tableContainer`,
+    select: `${PREFIX}-select`,
+    badges: `${PREFIX}-badges`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.tableContainer}`]: {
 		minHeight: '500px'
 	},
-	select: {
+
+    [`& .${classes.select}`]: {
 		backgroundColor: 'rgba(255,255,255,0.2)',
 		border: 'thin solid rgba(255,255,255,0.5)',
 		'label + &': {
 			marginTop: theme.spacing(1)
 		}
 	},
-	badges: {
+
+    [`& .${classes.badges}`]: {
 		'& > *': {
 			margin: theme.spacing(0.5)
 		}
 	},
-	// fab: {
-	// 	position: 'absolute',
-	// 	bottom: theme.spacing(2),
-	// 	right: theme.spacing(2)
-	// },
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+
+    // fab: {
+    // 	position: 'absolute',
+    // 	bottom: theme.spacing(2),
+    // 	right: theme.spacing(2)
+    // },
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
 }));
 
 const groupShape = PropTypes.shape({
@@ -91,7 +109,7 @@ const FormattedGroupType = (props) => {
 };
 
 const Groups = (props) => {
-	const classes = useStyles();
+
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
@@ -188,7 +206,7 @@ const Groups = (props) => {
 		}));
 
 	return (
-		<div>
+        <Root>
 			<Breadcrumbs aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -207,16 +225,14 @@ const Groups = (props) => {
 			</Alert></> : null}
 			<br />
 			{dynamicsecurityFeature?.supported !== false && <><Button
-				variant="outlined"
-				color="default"
-				size="small"
-				className={classes.button}
-				startIcon={<AddIcon />}
-				onClick={(event) => {
+                variant="outlined"
+                size="small"
+                className={classes.button}
+                startIcon={<AddIcon />}
+                onClick={(event) => {
 					event.stopPropagation();
 					onNewGroup();
-				}}
-			>
+				}}>
 				New Group
 			</Button>
 			<br />
@@ -224,7 +240,7 @@ const Groups = (props) => {
 			</>}
 			{dynamicsecurityFeature?.supported !== false && groups && groups.length > 0 ? (
 				<div>
-					<Hidden xsDown implementation="css">
+					<Hidden smDown implementation="css">
 						<TableContainer component={Paper} className={classes.tableContainer}>
 							<Table>
 								<TableHead>
@@ -390,8 +406,8 @@ const Groups = (props) => {
 			>
 				<AddIcon />
 			</Fab> */}
-		</div>
-	);
+		</Root>
+    );
 };
 
 Groups.propTypes = {

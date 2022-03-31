@@ -1,32 +1,38 @@
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Grid from '@material-ui/core/Grid';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
 import HomeCard from './HomeCard';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core';
+import Typography from '@mui/material/Typography';
+const PREFIX = 'System';
 
-// import SecurityIcon from '@material-ui/icons/VerifiedUser';
-// import StreamsIcon from "@material-ui/icons/SettingsInputAntenna";
-// import SystemIcon from '@material-ui/icons/Assessment';
+const classes = {
+    root: `${PREFIX}-root`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
 
-
-
-const useStyles = makeStyles((theme) => ({
-	root: {
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
 		backgroundColor: theme.palette.background.dark,
 		minHeight: '100%',
 		paddingBottom: theme.spacing(3),
 		paddingTop: theme.spacing(3)
 	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
 }));
 
 function System() {
-	const classes = useStyles();
+
 	return (
-		<div>
+        <Root>
 			<Breadcrumbs aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -54,8 +60,8 @@ function System() {
 					/>
 				</Grid>
 			</Grid>
-		</div>
-	);
+		</Root>
+    );
 }
 
 export default System;

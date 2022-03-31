@@ -1,36 +1,52 @@
 import React, { useContext, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { connect, useDispatch } from 'react-redux';
 import { useSnackbar } from 'notistack';
 
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import Box from '@material-ui/core/Box';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
-import ClientIDIcon from '@material-ui/icons/Fingerprint';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
-import PasswordIcon from '@material-ui/icons/VpnKey';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import Box from '@mui/material/Box';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
+import ClientIDIcon from '@mui/icons-material/Fingerprint';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import InputAdornment from '@mui/material/InputAdornment';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import Paper from '@mui/material/Paper';
+import PasswordIcon from '@mui/icons-material/VpnKey';
 import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';
-import SaveIcon from '@material-ui/icons/Save';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import SaveIcon from '@mui/icons-material/Save';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
-import { makeStyles } from '@material-ui/core/styles';
 import { updateGroups } from '../actions/actions';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
 import SaveCancelButtons from './SaveCancelButtons';
 
-const useStyles = makeStyles((theme) => ({
-	root: {
+const PREFIX = 'GroupNew';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    buttons: `${PREFIX}-buttons`,
+    form: `${PREFIX}-form`,
+    textField: `${PREFIX}-textField`,
+    margin: `${PREFIX}-margin`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
 		'& > *': {
 			margin: theme.spacing(1)
 		},
@@ -39,29 +55,34 @@ const useStyles = makeStyles((theme) => ({
 			width: '75ch'
 		}
 	},
-	buttons: {
+
+    [`& .${classes.buttons}`]: {
 		'& > *': {
 			margin: theme.spacing(1)
 		}
 	},
-	form: {
+
+    [`& .${classes.form}`]: {
 		display: 'flex',
 		flexWrap: 'wrap'
 	},
-	textField: {
+
+    [`& .${classes.textField}`]: {
 		// marginLeft: theme.spacing(1),
 		// marginRight: theme.spacing(1),
 		// width: 200,
 	},
-	margin: {
+
+    [`& .${classes.margin}`]: {
 		margin: theme.spacing(2)
 	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
 }));
 
 const GroupNew = (props) => {
-	const classes = useStyles();
+
 
 	const [groupname, setGroupname] = useState('');
 	const [textname, setTextname] = useState('');
@@ -116,7 +137,7 @@ const GroupNew = (props) => {
 	};
 
 	return (
-		<div>
+        <Root>
 			<Breadcrumbs aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -191,8 +212,8 @@ const GroupNew = (props) => {
 					</form>
 				</Paper>
 			</div>
-		</div>
-	);
+		</Root>
+    );
 };
 
 const mapStateToProps = (state) => {

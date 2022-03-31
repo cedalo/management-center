@@ -1,61 +1,108 @@
 import React, { useContext, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { Redirect, Link as RouterLink } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import { updateEditDefaultClient, updateRole, updateRoles } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
-import ACLIcon from '@material-ui/icons/Security';
-import AccountCircle from '@material-ui/icons/AccountCircle';
+import ACLIcon from '@mui/icons-material/Security';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import ACLTypesHelpDialog from './ACLTypesHelpDialog';
-import Avatar from '@material-ui/core/Avatar';
-import Box from '@material-ui/core/Box';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import ClientIDIcon from '@material-ui/icons/Fingerprint';
-import CredentialsIcon from '@material-ui/icons/Lock';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Divider from '@material-ui/core/Divider';
-import EditIcon from '@material-ui/icons/Edit';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Grid from '@material-ui/core/Grid';
-import GroupIcon from '@material-ui/icons/Group';
-import GroupsIcon from '@material-ui/icons/Group';
-import HelpIcon from '@material-ui/icons/Help';
-import Hidden from '@material-ui/core/Hidden';
-import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import InputLabel from '@material-ui/core/InputLabel';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import PasswordIcon from '@material-ui/icons/VpnKey';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import ClientIDIcon from '@mui/icons-material/Fingerprint';
+import CredentialsIcon from '@mui/icons-material/Lock';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Divider from '@mui/material/Divider';
+import EditIcon from '@mui/icons-material/Edit';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import FormHelperText from '@mui/material/FormHelperText';
+import Grid from '@mui/material/Grid';
+import GroupIcon from '@mui/icons-material/Group';
+import GroupsIcon from '@mui/icons-material/Group';
+import HelpIcon from '@mui/icons-material/Help';
+import Hidden from '@mui/material/Hidden';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import InputLabel from '@mui/material/InputLabel';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import PasswordIcon from '@mui/icons-material/VpnKey';
 import PropTypes from 'prop-types';
-import RoleIcon from '@material-ui/icons/Policy';
-import SaveIcon from '@material-ui/icons/AddCircle';
-import Select from '@material-ui/core/Select';
-import Switch from '@material-ui/core/Switch';
-import Tab from '@material-ui/core/Tab';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Tabs from '@material-ui/core/Tabs';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import RoleIcon from '@mui/icons-material/Policy';
+import SaveIcon from '@mui/icons-material/AddCircle';
+import Select from '@mui/material/Select';
+import Switch from '@mui/material/Switch';
+import Tab from '@mui/material/Tab';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Tabs from '@mui/material/Tabs';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
-import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
+
+const PREFIX = 'RoleDetail';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    form: `${PREFIX}-form`,
+    textField: `${PREFIX}-textField`,
+    buttons: `${PREFIX}-buttons`,
+    margin: `${PREFIX}-margin`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const StyledRedirect = styled(Redirect)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
+		width: '100%',
+		backgroundColor: theme.palette.background.paper
+	},
+
+    [`& .${classes.form}`]: {
+		display: 'flex',
+		flexWrap: 'wrap'
+	},
+
+    [`& .${classes.textField}`]: {
+		// marginLeft: theme.spacing(1),
+		// marginRight: theme.spacing(1),
+		// width: 200,
+	},
+
+    [`& .${classes.buttons}`]: {
+		'& > *': {
+			margin: theme.spacing(1)
+		}
+	},
+
+    [`& .${classes.margin}`]: {
+		margin: theme.spacing(1)
+	},
+
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
+}));
 
 const ACL_TABLE_COLUMNS = [
 	{ id: 'type', key: 'Type' },
@@ -101,35 +148,9 @@ const roleShape = PropTypes.shape({
 	rolename: PropTypes.string
 });
 
-const useStyles = makeStyles((theme) => ({
-	root: {
-		width: '100%',
-		backgroundColor: theme.palette.background.paper
-	},
-	form: {
-		display: 'flex',
-		flexWrap: 'wrap'
-	},
-	textField: {
-		// marginLeft: theme.spacing(1),
-		// marginRight: theme.spacing(1),
-		// width: 200,
-	},
-	buttons: {
-		'& > *': {
-			margin: theme.spacing(1)
-		}
-	},
-	margin: {
-		margin: theme.spacing(1)
-	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
-}));
-
 
 const RoleDetail = (props) => {
-	const classes = useStyles();
+
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
@@ -285,7 +306,7 @@ const RoleDetail = (props) => {
 					value={selectedTab}
 					onChange={handleChange}
 					variant="scrollable"
-					scrollButtons="off"
+					scrollButtons={false}
 					aria-label="Role"
 				>
 					<Tab label="Details" icon={<RoleIcon />} aria-label="details" {...a11yProps(0)} />
@@ -399,7 +420,7 @@ const RoleDetail = (props) => {
 					<form className={classes.form} noValidate autoComplete="off">
 						<div className={classes.margin}>
 							<Grid container spacing={1} alignItems="flex-end">
-								<Hidden xsDown implementation="css">
+								<Hidden smDown implementation="css">
 									<TableContainer component={Paper}>
 										<Table>
 											<TableHead>
@@ -500,10 +521,11 @@ const RoleDetail = (props) => {
 															</Select>
 														</FormControl>
 														<IconButton
-															variant="contained"
-															edge="end" aria-label="help"
-															onClick={handleOpenACLTypesHelpDialog}
-														>
+                                                            variant="contained"
+                                                            edge="end"
+                                                            aria-label="help"
+                                                            onClick={handleOpenACLTypesHelpDialog}
+                                                            size="large">
 															<HelpIcon fontSize="small" />
 														</IconButton>
 													</TableCell>
@@ -630,7 +652,7 @@ const RoleDetail = (props) => {
 																}
 															/>
 															<ListItemSecondaryAction>
-																<IconButton edge="end" aria-label="delete">
+																<IconButton edge="end" aria-label="delete" size="large">
 																	<DeleteIcon />
 																</IconButton>
 															</ListItemSecondaryAction>
@@ -687,7 +709,7 @@ const RoleDetail = (props) => {
 			</Paper>
 		</div>
 	) : (
-		<Redirect to="/security/roles" push />
+		<StyledRedirect to="/security/roles" push />
 	);
 };
 

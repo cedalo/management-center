@@ -1,61 +1,84 @@
 import React, { useContext, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { Redirect, Link as RouterLink } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import { updateUserProfile } from '../actions/actions';
 import { updateUsers } from '../admin/users/actions/actions';
 import { useSnackbar } from 'notistack';
 
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import PasswordIcon from '@material-ui/icons/VpnKey';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
-import EditIcon from '@material-ui/icons/Edit';
-import Grid from '@material-ui/core/Grid';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Paper from '@material-ui/core/Paper';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import PasswordIcon from '@mui/icons-material/VpnKey';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
+import EditIcon from '@mui/icons-material/Edit';
+import Grid from '@mui/material/Grid';
+import InputAdornment from '@mui/material/InputAdornment';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
-import SaveIcon from '@material-ui/icons/Save';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import SaveIcon from '@mui/icons-material/Save';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
-import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
+const PREFIX = 'UserProfile';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    paper: `${PREFIX}-paper`,
+    form: `${PREFIX}-form`,
+    textField: `${PREFIX}-textField`,
+    buttons: `${PREFIX}-buttons`,
+    margin: `${PREFIX}-margin`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
+		width: '100%'
+	},
+
+    [`& .${classes.paper}`]: {
+		padding: '15px'
+	},
+
+    [`& .${classes.form}`]: {
+		display: 'flex',
+		flexWrap: 'wrap'
+	},
+
+    [`& .${classes.textField}`]: {
+		// marginLeft: theme.spacing(1),
+		// marginRight: theme.spacing(1),
+		// width: 200,
+	},
+
+    [`& .${classes.buttons}`]: {
+		'& > *': {
+			margin: theme.spacing(1)
+		}
+	},
+
+    [`& .${classes.margin}`]: {
+		margin: theme.spacing(1)
+	},
+
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
+}));
+
 // import AutoSuggest from './AutoSuggest';
 
 const userShape = PropTypes.shape({
 	username: PropTypes.string,
 });
 
-const useStyles = makeStyles((theme) => ({
-	root: {
-		width: '100%'
-	},
-	paper: {
-		padding: '15px'
-	},
-	form: {
-		display: 'flex',
-		flexWrap: 'wrap'
-	},
-	textField: {
-		// marginLeft: theme.spacing(1),
-		// marginRight: theme.spacing(1),
-		// width: 200,
-	},
-	buttons: {
-		'& > *': {
-			margin: theme.spacing(1)
-		}
-	},
-	margin: {
-		margin: theme.spacing(1)
-	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
-}));
-
 const UserProfile = (props) => {
-	const classes = useStyles();
+
 	const [value, setValue] = React.useState(0);
 	const [editMode, setEditMode] = React.useState(false);
 	const { enqueueSnackbar } = useSnackbar();
@@ -124,7 +147,7 @@ const UserProfile = (props) => {
 		setEditMode(false);
 	};
 
-	return userProfile ? (<div>
+	return userProfile ? (<Root>
 		<Breadcrumbs aria-label="breadcrumb">
 			<RouterLink className={classes.breadcrumbLink} to="/home">
 				Home
@@ -256,7 +279,7 @@ const UserProfile = (props) => {
 				</Grid>
 			)}
 		</Paper>
-	</div>) : null;
+	</Root>) : null;
 };
 
 UserProfile.propTypes = {

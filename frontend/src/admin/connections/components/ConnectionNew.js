@@ -1,18 +1,31 @@
 import React, { useContext, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { connect, useDispatch } from 'react-redux';
 import { useSnackbar } from 'notistack';
 
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 import { Link as RouterLink } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { WebSocketContext } from '../../../websockets/WebSocket';
-import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
 import ConnectionNewComponent from '../../../components/ConnectionNewComponent';
 
-const useStyles = makeStyles((theme) => ({
-	root: {
+const PREFIX = 'ConnectionNew';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    margin: `${PREFIX}-margin`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
 		'& > *': {
 			margin: theme.spacing(1)
 		},
@@ -21,16 +34,18 @@ const useStyles = makeStyles((theme) => ({
 			width: '75ch'
 		}
 	},
-	margin: {
+
+    [`& .${classes.margin}`]: {
 		margin: theme.spacing(2)
 	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
 }));
 
 const ConnectionNew = (props) => {
 	const { connections } = props;
-	const classes = useStyles();
+
 
 	const [id, setId] = useState('');
 
@@ -51,7 +66,7 @@ const ConnectionNew = (props) => {
 	const { client } = context;
 
 	return (
-		<div>
+        <Root>
 			<Breadcrumbs aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -65,8 +80,8 @@ const ConnectionNew = (props) => {
 			</Breadcrumbs>
 			<br />
 			<ConnectionNewComponent />
-		</div>
-	);
+		</Root>
+    );
 };
 
 const mapStateToProps = (state) => {

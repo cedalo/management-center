@@ -1,54 +1,75 @@
-import { lightGreen, purple } from '@material-ui/core/colors';
+import { lightGreen, purple } from '@mui/material/colors';
 
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import Chip from '@material-ui/core/Chip';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import { styled } from '@mui/material/styles';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import Chip from '@mui/material/Chip';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-import Tooltip from '@material-ui/core/Tooltip';
-import TreeItem from '@material-ui/lab/TreeItem';
-import TreeView from '@material-ui/lab/TreeView';
-import Typography from '@material-ui/core/Typography';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import TextareaAutosize from '@mui/material/TextareaAutosize';
+import Tooltip from '@mui/material/Tooltip';
+import TreeItem from '@mui/lab/TreeItem';
+import TreeView from '@mui/lab/TreeView';
+import Typography from '@mui/material/Typography';
 import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 
-const useStyles = makeStyles((theme) => ({
-	root: {
+const PREFIX = 'TopicTree';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    table: `${PREFIX}-table`,
+    payloadDetail: `${PREFIX}-payloadDetail`,
+    payloadHistory: `${PREFIX}-payloadHistory`,
+    paper: `${PREFIX}-paper`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
 		height: '100%',
 		minHeight: '500px',
 		flexGrow: 1,
 		maxWidth: 400
 	},
-	table: {
+
+    [`& .${classes.table}`]: {
 		'& tr:nth-child(2), & td:nth-child(2)': {
 			width: '75%'
 		}
 	},
-	payloadDetail: {
+
+    [`& .${classes.payloadDetail}`]: {
 		width: '100%'
 	},
-	payloadHistory: {
+
+    [`& .${classes.payloadHistory}`]: {
 		verticalAlign: 'top'
 	},
-	paper: {
+
+    [`& .${classes.paper}`]: {
 		padding: theme.spacing(2),
 		height: '100%'
 	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
 }));
 
 const prettifyJSON = (jsonString) => {
@@ -59,8 +80,12 @@ const prettifyJSON = (jsonString) => {
 
 const isJSON = (text) => text?.startsWith('{') || text?.startsWith('[');
 
-const useTreeItemStyles = makeStyles((theme) => ({
-	root: {
+const useTreeItemStyles = styled((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
 		color: theme.palette.text.secondary
 		//   '&:hover > $content': {
 		// 	backgroundColor: theme.palette.action.hover,
@@ -73,7 +98,8 @@ const useTreeItemStyles = makeStyles((theme) => ({
 		// 	backgroundColor: 'transparent',
 		//   },
 	},
-	content: {
+
+    [`& .${classes.content}`]: {
 		//   color: theme.palette.text.secondary,
 		//   borderTopRightRadius: theme.spacing(2),
 		//   borderBottomRightRadius: theme.spacing(2),
@@ -83,29 +109,35 @@ const useTreeItemStyles = makeStyles((theme) => ({
 		// 	fontWeight: theme.typography.fontWeightRegular,
 		//   },
 	},
-	group: {
+
+    [`& .${classes.group}`]: {
 		//   marginLeft: 0,
 		//   '& $content': {
 		// 	paddingLeft: theme.spacing(2),
 		//   },
 	},
-	expanded: {},
-	selected: {},
-	label: {
+
+    [`& .${classes.expanded}`]: {},
+    [`& .${classes.selected}`]: {},
+
+    [`& .${classes.label}`]: {
 		fontWeight: 'inherit',
 		color: 'inherit',
 		marginLeft: '2px',
 		marginRight: '2px'
 	},
-	labelRoot: {
+
+    [`& .${classes.labelRoot}`]: {
 		display: 'flex',
 		alignItems: 'center',
 		padding: theme.spacing(0.5, 0)
 	},
-	labelIcon: {
+
+    [`& .${classes.labelIcon}`]: {
 		marginRight: theme.spacing(1)
 	},
-	labelText: {
+
+    [`& .${classes.labelText}`]: {
 		fontWeight: 'inherit',
 		flexGrow: 1
 	}
@@ -125,10 +157,10 @@ function StyledTreeItem(props) {
 	} = props;
 
 	return (
-		<TreeItem
+        <TreeItem
 			onLabelClick={onLabelClick}
 			label={
-				<div className={classes.labelRoot}>
+				<Root className={classes.labelRoot}>
 					{/* <LabelIcon color="inherit" className={classes.labelIcon} /> */}
 					<Typography variant="body2" className={classes.labelText}>
 						{labelText}
@@ -155,7 +187,7 @@ function StyledTreeItem(props) {
 							</Typography>
 						</Tooltip>
 					)}
-				</div>
+				</Root>
 			}
 			style={{
 				'--tree-view-color': color,
@@ -171,7 +203,7 @@ function StyledTreeItem(props) {
 			}}
 			{...other}
 		/>
-	);
+    );
 }
 
 StyledTreeItem.propTypes = {
@@ -205,7 +237,7 @@ const generateTreeData = (id, name, object, index = 0) => {
 };
 
 const TopicTree = ({ topicTree, currentConnectionName }) => {
-	const classes = useStyles();
+
 	const [messageHistory, setMessageHistory] = React.useState([]);
 	const [selectedNode, setSelectedNode] = React.useState({});
 	const [selectedNodeId, setSelectedNodeId] = React.useState('');
@@ -265,7 +297,7 @@ const TopicTree = ({ topicTree, currentConnectionName }) => {
 	);
 
 	return (
-		<div>
+        <Root>
 			<Breadcrumbs aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -372,7 +404,7 @@ const TopicTree = ({ topicTree, currentConnectionName }) => {
 											<TableCell>
 												<TextareaAutosize
 													className={classes.payloadDetail}
-													rows={5}
+													minRows={5}
 													value={
 														isJSON(selectedNode?._message)
 														? prettifyJSON(selectedNode?._message)
@@ -401,24 +433,26 @@ const TopicTree = ({ topicTree, currentConnectionName }) => {
 										if (index > 0) {
 											// if (entry?._message && entry?._message.startsWith('{')) {
 											if (entry?._message) {
-												return <TableRow>
-													<TableCell 
-														className={classes.payloadHistory}
-													>
-														<strong>{moment(entry._received).format('HH:mm:ss:SSS')}</strong>
-													</TableCell>
-													<TableCell>
-														<TextareaAutosize
-															className={classes.payloadDetail}
-															rows={5}
-															value={
-																isJSON(entry?._message)
-																? prettifyJSON(entry?._message)
-																: entry?._message
-															}
-														/>
-													</TableCell>
-												</TableRow>
+												return (
+                                                    <TableRow>
+                                                        <TableCell 
+                                                            className={classes.payloadHistory}
+                                                        >
+                                                            <strong>{moment(entry._received).format('HH:mm:ss:SSS')}</strong>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <TextareaAutosize
+                                                                className={classes.payloadDetail}
+                                                                minRows={5}
+                                                                value={
+                                                                    isJSON(entry?._message)
+                                                                    ? prettifyJSON(entry?._message)
+                                                                    : entry?._message
+                                                                }
+                                                            />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
 											// } else if(entry?._message && !entry?._message.startsWith('{')) {
 											// 	return <TableRow>
 											// 		<TableCell>
@@ -435,8 +469,8 @@ const TopicTree = ({ topicTree, currentConnectionName }) => {
 					</Paper>
 				</Grid>
 			</Grid>
-		</div>
-	);
+		</Root>
+    );
 };
 
 const mapStateToProps = (state) => {

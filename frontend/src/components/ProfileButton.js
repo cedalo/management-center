@@ -1,40 +1,52 @@
 import React, { useContext, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { connect, useDispatch } from 'react-redux';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import ProfileIcon from '@material-ui/icons/Person';
-import { makeStyles } from '@material-ui/core/styles';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import ProfileIcon from '@mui/icons-material/Person';
 import { useConfirm } from 'material-ui-confirm';
 
 
-const useStyles = makeStyles((theme) => ({
-	toolbarButton: {
+const PREFIX = 'ProfileButton';
+
+const classes = {
+    toolbarButton: `${PREFIX}-toolbarButton`
+};
+
+const StyledTooltip = styled(Tooltip)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.toolbarButton}`]: {
 		marginTop: theme.spacing(0.8),
 		marginBottom: theme.spacing(0.2)
-	},
+	}
 }));
 
 const ProfileButton = (props) => {
-	const classes = useStyles();
+
 	const confirm = useConfirm();
 
 	const handleProfile = async () => {
 		window.location.href = '/profile';
 	};
 
-	return <Tooltip title="Profile">
-		<IconButton
-			edge="end"
-			aria-label="Profile"
-			aria-controls="profile"
-			aria-haspopup="true"
-			onClick={() => handleProfile()}
-			color="inherit"
-			className={classes.toolbarButton}
-		>
-			<ProfileIcon fontSize="small" />
-		</IconButton>
-	</Tooltip>
+	return (
+        <StyledTooltip title="Profile">
+            <IconButton
+                edge="end"
+                aria-label="Profile"
+                aria-controls="profile"
+                aria-haspopup="true"
+                onClick={() => handleProfile()}
+                color="inherit"
+                className={classes.toolbarButton}
+                size="large">
+                <ProfileIcon fontSize="small" />
+            </IconButton>
+        </StyledTooltip>
+    );
 };
 
 const mapStateToProps = (state) => {

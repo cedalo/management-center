@@ -1,31 +1,29 @@
-import {
-	Box,
-	Card,
-	CardContent,
-	CardHeader,
-	Divider,
-	Typography,
-	colors,
-	makeStyles,
-	useTheme
-} from '@material-ui/core';
+import { Box, Card, CardContent, CardHeader, Divider, Typography, colors, useTheme } from '@mui/material';
+
+import { styled } from '@mui/material/styles';
 
 import { Doughnut } from 'react-chartjs-2';
-import LaptopMacIcon from '@material-ui/icons/LaptopMac';
-import PhoneIcon from '@material-ui/icons/Phone';
+import LaptopMacIcon from '@mui/icons-material/LaptopMac';
+import PhoneIcon from '@mui/icons-material/Phone';
 import PropTypes from 'prop-types';
 import React from 'react';
-import TabletIcon from '@material-ui/icons/Tablet';
+import TabletIcon from '@mui/icons-material/Tablet';
 import clsx from 'clsx';
 
-const useStyles = makeStyles(() => ({
-	root: {
+const PREFIX = 'Chart';
+
+const classes = {
+    root: `${PREFIX}-root`
+};
+
+const StyledCard = styled(Card)(() => ({
+    [`&.${classes.root}`]: {
 		height: '100%'
 	}
 }));
 
 const Chart = ({ className, title, data, labels, dataDescriptions, ...rest }) => {
-	const classes = useStyles();
+
 	const theme = useTheme();
 
 	const options = {
@@ -51,7 +49,7 @@ const Chart = ({ className, title, data, labels, dataDescriptions, ...rest }) =>
 	};
 
 	return (
-		<Card className={clsx(classes.root, className)} {...rest}>
+        <StyledCard className={clsx(classes.root, className)} {...rest}>
 			<CardHeader title={title} />
 			<Divider />
 			<CardContent>
@@ -72,8 +70,8 @@ const Chart = ({ className, title, data, labels, dataDescriptions, ...rest }) =>
 					))}
 				</Box>
 			</CardContent>
-		</Card>
-	);
+		</StyledCard>
+    );
 };
 
 Chart.propTypes = {

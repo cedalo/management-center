@@ -1,19 +1,19 @@
 import React, { useContext } from 'react';
 
 import BrokerSelect from './BrokerSelect';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Paper from '@material-ui/core/Paper';
-import ReloadIcon from '@material-ui/icons/Replay';
-import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress'
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Paper from '@mui/material/Paper';
+import ReloadIcon from '@mui/icons-material/Replay';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress'
 import { connect } from 'react-redux';
 import ConnectionNewComponent from './ConnectionNewComponent';
 
@@ -265,7 +265,7 @@ const getDialogContent = (handleClose, brokerConnections, connected, proxyConnec
 				{ !connected ? 'Applying changes' : 'Changes applied' }
 			</DialogTitle>
 			<DialogContent>
-				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
+				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
 					<Grid item xs={12} align="center">
 						<DialogContentText id="alert-dialog-description">
 						{ 
@@ -291,14 +291,14 @@ const getDialogContent = (handleClose, brokerConnections, connected, proxyConnec
 					</Grid>
 				</Grid>
 			</DialogContent>
-		</>
+		</>;
 	} else if (!brokerConnections || brokerConnections.length === 0) {
 		return <>
 			<DialogTitle align="center" id="not-connected-dialog-title">
 				You have not configured any broker.
 			</DialogTitle>
 			<DialogContent>
-				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
+				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
 					<Grid item xs={12} align="center">
 						<DialogContentText id="alert-dialog-description">
 							Please create a connection first.
@@ -307,28 +307,28 @@ const getDialogContent = (handleClose, brokerConnections, connected, proxyConnec
 					</Grid>
 				</Grid>
 			</DialogContent>
-		</>
+		</>;
 	} else if (!connected) {
 		return <>
 			<DialogTitle align="center" id="not-connected-dialog-title">
 				We could not connect to your broker
 				{handleClose ? (
 					<IconButton
-					aria-label="close"
-					onClick={handleClose}
-					sx={{
-						position: 'absolute',
-						right: 8,
-						top: 8,
-						color: (theme) => theme.palette.grey[500],
-					}}
-					>
+                        aria-label="close"
+                        onClick={handleClose}
+                        sx={{
+                            position: 'absolute',
+                            right: 8,
+                            top: 8,
+                            color: (theme) => theme.palette.grey[500],
+                        }}
+                        size="large">
 					<CloseIcon />
 					</IconButton>
 				) : null}
 			</DialogTitle>
 			<DialogContent>
-				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
+				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
 					<Grid item xs={12} align="center">
 						<img src={disconnectedImage} />
 					</Grid>
@@ -353,14 +353,14 @@ const getDialogContent = (handleClose, brokerConnections, connected, proxyConnec
 					</Grid>
 				</Grid>
 			</DialogContent>
-		</>
+		</>;
 	} else if (!proxyConnected) {
 		return <>
 			<DialogTitle align="center" id="not-connected-dialog-title">
 				We could not connect to the proxy server
 			</DialogTitle>
 			<DialogContent>
-				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
+				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
 					<Grid item xs={12} align="center">
 						<img src={disconnectedImage} />
 					</Grid>
@@ -380,7 +380,7 @@ const getDialogContent = (handleClose, brokerConnections, connected, proxyConnec
 					</Grid>
 				</Grid>
 			</DialogContent>
-		</>
+		</>;
 	}
 }
 const DisconnectedDialog = ({ brokerConnections, connected, proxyConnected, editDefaultClient }) => {

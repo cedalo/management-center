@@ -1,39 +1,68 @@
 import React, { useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import { connect, useDispatch } from 'react-redux';
-import { green, red } from '@material-ui/core/colors';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { green, red } from '@mui/material/colors';
+import { useTheme } from '@mui/material/styles';
 import { updateAnonymousGroup, updateDefaultACLAccess, updateClient, updateClients, updateGroups, updateRoles } from '../actions/actions';
 
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Paper from '@material-ui/core/Paper';
-import PluginDisabledIcon from '@material-ui/icons/Cancel';
-import PluginEnabledIcon from '@material-ui/icons/CheckCircle';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Paper from '@mui/material/Paper';
+import PluginDisabledIcon from '@mui/icons-material/Cancel';
+import PluginEnabledIcon from '@mui/icons-material/CheckCircle';
 import { Link as RouterLink } from 'react-router-dom';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import Terminal from 'terminal-in-react';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
 import moment from 'moment';
 import useLocalStorage from '../helpers/useLocalStorage';
 
-const useStyles = makeStyles((theme) => ({
-	terminal: {
-		fontWeight: 'bold',
-		fontSize: '2em'
-	},
-	badges: {
-		'& > *': {
-			margin: theme.spacing(0.3)
-		}
-	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
-}));
+const PREFIX = 'Terminal';
+
+const classes = {
+    terminal: `${PREFIX}-terminal`,
+    badges: `${PREFIX}-badges`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+// TODO: fix
+// const StyledTerminal
+// 			startState="maximised"
+// 			className={classesterminal}
+// 			showActions={false}
+// 			hideTopBar={true}
+// 			allowTabs={false}
+// 			prompt={darkMode = styled(Terminal
+// 			startState="maximised"
+// 			className={classes.terminal}
+// 			showActions={false}
+// 			hideTopBar={true}
+// 			allowTabs={false}
+// 			prompt={darkMode)((
+//     {
+//         theme
+//     }
+// ) => ({
+//     [`& .${classes.terminal}`]: {
+// 		fontWeight: 'bold',
+// 		fontSize: '2em'
+// 	},
+
+//     [`& .${classes.badges}`]: {
+// 		'& > *': {
+// 			margin: theme.spacing(0.3)
+// 		}
+// 	},
+
+//     [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+//     [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
+// }));
 
 const isHelpParameter = (parameter) => parameter === '--help';
 const toErrorMessage = (error) => `⚠️ ${error.message ? error.message : error}`;
@@ -45,7 +74,7 @@ const Plugins = (props) => {
 	const context = useContext(WebSocketContext);
 	const { client: brokerClient } = context;
 
-	const classes = useStyles();
+
 
 	const message = `Welcome to the Management Center Terminal.
 💡 Type 'help' for a list of available commands and type '<command> --help' for information on a specific command.`

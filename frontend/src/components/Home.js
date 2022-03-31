@@ -1,12 +1,12 @@
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import HomeCard from './HomeCard';
 import NewsCard from './NewsCard';
 import React from 'react';
-// import SecurityIcon from '@material-ui/icons/VerifiedUser';
-// import StreamsIcon from "@material-ui/icons/SettingsInputAntenna";
-// import SystemIcon from '@material-ui/icons/Assessment';
-import Typography from '@material-ui/core/Typography';
+// import SecurityIcon from '@mui/icons-material/VerifiedUser';
+// import StreamsIcon from "@mui/icons-material/SettingsInputAntenna";
+// import SystemIcon from '@mui/icons-material/Assessment';
+import Typography from '@mui/material/Typography';
 
 function Home() {
 	return (

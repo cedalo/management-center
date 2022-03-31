@@ -1,42 +1,75 @@
 import React, { useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import { connect, useDispatch } from 'react-redux';
 import { updateClients, updateGroups, updateRole, updateRoles } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
-import AddIcon from '@material-ui/icons/Add';
-import { Alert, AlertTitle } from '@material-ui/lab';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Divider from '@material-ui/core/Divider';
-import EditIcon from '@material-ui/icons/Edit';
-// import Fab from '@material-ui/core/Fab';
-import Hidden from '@material-ui/core/Hidden';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
+import AddIcon from '@mui/icons-material/Add';
+import { Alert, AlertTitle } from '@mui/material';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Divider from '@mui/material/Divider';
+import EditIcon from '@mui/icons-material/Edit';
+// import Fab from '@mui/material/Fab';
+import Hidden from '@mui/material/Hidden';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
-import RoleIcon from '@material-ui/icons/Policy';
+import RoleIcon from '@mui/icons-material/Policy';
 import { Link as RouterLink } from 'react-router-dom';
-import SecurityIcon from '@material-ui/icons/Security';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import UserManagementIcon from '@material-ui/icons/SupervisedUserCircle';
+import SecurityIcon from '@mui/icons-material/Security';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import UserManagementIcon from '@mui/icons-material/SupervisedUserCircle';
 import { WebSocketContext } from '../websockets/WebSocket';
-import { makeStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
+
+const PREFIX = 'Roles';
+
+const classes = {
+    badges: `${PREFIX}-badges`,
+    button: `${PREFIX}-button`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.badges}`]: {
+		'& > *': {
+			margin: theme.spacing(0.5)
+		}
+	},
+
+    // fab: {
+    // 	position: 'absolute',
+    // 	bottom: theme.spacing(2),
+    // 	right: theme.spacing(2)
+    // },
+    [`& .${classes.button}`]: {
+		marginRight: 10
+	},
+
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
+}));
 
 const getIconForFeature = (feature) => {
 	switch (feature) {
@@ -50,24 +83,6 @@ const remove = (array, item) => {
 	const index = array.indexOf(item);
 	array.splice(index, 1);
 };
-
-const useStyles = makeStyles((theme) => ({
-	badges: {
-		'& > *': {
-			margin: theme.spacing(0.5)
-		}
-	},
-	// fab: {
-	// 	position: 'absolute',
-	// 	bottom: theme.spacing(2),
-	// 	right: theme.spacing(2)
-	// },
-	button: {
-		marginRight: 10
-	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
-}));
 
 const rolesShape = PropTypes.shape({
 	rolename: PropTypes.string
@@ -90,7 +105,7 @@ const FormattedGroupType = (props) => {
 };
 
 const Roles = (props) => {
-	const classes = useStyles();
+
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
@@ -152,7 +167,7 @@ const Roles = (props) => {
 	const { dynamicsecurityFeature, defaultACLAccess, roles = [], onSort, sortBy, sortDirection } = props;
 
 	return (
-		<div>
+        <Root>
 			<Breadcrumbs aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -171,26 +186,22 @@ const Roles = (props) => {
 			</Alert></> : null}
 			<br />
 			{dynamicsecurityFeature?.supported !== false && <><Button
-				variant="outlined"
-				color="default"
-				size="small"
-				className={classes.button}
-				startIcon={<AddIcon />}
-				onClick={(event) => {
+                variant="outlined"
+                size="small"
+                className={classes.button}
+                startIcon={<AddIcon />}
+                onClick={(event) => {
 					event.stopPropagation();
 					onNewRole();
-				}}
-			>
+				}}>
 				New Role
 			</Button>
 			<Button
-				variant="outlined"
-				color="default"
-				size="small"
-				className={classes.button}
-				startIcon={<EditIcon />}
-				onClick={onEditDefaultACLAccess}
-			>
+                variant="outlined"
+                size="small"
+                className={classes.button}
+                startIcon={<EditIcon />}
+                onClick={onEditDefaultACLAccess}>
 				Edit default ACL access
 			</Button>
 			<br />
@@ -198,7 +209,7 @@ const Roles = (props) => {
 			</>}
 			{dynamicsecurityFeature?.supported !== false && roles && roles.length > 0 ? (
 				<div>
-					<Hidden xsDown implementation="css">
+					<Hidden smDown implementation="css">
 						<TableContainer component={Paper}>
 							<Table>
 								<TableHead>
@@ -310,8 +321,8 @@ const Roles = (props) => {
 			>
 				<AddIcon />
 			</Fab> */}
-		</div>
-	);
+		</Root>
+    );
 };
 
 Roles.propTypes = {

@@ -1,62 +1,80 @@
 import React, { useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { connect, useDispatch } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
-import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Divider from '@material-ui/core/Divider';
-import FormControl from '@material-ui/core/FormControl';
-import Hidden from '@material-ui/core/Hidden';
-import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import SaveIcon from '@material-ui/icons/AddCircle';
-import Select from '@material-ui/core/Select';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import { useTheme } from '@mui/material/styles';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Divider from '@mui/material/Divider';
+import FormControl from '@mui/material/FormControl';
+import Hidden from '@mui/material/Hidden';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import SaveIcon from '@mui/icons-material/AddCircle';
+import Select from '@mui/material/Select';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { updateDefaultACLAccess } from '../actions/actions';
+
+const PREFIX = 'DefaultACLAccess';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    buttons: `${PREFIX}-buttons`,
+    margin: `${PREFIX}-margin`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
+		width: '100%',
+		backgroundColor: theme.palette.background.paper
+	},
+
+    [`& .${classes.buttons}`]: {
+		'& > *': {
+			margin: theme.spacing(1)
+		}
+	},
+
+    [`& .${classes.margin}`]: {
+		margin: theme.spacing(1)
+	},
+
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
+}));
 
 const ACL_TABLE_COLUMNS = [
 	{ id: 'type', key: 'Type' },
 	{ id: 'allow', key: 'Allow / Deny' }
 ];
 
-const useStyles = makeStyles((theme) => ({
-	root: {
-		width: '100%',
-		backgroundColor: theme.palette.background.paper
-	},
-	buttons: {
-		'& > *': {
-			margin: theme.spacing(1)
-		}
-	},
-	margin: {
-		margin: theme.spacing(1)
-	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
-}));
-
 const DefaultACLAccess = ({ defaultACLAccess }) => {
-	const classes = useStyles();
+
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const { enqueueSnackbar } = useSnackbar();
@@ -75,7 +93,7 @@ const DefaultACLAccess = ({ defaultACLAccess }) => {
 	}
 
 	return (
-		<div>
+        <Root>
 			<Breadcrumbs maxItems={2} aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -92,7 +110,7 @@ const DefaultACLAccess = ({ defaultACLAccess }) => {
 			</Breadcrumbs>
 			<br />
 			<Paper className={classes.paper}>
-				<Hidden xsDown implementation="css">
+				<Hidden smDown implementation="css">
 					<TableContainer component={Paper}>
 						<Table>
 							<TableHead>
@@ -156,7 +174,7 @@ const DefaultACLAccess = ({ defaultACLAccess }) => {
 												}
 											/>
 											<ListItemSecondaryAction>
-												<IconButton edge="end" aria-label="delete">
+												<IconButton edge="end" aria-label="delete" size="large">
 													<DeleteIcon />
 												</IconButton>
 											</ListItemSecondaryAction>
@@ -168,8 +186,8 @@ const DefaultACLAccess = ({ defaultACLAccess }) => {
 					</Paper>
 				</Hidden>
 			</Paper>
-		</div>
-	);
+		</Root>
+    );
 };
 
 const mapStateToProps = (state) => {

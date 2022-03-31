@@ -1,22 +1,29 @@
 import React, { useContext } from 'react';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Grid from '@material-ui/core/Grid';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Grid from '@mui/material/Grid';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import { WebSocketContext } from '../../websockets/WebSocket';
 
-const useStyles = makeStyles((theme) => ({}));
+const PREFIX = 'ReplayStreamDialog';
+const classes = {};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({}));
 
 export default function ReplayStreamDialog({ stream, open, handleReplay, handleClose }) {
 	const context = useContext(WebSocketContext);
-	const classes = useStyles();
+
 	const { client: brokerClient } = context;
 	const [replayTopic, setReplayTopic] = React.useState('');
 	const [gte, setGTE] = React.useState('');
@@ -31,7 +38,7 @@ export default function ReplayStreamDialog({ stream, open, handleReplay, handleC
 	};
 
 	return (
-		<div>
+        <Root>
 			<Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
 				<DialogTitle id="form-dialog-title">Replay stream "{stream.streamname}"</DialogTitle>
 				<DialogContent>
@@ -140,6 +147,6 @@ export default function ReplayStreamDialog({ stream, open, handleReplay, handleC
 					</Button>
 				</DialogActions>
 			</Dialog>
-		</div>
-	);
+		</Root>
+    );
 }

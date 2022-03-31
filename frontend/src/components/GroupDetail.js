@@ -1,44 +1,95 @@
 import React, { useContext, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { Redirect, Link as RouterLink } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import { updateGroup, updateGroups } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import Avatar from '@material-ui/core/Avatar';
-import Box from '@material-ui/core/Box';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
-import ClientIDIcon from '@material-ui/icons/Fingerprint';
-import CredentialsIcon from '@material-ui/icons/Lock';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Divider from '@material-ui/core/Divider';
-import EditIcon from '@material-ui/icons/Edit';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import Grid from '@material-ui/core/Grid';
-import GroupIcon from '@material-ui/icons/Group';
-import GroupsIcon from '@material-ui/icons/Group';
-import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
-import PasswordIcon from '@material-ui/icons/VpnKey';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
+import ClientIDIcon from '@mui/icons-material/Fingerprint';
+import CredentialsIcon from '@mui/icons-material/Lock';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Divider from '@mui/material/Divider';
+import EditIcon from '@mui/icons-material/Edit';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Grid from '@mui/material/Grid';
+import GroupIcon from '@mui/icons-material/Group';
+import GroupsIcon from '@mui/icons-material/Group';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import Paper from '@mui/material/Paper';
+import PasswordIcon from '@mui/icons-material/VpnKey';
 import PropTypes from 'prop-types';
-import SaveIcon from '@material-ui/icons/Save';
-import Switch from '@material-ui/core/Switch';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import UserIcon from '@material-ui/icons/Person';
+import SaveIcon from '@mui/icons-material/Save';
+import Switch from '@mui/material/Switch';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import UserIcon from '@mui/icons-material/Person';
 import { WebSocketContext } from '../websockets/WebSocket';
-import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
+
+const PREFIX = 'GroupDetail';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    paper: `${PREFIX}-paper`,
+    form: `${PREFIX}-form`,
+    textField: `${PREFIX}-textField`,
+    buttons: `${PREFIX}-buttons`,
+    margin: `${PREFIX}-margin`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const StyledRedirect = styled(Redirect)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
+		width: '100%'
+	},
+
+    [`& .${classes.paper}`]: {
+		padding: '15px'
+	},
+
+    [`& .${classes.form}`]: {
+		display: 'flex',
+		flexWrap: 'wrap'
+	},
+
+    [`& .${classes.textField}`]: {
+		// marginLeft: theme.spacing(1),
+		// marginRight: theme.spacing(1),
+		// width: 200,
+	},
+
+    [`& .${classes.buttons}`]: {
+		'& > *': {
+			margin: theme.spacing(1)
+		}
+	},
+
+    [`& .${classes.margin}`]: {
+		margin: theme.spacing(1)
+	},
+
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
+}));
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -78,36 +129,8 @@ const clientShape = PropTypes.shape({
 	groups: PropTypes.array
 });
 
-const useStyles = makeStyles((theme) => ({
-	root: {
-		width: '100%'
-	},
-	paper: {
-		padding: '15px'
-	},
-	form: {
-		display: 'flex',
-		flexWrap: 'wrap'
-	},
-	textField: {
-		// marginLeft: theme.spacing(1),
-		// marginRight: theme.spacing(1),
-		// width: 200,
-	},
-	buttons: {
-		'& > *': {
-			margin: theme.spacing(1)
-		}
-	},
-	margin: {
-		margin: theme.spacing(1)
-	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
-}));
-
 const GroupDetail = (props) => {
-	const classes = useStyles();
+
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
@@ -341,7 +364,7 @@ const GroupDetail = (props) => {
 			</Paper>
 		</div>
 	) : (
-		<Redirect to="/security/groups" push />
+		<StyledRedirect to="/security/groups" push />
 	);
 };
 

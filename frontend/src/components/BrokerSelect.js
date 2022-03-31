@@ -1,15 +1,15 @@
 import React, { useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import { connect } from 'react-redux';
 import { useDispatch } from 'react-redux';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import InputBase from '@material-ui/core/InputBase';
-import DisconnectedIcon from '@material-ui/icons/Cancel';
-import ConnectedIcon from '@material-ui/icons/CheckCircle';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormHelperText from '@mui/material/FormHelperText';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import InputBase from '@mui/material/InputBase';
+import DisconnectedIcon from '@mui/icons-material/Cancel';
+import ConnectedIcon from '@mui/icons-material/CheckCircle';
 import {
 	updateAnonymousGroup,
 	updateGroups,
@@ -33,45 +33,56 @@ import {
 
 // import {
 // 	colors,
-//   } from '@material-ui/core';
+//   } from '@mui/material';
 
 import { WebSocketContext } from '../websockets/WebSocket';
 
-const CustomInput = withStyles((theme) => ({
-	root: {
-		'label + &': {
-			marginTop: theme.spacing(1)
-		}
-	}
-}))(InputBase);
+const PREFIX = 'BrokerSelect';
 
-const useStyles = makeStyles((theme) => ({
-	root: {
+const classes = {
+    root: `${PREFIX}-root`,
+    root2: `${PREFIX}-root2`,
+    label: `${PREFIX}-label`,
+    formControl: `${PREFIX}-formControl`,
+    select: `${PREFIX}-select`
+};
+
+const StyledFormControl = styled(FormControl)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root2}`]: {
 		paddingLeft: '20px',
 		backgroundColor: 'rgba(255,255,255,0.2)',
 		border: 'thin solid rgba(255,255,255,0.5)',
 		color: 'white',
 		fontSize: '14px'
 	},
-	label: {
+
+    [`& .${classes.label}`]: {
 		fontSize: '12px',
 		textTransform: 'uppercase',
 		transform: 'translate(14px, 20px) scale(1)',
 		color: 'white',
 	},
-	formControl: {
+
+    [`&.${classes.formControl}`]: {
 		// margin: theme.spacing(1),
 		// height: "25px",
 		margin: theme.spacing(1),
 		minWidth: 120
 	},
-	select: {
+
+    [`& .${classes.select}`]: {
 		fontSize: '14px',
 	}
 }));
 
+const CustomInput = InputBase;
+
 const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sendMessage }) => {
-	const classes = useStyles();
+
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const [connection, setConnection] = React.useState('');
@@ -150,7 +161,7 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 	};
 
 	return brokerConnections ? (
-		<FormControl id="connection-select" variant="outlined" className={classes.formControl}>
+		<StyledFormControl id="connection-select" variant="outlined" className={classes.formControl}>
 			<InputLabel
 				id="broker-select-outlined-label"
 				classes={{
@@ -171,7 +182,10 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 					root: classes.root,
 					icon: classes.icon
 				}}
-				input={<CustomInput />}
+				input={<CustomInput
+                    classes={{
+                        root: classes.root
+                    }} />}
 			>
 				{brokerConnections && Array.isArray(brokerConnections)
 					? brokerConnections
@@ -188,7 +202,7 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 							))
 					: null}
 			</Select>
-		</FormControl>
+		</StyledFormControl>
 	) : null;
 };
 

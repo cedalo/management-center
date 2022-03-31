@@ -1,40 +1,54 @@
 import React, { useContext } from 'react';
 
-import BrokerSelect from './BrokerSelect';
-import Button from '@material-ui/core/Button';
-import CloseIcon from '@material-ui/icons/Close';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon	 from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
 
-const useStyles = makeStyles((theme) => ({
-	closeButton: {
+import BrokerSelect from './BrokerSelect';
+import Button from '@mui/material/Button';
+import CloseIcon from '@mui/icons-material/Close';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon	 from '@mui/material/ListItemIcon';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import { connect } from 'react-redux';
+const PREFIX = 'ACLTypesHelpDialog';
+
+const classes = {
+    closeButton: `${PREFIX}-closeButton`,
+    acltype: `${PREFIX}-acltype`,
+    description: `${PREFIX}-description`
+};
+
+const StyledDialog = styled(Dialog)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.closeButton}`]: {
 		position: 'absolute',
 		right: theme.spacing(1),
 		top: theme.spacing(1),
 		color: theme.palette.grey[500]
 	},
-	acltype: {
+
+    [`& .${classes.acltype}`]: {
 		flex: '0.35',
 		minWidth: '50px',
 		fontWeight: 'bold',
 	},
-	description: {
+
+    [`& .${classes.description}`]: {
 		flex: '0.65',
 		minWidth: '100px'
-	},
+	}
 }));
 
 const aclTypeHelp = [
@@ -65,10 +79,10 @@ const aclTypeHelp = [
 ]
 
 const ACLTypesHelpDialog = ({ open, handleClose }) => {
-	const classes = useStyles();
+
 
 	return (
-		<Dialog
+        <StyledDialog
 			open={open}
 			onClose={handleClose}
 			aria-labelledby="acl-types-dialog-title"
@@ -76,7 +90,11 @@ const ACLTypesHelpDialog = ({ open, handleClose }) => {
 		>
 			<DialogTitle align="center" id="acl-types-dialog-title">
 				ACL Types
-				<IconButton aria-label="close" className={classes.closeButton} onClick={handleClose}>
+				<IconButton
+                    aria-label="close"
+                    className={classes.closeButton}
+                    onClick={handleClose}
+                    size="large">
 					<CloseIcon />
 				</IconButton>
 			</DialogTitle>
@@ -102,8 +120,8 @@ const ACLTypesHelpDialog = ({ open, handleClose }) => {
 				</List>
 			</DialogContent>
 			<DialogActions></DialogActions>
-		</Dialog>
-	);
+		</StyledDialog>
+    );
 };
 
 const mapStateToProps = (state) => {

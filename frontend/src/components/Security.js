@@ -1,24 +1,31 @@
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Grid from '@material-ui/core/Grid';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
 import HomeCard from './HomeCard';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
-// import SecurityIcon from '@material-ui/icons/VerifiedUser';
-// import StreamsIcon from "@material-ui/icons/SettingsInputAntenna";
-// import SystemIcon from '@material-ui/icons/Assessment';
-import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@mui/material/Typography';
+const PREFIX = 'Security';
 
-const useStyles = makeStyles((theme) => ({
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+const classes = {
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
 }));
 
 function Security() {
-	const classes = useStyles();
+
 
 	return (
-		<div>
+        <Root>
 			<Breadcrumbs aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/">
 					Home
@@ -44,8 +51,8 @@ function Security() {
 					<HomeCard title="Roles" description="Manage roles" image={'roles.png'} link="/security/roles" />
 				</Grid>
 			</Grid>
-		</div>
-	);
+		</Root>
+    );
 }
 
 export default Security;

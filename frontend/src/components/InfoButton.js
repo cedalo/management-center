@@ -1,20 +1,30 @@
-import IconButton from '@material-ui/core/IconButton';
-import InfoIcon from '@material-ui/icons/Info';
+import IconButton from '@mui/material/IconButton';
+import { styled } from '@mui/material/styles';
+import InfoIcon from '@mui/icons-material/Info';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Tooltip from '@material-ui/core/Tooltip';
-import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@mui/material/Tooltip';
 import { useHistory } from 'react-router-dom';
 
-const useStyles = makeStyles((theme) => ({
-	toolbarButton: {
+const PREFIX = 'InfoButton';
+
+const classes = {
+    toolbarButton: `${PREFIX}-toolbarButton`
+};
+
+const StyledTooltip = styled(Tooltip)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.toolbarButton}`]: {
 		marginTop: theme.spacing(0.8),
 		marginBottom: theme.spacing(0.2)
 	}
 }));
 
 const InfoButton = () => {
-	const classes = useStyles();
+
 	const history = useHistory();
 
 	const onClickInfo = () => {
@@ -22,20 +32,20 @@ const InfoButton = () => {
 	};
 
 	return (
-		<Tooltip title="Show info">
+        <StyledTooltip title="Show info">
 			<IconButton
-				edge="end"
-				aria-label="Theme Mode"
-				aria-controls="theme-mode"
-				aria-haspopup="true"
-				onClick={onClickInfo}
-				color="inherit"
-				className={classes.toolbarButton}
-			>
+                edge="end"
+                aria-label="Theme Mode"
+                aria-controls="theme-mode"
+                aria-haspopup="true"
+                onClick={onClickInfo}
+                color="inherit"
+                className={classes.toolbarButton}
+                size="large">
 				<InfoIcon fontSize="small" />
 			</IconButton>
-		</Tooltip>
-	);
+		</StyledTooltip>
+    );
 };
 
 InfoButton.propTypes = {

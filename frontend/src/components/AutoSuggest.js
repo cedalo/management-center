@@ -1,28 +1,51 @@
-import { emphasize, makeStyles, useTheme } from '@material-ui/core/styles';
+import { emphasize, useTheme } from '@mui/material/styles';
 
-import CancelIcon from '@material-ui/icons/Cancel';
-import Chip from '@material-ui/core/Chip';
-import MenuItem from '@material-ui/core/MenuItem';
-import NoSsr from '@material-ui/core/NoSsr';
-import Paper from '@material-ui/core/Paper';
+import { styled } from '@mui/material/styles';
+
+import CancelIcon from '@mui/icons-material/Cancel';
+import Chip from '@mui/material/Chip';
+import MenuItem from '@mui/material/MenuItem';
+import NoSsr from '@mui/material/NoSsr';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Select from 'react-select';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import clsx from 'clsx';
 
-const useStyles = makeStyles((theme) => ({
-	root: {
+const PREFIX = 'AutoSuggest';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    input: `${PREFIX}-input`,
+    valueContainer: `${PREFIX}-valueContainer`,
+    chip: `${PREFIX}-chip`,
+    chipFocused: `${PREFIX}-chipFocused`,
+    noOptionsMessage: `${PREFIX}-noOptionsMessage`,
+    singleValue: `${PREFIX}-singleValue`,
+    placeholder: `${PREFIX}-placeholder`,
+    paper: `${PREFIX}-paper`,
+    divider: `${PREFIX}-divider`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
 		flexGrow: 1,
 		minWidth: 250
 	},
-	input: {
+
+    [`& .${classes.input}`]: {
 		display: 'flex',
 		padding: 0,
 		height: 'auto'
 	},
-	valueContainer: {
+
+    [`& .${classes.valueContainer}`]: {
 		display: 'flex',
 		flexWrap: 'wrap',
 		flex: 1,
@@ -32,35 +55,42 @@ const useStyles = makeStyles((theme) => ({
 			margin: theme.spacing(0.3)
 		}
 	},
-	chip: {
+
+    [`& .${classes.chip}`]: {
 		margin: theme.spacing(1, 1)
 	},
-	chipFocused: {
+
+    [`& .${classes.chipFocused}`]: {
 		backgroundColor: emphasize(
-			theme.palette.type === 'light' ? theme.palette.grey[300] : theme.palette.grey[700],
+			theme.palette.mode === 'light' ? theme.palette.grey[300] : theme.palette.grey[700],
 			0.08
 		)
 	},
-	noOptionsMessage: {
+
+    [`& .${classes.noOptionsMessage}`]: {
 		padding: theme.spacing(1, 2)
 	},
-	singleValue: {
+
+    [`& .${classes.singleValue}`]: {
 		fontSize: 14
 	},
-	placeholder: {
+
+    [`& .${classes.placeholder}`]: {
 		position: 'absolute',
 		left: 2,
 		bottom: 6,
 		fontSize: 14
 	},
-	paper: {
+
+    [`& .${classes.paper}`]: {
 		position: 'absolute',
 		zIndex: 1,
 		marginTop: theme.spacing(1),
 		left: 0,
 		right: 0
 	},
-	divider: {
+
+    [`& .${classes.divider}`]: {
 		height: theme.spacing(1)
 	}
 }));
@@ -80,7 +110,7 @@ NoOptionsMessage.propTypes = {
 };
 
 function inputComponent({ inputRef, ...props }) {
-	return <div ref={inputRef} {...props} />;
+	return <Root ref={inputRef} {...props} />;
 }
 
 inputComponent.propTypes = {
@@ -97,7 +127,7 @@ function Control(props) {
 		children,
 		innerProps,
 		innerRef,
-		selectProps: { classes, TextFieldProps }
+		selectProps: {  TextFieldProps }
 	} = props;
 
 	return (
@@ -267,7 +297,7 @@ const components = {
 };
 
 export default function AutoSuggest({ disabled, handleDelete, handleChange, suggestions, values, placeholder }) {
-	const classes = useStyles();
+
 	const theme = useTheme();
 
 	const selectStyles = {

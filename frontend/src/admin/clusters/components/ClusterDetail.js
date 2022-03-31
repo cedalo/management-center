@@ -1,66 +1,89 @@
 import React, { useContext, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { Redirect, Link as RouterLink } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import { updateCluster, updateClusters } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
-import AddIcon from '@material-ui/icons/Add';
-import RemoveNodeIcon from '@material-ui/icons/RemoveCircle';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
-import EditIcon from '@material-ui/icons/Edit';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveNodeIcon from '@mui/icons-material/RemoveCircle';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
+import EditIcon from '@mui/icons-material/Edit';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
-import SaveIcon from '@material-ui/icons/Save';
-import Switch from '@material-ui/core/Switch';
-import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import SaveIcon from '@mui/icons-material/Save';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import { WebSocketContext } from '../../../websockets/WebSocket';
-import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
 import SelectNodeDialog from './SelectNodeDialog';
+
+const PREFIX = 'ClusterDetail';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    paper: `${PREFIX}-paper`,
+    form: `${PREFIX}-form`,
+    textField: `${PREFIX}-textField`,
+    buttons: `${PREFIX}-buttons`,
+    margin: `${PREFIX}-margin`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const StyledRedirect = styled(Redirect)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
+		width: '100%'
+	},
+
+    [`& .${classes.paper}`]: {
+		padding: '15px'
+	},
+
+    [`& .${classes.form}`]: {
+		// display: 'flex',
+		flexWrap: 'wrap'
+	},
+
+    [`& .${classes.textField}`]: {
+		// marginLeft: theme.spacing(1),
+		// marginRight: theme.spacing(1),
+		// width: 200,
+	},
+
+    [`& .${classes.buttons}`]: {
+		'& > *': {
+			margin: theme.spacing(1)
+		}
+	},
+
+    [`& .${classes.margin}`]: {
+		margin: theme.spacing(1)
+	},
+
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
+}));
 
 const clusterShape = PropTypes.shape({
 	clustername: PropTypes.string,
 });
 
-const useStyles = makeStyles((theme) => ({
-	root: {
-		width: '100%'
-	},
-	paper: {
-		padding: '15px'
-	},
-	form: {
-		// display: 'flex',
-		flexWrap: 'wrap'
-	},
-	textField: {
-		// marginLeft: theme.spacing(1),
-		// marginRight: theme.spacing(1),
-		// width: 200,
-	},
-	buttons: {
-		'& > *': {
-			margin: theme.spacing(1)
-		}
-	},
-	margin: {
-		margin: theme.spacing(1)
-	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
-}));
-
 const ClusterDetail = (props) => {
-	const classes = useStyles();
+
 	const [value, setValue] = React.useState(0);
 	const [editMode, setEditMode] = React.useState(false);
 	const [selectNodeDialogOpen, setSelectNodeDialogOpen] = React.useState(false);
@@ -473,7 +496,7 @@ const ClusterDetail = (props) => {
 			/>
 		</Paper>
 	</div>) : (
-		<Redirect to="/admin/clusters" push />
+		<StyledRedirect to="/admin/clusters" push />
 	);
 };
 

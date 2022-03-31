@@ -1,41 +1,74 @@
 import React, { useContext } from 'react';
-import { green, red } from '@material-ui/core/colors';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
+import { green, red } from '@mui/material/colors';
+import { useTheme } from '@mui/material/styles';
 
-import AddIcon from '@material-ui/icons/Add';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
-import ConfigurationIcon from '@material-ui/icons/Tune';
-import ConnectedIcon from '@material-ui/icons/CheckCircle';
-import DeleteIcon from '@material-ui/icons/Delete';
-import DisconnectedIcon from '@material-ui/icons/Cancel';
-import Divider from '@material-ui/core/Divider';
-import EditIcon from '@material-ui/icons/Edit';
-import Fab from '@material-ui/core/Fab';
-import Hidden from '@material-ui/core/Hidden';
-import Icon from '@material-ui/core/Icon';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
-import Popover from '@material-ui/core/Popover';
+import AddIcon from '@mui/icons-material/Add';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
+import ConfigurationIcon from '@mui/icons-material/Tune';
+import ConnectedIcon from '@mui/icons-material/CheckCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DisconnectedIcon from '@mui/icons-material/Cancel';
+import Divider from '@mui/material/Divider';
+import EditIcon from '@mui/icons-material/Edit';
+import Fab from '@mui/material/Fab';
+import Hidden from '@mui/material/Hidden';
+import Icon from '@mui/material/Icon';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import Paper from '@mui/material/Paper';
+import Popover from '@mui/material/Popover';
 import { Link as RouterLink } from 'react-router-dom';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Typography from '@material-ui/core/Typography';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Typography from '@mui/material/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { connect } from 'react-redux';
+const PREFIX = 'Configurations';
+
+const classes = {
+    avatar: `${PREFIX}-avatar`,
+    imageIcon: `${PREFIX}-imageIcon`,
+    iconRoot: `${PREFIX}-iconRoot`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.avatar}`]: {
+		backgroundColor: 'white'
+	},
+
+    [`& .${classes.imageIcon}`]: {
+		height: '100%',
+		width: '20px'
+	},
+
+    [`& .${classes.iconRoot}`]: {
+		textAlign: 'center'
+	},
+
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
+}));
+
 // import {
 // 	colors,
-//   } from '@material-ui/core';
+//   } from '@mui/material';
 
 
 const GROUP_TABLE_COLUMNS = [
@@ -52,23 +85,8 @@ const createStatusIcon = (status) =>
 		<DisconnectedIcon fontSize="small" style={{ color: red[500] }} />
 	);
 
-const useStyles = makeStyles((theme) => ({
-	avatar: {
-		backgroundColor: 'white'
-	},
-	imageIcon: {
-		height: '100%',
-		width: '20px'
-	},
-	iconRoot: {
-		textAlign: 'center'
-	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
-}));
-
 const Configurations = ({ brokerConfigurations, onSort, sortBy, sortDirection }) => {
-	const classes = useStyles();
+
 	const theme = useTheme();
 	const context = useContext(WebSocketContext);
 	const [connection, setConnection] = React.useState('');
@@ -86,7 +104,7 @@ const Configurations = ({ brokerConfigurations, onSort, sortBy, sortDirection })
 	};
 
 	return (
-		<div>
+        <Root>
 			<Breadcrumbs aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -101,7 +119,7 @@ const Configurations = ({ brokerConfigurations, onSort, sortBy, sortDirection })
 			<br />
 			{brokerConfigurations && brokerConfigurations.connections && brokerConfigurations.connections.length > 0 ? (
 				<div>
-					<Hidden xsDown implementation="css">
+					<Hidden smDown implementation="css">
 						<TableContainer component={Paper}>
 							<Table>
 								<TableHead>
@@ -297,8 +315,8 @@ const Configurations = ({ brokerConfigurations, onSort, sortBy, sortDirection })
 			) : (
 				<div>No configurations found</div>
 			)}
-		</div>
-	);
+		</Root>
+    );
 };
 
 const mapStateToProps = (state) => {

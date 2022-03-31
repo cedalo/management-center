@@ -1,9 +1,9 @@
-import { red } from '@material-ui/core/colors';
-import { createMuiTheme } from '@material-ui/core/styles';
+import { red } from '@mui/material/colors';
+import { createTheme, adaptV4Theme } from '@mui/material/styles';
 
-const theme = createMuiTheme({
+const theme = createTheme(adaptV4Theme({
 	palette: {
-		type: 'dark',
+		mode: 'dark',
 		primary: {
 			main: '#556cd6'
 			//   main: '#00695f',
@@ -36,6 +36,6 @@ const theme = createMuiTheme({
 			}
 		}
 	}
-});
+}));
 
 export default theme;

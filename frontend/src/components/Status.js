@@ -1,42 +1,55 @@
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import { styled } from '@mui/material/styles';
 import Chart from './Chart';
-import ClientIcon from '@material-ui/icons/RecordVoiceOver';
-import Container from '@material-ui/core/Container';
-import DataReceivedIcon from '@material-ui/icons/CallReceived';
-import DataSentIcon from '@material-ui/icons/CallMade';
-import Grid from '@material-ui/core/Grid';
+import ClientIcon from '@mui/icons-material/RecordVoiceOver';
+import Container from '@mui/material/Container';
+import DataReceivedIcon from '@mui/icons-material/CallReceived';
+import DataSentIcon from '@mui/icons-material/CallMade';
+import Grid from '@mui/material/Grid';
 import Info from './Info';
-import MessageIcon from '@material-ui/icons/Email';
+import MessageIcon from '@mui/icons-material/Email';
 import moment from 'moment';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import SubscriptionIcon from '@material-ui/icons/PhonelinkRing';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
-import { colors } from '@material-ui/core';
+import SubscriptionIcon from '@mui/icons-material/PhonelinkRing';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
+import { colors } from '@mui/material';
 import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core';
-import { Alert, AlertTitle } from '@material-ui/lab';
+import { Alert, AlertTitle } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
-	root: {
+const PREFIX = 'Status';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
 		backgroundColor: theme.palette.background.dark,
 		minHeight: '100%',
 		paddingBottom: theme.spacing(3),
 		paddingTop: theme.spacing(3)
 	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
 }));
 
 const Status = ({ lastUpdated, systemStatus, defaultClient, currentConnection, currentConnectionName }) => {
-	const classes = useStyles();
+
 
 	const totalMessages = parseInt(systemStatus?.$SYS?.broker?.messages?.sent);
 	const publishMessages = (parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent) / totalMessages) * 100;
@@ -72,7 +85,7 @@ const Status = ({ lastUpdated, systemStatus, defaultClient, currentConnection, c
 	];
 
 	return (
-		<div>
+        <Root>
 			<Breadcrumbs aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -269,8 +282,8 @@ const Status = ({ lastUpdated, systemStatus, defaultClient, currentConnection, c
 			}}>
 				Dashboard last updated at: {moment(lastUpdated).format('hh:mm:ss a')}
 			</div>}
-		</div>
-	);
+		</Root>
+    );
 };
 
 const mapStateToProps = (state) => {

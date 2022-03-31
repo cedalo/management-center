@@ -1,37 +1,45 @@
 import React, { useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import { connect } from 'react-redux';
-import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import InputBase from '@material-ui/core/InputBase';
+import { useTheme } from '@mui/material/styles';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import InputBase from '@mui/material/InputBase';
 
 // import {
 // 	colors,
-//   } from '@material-ui/core';
+//   } from '@mui/material';
 
 import { WebSocketContext } from '../websockets/WebSocket';
 
-const CustomInput = withStyles((theme) => ({
-	root: {
-		'label + &': {
-			marginTop: theme.spacing(1)
-		}
-	}
-}))(InputBase);
+const PREFIX = 'AnonymousGroupSelect';
 
-const useStyles = makeStyles((theme) => ({
-	root: {
+const classes = {
+    root: `${PREFIX}-root`,
+    root2: `${PREFIX}-root2`,
+    label: `${PREFIX}-label`,
+    formControl: `${PREFIX}-formControl`
+};
+
+const StyledFormControl = styled(FormControl)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root2}`]: {
 		backgroundColor: 'rgba(255,255,255,0.2)',
 		border: 'thin solid rgba(255,255,255,0.5)'
 	},
-	label: {
+
+    [`& .${classes.label}`]: {
 		fontSize: '12px',
 		textTransform: 'uppercase',
 		transform: 'translate(14px, 20px) scale(1)'
 	},
-	formControl: {
+
+    [`&.${classes.formControl}`]: {
 		// margin: theme.spacing(1),
 		// height: "25px",
 		margin: theme.spacing(1),
@@ -40,8 +48,10 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
+const CustomInput = InputBase;
+
 const AnonymousGroupSelect = ({ anonymousGroup, groups = [], onUpdateAnonymousGroup }) => {
-	const classes = useStyles();
+
 
 	const groupSuggestions = groups
 		.map((group) => group.groupname)
@@ -51,35 +61,37 @@ const AnonymousGroupSelect = ({ anonymousGroup, groups = [], onUpdateAnonymousGr
 			value: groupname
 		}));
 
-	return <FormControl id="anonymous-group-select" variant="outlined" className={classes.formControl}>
-			<InputLabel
-				id="anonymous-group-label"
-				classes={{
-					root: classes.label
-				}}
-			>
-				Anonymous group
-			</InputLabel>
-			<Select
-				label="Anonymous group"
-				classes={classes}
-				classes={{
-					root: classes.select
-				}}
-				placeholder="Select anonymous group"
-				options={groupSuggestions}
-				value={anonymousGroup?.groupname || ''}
-				onChange={(event) => {
-					onUpdateAnonymousGroup(event.target.value);
-				}}
-			>
-				{
-					groupSuggestions.map(group => 
-						<MenuItem value={group.value} primaryText={group.label}>{group.label}</MenuItem>
-					)
-				}
-			</Select>
-		</FormControl>
+	return (
+        <StyledFormControl id="anonymous-group-select" variant="outlined" className={classes.formControl}>
+                <InputLabel
+                    id="anonymous-group-label"
+                    classes={{
+                        root: classes.label
+                    }}
+                >
+                    Anonymous group
+                </InputLabel>
+                <Select
+                    label="Anonymous group"
+                    classes={classes}
+                    classes={{
+                        root: classes.select
+                    }}
+                    placeholder="Select anonymous group"
+                    options={groupSuggestions}
+                    value={anonymousGroup?.groupname || ''}
+                    onChange={(event) => {
+                        onUpdateAnonymousGroup(event.target.value);
+                    }}
+                >
+                    {
+                        groupSuggestions.map(group => 
+                            <MenuItem value={group.value} primaryText={group.label}>{group.label}</MenuItem>
+                        )
+                    }
+                </Select>
+            </StyledFormControl>
+    );
 };
 
 const mapStateToProps = (state) => {

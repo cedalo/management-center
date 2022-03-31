@@ -1,71 +1,83 @@
 import React, { useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import { connect, useDispatch } from 'react-redux';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { updateInspectClient, updateInspectClients } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
-import AddIcon from '@material-ui/icons/Add';
-import { Alert, AlertTitle } from '@material-ui/lab';
+import { DataGrid } from '@mui/x-data-grid';
+import AddIcon from '@mui/icons-material/Add';
+import { Alert, AlertTitle } from '@mui/material';
 import AutoSuggest from '../../../components/AutoSuggest';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
-import ClientIcon from '@material-ui/icons/Person';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Divider from '@material-ui/core/Divider';
-// import Fab from '@material-ui/core/Fab';
-import GroupIcon from '@material-ui/icons/Group';
-import Hidden from '@material-ui/core/Hidden';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
+import ClientIcon from '@mui/icons-material/Person';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Divider from '@mui/material/Divider';
+// import Fab from '@mui/material/Fab';
+import GroupIcon from '@mui/icons-material/Group';
+import Hidden from '@mui/material/Hidden';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';
-import Switch from '@material-ui/core/Switch';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import Switch from '@mui/material/Switch';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import { WebSocketContext } from '../../../websockets/WebSocket';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
 
-const StyledTableRow = withStyles((theme) => ({
-	root: {
-		'&:nth-of-type(odd)': {
-			backgroundColor: theme.palette.tables?.odd
-		}
-	}
-}))(TableRow);
+const PREFIX = 'InspectClients';
 
-const useStyles = makeStyles((theme) => ({
-	tableContainer: {
+const classes = {
+    root: `${PREFIX}-root`,
+    tableContainer: `${PREFIX}-tableContainer`,
+    badges: `${PREFIX}-badges`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.tableContainer}`]: {
 		minHeight: '500px',
 		'& td:nth-child(2)': {
 			minWidth: '100px'
 		}
 	},
-	badges: {
+
+    [`& .${classes.badges}`]: {
 		'& > *': {
 			margin: theme.spacing(0.3)
 		}
 	},
-	// fab: {
-	// 	position: 'absolute',
-	// 	bottom: theme.spacing(2),
-	// 	right: theme.spacing(2)
-	// },
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+
+    // fab: {
+    // 	position: 'absolute',
+    // 	bottom: theme.spacing(2),
+    // 	right: theme.spacing(2)
+    // },
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
 }));
+
+const StyledTableRow = TableRow;
 
 const CLIENTS_TABLE_COLUMNS = [
 	{ id: 'username', key: 'Username' },
@@ -79,91 +91,95 @@ const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelect
 	const { inspectFeature, onSort, sortBy, sortDirection } = props;
 
 	if (!inspectFeature?.error && inspectFeature?.supported !== false && clients && clients.length > 0) {
-		return <div>
-			<Hidden xsDown implementation="css">
-				<TableContainer component={Paper} className={classes.tableContainer}>
-					<Table size="medium">
-						<TableHead>
-							<TableRow>
-								{CLIENTS_TABLE_COLUMNS.map((column) => (
-									<TableCell
-										key={column.id}
-										sortDirection={sortBy === column.id ? sortDirection : false}
-									>
-										{column.key}
-									</TableCell>
-								))}
-								<TableCell />
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{clients &&
-								clients.map((client) => (
-									<StyledTableRow
-										hover
-										key={client.username}
-										onClick={(event) => {
-											onSelectClient(client.username);
-										}}
-										style={{ cursor: 'pointer' }}
-									>
-										<TableCell>{client.username}</TableCell>
-										<TableCell>{client.clientid}</TableCell>
-										<TableCell>{client.protocol}</TableCell>
-										<TableCell>{client.protocol_version}</TableCell>
-										<TableCell>{client.address}</TableCell>
-									</StyledTableRow>
-								))}
-						</TableBody>
-					</Table>
-				</TableContainer>
-			</Hidden>
-			<Hidden smUp implementation="css">
-				<Paper>
-					<List className={classes.root}>
-						{clients.map((client) => (
-							<React.Fragment>
-								<ListItem
-									alignItems="flex-start"
-									onClick={(event) => onSelectClient(client.username)}
-								>
-									<ListItemText
-										primary={<span>{client.username}</span>}
-										secondary={
-											<React.Fragment>
-												<Typography
-													component="span"
-													variant="body2"
-													className={classes.inline}
-													color="textPrimary"
-												>
-													{client.username}
-												</Typography>
-												<span> — {client.clientid} </span>
-											</React.Fragment>
-										}
-									/>
-									<ListItemSecondaryAction>
-										{/* <IconButton
-											edge="end"
-											size="small"
-											onClick={(event) => {
-												event.stopPropagation();
-												onSelectClient(client.username);
-											}}
-											aria-label="edit"
-										>
-											<EditIcon fontSize="small" />
-										</IconButton> */}
-									</ListItemSecondaryAction>
-								</ListItem>
-								<Divider />
-							</React.Fragment>
-						))}
-					</List>
-				</Paper>
-			</Hidden>
-		</div>
+		return (
+            <Root>
+                <Hidden smDown implementation="css">
+                    <TableContainer component={Paper} className={classes.tableContainer}>
+                        <Table size="medium">
+                            <TableHead>
+                                <TableRow>
+                                    {CLIENTS_TABLE_COLUMNS.map((column) => (
+                                        <TableCell
+                                            key={column.id}
+                                            sortDirection={sortBy === column.id ? sortDirection : false}
+                                        >
+                                            {column.key}
+                                        </TableCell>
+                                    ))}
+                                    <TableCell />
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {clients &&
+                                    clients.map((client) => (
+                                        <StyledTableRow
+                                            hover
+                                            key={client.username}
+                                            onClick={(event) => {
+                                                onSelectClient(client.username);
+                                            }}
+                                            style={{ cursor: 'pointer' }}
+                                            classes={{
+                                                root: classes.root
+                                            }}>
+                                            <TableCell>{client.username}</TableCell>
+                                            <TableCell>{client.clientid}</TableCell>
+                                            <TableCell>{client.protocol}</TableCell>
+                                            <TableCell>{client.protocol_version}</TableCell>
+                                            <TableCell>{client.address}</TableCell>
+                                        </StyledTableRow>
+                                    ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Hidden>
+                <Hidden smUp implementation="css">
+                    <Paper>
+                        <List className={classes.root}>
+                            {clients.map((client) => (
+                                <React.Fragment>
+                                    <ListItem
+                                        alignItems="flex-start"
+                                        onClick={(event) => onSelectClient(client.username)}
+                                    >
+                                        <ListItemText
+                                            primary={<span>{client.username}</span>}
+                                            secondary={
+                                                <React.Fragment>
+                                                    <Typography
+                                                        component="span"
+                                                        variant="body2"
+                                                        className={classes.inline}
+                                                        color="textPrimary"
+                                                    >
+                                                        {client.username}
+                                                    </Typography>
+                                                    <span> — {client.clientid} </span>
+                                                </React.Fragment>
+                                            }
+                                        />
+                                        <ListItemSecondaryAction>
+                                            {/* <IconButton
+                                                edge="end"
+                                                size="small"
+                                                onClick={(event) => {
+                                                    event.stopPropagation();
+                                                    onSelectClient(client.username);
+                                                }}
+                                                aria-label="edit"
+                                            >
+                                                <EditIcon fontSize="small" />
+                                            </IconButton> */}
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
+                                    <Divider />
+                                </React.Fragment>
+                            ))}
+                        </List>
+                    </Paper>
+                </Hidden>
+            </Root>
+        );
 	} else if (inspectFeature?.error) {
 		return null;
 	} else {
@@ -172,7 +188,7 @@ const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelect
 }
 
 const Clients = (props) => {
-	const classes = useStyles();
+
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
@@ -223,7 +239,7 @@ const Clients = (props) => {
 			<br />
 			<br />
 			
-			{ createClientsTable(clients, classes, props, onUpdateUserRoles, onSelectClient) }
+			{ createClientsTable(clients,  props, onUpdateUserRoles, onSelectClient) }
 		</div>
 	);
 };

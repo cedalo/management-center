@@ -1,6 +1,6 @@
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
 import Groups from './components/Groups';
 import Home from './components/Home';
 import Security from './components/Security';
@@ -43,9 +43,14 @@ import InspectClientDetail from './admin/inspect/components/InspectClientDetail'
 import { Switch, Route, Redirect } from 'react-router-dom';
 import DefaultACLAccess from './components/DefaultACLAccess';
 
-const useStyles = makeStyles((theme) => ({
-	
-}));
+const PREFIX = 'AppRoutes';
+const classes = {};
+
+const StyledSwitch = styled(Switch)((
+    {
+        theme
+    }
+) => ({}));
 
 function AppRoutes(props) {
 
@@ -61,7 +66,7 @@ function AppRoutes(props) {
 		//   const container = window !== undefined ? () => window().document.body : undefined;
 
 		return (
-			<Switch>
+            <StyledSwitch>
 				<Route
 					path="/security/clients/detail/:clientId"
 					component={ClientDetail}
@@ -183,8 +188,8 @@ function AppRoutes(props) {
 				<Route path="/">
 					<Redirect to="/system/status" />
 				</Route>
-			</Switch>
-		);
+			</StyledSwitch>
+        );
 	} else {
 		return null;
 	}

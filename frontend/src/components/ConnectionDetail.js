@@ -1,19 +1,30 @@
 import React, { useContext, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { Redirect, Link as RouterLink } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Typography from '@mui/material/Typography';
 import ConnectionDetailComponent from './ConnectionDetailComponent';
 
-const useStyles = makeStyles((theme) => ({
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+const PREFIX = 'ConnectionDetail';
+
+const classes = {
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const StyledRedirect = styled(Redirect)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
 }));
 
 const ConnectionDetail = (props) => {
-	const classes = useStyles();
+
 
 	const { selectedConnectionToEdit: connection } = props;
 
@@ -37,7 +48,7 @@ const ConnectionDetail = (props) => {
 			<ConnectionDetailComponent />
 		</div>
 	) : (
-		<Redirect to="/config/connections" push />
+		<StyledRedirect to="/config/connections" push />
 	);
 };
 

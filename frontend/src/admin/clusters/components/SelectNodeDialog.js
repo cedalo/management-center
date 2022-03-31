@@ -1,23 +1,38 @@
 import React, { useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
 import { connect } from 'react-redux';
 import ConnectionNewComponent from '../../../components/ConnectionNewComponent';
 
-const useStyles = makeStyles((theme) => ({
-	root: {
+const PREFIX = 'SelectNodeDialog';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    form: `${PREFIX}-form`,
+    textField: `${PREFIX}-textField`,
+    margin: `${PREFIX}-margin`,
+    formControl: `${PREFIX}-formControl`,
+    select: `${PREFIX}-select`
+};
+
+const StyledDialog = styled(Dialog)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
 		'& > *': {
 			margin: theme.spacing(1)
 		},
@@ -26,23 +41,28 @@ const useStyles = makeStyles((theme) => ({
 			width: '75ch'
 		}
 	},
-	form: {
+
+    [`& .${classes.form}`]: {
 		display: 'flex',
 		flexWrap: 'wrap'
 	},
-	textField: {
+
+    [`& .${classes.textField}`]: {
 		// marginLeft: theme.spacing(1),
 		// marginRight: theme.spacing(1),
 		// width: 200,
 	},
-	margin: {
+
+    [`& .${classes.margin}`]: {
 		margin: theme.spacing(2)
 	},
-	formControl: {
+
+    [`& .${classes.formControl}`]: {
 	  margin: theme.spacing(1),
 	  minWidth: 120,
 	},
-	select: {
+
+    [`& .${classes.select}`]: {
 		fontSize: '14px',
 	}
 }));
@@ -76,7 +96,7 @@ const getDialogContent = ({
 				You have not configured any broker.
 			</DialogTitle>
 			<DialogContent>
-				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
+				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
 					<Grid item xs={12} align="center">
 						<DialogContentText id="alert-dialog-description">
 							Please create a connection first.
@@ -85,14 +105,14 @@ const getDialogContent = ({
 					</Grid>
 				</Grid>
 			</DialogContent>
-		</>
+		</>;
 	} else {
 		return <>
 			<DialogTitle align="center" id="add-node-dialog-title">
 				Select the broker to add as node
 			</DialogTitle>
 			<DialogContent>
-				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
+				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
 					<Grid item xs={12} align="center">
 						<FormControl variant="outlined">
 							<InputLabel htmlFor="broker">Broker</InputLabel>
@@ -140,11 +160,11 @@ const getDialogContent = ({
 					Add node
 				</Button>
 			</DialogActions>
-		</>
+		</>;
 	} 
 }
 const SelectNodeDialog = ({ brokerConnections, cluster, open, handleClose, handleAddNode }) => {
-	const classes = useStyles();
+
 	const [selectedBroker, setSelectedBroker] = React.useState('');
 	const [privateIPAddress, setPrivateIPAddress] = React.useState('');
 
@@ -153,7 +173,7 @@ const SelectNodeDialog = ({ brokerConnections, cluster, open, handleClose, handl
 	}
 
 	return (
-		<Dialog
+        <StyledDialog
 			open={open}
 			onClose={handleClose}
 			aria-labelledby="add-node-dialog-title"
@@ -172,8 +192,8 @@ const SelectNodeDialog = ({ brokerConnections, cluster, open, handleClose, handl
 					handleClose
 				})
 			}
-		</Dialog>
-	);
+		</StyledDialog>
+    );
 };
 
 const mapStateToProps = (state) => {

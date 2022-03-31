@@ -1,72 +1,83 @@
 import React, { useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import { connect, useDispatch } from 'react-redux';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { updateClient, updateClients, updateGroups } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
-import AddIcon from '@material-ui/icons/Add';
-import { Alert, AlertTitle } from '@material-ui/lab';
+import AddIcon from '@mui/icons-material/Add';
+import { Alert, AlertTitle } from '@mui/material';
 import AutoSuggest from './AutoSuggest';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
-import ClientIcon from '@material-ui/icons/Person';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Divider from '@material-ui/core/Divider';
-import EditIcon from '@material-ui/icons/Edit';
-// import Fab from '@material-ui/core/Fab';
-import GroupIcon from '@material-ui/icons/Group';
-import Hidden from '@material-ui/core/Hidden';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
+import ClientIcon from '@mui/icons-material/Person';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Divider from '@mui/material/Divider';
+import EditIcon from '@mui/icons-material/Edit';
+// import Fab from '@mui/material/Fab';
+import GroupIcon from '@mui/icons-material/Group';
+import Hidden from '@mui/material/Hidden';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';
-import Switch from '@material-ui/core/Switch';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import Switch from '@mui/material/Switch';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
 
-const StyledTableRow = withStyles((theme) => ({
-	root: {
-		'&:nth-of-type(odd)': {
-			backgroundColor: theme.palette.tables?.odd
-		}
-	}
-}))(TableRow);
+const PREFIX = 'Clients';
 
-const useStyles = makeStyles((theme) => ({
-	tableContainer: {
+const classes = {
+    root: `${PREFIX}-root`,
+    tableContainer: `${PREFIX}-tableContainer`,
+    badges: `${PREFIX}-badges`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.tableContainer}`]: {
 		minHeight: '500px',
 		'& td:nth-child(2)': {
 			minWidth: '100px'
 		}
 	},
-	badges: {
+
+    [`& .${classes.badges}`]: {
 		'& > *': {
 			margin: theme.spacing(0.3)
 		}
 	},
-	// fab: {
-	// 	position: 'absolute',
-	// 	bottom: theme.spacing(2),
-	// 	right: theme.spacing(2)
-	// },
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+
+    // fab: {
+    // 	position: 'absolute',
+    // 	bottom: theme.spacing(2),
+    // 	right: theme.spacing(2)
+    // },
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
 }));
+
+const StyledTableRow = TableRow;
 
 const clientShape = PropTypes.shape({
 	username: PropTypes.string,
@@ -94,7 +105,7 @@ const FormattedClientType = (props) => {
 };
 
 const Clients = (props) => {
-	const classes = useStyles();
+
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
@@ -246,7 +257,7 @@ const Clients = (props) => {
 		}));
 
 	return (
-		<div>
+        <Root>
 			<Breadcrumbs aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
 					Home
@@ -265,16 +276,14 @@ const Clients = (props) => {
 			</Alert></> : null}
 			<br />
 			{dynamicsecurityFeature?.supported !== false && <><Button
-				variant="outlined"
-				color="default"
-				size="small"
-				className={classes.button}
-				startIcon={<AddIcon />}
-				onClick={(event) => {
+                variant="outlined"
+                size="small"
+                className={classes.button}
+                startIcon={<AddIcon />}
+                onClick={(event) => {
 					event.stopPropagation();
 					onNewClient();
-				}}
-			>
+				}}>
 				New Client
 			</Button>
 			<br />
@@ -283,7 +292,7 @@ const Clients = (props) => {
 			
 			{dynamicsecurityFeature?.supported !== false && clients && clients.length > 0 ? (
 				<div>
-					<Hidden xsDown implementation="css">
+					<Hidden smDown implementation="css">
 						<TableContainer component={Paper} className={classes.tableContainer}>
 							<Table size="medium">
 								<TableHead>
@@ -309,9 +318,9 @@ const Clients = (props) => {
 									{clients &&
 										clients.map((client) => (
 											<StyledTableRow
-												hover
-												key={client.username}
-												onClick={(event) => {
+                                                hover
+                                                key={client.username}
+                                                onClick={(event) => {
 													if (
 														event.target.nodeName?.toLowerCase() === 'td' ||
 														defaultClient?.username === client.username
@@ -319,8 +328,10 @@ const Clients = (props) => {
 														onSelectClient(client.username);
 													}
 												}}
-												style={{ cursor: 'pointer' }}
-											>
+                                                style={{ cursor: 'pointer' }}
+                                                classes={{
+                                                    root: classes.root
+                                                }}>
 												<TableCell>{client.username}</TableCell>
 												<TableCell>{client.clientid}</TableCell>
 												<TableCell>{client.textname}</TableCell>
@@ -485,8 +496,8 @@ const Clients = (props) => {
 			>
 				<AddIcon />
 			</Fab> */}
-		</div>
-	);
+		</Root>
+    );
 };
 
 Clients.propTypes = {

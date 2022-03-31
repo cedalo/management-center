@@ -1,46 +1,64 @@
-import { green, red } from '@material-ui/core/colors';
+import { green, red } from '@mui/material/colors';
 
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FeatureDisabledIcon from '@material-ui/icons/Cancel';
-import FeatureEnabledIcon from '@material-ui/icons/CheckCircle';
-import Paper from '@material-ui/core/Paper';
-import PremiumVersionIcon from '@material-ui/icons/VerifiedUser';
+import { styled } from '@mui/material/styles';
+
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import FeatureDisabledIcon from '@mui/icons-material/Cancel';
+import FeatureEnabledIcon from '@mui/icons-material/CheckCircle';
+import Paper from '@mui/material/Paper';
+import PremiumVersionIcon from '@mui/icons-material/VerifiedUser';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
 import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import useFetch from '../helpers/useFetch';
-import { TableHead } from '@material-ui/core';
+import { TableHead } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
-	tableContainer: {
+const PREFIX = 'InfoPage';
+
+const classes = {
+    tableContainer: `${PREFIX}-tableContainer`,
+    updateButton: `${PREFIX}-updateButton`,
+    badges: `${PREFIX}-badges`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.tableContainer}`]: {
 		'& td:first-child': {
 			width: '30%'
 		}
 	},
-	updateButton: {
+
+    [`& .${classes.updateButton}`]: {
 		marginLeft: '20px'
 	},
-	badges: {
+
+    [`& .${classes.badges}`]: {
 		'& > *': {
 			margin: theme.spacing(0.3)
 		}
 	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
 }));
 
 const createFeatureIcon = (feature, license) =>
@@ -61,7 +79,7 @@ const getPremium = () => {
 };
 
 const InfoPage = (props) => {
-	const classes = useStyles();
+
 	const [open, setOpen] = React.useState(false);
 	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/update`);
 	const { license, version, webSocketConnections } = props;
@@ -76,7 +94,7 @@ const InfoPage = (props) => {
 
 	if (response) {
 		return (
-			<div>
+            <Root>
 				<Dialog
 					open={open}
 					onClose={handleClose}
@@ -306,8 +324,8 @@ const InfoPage = (props) => {
 						</Table>
 					</TableContainer>
 				}
-			</div>
-		);
+			</Root>
+        );
 	} else {
 		return null;
 	}

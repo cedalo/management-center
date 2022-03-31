@@ -1,34 +1,50 @@
-import Button from '@material-ui/core/Button';
-import DownloadIcon from '@material-ui/icons/GetApp';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import Button from '@mui/material/Button';
+import { styled } from '@mui/material/styles';
+import DownloadIcon from '@mui/icons-material/GetApp';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import { amber } from '@material-ui/core/colors';
+import Typography from '@mui/material/Typography';
+import { amber } from '@mui/material/colors';
 import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
+const PREFIX = 'MessagePage';
 
-const useStyles = makeStyles((theme) => ({
-	button: {
+const classes = {
+    button: `${PREFIX}-button`,
+    updateButton: `${PREFIX}-updateButton`,
+    badges: `${PREFIX}-badges`,
+    breadcrumbItem: `${PREFIX}-breadcrumbItem`,
+    breadcrumbLink: `${PREFIX}-breadcrumbLink`
+};
+
+const StyledPaper = styled(Paper)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.button}`]: {
 		margin: theme.spacing(1)
 	},
-	updateButton: {
+
+    [`& .${classes.updateButton}`]: {
 		marginLeft: '20px'
 	},
-	badges: {
+
+    [`& .${classes.badges}`]: {
 		'& > *': {
 			margin: theme.spacing(0.3)
 		}
 	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+
+    [`& .${classes.breadcrumbItem}`]: theme.palette.breadcrumbItem,
+    [`& .${classes.breadcrumbLink}`]: theme.palette.breadcrumbLink
 }));
 
 const MessagePage = ({ message, buttonText, buttonIcon, callToAction, image = '/smilethink.png' }) => {
-	const classes = useStyles();
+
 	return (
-		<Paper>
-			<Grid container spacing={24} justify="center" style={{ minHeight: '500px', maxWidth: '100%' }}>
+        <StyledPaper>
+			<Grid container spacing={24} justifyContent="center" style={{ minHeight: '500px', maxWidth: '100%' }}>
 				<Grid item xs={12} align="center"></Grid>
 				<Grid item xs={12} align="center">
 					<img src={image} />
@@ -56,8 +72,8 @@ const MessagePage = ({ message, buttonText, buttonIcon, callToAction, image = '/
 					)}
 				</Grid>
 			</Grid>
-		</Paper>
-	);
+		</StyledPaper>
+    );
 };
 
 const mapStateToProps = (state) => {
