@@ -1,65 +1,85 @@
 import React, { useContext, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { Redirect, Link as RouterLink } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import { useSnackbar } from 'notistack';
 import useLocalStorage from '../helpers/useLocalStorage';
 
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import DisconnectedIcon from '@material-ui/icons/Cloud';
-import ConnectedIcon from '@material-ui/icons/CloudDone';
-import Box from '@material-ui/core/Box';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
-import EditIcon from '@material-ui/icons/Edit';
-import Grid from '@material-ui/core/Grid';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Paper from '@material-ui/core/Paper';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import DisconnectedIcon from '@mui/icons-material/Cloud';
+import ConnectedIcon from '@mui/icons-material/CloudDone';
+import Box from '@mui/material/Box';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
+import EditIcon from '@mui/icons-material/Edit';
+import Grid from '@mui/material/Grid';
+import InputAdornment from '@mui/material/InputAdornment';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
-import SaveIcon from '@material-ui/icons/Save';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import SaveIcon from '@mui/icons-material/Save';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
-import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
 import { updateBrokerConfigurations, updateBrokerConnections } from '../actions/actions';
 
-const useStyles = makeStyles((theme) => ({
-	root: {
+const PREFIX = 'ConnectionDetailComponent';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    paper: `${PREFIX}-paper`,
+    form: `${PREFIX}-form`,
+    textField: `${PREFIX}-textField`,
+    buttons: `${PREFIX}-buttons`,
+    margin: `${PREFIX}-margin`
+};
+
+const StyledRedirect = styled(Redirect)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
 		width: '100%'
 	},
-	paper: {
+
+    [`& .${classes.paper}`]: {
 		padding: '15px'
 	},
-	form: {
+
+    [`& .${classes.form}`]: {
 		display: 'flex',
 		flexWrap: 'wrap'
 	},
-	textField: {
+
+    [`& .${classes.textField}`]: {
 		// marginLeft: theme.spacing(1),
 		// marginRight: theme.spacing(1),
 		// width: 200,
 	},
-	buttons: {
+
+    [`& .${classes.buttons}`]: {
 		'& > *': {
 			margin: theme.spacing(1)
 		}
 	},
-	margin: {
+
+    [`& .${classes.margin}`]: {
 		margin: theme.spacing(1)
 	}
 }));
 
 const ConnectionDetailComponent = (props) => {
 	const [connected, setConnected] = React.useState(false);
-	const { selectedConnectionToEdit: connection = {} } = props;
+	const { selectedConnectionToEdit: connection = {}, connections } = props;
 	let editModeEnabledByDefault = false;
 	if (!connection.id) {
 		connection.id = 'default';
 		editModeEnabledByDefault = true;
 	}
 
-	const classes = useStyles();
+
 	const [value, setValue] = React.useState(0);
 	const [showPassword, setShowPassword] = React.useState(false);
 	const [editMode, setEditMode] = React.useState(editModeEnabledByDefault);
@@ -75,11 +95,24 @@ const ConnectionDetailComponent = (props) => {
 	const history = useHistory();
 	const { client: brokerClient } = context;
 
+	const connectionExists = connections?.find((searchConnection) => {
+		return searchConnection.id === connection.id;
+	});
+
+	const connectionWithNameExists = connections?.find((searchConnection) => {
+		return searchConnection.name === connection.name;
+	});
+
 	const validate = () => {
 		if (editMode) {
 			return connection.id !== ''
 			&& connection.name !== ''
 			&& connection.url !== '';
+			// !connectionExists
+			// && !connectionWithNameExists
+			// && connection.id !== ''
+			// && connection.name !== ''
+			// && connection.url !== '';
 		} else {
 			return connection.id !== '';
 		}
@@ -189,6 +222,8 @@ const ConnectionDetailComponent = (props) => {
 											});
 										}
 									}}
+									// error={connectionExists}
+									// helperText={connectionExists && 'A connection with this ID already exists.'}
 									id="id"
 									label="ID"
 									value={updatedConnection.id}
@@ -212,6 +247,8 @@ const ConnectionDetailComponent = (props) => {
 									id="name"
 									label="Name"
 									value={updatedConnection.name}
+									// error={connectionWithNameExists}
+									// helperText={connectionWithNameExists && 'A connection with this name already exists.'}
 									defaultValue=""
 									variant="outlined"
 									fullWidth
@@ -371,12 +408,13 @@ const ConnectionDetailComponent = (props) => {
 			</Paper>
 		</div>
 	) : (
-		<Redirect to="/config/connections" push />
+		<StyledRedirect to="/config/connections" push />
 	);
 };
 
 const mapStateToProps = (state) => {
 	return {
+		connections: state.brokerConnections?.brokerConnections,
 		selectedConnectionToEdit: state.brokerConnections?.selectedConnectionToEdit
 	};
 };
