@@ -156,6 +156,12 @@ const InfoPage = (props) => {
 								</TableRow>
 								<TableRow>
 									<TableCell>
+										<b>Commit ID</b>
+									</TableCell>
+									<TableCell>{version.commitId}</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell>
 										<b>Build date</b>
 									</TableCell>
 									<TableCell>{moment(version.buildDate).format('LLLL')}</TableCell>
