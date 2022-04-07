@@ -41,7 +41,7 @@ module.exports = class BaseMosquittoClient {
 		this._requests = new Map();
 		// TODO: make timeout configurable
 		// request timeout in ms:
-		this._timeout = 2000;
+		this._timeout = 10000;
 	}
 
 	// eslint-disable-next-line consistent-return
@@ -124,10 +124,18 @@ module.exports = class BaseMosquittoClient {
 		const commands = {
 			commands: [commandMessage]
 		};
-		return this.sendRequest(feature, commands, correlationData);
+		return this.sendFeatureRequest(feature, commands, correlationData);
 	}
 
-	async sendRequest(feature, request, correlationData = createID(), timeout = this._timeout) {
+	async sendFeatureRequest(feature, request, correlationData = createID(), timeout = this._timeout) {
+		if (feature) {
+			return this.sendRequestToBroker(`$CONTROL/${feature}/v1`, request, correlationData, timeout);
+		} else {
+			return this.sendRequestToBroker(`$CONTROL`, request, correlationData, timeout);
+		}
+	}
+
+	async sendRequest(requestTopic, request, correlationData = createID(), timeout = this._timeout) {
 		/* eslint-disable */
 		this.logger.debug('Sending request to Mosquitto', request);
 		return new Promise((resolve, reject) => {
@@ -142,11 +150,7 @@ module.exports = class BaseMosquittoClient {
 				if (!this._brokerClient) {
 					reject(new Error('Not connected to broker'));
 				} else {
-					if (feature) {
-						this._brokerClient.publish(`$CONTROL/${feature}/v1`, JSON.stringify(request));
-					} else {
-						this._brokerClient.publish(`$CONTROL`, JSON.stringify(request));
-					}
+					this._brokerClient.publish(requestTopic, JSON.stringify(request));
 					resolve();
 				}
 			}).catch((error) => {
