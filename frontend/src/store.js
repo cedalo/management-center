@@ -42,7 +42,7 @@ const store = createStore(
 		userProfile: userProfileReducer,
 		users: usersReducer,
 		clusters: clustersReducer,
-		inspectClients: inspectClientsReducer
+		inspectClients: inspectClientsReducer,
 		brokerLicense: brokerLicenseReducer,
 		tests: testsReducer
 	})
