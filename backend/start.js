@@ -26,7 +26,6 @@ const version = {
 	buildDate: process.env.CEDALO_MC_BUILD_DATE || Date.now()
 };
 
-const CEDALO_MC_TOPIC_TREE_UPDATE_INTERVAL = process.env.CEDALO_MC_TOPIC_TREE_UPDATE_INTERVAL || 5000;
 const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
@@ -37,6 +36,7 @@ const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
 // const LicenseManager = require("../src/LicenseManager");
 const LicenseChecker = require('./src/license/LicenseChecker');
 const acl = require('./src/security/acl');
+const TopicTreeManager = require('./src/topictree/TopicTreeManager');
 // const NodeMosquittoProxyClient = require('../frontend/src/client/NodeMosquittoProxyClient');
 // const licenseManager = new LicenseManager();
 // await licenseManager.loadLicense();
@@ -84,52 +84,7 @@ const updateSystemTopics = (system, topic, message) => {
 	return system;
 };
 
-const updateTopicTree = (topicTree, topic, message, packet) => {
-	if (!topicTree._messagesCounter) {
-		topicTree._messagesCounter = 0;
-	}
-	topicTree._messagesCounter += 1;
-	const parts = topic.split('/');
-	let current = topicTree;
-	let newTopic = false;
-	parts.forEach((part, index) => {
-		if (!current[part]) {
-			// first time the topic was received
-			current[part] = {
-				_name: part,
-				_topic: topic,
-				_created: Date.now(),
-				_messagesCounter: 1,
-				_topicsCounter: 0
-			};
-			newTopic = true;
-		} else {
-			// topic already existed in the topic tree
-			current[part]._lastModified = Date.now();
-			current[part]._messagesCounter += 1;
-		}
-		if (parts.length - 1 === index) {
-			// last item is the node where the message should be saved
-			current[part]._message = message.toString();
-			current[part]._cmd = packet.cmd;
-			current[part]._dup = packet.dup;
-			current[part]._retain = packet.retain;
-			current[part]._qos = packet.qos;
-		}
-		current = current[part];
-	});
 
-	current = topicTree;
-	if (newTopic) {
-		parts.forEach((part, index) => {
-			if (index < parts.length - 1) {
-				current[part]._topicsCounter += 1;
-			}
-			current = current[part];
-		});
-	}
-	return topicTree;
-};
 
 const initConnections = (config) => {
 	const connections = config.connections || [];
@@ -249,17 +204,20 @@ const init = async (licenseContainer) => {
 	config.connections = connections;
 
 	const handleConnectServerToBroker = async (connection) => {
-		const system = {
-			_name: connection.name
-		};
-		const topicTree = {
-			_name: connection.name
-		};
-		globalSystem[connection.name] = system;
-		globalTopicTree[connection.name] = topicTree;
+
 		const brokerClient = new NodeMosquittoClient({
 			/* logger: console */
 		});
+		const topicTreeManager = new TopicTreeManager(brokerClient, connection, settingsManager);
+		topicTreeManager.addListener((topicTree, brokerClient, connection) => {
+			sendTopicTreeUpdate(topicTree, brokerClient, connection);
+		});
+
+		const system = {
+			_name: connection.name
+		};
+		globalSystem[connection.name] = system;
+		globalTopicTree[connection.name] = topicTreeManager.topicTree;
 		console.log(`Connecting to "${connection.name}" on ${connection.url}`);
 		const connectionConfiguration = config.connections?.find(
 			(connectionToSearch) => connection.id === connectionToSearch.id
@@ -276,6 +234,9 @@ const init = async (licenseContainer) => {
 				credentials: connection.credentials,
 				connectTimeout: process.env.CEDALO_MC_TIMOUT_MOSQUITTO_CONNECT || 5000
 			});
+
+			topicTreeManager.start();
+
 			connectionConfiguration.status.connected = true;
 			console.log(`Connected to '${connection.name}' at ${connection.url}`);
 			brokerClient.on('close', () => {
@@ -323,7 +284,6 @@ const init = async (licenseContainer) => {
 		});
 		//   });
 
-		let lastUpdatedTopicTree = Date.now();
 		brokerClient.on('message', (topic, message, packet) => {
 			if (topic.startsWith('$SYS')) {
 				updateSystemTopics(system, topic, message, packet);
@@ -339,13 +299,6 @@ const init = async (licenseContainer) => {
 			} else if (topic.startsWith('$CONTROL')) {
 				// Nothing to do
 			}
-			// in any case update the topic tree
-			updateTopicTree(topicTree, topic, message, packet);
-			let now = Date.now();
-			if (now - lastUpdatedTopicTree > CEDALO_MC_TOPIC_TREE_UPDATE_INTERVAL) {
-				lastUpdatedTopicTree = Date.now();
-				sendTopicTreeUpdate(topicTree, brokerClient, connection);
-			}
 		});
 
 		// const proxyClient = new NodeMosquittoProxyClient({
@@ -355,7 +308,7 @@ const init = async (licenseContainer) => {
 		// proxyClient.on('error', (message) => {
 		// 	console.error(message);
 		// });
-		context.brokerManager.handleNewBrokerConnection(connection, brokerClient, system, topicTree /*, proxyClient */);
+		context.brokerManager.handleNewBrokerConnection(connection, brokerClient, system, topicTreeManager /*, proxyClient */);
 		configManager.updateConnection(connection);
 
 		// try {
@@ -426,11 +379,11 @@ const init = async (licenseContainer) => {
 	const connectToBroker = (brokerName, client) => {
 		const brokerConnection = context.brokerManager.getBrokerConnection(brokerName);
 		if (brokerConnection) {
-			const { broker, system, topicTree } = brokerConnection;
+			const { broker, system, topicTreeManager } = brokerConnection;
 			context.brokerManager.connectClient(client, broker, brokerConnection);
 			if (broker.connected) {
 				sendSystemStatusUpdate(system, broker, brokerConnection);
-				sendTopicTreeUpdate(topicTree, broker, brokerConnection);
+				sendTopicTreeUpdate(topicTreeManager.topicTree, broker, brokerConnection);
 			} else {
 				throw new Error('Broker not connected');
 			}
@@ -487,7 +440,12 @@ const init = async (licenseContainer) => {
 			case 'updateSettings': {
 				if (context.security.acl.isAdmin(user)) {
 					const { settings } = message;
-					settingsManager.updateSettings(settings);
+					settingsManager.updateSettings(
+						{
+							...settingsManager.settings,
+							...settings
+						}
+					);
 					if (settingsManager.settings.allowTrackingUsageData) {
 						const data = Object.values(globalSystem);
 						usageTracker.send({

@@ -6,7 +6,7 @@ module.exports = class BrokerManager {
 		this._clientConnections = new Map();
 	}
 
-	handleNewBrokerConnection(connection, brokerClient, system, topicTree, proxyClient) {
+	handleNewBrokerConnection(connection, brokerClient, system, topicTreeManager, proxyClient) {
 		this._brokerClient = brokerClient;
 		this._connection = connection;
 		this._brokerConnection = {
@@ -14,7 +14,7 @@ module.exports = class BrokerManager {
 			name: connection.name,
 			broker: brokerClient,
 			system,
-			topicTree,
+			topicTreeManager,
 			proxyClient
 		};
 	}
