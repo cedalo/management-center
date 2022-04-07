@@ -14,6 +14,7 @@ import clientsReducer from './reducers/clientsReducer';
 import userProfileReducer from './reducers/userProfileReducer';
 import settingsReducer from './reducers/settingsReducer';
 import webSocketConnectionsReducer from './reducers/webSocketConnectionsReducer';
+import brokerLicenseReducer from './reducers/brokerLicenseReducer';
 
 import userRolesReducer from './admin/users/reducers/userRolesReducer';
 import usersReducer from './admin/users/reducers/usersReducer';
@@ -41,6 +42,7 @@ const store = createStore(
 		users: usersReducer,
 		clusters: clustersReducer,
 		inspectClients: inspectClientsReducer
+		brokerLicense: brokerLicenseReducer,
 	})
 );
 
