@@ -6,6 +6,7 @@ const createError = (code, message) => ({
 	message
 });
 
+const API_LICENSE = 'cedalo/license';
 const API_INSPECT = 'inspect';
 const API_DYNAMIC_SECURITY = 'dynamic-security';
 const API_STREAMS_PROCESSING = 'stream-processing';
@@ -901,6 +902,87 @@ export default class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
+	 async listTestCollections() {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'listTestCollections',
+		});
+		return response?.response;
+	}
+
+	 async listTests(testCollectionId) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'listTests',
+			testCollectionId
+		});
+		return response?.response;
+	}
+
+	async runTest(testCollectionId, testId) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'runTest',
+			testCollectionId,
+			testId
+		});
+		return response?.response;
+	}
+
+	async runTestCollection(testCollectionId) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'runTestCollection',
+			testCollectionId
+		});
+		return response?.response;
+	}
+
+	async exportTestCollection(testCollectionId) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'exportTestCollection',
+			testCollectionId
+		});
+		return response?.response;
+	}
+
+	 async getTestCollection(testCollectionId) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'getTestCollection',
+			testCollectionId
+		});
+		return response?.response;
+	}
+
+	 async getTest(testCollectionId, testId) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'getTest',
+			testCollectionId,
+			testId
+		});
+		return response?.response;
+	}
+
+	 async sendTestRequest(request) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'sendTestRequest',
+			data: request
+		});
+		return response?.response;
+	}
+
 	async listPlugins() {
 		return this.sendCommand(
 			{
@@ -1065,6 +1147,21 @@ export default class BaseMosquittoProxyClient {
 			this._eventListeners.set(event, listeners);
 		}
 		listeners.push(listener);
+	}
+
+	/**
+	 * ******************************************************************************************
+	 * Methods for license management
+	 * ******************************************************************************************
+	 */
+	 async getLicenseInformation() {
+		const data = await this.sendCommand(
+			{
+				command: 'getLicenseInformation'
+			},
+			API_LICENSE
+		);
+		return data;
 	}
 
 	/**
