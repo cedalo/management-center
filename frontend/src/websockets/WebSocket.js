@@ -21,7 +21,10 @@ import {
 	updateVersion,
 	updateEditDefaultClient,
 	updateFeatures,
-	updateUserProfile
+	updateUserProfile,
+	updateBrokerLicenseInformation,
+	updateTests,
+	updateTestCollections
 } from '../actions/actions';
 
 import {
@@ -164,6 +167,13 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		dispatch(updateBrokerLicenseInformation(licenseInformation));
 	} catch (error) {
 		// TODO: handle error
+	}
+	try {
+		const testCollections = await client.listTestCollections();
+		dispatch(updateTestCollections(testCollections));
+	} catch (error) {
+		// TODO: handle error
+		console.log(error);
 	}
 }
 
