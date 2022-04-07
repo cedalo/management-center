@@ -1,5 +1,6 @@
 import { lightGreen, purple } from '@material-ui/core/colors';
 
+import { Alert, AlertTitle } from '@material-ui/lab';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Chip from '@material-ui/core/Chip';
@@ -204,7 +205,7 @@ const generateTreeData = (id, name, object, index = 0) => {
 	return node;
 };
 
-const TopicTree = ({ topicTree, currentConnectionName }) => {
+const TopicTree = ({ topicTree, lastUpdated, currentConnectionName, settings }) => {
 	const classes = useStyles();
 	const [messageHistory, setMessageHistory] = React.useState([]);
 	const [selectedNode, setSelectedNode] = React.useState({});
@@ -277,6 +278,11 @@ const TopicTree = ({ topicTree, currentConnectionName }) => {
 					Topic Tree
 				</Typography>
 			</Breadcrumbs>
+			{(settings?.topicTreeEnabled === false) ? <><br/><Alert severity="warning">
+				<AlertTitle>Topic tree not enabled</AlertTitle>
+				The MMC is currently not collecting topic tree data. If you want to collect data, please enable the topic tree feature in the settings page.
+				Note that if you enable this setting and the MMC is collecting topic tree data, the performance of the MMC backend might decrease.
+			</Alert></> : null}
 			<br />
 
 			<Grid container spacing={3}>
@@ -435,12 +441,22 @@ const TopicTree = ({ topicTree, currentConnectionName }) => {
 					</Paper>
 				</Grid>
 			</Grid>
+			{topicTree && <div style={{
+				fontSize: '0.9em',
+				position: 'absolute',
+				right: '15px',
+				top: '70px'
+			}}>
+				Topic tree last updated at: {moment(lastUpdated).format('hh:mm:ss a')}
+			</div>}
 		</div>
 	);
 };
 
 const mapStateToProps = (state) => {
 	return {
+		settings: state.settings?.settings,
+		lastUpdated: state.topicTree.lastUpdated,
 		topicTree: state.topicTree,
 		currentConnectionName: state.brokerConnections.currentConnectionName
 	};
