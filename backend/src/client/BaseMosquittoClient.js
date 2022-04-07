@@ -171,6 +171,7 @@ module.exports = class BaseMosquittoClient {
 			|| topic === '$CONTROL/stream-processing/v1/response'
 			|| topic === '$CONTROL/cedalo/ha/v1/response'
 			|| topic === '$CONTROL/inspect/v1/response'
+			|| topic === '$CONTROL/cedalo/license/v1/response'
 		) {
 			return true;
 		}
