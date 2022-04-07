@@ -47,6 +47,7 @@ export { WebSocketContext };
 
 
 const init = async (client, dispatch, connectionConfiguration) => {
+	dispatch(updateBrokerLicenseInformation(null));
 	// TODO: merge with code from BrokerSelect
 	await client.connect(connectionConfiguration)
 	dispatch(updateProxyConnected(true));
