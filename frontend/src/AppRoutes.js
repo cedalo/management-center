@@ -38,10 +38,12 @@ import ClusterNew from './admin/clusters/components/ClusterNew';
 import Clusters from './admin/clusters/components/Clusters';
 import ClusterDetail from './admin/clusters/components/ClusterDetail';
 import InspectClients from './admin/inspect/components/InspectClients';
-import InspectClientDetail from './admin/inspect/components/InspectClientDetail';
 
 import { Switch, Route, Redirect } from 'react-router-dom';
 import DefaultACLAccess from './components/DefaultACLAccess';
+import TestEdit from './components/TestEdit';
+import TestCollections from './components/TestCollections';
+import TestCollectionDetail from './components/TestCollectionDetail';
 
 const useStyles = makeStyles((theme) => ({
 	
@@ -161,10 +163,6 @@ function AppRoutes(props) {
 				<Route path="/admin/clusters">
 					<Clusters />
 				</Route>
-				<Route
-					path="/admin/inspect/clients/detail/:clientId"
-					component={InspectClientDetail}
-				/>
 				<Route path="/admin/inspect/clients">
 					<InspectClients />
 				</Route>
@@ -180,6 +178,18 @@ function AppRoutes(props) {
 				{ !hideInfoPage ? <Route path="/info">
 					<InfoPage />
 				</Route> : null }
+				<Route
+					path="/testCollections/tests/detail/:id"
+					component={TestEdit}
+				/>
+				<Route
+					path="/testCollections/detail/:id"
+					component={TestCollectionDetail}
+				/>
+				<Route
+					path="/testCollections"
+					component={TestCollections}
+				/>
 				<Route path="/">
 					<Redirect to="/system/status" />
 				</Route>
