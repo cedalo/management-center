@@ -158,6 +158,12 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			status: error
 		}));
 	}
+	try {
+		const licenseInformation = await client.getLicenseInformation()
+		dispatch(updateBrokerLicenseInformation(licenseInformation));
+	} catch (error) {
+		// TODO: handle error
+	}
 }
 
 export default ({ children }) => {
