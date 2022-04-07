@@ -24,7 +24,8 @@ import {
 	updateSystemStatus,
 	updateTopicTree,
 	updateEditDefaultClient,
-	updateFeatures
+	updateFeatures,
+	updateBrokerLicenseInformation
 } from '../actions/actions';
 
 import {
@@ -77,6 +78,7 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 	const [connection, setConnection] = React.useState('');
 
 	const handleConnectionChange = async (event) => {
+		dispatch(updateBrokerLicenseInformation(null));
 		const connectionID = event.target.value;
 		const { client } = context;
 		await client.disconnectFromBroker(connection);
@@ -141,6 +143,12 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 					feature: 'streamprocessing',
 					status: error
 				}));
+			}
+			try {
+				const licenseInformation = await client.getLicenseInformation();
+				dispatch(updateBrokerLicenseInformation(licenseInformation));
+			} catch (error) {
+				// TODO: handle error
 			}
 			// const plugins = await client.listPlugins();
 			// dispatch(updatePlugins(plugins));
