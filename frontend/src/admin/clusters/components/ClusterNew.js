@@ -171,7 +171,7 @@ const ClusterNew = (props) => {
 										id="clustername"
 										label="Cluster name"
 										onChange={(event) => setClustername(event.target.value)}
-										defaultValue=""
+										defaultValue="Example"
 										variant="outlined"
 										fullWidth
 										className={classes.textField}
@@ -190,7 +190,7 @@ const ClusterNew = (props) => {
 										id="description"
 										label="Cluster description"
 										onChange={(event) => setClusterDescription(event.target.value)}
-										defaultValue=""
+										defaultValue="Example cluster"
 										variant="outlined"
 										fullWidth
 										className={classes.textField}
