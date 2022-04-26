@@ -68,12 +68,6 @@ const ClusterNew = (props) => {
 	const { clusters, clusterManagementFeature } = props;
 	const classes = useStyles();
 
-	const [clustername, setClustername] = useState('');
-	const [clusterDescription, setClusterDescription] = useState('');
-	const [backendUsername, setBackendUsername] = useState('');
-	const [backendPassword, setBackendPassword] = useState('');
-	const [hostname, setBackendHostname] = useState('');
-	const [port, setBackendPort] = useState(0);
 	const [clustername, setClustername] = useState('Example');
 	const [clusterDescription, setClusterDescription] = useState('Example cluster');
 	const [node1, setNode1] = useState({
