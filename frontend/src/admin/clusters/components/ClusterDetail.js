@@ -82,9 +82,9 @@ const ClusterDetail = (props) => {
 		}
 	};
 
-	const addNodeToCluster = async (nodeId, privateIPAddress) => {
+	const addNodeToCluster = async (nodeId, address) => {
 		try {
-			await brokerClient.joinCluster(cluster.clustername, nodeId, privateIPAddress);
+			await brokerClient.joinCluster(cluster.clustername, nodeId, address);
 			enqueueSnackbar('Node successfully added to cluster', {
 				variant: 'success'
 			});
@@ -302,21 +302,9 @@ const ClusterDetail = (props) => {
 												<Grid item xs={12}>
 													<TextField
 														disabled={true}
-														id={node?.connection?.url}
-														label="URL"
-														value={node?.connection?.url}
-														defaultValue=""
-														variant="outlined"
-														fullWidth
-														className={classes.textField}
-													/>
-												</Grid>
-												<Grid item xs={12}>
-													<TextField
-														disabled={true}
-														id={node?.nodeid}
+														id={node?.nodeId}
 														label="Node ID"
-														value={node?.nodeid}
+														value={node?.nodeId}
 														defaultValue=""
 														variant="outlined"
 														fullWidth
@@ -329,6 +317,18 @@ const ClusterDetail = (props) => {
 														id={node?.address}
 														label="Address"
 														value={node?.address}
+														defaultValue=""
+														variant="outlined"
+														fullWidth
+														className={classes.textField}
+													/>
+												</Grid>
+												<Grid item xs={12}>
+													<TextField
+														disabled={true}
+														id={node?.broker}
+														label="Broker Id"
+														value={node?.broker}
 														defaultValue=""
 														variant="outlined"
 														fullWidth
@@ -399,7 +399,7 @@ const ClusterDetail = (props) => {
 									</CardContent>
 									<CardActions>
 										<Button
-											disabled={!editMode}
+											disabled={!editMode || cluster?.nodes?.length <= 3}
 											size="small"
 											onClick={() => removeNodeFromCluster(node.id)}
 											startIcon={<RemoveNodeIcon />}
@@ -468,7 +468,7 @@ const ClusterDetail = (props) => {
 			<SelectNodeDialog
 				open={selectNodeDialogOpen}
 				handleClose={() => setSelectNodeDialogOpen(false)}
-				handleAddNode={(nodeId, privateIPAddress) => addNodeToCluster(nodeId, privateIPAddress)}
+				handleAddNode={(nodeId, address) => addNodeToCluster(nodeId, address)}
 				cluster={cluster}
 			/>
 		</Paper>
