@@ -76,10 +76,20 @@ const ClusterNew = (props) => {
 	const [port, setBackendPort] = useState(0);
 	const [clustername, setClustername] = useState('Example');
 	const [clusterDescription, setClusterDescription] = useState('Example cluster');
+	const [node1, setNode1] = useState({
+	});
+	const [node2, setNode2] = useState({
+	});
+	const [node3, setNode3] = useState({
+	});
 
 	const clusternameExists = props?.clusters?.find((searchCluster) => {
 		return searchCluster.clustername === clustername;
 	});
+
+	const nodes = [
+		node1, node2, node3
+	];
 
 	const validate = () => {
 		const valid = !clusternameExists && clustername !== '';
@@ -98,6 +108,7 @@ const ClusterNew = (props) => {
 			await client.createCluster({
 				clustername, 
 				description: clusterDescription,
+				nodes
 			});
 			const clusters = await client.listClusters();
 			dispatch(updateClusters(clusters));
