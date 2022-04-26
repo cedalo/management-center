@@ -15,6 +15,7 @@ import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import { connect } from 'react-redux';
 import ConnectionNewComponent from '../../../components/ConnectionNewComponent';
+import SelectNodeComponent from './SelectNodeComponent';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -47,10 +48,7 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-const clusterDoesNotContainNode = (brokerConnection, cluster) => {
-	const result = cluster?.nodes?.find((node) => node.id === brokerConnection.id);
-	return result ? false : true;
-}
+
 
 const getDialogContent = ({
 	brokerConnections, 
@@ -63,12 +61,6 @@ const getDialogContent = ({
 	classes, 
 	handleClose
 }) => {
-
-	const availableBrokerConnections = brokerConnections.filter((brokerConnection) => clusterDoesNotContainNode(brokerConnection, cluster));
-
-	if (!selectedBroker && availableBrokerConnections[0]) {
-		handleSelectBroker(availableBrokerConnections[0].id);
-	}
 
 	if (!brokerConnections || brokerConnections.length === 0) {
 		return <>
@@ -93,44 +85,7 @@ const getDialogContent = ({
 			</DialogTitle>
 			<DialogContent>
 				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
-					<Grid item xs={12} align="center">
-						<FormControl variant="outlined">
-							<InputLabel htmlFor="broker">Broker</InputLabel>
-							<Select
-								autoFocus
-								defaultValue={availableBrokerConnections[0]?.id}
-								value={selectedBroker}
-								onChange={(event) => handleSelectBroker(event.target.value)}
-								label="Broker"
-							>
-								{
-									availableBrokerConnections.map(brokerConnection => 
-										<MenuItem
-											value={brokerConnection.id}
-											classes={{
-												root: classes.select
-											}}
-										>
-											{`${brokerConnection.name} (${brokerConnection.id})`}
-										</MenuItem>
-									)
-								}
-							</Select>
-						</FormControl>
-					</Grid>
-					<br />
-					<Grid item xs={12} align="center">
-						<TextField
-							required={true}
-							id="private-ip-address"
-							label="Private IP address"
-							onChange={(event) => setPrivateIPAddress(event.target.value)}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							className={classes.textField}
-						/>
-					</Grid>
+					<SelectNodeComponent />
 				</Grid>
 			</DialogContent>
 			<DialogActions>
