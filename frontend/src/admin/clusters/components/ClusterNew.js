@@ -74,6 +74,8 @@ const ClusterNew = (props) => {
 	const [backendPassword, setBackendPassword] = useState('');
 	const [hostname, setBackendHostname] = useState('');
 	const [port, setBackendPort] = useState(0);
+	const [clustername, setClustername] = useState('Example');
+	const [clusterDescription, setClusterDescription] = useState('Example cluster');
 
 	const clusternameExists = props?.clusters?.find((searchCluster) => {
 		return searchCluster.clustername === clustername;
