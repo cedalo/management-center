@@ -1,5 +1,6 @@
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Chart from './Chart';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import ClientIcon from '@material-ui/icons/RecordVoiceOver';
 import Container from '@material-ui/core/Container';
 import DataReceivedIcon from '@material-ui/icons/CallReceived';
@@ -23,6 +24,7 @@ import { colors } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
+import LicenseTable from './LicenseTable';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -35,9 +37,11 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
-const Status = ({ lastUpdated, systemStatus, defaultClient, currentConnection, currentConnectionName }) => {
+const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus, defaultClient, currentConnection, currentConnectionName }) => {
 	const classes = useStyles();
 
+	console.log("brokerLicense");
+	console.log(brokerLicense);
 	const totalMessages = parseInt(systemStatus?.$SYS?.broker?.messages?.sent);
 	const publishMessages = (parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent) / totalMessages) * 100;
 	const otherMessages =
@@ -247,13 +251,23 @@ const Status = ({ lastUpdated, systemStatus, defaultClient, currentConnection, c
 							</Table>
 						</TableContainer>
 					</Grid>
-					{/* <Grid item lg={4} sm={4} xl={4} xs={12}>
-            <Chart
-              title="Sent messages by type"
-              data={data}
-              dataDescriptions={dataDescriptions}
-            />
-          </Grid> */}
+					{/* <Grid item lg={3} sm={3} xl={3} xs={12}>
+						<Chart
+							title="Sent messages by type"
+							data={data}
+							dataDescriptions={dataDescriptions}
+						/>
+					</Grid> */}
+					<Grid item lg={12} sm={12} xl={12} xs={12}>
+						{brokerLicenseLoading ? 
+						<Alert severity="info">
+							<AlertTitle>Loading license information</AlertTitle>
+							<CircularProgress color="secondary" />
+						</Alert> : null}
+
+						{brokerLicense ? <LicenseTable license={brokerLicense} /> : null}
+
+					</Grid>
 				</Grid>
 			</Container> : <Alert severity="warning">
 				<AlertTitle>System status information not accessible</AlertTitle>
@@ -275,6 +289,8 @@ const Status = ({ lastUpdated, systemStatus, defaultClient, currentConnection, c
 
 const mapStateToProps = (state) => {
 	return {
+		brokerLicense: state.brokerLicense.license,
+		brokerLicenseLoading: state.brokerLicense.isLoading,
 		lastUpdated: state.systemStatus.lastUpdated,
 		systemStatus: state.systemStatus.systemStatus,
 		defaultClient: state.brokerConnections?.defaultClient,
