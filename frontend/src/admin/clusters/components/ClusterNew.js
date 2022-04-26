@@ -32,6 +32,11 @@ import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
 import AutoSuggest from '../../../components/AutoSuggest';
 import SaveCancelButtons from '../../../components/SaveCancelButtons';
+import SelectNodeComponent from './SelectNodeComponent';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
