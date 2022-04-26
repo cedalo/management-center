@@ -129,9 +129,9 @@ module.exports = class BaseMosquittoClient {
 
 	async sendFeatureRequest(feature, request, correlationData = createID(), timeout = this._timeout) {
 		if (feature) {
-			return this.sendRequestToBroker(`$CONTROL/${feature}/v1`, request, correlationData, timeout);
+			return this.sendRequest(`$CONTROL/${feature}/v1`, request, correlationData, timeout);
 		} else {
-			return this.sendRequestToBroker(`$CONTROL`, request, correlationData, timeout);
+			return this.sendRequest(`$CONTROL`, request, correlationData, timeout);
 		}
 	}
 
