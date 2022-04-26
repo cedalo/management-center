@@ -63,7 +63,20 @@ const Settings = ({ settings, sendMessage }) => {
 			});
 			dispatch(updateSettings(updatedSettings));
 		} catch (error) {
-			enqueueSnackbar(`Error disconnecting broker. Reason: ${error.message ? error.message : error}`, {
+			enqueueSnackbar(`Error upating settings. Reason: ${error.message ? error.message : error}`, {
+				variant: 'error'
+			});
+		}
+	};
+
+	const onChangeEnableTopicTree = async (topicTreeEnabled) => {
+		try {
+			const updatedSettings = await brokerClient.updateSettings({
+				topicTreeEnabled
+			});
+			dispatch(updateSettings(updatedSettings));
+		} catch (error) {
+			enqueueSnackbar(`Error enableTopicTree. Reason: ${error.message ? error.message : error}`, {
 				variant: 'error'
 			});
 		}
@@ -115,6 +128,26 @@ const Settings = ({ settings, sendMessage }) => {
 						/>
 					}
 					label="Allow tracking of usage data"
+				/>
+			</FormGroup>
+			<FormGroup row>
+				<FormControlLabel
+					control={
+						<Switch
+							checked={settings?.topicTreeEnabled === true}
+							onClick={(event) => {
+								event.stopPropagation();
+								if (event.target.checked) {
+									onChangeEnableTopicTree(true);
+								} else {
+									onChangeEnableTopicTree(false);
+								}
+							}}
+							name="topicTreeEnabled"
+							color="primary"
+						/>
+					}
+					label="Topic Tree"
 				/>
 			</FormGroup>
 		</div>
