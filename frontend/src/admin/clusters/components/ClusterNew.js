@@ -150,7 +150,7 @@ const ClusterNew = (props) => {
 					<form className={classes.form} noValidate autoComplete="off">
 						<div className={classes.margin}>
 							<Grid container spacing={1} alignItems="flex-end">
-								<Grid item xs={12}>
+								<Grid item xs={12} sm={4}>
 									<TextField
 										error={clusternameExists}
 										helperText={clusternameExists && 'A cluster with this clustername already exists.'}
@@ -171,7 +171,7 @@ const ClusterNew = (props) => {
 										}}
 									/>
 								</Grid>
-								<Grid item xs={12}>
+								<Grid item xs={12} sm={8}>
 									<TextField
 										required={false}
 										id="description"
