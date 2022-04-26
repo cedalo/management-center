@@ -235,19 +235,6 @@ const ClusterNew = (props) => {
 										className={classes.textField}
 									/>
 								</Grid>
-								<Grid item xs={12}>
-									<TextField
-										required={false}
-										type="number"
-										id="backend-hosts-port"
-										label="Backend Port"
-										onChange={(event) => setBackendPort(parseInt(event.target.value))}
-										defaultValue=""
-										variant="outlined"
-										fullWidth
-										className={classes.textField}
-									/>
-								</Grid> */}
 								<Grid container xs={12} alignItems="flex-start">
 									<Grid item xs={12} className={classes.buttons}>
 										<SaveCancelButtons
