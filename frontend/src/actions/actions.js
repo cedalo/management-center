@@ -7,6 +7,13 @@ export function updateLicenseStatus(update) {
 	};
 }
 
+export function updateBrokerLicenseInformation(update) {
+	return {
+		type: ActionTypes.UPDATE_BROKER_LICENSE_INFORMATION,
+		update
+	};
+}
+
 export function updateUserProfile(update) {
 	return {
 		type: ActionTypes.UPDATE_USER_PROFILE,
