@@ -18,6 +18,7 @@
 		"ajv": "^7.1.1",
 		"brace": "^0.11.1",
 		"express": "^4.17.1",
+		"file-saver": "^2.0.5",
 		"jsoneditor": "^9.1.10",
 		"jsoneditor-react": "^3.1.0",
 		"notistack": "^1.0.1",
