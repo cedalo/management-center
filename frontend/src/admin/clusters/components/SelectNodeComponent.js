@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 	formControl: {
 		margin: theme.spacing(1),
-		minWidth: 120,
+		minWidth: '100%',
 	  },
 }));
 
@@ -40,15 +40,14 @@ const clusterDoesNotContainNode = (brokerConnection, cluster) => {
 	return result ? false : true;
 }
 
-const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, defaultNode }) => {
+const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, defaultNode = {} }) => {
 
 	const classes = useStyles();
-	const [selectedBroker, setSelectedBroker] = React.useState('');
 
-	const availableBrokerConnections = brokerConnections?.filter((brokerConnection) => clusterDoesNotContainNode(brokerConnection, cluster)) || [];
+	const availableBrokerConnections = brokerConnections?.filter((brokerConnection) => clusterDoesNotContainNode(brokerConnection, cluster))
+		.filter((brokerConnection) => brokerConnection.status ? brokerConnection.status.connected : false) || [];
 
 	const handleSelectBroker = (broker) => {
-		setSelectedBroker(broker);
 		defaultNode.broker = broker;
 	}
 
@@ -56,8 +55,8 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 		<Grid container spacing={1} alignItems="flex-end">
 			<Grid item xs={2} sm={2} align="center">
 				<TextField
+					type="number"
 					required={true}
-					disabled={true}
 					id="node-id"
 					label="Node ID"
 					onChange={(event) => defaultNode.nodeId = event.target.value}
@@ -80,15 +79,15 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 				/>
 			</Grid>
 			<Grid item xs={12} sm={6} align="center">
-				<FormControl variant="outlined">
+				<FormControl variant="outlined" className={classes.formControl}>
 					<InputLabel htmlFor="broker">Broker</InputLabel>
 					<Select
 						autoFocus
 						defaultValue=""
-						placeholder='Please select a broker'
-						value={selectedBroker}
+						placeholder='Please select an instance'
+						value={defaultNode.broker}
 						onChange={(event) => handleSelectBroker(event.target.value)}
-						label="Broker"
+						label="Instance"
 					>
 						{
 							availableBrokerConnections.map(brokerConnection =>
