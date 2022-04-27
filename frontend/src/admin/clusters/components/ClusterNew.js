@@ -45,7 +45,6 @@ const useStyles = makeStyles((theme) => ({
 		},
 		'& .MuiTextField-root': {
 			margin: theme.spacing(1),
-			width: '75ch'
 		}
 	},
 	buttons: {
@@ -76,10 +75,13 @@ const ClusterNew = (props) => {
 	const [clustername, setClustername] = useState('Example');
 	const [clusterDescription, setClusterDescription] = useState('Example cluster');
 	const [node1, setNode1] = useState({
+		port: 7000
 	});
 	const [node2, setNode2] = useState({
+		port: 7000
 	});
 	const [node3, setNode3] = useState({
+		port: 7000
 	});
 
 	const clusternameExists = props?.clusters?.find((searchCluster) => {
