@@ -202,6 +202,12 @@ const InfoPage = (props) => {
 									</TableCell>
 									<TableCell>{license.issuedBy}</TableCell>
 								</TableRow>
+								{license.comment && <TableRow>
+									<TableCell>
+										<b>Comment</b>
+									</TableCell>
+									<TableCell>{license.comment}</TableCell>
+								</TableRow>}
 								{isPremiumLicense(license) && (
 									<TableRow>
 										<TableCell>
