@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 
 const getDialogContent = ({
 	brokerConnections, 
-	cluster, 
+	node, 
 	handleAddNode, 
 	privateIPAddress,
 	handleSelectBroker, 
@@ -90,8 +90,8 @@ const getDialogContent = ({
 			</DialogContent>
 			<DialogActions>
 				<Button
-					disabled={privateIPAddress === ''}
-					onClick={() => handleAddNode(selectedBroker, privateIPAddress)}>
+					disabled={node?.address === ''}
+					onClick={() => handleAddNode(node)}>
 					Add node
 				</Button>
 			</DialogActions>
@@ -100,12 +100,9 @@ const getDialogContent = ({
 }
 const SelectNodeDialog = ({ brokerConnections, cluster, open, handleClose, handleAddNode }) => {
 	const classes = useStyles();
-	const [selectedBroker, setSelectedBroker] = React.useState('');
-	const [privateIPAddress, setPrivateIPAddress] = React.useState('');
-
-	const handleSelectBroker = (broker) => {
-		setSelectedBroker(broker);
-	}
+	const [node, setNode] = React.useState({
+		port: 7000
+	});
 
 	return (
 		<Dialog
@@ -117,12 +114,8 @@ const SelectNodeDialog = ({ brokerConnections, cluster, open, handleClose, handl
 			{
 				getDialogContent({
 					brokerConnections, 
-					cluster, 
+					node, 
 					handleAddNode, 
-					handleSelectBroker, 
-					privateIPAddress,
-					setPrivateIPAddress,
-					selectedBroker, 
 					classes, 
 					handleClose
 				})
