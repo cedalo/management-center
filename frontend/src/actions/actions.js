@@ -207,3 +207,31 @@ export function updateSelectedConnection(update) {
 		update
 	};
 }
+
+export function updateTest(update) {
+	return {
+		type: ActionTypes.UPDATE_TEST,
+		update
+	};
+}
+
+export function updateTests(update) {
+	return {
+		type: ActionTypes.UPDATE_TESTS,
+		update
+	};
+}
+
+export function updateTestCollection(update) {
+	return {
+		type: ActionTypes.UPDATE_TESTCOLLECTION,
+		update
+	};
+}
+
+export function updateTestCollections(update) {
+	return {
+		type: ActionTypes.UPDATE_TESTCOLLECTIONS,
+		update
+	};
+}
