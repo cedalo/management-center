@@ -26,6 +26,9 @@ import CardActions from '@material-ui/core/CardActions';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import SelectNodeDialog from './SelectNodeDialog';
+import LeaderIcon from '@material-ui/icons/Person';
+import FollowerIcon from '@material-ui/icons/People';
+import { green } from '@material-ui/core/colors';
 
 const clusterShape = PropTypes.shape({
 	clustername: PropTypes.string,
@@ -82,9 +85,9 @@ const ClusterDetail = (props) => {
 		}
 	};
 
-	const addNodeToCluster = async (nodeId, address) => {
+	const addNodeToCluster = async (node) => {
 		try {
-			await brokerClient.joinCluster(cluster.clustername, nodeId, address);
+			await brokerClient.joinCluster(cluster.clustername, node);
 			enqueueSnackbar('Node successfully added to cluster', {
 				variant: 'success'
 			});
@@ -96,7 +99,7 @@ const ClusterDetail = (props) => {
 			const clusters = await brokerClient.listClusters();
 			dispatch(updateClusters(clusters));
 		} catch (error) {
-			enqueueSnackbar(`Error adding node "${nodeId}" to cluster. Reason: ${error.message || error}`, {
+			enqueueSnackbar(`Error adding node "${node.nodeId}" to cluster. Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
 		}
@@ -226,128 +229,63 @@ const ClusterDetail = (props) => {
 								className={classes.textField}
 							/>
 						</Grid>
-						{/* <Grid item xs={12} sm={12}>
-							<TextField
-								disabled
-								id="backend-username"
-								label="Backend Username"
-								value={cluster?.backendhosts[0]?.username}
-								defaultValue=""
-								variant="outlined"
-								fullWidth
-								className={classes.textField}
-							/>
-						</Grid>
-						<Grid item xs={12} sm={12}>
-							<TextField
-								disabled
-								type="password"
-								id="backend-password"
-								label="Backend Password"
-								value={cluster?.backendhosts[0]?.password}
-								defaultValue=""
-								variant="outlined"
-								fullWidth
-								className={classes.textField}
-							/>
-						</Grid>
-						<Grid item xs={12} sm={8}>
-							<TextField
-								disabled
-								id="backend-hostname"
-								label="Backend Hostname"
-								value={cluster?.backendhosts[0]?.hostname}
-								defaultValue=""
-								variant="outlined"
-								fullWidth
-								className={classes.textField}
-							/>
-						</Grid>
-						<Grid item xs={12} sm={4}>
-							<TextField
-								disabled
-								id="backend-port"
-								label="Backend Port"
-								value={cluster?.backendhosts[0]?.port}
-								defaultValue=""
-								variant="outlined"
-								fullWidth
-								className={classes.textField}
-							/>
-						</Grid> */}
-						<br/>
+						<br />
 					</Grid>
-					<br/>
+					<br />
 					<Grid container spacing={1} alignItems="flex-end">
-						{cluster?.nodes?.map((node, index) => 
+						{cluster?.nodes?.map((node, index) =>
 							<Grid item xs={12} md={4}>
 								<Card variant="outlined">
 									<CardHeader
-										subheader={node.id}
+										avatar={
+											node?.leader 
+												? <Tooltip title="Leader" aria-label="Leader">
+													<LeaderIcon style={{ color: green[500] }} />
+												</Tooltip> 
+												: <Tooltip title="Follower" aria-label="Follower">
+													<FollowerIcon />
+												</Tooltip>
+										}
+										subheader={node.broker}
 									/>
 									<CardContent>
 										<Grid container spacing={1} alignItems="flex-end">
-												{/* <Grid item xs={12}>
-													<TextField
-														disabled={true}
-														id={node.id}
-														label="Name"
-														value={node?.id}
-														defaultValue=""
-														variant="outlined"
-														fullWidth
-														className={classes.textField}
-													/>
-												</Grid> */}
-												<Grid item xs={12}>
-													<TextField
-														disabled={true}
-														id={node?.nodeId}
-														label="Node ID"
-														value={node?.nodeId}
-														defaultValue=""
-														variant="outlined"
-														fullWidth
-														className={classes.textField}
-													/>
-												</Grid>
-												<Grid item xs={12}>
-													<TextField
-														disabled={true}
-														id={node?.address}
-														label="Address"
-														value={node?.address}
-														defaultValue=""
-														variant="outlined"
-														fullWidth
-														className={classes.textField}
-													/>
-												</Grid>
-												<Grid item xs={12}>
-													<TextField
-														disabled={true}
-														id={node?.broker}
-														label="Broker Id"
-														value={node?.broker}
-														defaultValue=""
-														variant="outlined"
-														fullWidth
-														className={classes.textField}
-													/>
-												</Grid>
-												<Grid item xs={12}>
-													<TextField
-														disabled={true}
-														id={node?.port}
-														label="Port"
-														value={node?.port}
-														defaultValue=""
-														variant="outlined"
-														fullWidth
-														className={classes.textField}
-													/>
-												</Grid>
-												{/* <Grid item xs={12}>
+											<Grid item xs={12}>
+												<TextField
+													disabled={true}
+													id={node?.nodeId}
+													label="Node ID"
+													value={node?.nodeId}
+													defaultValue=""
+													variant="outlined"
+													fullWidth
+													className={classes.textField}
+												/>
+											</Grid>
+											<Grid item xs={12}>
+												<TextField
+													disabled={true}
+													id={node?.address}
+													label="Address"
+													value={node?.address}
+													defaultValue=""
+													variant="outlined"
+													fullWidth
+													className={classes.textField}
+												/>
+											</Grid>
+											<Grid item xs={12}>
+												<TextField
+													disabled={true}
+													label="Port"
+													value={node?.port}
+													defaultValue=""
+													variant="outlined"
+													fullWidth
+													className={classes.textField}
+												/>
+											</Grid>
+											{/* <Grid item xs={12}>
 													<TextField
 														disabled={true}
 														id={`${node.id}-redis-hostname`}
@@ -371,7 +309,7 @@ const ClusterDetail = (props) => {
 														className={classes.textField}
 													/>
 												</Grid> */}
-												{/* <Grid item xs={12}>
+											{/* <Grid item xs={12}>
 													<Tooltip title="Use LTS">
 														<FormControlLabel
 															disabled={!editMode}
@@ -401,7 +339,7 @@ const ClusterDetail = (props) => {
 										<Button
 											disabled={!editMode || cluster?.nodes?.length <= 3}
 											size="small"
-											onClick={() => removeNodeFromCluster(node.id)}
+											onClick={() => removeNodeFromCluster(node.broker)}
 											startIcon={<RemoveNodeIcon />}
 										>
 											Remove
@@ -468,7 +406,7 @@ const ClusterDetail = (props) => {
 			<SelectNodeDialog
 				open={selectNodeDialogOpen}
 				handleClose={() => setSelectNodeDialogOpen(false)}
-				handleAddNode={(nodeId, address) => addNodeToCluster(nodeId, address)}
+				handleAddNode={(node) => addNodeToCluster(node)}
 				cluster={cluster}
 			/>
 		</Paper>
