@@ -40,6 +40,7 @@ import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
+import { saveAs } from 'file-saver';
 
 const StyledTableRow = withStyles((theme) => ({
 	root: {
@@ -111,9 +112,15 @@ const TestCollections = (props) => {
 		}
 	};
 
-	const onExportTestCollection = async (id) => {
+	const onExportTestCollection = async (testCollection) => {
+		const id = testCollection?.info?.id;
+		const name = testCollection?.info?.name;
 		try {
-			await brokerClient.exportTestCollection(id);
+			const response = await brokerClient.exportTestCollection(id);
+			const blob = new Blob([JSON.stringify(response, null, 2)], {
+				type: 'application/json;charset=utf8;'
+			});
+			saveAs(blob, `${name}.json`);
 		} catch(error) {
 			enqueueSnackbar(`Error exporting test collection. Reason: ${error.message || error}`, {
 				variant: 'error'
@@ -190,7 +197,7 @@ const TestCollections = (props) => {
 															size="small"
 															onClick={(event) => {
 																event.stopPropagation();
-																onExportTestCollection(test?.info?.id);
+																onExportTestCollection(test);
 															}}
 														>
 															<ExportTestCollectionIcon fontSize="small" />
