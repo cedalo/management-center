@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 		},
 		'& .MuiTextField-root': {
 			margin: theme.spacing(1),
-			width: '75ch'
+			width: '100ch'
 		}
 	},
 	form: {
@@ -54,10 +54,6 @@ const getDialogContent = ({
 	brokerConnections, 
 	node, 
 	handleAddNode, 
-	privateIPAddress,
-	handleSelectBroker, 
-	setPrivateIPAddress,
-	selectedBroker, 
 	classes, 
 	handleClose
 }) => {
