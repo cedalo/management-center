@@ -941,14 +941,24 @@ export default class BaseMosquittoProxyClient {
 		return response?.response;
 	}
 
+	// async exportTestCollection(testCollectionId) {
+	// 	const response = await this.sendRequest({
+	// 		id: createID(),
+	// 		type: 'request',
+	// 		request: 'exportTestCollection',
+	// 		testCollectionId
+	// 	});
+	// 	return response?.response;
+	// }
+
 	async exportTestCollection(testCollectionId) {
-		const response = await this.sendRequest({
-			id: createID(),
-			type: 'request',
-			request: 'exportTestCollection',
-			testCollectionId
-		});
-		return response?.response;
+		try {
+			const url = `${this._httpEndpointURL}/api/mqtt-testing/testcollections/${testCollectionId}`;
+			const response = await axios.get(url);
+			return response.data;
+		} catch (error) {
+			throw new NotAuthorizedError()();
+		}
 	}
 
 	 async getTestCollection(testCollectionId) {
