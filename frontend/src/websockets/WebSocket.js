@@ -72,6 +72,14 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			error
 		}));
 	}
+	
+	try {
+		const testCollections = await client.listTestCollections();
+		dispatch(updateTestCollections(testCollections));
+	} catch (error) {
+		// TODO: handle error
+		console.log(error);
+	}
 
 	try {
 		const clusters = await client.listClusters();
@@ -139,7 +147,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		}));
 	} catch (error) {
 		// TODO: change when Mosquitto provides feature endpoint
-		// there was an error loading the stream feature
+		// there was an error loading the inspect feature
 		// --> we assume that feature has not been loaded
 		dispatch(updateFeatures({
 			feature: 'inspect',
@@ -167,13 +175,6 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		dispatch(updateBrokerLicenseInformation(licenseInformation));
 	} catch (error) {
 		// TODO: handle error
-	}
-	try {
-		const testCollections = await client.listTestCollections();
-		dispatch(updateTestCollections(testCollections));
-	} catch (error) {
-		// TODO: handle error
-		console.log(error);
 	}
 }
 
