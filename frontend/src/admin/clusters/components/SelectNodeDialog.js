@@ -85,7 +85,7 @@ const getDialogContent = ({
 			</DialogTitle>
 			<DialogContent>
 				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
-					<SelectNodeComponent />
+					<SelectNodeComponent defaultNode={node} />
 				</Grid>
 			</DialogContent>
 			<DialogActions>
