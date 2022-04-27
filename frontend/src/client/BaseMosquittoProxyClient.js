@@ -327,14 +327,13 @@ export default class BaseMosquittoProxyClient {
 		return response.response;
 	}
 
-	async joinCluster(clustername, brokerId, privateIPAddress) {
+	async joinCluster(clustername, node) {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
 			request: 'joinCluster',
 			clustername,
-			brokerId,
-			privateIPAddress
+			node
 		});
 		return response.response;
 	}
