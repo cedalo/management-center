@@ -59,7 +59,7 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 					required={true}
 					id="node-id"
 					label="Node ID"
-					onChange={(event) => defaultNode.nodeId = event.target.value}
+					onChange={(event) => defaultNode.nodeId = parseInt(event.target.value)}
 					defaultValue={defaultNode.nodeId}
 					variant="outlined"
 					fullWidth
