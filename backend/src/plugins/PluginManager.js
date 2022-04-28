@@ -54,28 +54,33 @@ module.exports = class PluginManager {
 		}
 		this._context = context;
 		const { licenseContainer } = context;
-		pluginConfigurations.forEach((pluginConfiguration) => {
-			try {
-				const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
-				const plugin = new Plugin();
-				if (
-					licenseContainer.license.features &&
-					licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
-				) {
-					plugin.init(context);
-					plugin.load(context);
-					plugin.setLoaded();
-					this._plugins.push(plugin);
-				} else {
-					plugin.setErrored('License does not allow this plugin.');
-					this._plugins.push(plugin);
+		if (licenseContainer.license.isValid) {
+			pluginConfigurations.forEach((pluginConfiguration) => {
+				try {
+					const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
+					const plugin = new Plugin();
+					if (
+						licenseContainer.license.features &&
+						licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
+					) {
+						plugin.init(context);
+						plugin.load(context);
+						plugin.setLoaded();
+						this._plugins.push(plugin);
+					} else {
+						plugin.setErrored('License does not allow this plugin.');
+						this._plugins.push(plugin);
+					}
+				} catch (error) {
+					console.error(`Failed loading plugin.`);
+					console.error(error);
+					// plugin.setErrored();
 				}
-			} catch (error) {
-				console.error(`Failed loading plugin.`);
-				console.error(error);
-				// plugin.setErrored();
-			}
-		});
+			});
+		} else {
+			console.error('Ignore loading plugins: no premium license provided or license not valid');
+		}
+		
 	}
 
 	add(plugin) {
