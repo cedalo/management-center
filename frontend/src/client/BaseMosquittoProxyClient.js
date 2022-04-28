@@ -334,7 +334,7 @@ export default class BaseMosquittoProxyClient {
 			request: 'joinCluster',
 			clustername,
 			node
-		});
+		}, 20000);
 		return response.response;
 	}
 
@@ -345,7 +345,7 @@ export default class BaseMosquittoProxyClient {
 			request: 'leaveCluster',
 			clustername,
 			brokerId
-		});
+		}, 20000);
 		return response.response;
 	}
 
