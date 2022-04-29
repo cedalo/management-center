@@ -80,8 +80,8 @@ module.exports = class BaseMosquittoClient {
 	 * ******************************************************************************************
 	 */
 
-	async sendCommandMessage(feature, commandMessage) {
-		return this._sendCommands(feature, commandMessage);
+	async sendCommandMessage(feature, commandMessage, timeout) {
+		return this._sendCommands(feature, commandMessage, createID(), timeout);
 	}
 
 	on(event, listener) {
@@ -119,12 +119,12 @@ module.exports = class BaseMosquittoClient {
 		return this._closeHandler;
 	}
 
-	async _sendCommands(feature, commandMessage, correlationData = createID()) {
+	async _sendCommands(feature, commandMessage, correlationData = createID(), timeout = this._timeout) {
 		commandMessage.correlationData = correlationData;
 		const commands = {
 			commands: [commandMessage]
 		};
-		return this.sendFeatureRequest(feature, commands, correlationData);
+		return this.sendFeatureRequest(feature, commands, correlationData, timeout);
 	}
 
 	async sendFeatureRequest(feature, request, correlationData = createID(), timeout = this._timeout) {
