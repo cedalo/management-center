@@ -29,6 +29,7 @@ import SelectNodeDialog from './SelectNodeDialog';
 import LeaderIcon from '@material-ui/icons/Person';
 import FollowerIcon from '@material-ui/icons/People';
 import { green } from '@material-ui/core/colors';
+import WaitDialog from '../../../components/WaitDialog';
 
 const clusterShape = PropTypes.shape({
 	clustername: PropTypes.string,
@@ -67,6 +68,7 @@ const ClusterDetail = (props) => {
 	const [value, setValue] = React.useState(0);
 	const [editMode, setEditMode] = React.useState(false);
 	const [selectNodeDialogOpen, setSelectNodeDialogOpen] = React.useState(false);
+	const [progressDialogOpen, setProgressDialogOpen] = React.useState(false);
 	const { enqueueSnackbar } = useSnackbar();
 
 	const { cluster } = props;
@@ -86,6 +88,8 @@ const ClusterDetail = (props) => {
 	};
 
 	const addNodeToCluster = async (node) => {
+		setSelectNodeDialogOpen(false);
+		setProgressDialogOpen(true);
 		try {
 			await brokerClient.joinCluster(cluster.clustername, node);
 			enqueueSnackbar('Node successfully added to cluster', {
@@ -103,7 +107,7 @@ const ClusterDetail = (props) => {
 				variant: 'error'
 			});
 		}
-		setSelectNodeDialogOpen(false);
+		setProgressDialogOpen(false);
 	}
 
 	const removeNodeFromCluster = async (nodeId) => {
@@ -119,6 +123,7 @@ const ClusterDetail = (props) => {
 			}
 		});
 
+		setProgressDialogOpen(true);
 		try {
 			await brokerClient.leaveCluster(cluster.clustername, nodeId);
 			enqueueSnackbar('Node successfully removed from cluster', {
@@ -136,6 +141,7 @@ const ClusterDetail = (props) => {
 				variant: 'error'
 			});
 		}
+		setProgressDialogOpen(false);
 	}
 
 	const onUpdateClusterDetail = async () => {
@@ -408,6 +414,11 @@ const ClusterDetail = (props) => {
 				handleClose={() => setSelectNodeDialogOpen(false)}
 				handleAddNode={(node) => addNodeToCluster(node)}
 				cluster={cluster}
+			/>
+			<WaitDialog
+				title='Update process of your cluster is in process'
+				open={progressDialogOpen}
+				handleClose={() => setProgressDialogOpen(false)}
 			/>
 		</Paper>
 	</div>) : (
