@@ -307,6 +307,16 @@ export default class BaseMosquittoProxyClient {
 		return response.response;
 	}
 
+	async checkClusterHealthStatus(clustername) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'checkClusterHealthStatus',
+			clustername
+		});
+		return response.response;
+	}
+
 	async modifyCluster(cluster) {
 		const response = await this.sendRequest({
 			id: createID(),
