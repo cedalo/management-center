@@ -43,10 +43,11 @@ module.exports = class ConfigManager {
 	}
 
 	updateConnection(oldConnectionId, connection) {
-		db.get('connections')
+		const result = db.get('connections')
 			.find({ id: oldConnectionId })
-			.assign(connection)
+			.assign({...connection})
 			.write();
+		return result;
 	}
 
 	deleteConnection(id) {
