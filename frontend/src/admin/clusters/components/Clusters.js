@@ -12,6 +12,7 @@ import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import ClientIcon from '@material-ui/icons/Person';
 import DeleteIcon from '@material-ui/icons/Delete';
+import CheckHealthStatusIcon from '@material-ui/icons/Favorite';
 import Divider from '@material-ui/core/Divider';
 import EditIcon from '@material-ui/icons/Edit';
 // import Fab from '@material-ui/core/Fab';
@@ -74,7 +75,7 @@ const CLUSTER_TABLE_COLUMNS = [
 	{ id: 'numberOfNodes', key: 'Nodes' },
 ];
 
-const createClusterTable = (clusters, classes, props, onDeleteCluster, onSelectCluster) => {
+const createClusterTable = (clusters, classes, props, onCheckHealthStatus, onDeleteCluster, onSelectCluster) => {
 	const { clusterManagementFeature, userRoles = [], roles = [], onSort, sortBy, sortDirection } = props;
 
 	if (!clusterManagementFeature?.error && clusterManagementFeature?.supported !== false && clusters && clusters.length > 0) {
@@ -110,6 +111,17 @@ const createClusterTable = (clusters, classes, props, onDeleteCluster, onSelectC
 										<TableCell>{cluster.description}</TableCell>
 										<TableCell>{cluster.nodes?.length || 0}</TableCell>
 										<TableCell align="right">
+											{/* <Tooltip title="Check health status">
+												<IconButton
+													size="small"
+													onClick={(event) => {
+														event.stopPropagation();
+														onCheckHealthStatus(cluster.clustername);
+													}}
+												>
+													<CheckHealthStatusIcon fontSize="small" />
+												</IconButton>
+											</Tooltip> */}
 											<Tooltip title="Delete cluster">
 												<IconButton
 													size="small"
@@ -213,6 +225,26 @@ const Clusters = (props) => {
 		history.push('/admin/clusters/new');
 	};
 
+	const onCheckHealthStatus = async (clustername) => {
+		try {
+			const healtStatus = await brokerClient.checkClusterHealthStatus(clustername);
+			if (healtStatus.error) {
+				const error = healtStatus.error;
+				enqueueSnackbar(`Cluster health check failed. Reason: ${error.message || error}`, {
+					variant: 'error'
+				});
+			} else {
+				enqueueSnackbar(`Cluster "${clustername}" healthy`, {
+					variant: 'success'
+				});
+			}
+		} catch (error) {
+			enqueueSnackbar(`Cluster health check failed. Reason: ${error.message || error}`, {
+				variant: 'error'
+			});
+		}
+	};
+
 	const onDeleteCluster = async (clustername) => {
 		await confirm({
 			title: 'Confirm cluster deletion',
@@ -273,7 +305,7 @@ const Clusters = (props) => {
 			<br />
 			</>}
 			
-			{ createClusterTable(clusters, classes, props, onDeleteCluster, onSelectCluster) }
+			{ createClusterTable(clusters, classes, props, onCheckHealthStatus, onDeleteCluster, onSelectCluster) }
 		</div>
 	);
 };
