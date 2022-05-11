@@ -751,7 +751,7 @@ const init = async (licenseContainer) => {
 		response.json({});
 	});
 
-	router.get('/api/config', context.security.isLoggedIn, (request, response) => {
+	router.get('/api/config', context.security.isLoggedIn, context.security.acl.middleware.isAdmin, (request, response) => {
 		response.json(config);
 	});
 
