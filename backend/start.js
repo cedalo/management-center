@@ -429,8 +429,17 @@ const init = async (licenseContainer) => {
 			}
 			case 'getBrokerConnections': {
 				// const connections = context.brokerManager.getBrokerConnections();
-				const connections = configManager.connections;
-				return connections;
+				if (context.security.acl.isAdmin(user)) {
+					const connections = configManager.connections;
+					return connections;
+				} else {
+					const connections = configManager.connections.map(connection => {
+						const connectionCopy = Object.assign({}, connection);
+						delete connectionCopy.credentials;
+						return connectionCopy;
+					})
+					return connections;
+				}
 			}
 			case 'getBrokerConfigurations': {
 				return config;
