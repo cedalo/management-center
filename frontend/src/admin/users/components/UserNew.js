@@ -86,7 +86,11 @@ const UserNew = (props) => {
 	const passwordsMatch = password === passwordConfirm;
 
 	const validate = () => {
-		const valid = passwordsMatch && !usernameExists && username !== '' && password !== '';
+		const valid = passwordsMatch 
+			&& !usernameExists 
+			&& username !== '' 
+			&& password !== ''
+			&& username.match(/^[0-9a-zA-Z]+$/);
 		return valid;
 	};
 
