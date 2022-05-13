@@ -841,8 +841,8 @@ export default class BaseMosquittoProxyClient {
 	}
 
 	async getRole(rolename) {
-		const roles = await this.listRoles();
-		const fetchedRole = roles.find((role) => role.rolename === rolename);
+		const rolesResponse = await this.listRoles();
+		const fetchedRole = rolesResponse.roles.find((role) => role.rolename === rolename);
 		// TODO: activate when implemented at Mosquitto
 		// return this.sendCommand({
 		// 	command: 'getRole',
@@ -851,15 +851,17 @@ export default class BaseMosquittoProxyClient {
 		return fetchedRole;
 	}
 
-	async listRoles(verbose = true) {
+	async listRoles(verbose = true, count = -1, offset = 0) {
 		const data = await this.sendCommand(
 			{
 				command: 'listRoles',
-				verbose
+				verbose,
+				count,
+				offset
 			},
 			API_DYNAMIC_SECURITY
 		);
-		return data?.roles;
+		return data;
 	}
 
 	async addRoleACL(rolename, { acltype, priority, topic, allow }) {
@@ -1115,13 +1117,13 @@ export default class BaseMosquittoProxyClient {
 	}
 
 	async getClientCount() {
-		const clients = await this.listClients();
-		return clients.length;
+		const clientsResponse = await this.listClients();
+		return clientsResponse.totalCount;
 	}
 
 	async getGroupCount() {
-		const groups = await this.listGroups();
-		return groups.length;
+		const groupsResponse = await this.listGroups();
+		return groupsResponse.groups.totalCount;
 	}
 
 	async addClientToGroups(username, groups, priority) {
@@ -1143,15 +1145,15 @@ export default class BaseMosquittoProxyClient {
 	}
 
 	async deleteAllClients() {
-		const clients = await this.listClients();
-		for (const client of clients) {
+		const clientsResponse = await this.listClients();
+		for (const client of clientsResponse.clients) {
 			await this.deleteClient(client.username);
 		}
 	}
 
 	async deleteAllGroups() {
-		const groups = await this.listGroups();
-		for (const group of groups) {
+		const groupsResponse = await this.listGroups();
+		for (const group of groupsResponse.groups) {
 			await this.deleteGroup(group.groupname);
 		}
 	}
