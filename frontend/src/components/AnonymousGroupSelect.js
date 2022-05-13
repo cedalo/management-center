@@ -85,7 +85,7 @@ const AnonymousGroupSelect = ({ anonymousGroup, groups = [], onUpdateAnonymousGr
 const mapStateToProps = (state) => {
 	return {
 		anonymousGroup: state.groups?.anonymousGroup,
-		groups: state.groups?.groups,
+		groups: state.groups?.groups?.groups,
 	};
 };
 

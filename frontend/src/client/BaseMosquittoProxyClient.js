@@ -757,15 +757,17 @@ export default class BaseMosquittoProxyClient {
 		return data?.group;
 	}
 
-	async listGroups(verbose = true) {
+	async listGroups(verbose = true, count = -1, offset = 0) {
 		const data = await this.sendCommand(
 			{
 				command: 'listGroups',
-				verbose
+				verbose,
+				count,
+				offset
 			},
 			API_DYNAMIC_SECURITY
 		);
-		return data?.groups;
+		return data;
 	}
 
 	async listGroupClients(group) {

@@ -74,7 +74,7 @@ const GroupNew = (props) => {
 	const confirm = useConfirm();
 	const { client } = context;
 
-	const groupnameExists = props?.groups?.find((searchGroup) => {
+	const groupnameExists = props?.groups?.groups?.find((searchGroup) => {
 		return searchGroup.groupname === groupname;
 	});
 
