@@ -70,7 +70,7 @@ const ClientNew = (props) => {
 	const [textname, setTextname] = useState('');
 	const [textdescription, setTextdescription] = useState('');
 
-	const usernameExists = props?.clients?.find((searchClient) => {
+	const usernameExists = props?.clients?.clients?.find((searchClient) => {
 		return searchClient.username === username;
 	});
 
