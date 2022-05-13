@@ -98,13 +98,13 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 			const brokerConfigurations = await client.getBrokerConfigurations();
 			dispatch(updateBrokerConfigurations(brokerConfigurations));
 			try {
-				const clients = await client.listClients();
+				const clients = await client.listClients(true, 10, 0);
 				dispatch(updateClients(clients));
-				const groups = await client.listGroups();
+				const groups = await client.listGroups(true, 10, 0);
 				dispatch(updateGroups(groups));
 				const anonymousGroup = await client.getAnonymousGroup();
 				dispatch(updateAnonymousGroup(anonymousGroup));
-				const roles = await client.listRoles();
+				const roles = await client.listRoles(true, 10, 0);
 				dispatch(updateRoles(roles));
 				const defaultACLAccess = await client.getDefaultACLAccess();
 				dispatch(updateDefaultACLAccess(defaultACLAccess));
