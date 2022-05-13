@@ -719,8 +719,6 @@ export default class BaseMosquittoProxyClient {
 	}
 
 	async getClient(username) {
-		// const clients = await this.listClients();
-		// return clients.find((client) => client.username === username);
 		const data = await this.sendCommand(
 			{
 				command: 'getClient',
@@ -745,8 +743,6 @@ export default class BaseMosquittoProxyClient {
 	}
 
 	async getGroup(groupname) {
-		// const groups = await this.listGroups();
-		// return groups.find((group) => group.groupname === groupname);
 		const data = await this.sendCommand(
 			{
 				command: 'getGroup',
