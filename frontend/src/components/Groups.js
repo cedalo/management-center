@@ -36,6 +36,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
@@ -98,6 +100,27 @@ const Groups = (props) => {
 	const confirm = useConfirm();
 	const { enqueueSnackbar } = useSnackbar();
 	const { client } = context;
+
+	const [page, setPage] = React.useState(0);
+	const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+	const handleChangePage = async (event, newPage) => {
+		setPage(newPage);
+		const count = rowsPerPage;
+		const offset = newPage * rowsPerPage;
+		const groups = await client.listGroups(true, count, offset);
+		dispatch(updateGroups(groups));
+	};
+
+	const handleChangeRowsPerPage = async (event) => {
+		const rowsPerPage = parseInt(event.target.value, 10);
+		setRowsPerPage(rowsPerPage);
+		setPage(0);
+		const count = rowsPerPage;
+		const offset = 0 * count;
+		const groups = await client.listGroups(true, count, offset);
+		dispatch(updateGroups(groups));
+	};
 
 	const onUpdateGroupClients = async (group, clients = []) => {
 		if (!clients) {
@@ -222,7 +245,7 @@ const Groups = (props) => {
 			<br />
 			<br />
 			</>}
-			{dynamicsecurityFeature?.supported !== false && groups && groups.length > 0 ? (
+			{dynamicsecurityFeature?.supported !== false && groups?.groups?.length > 0 ? (
 				<div>
 					<Hidden xsDown implementation="css">
 						<TableContainer component={Paper} className={classes.tableContainer}>
@@ -248,7 +271,7 @@ const Groups = (props) => {
 								</TableHead>
 								<TableBody>
 									{groups &&
-										groups.map((group) => (
+										groups.groups.map((group) => (
 											<TableRow
 												hover
 												key={group.groupname}
@@ -312,13 +335,26 @@ const Groups = (props) => {
 											</TableRow>
 										))}
 								</TableBody>
+								<TableFooter>
+									<TableRow>
+										<TablePagination
+											// rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+											colSpan={8}
+											count={groups?.totalCount}
+											rowsPerPage={rowsPerPage}
+											page={page}
+											onChangePage={handleChangePage}
+											onChangeRowsPerPage={handleChangeRowsPerPage}
+										/>
+									</TableRow>
+								</TableFooter>
 							</Table>
 						</TableContainer>
 					</Hidden>
 					<Hidden smUp implementation="css">
 						<Paper>
 							<List className={classes.root}>
-								{groups.map((group) => (
+								{groups.groups.map((group) => (
 									<React.Fragment>
 										<ListItem
 											alignItems="flex-start"
@@ -410,8 +446,8 @@ const mapStateToProps = (state) => {
 	return {
 		anonymousGroup: state.groups?.anonymousGroup,
 		groups: state.groups?.groups,
-		roles: state.roles?.roles,
-		clients: state.clients?.clients,
+		roles: state.roles?.roles?.roles,
+		clients: state.clients?.clients?.clients,
 		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity
 	};
 };

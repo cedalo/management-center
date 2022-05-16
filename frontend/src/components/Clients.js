@@ -32,7 +32,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
@@ -101,6 +102,27 @@ const Clients = (props) => {
 	const confirm = useConfirm();
 	const { enqueueSnackbar } = useSnackbar();
 	const { client: brokerClient } = context;
+
+	const [page, setPage] = React.useState(0);
+	const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+	const handleChangePage = async (event, newPage) => {
+		setPage(newPage);
+		const count = rowsPerPage;
+		const offset = newPage * count;
+		const clients = await brokerClient.listClients(true, count, offset);
+		dispatch(updateClients(clients));
+	};
+
+	const handleChangeRowsPerPage = async (event) => {
+		const rowsPerPage = parseInt(event.target.value, 10);
+		setRowsPerPage(rowsPerPage);
+		setPage(0);
+		const count = rowsPerPage;
+		const offset = 0 * count;
+		const clients = await brokerClient.listClients(true, count, offset);
+		dispatch(updateClients(clients));
+	};
 
 	const onUpdateClientGroups = async (client, groups = []) => {
 		if (!groups) {
@@ -281,7 +303,7 @@ const Clients = (props) => {
 			<br />
 			</>}
 			
-			{dynamicsecurityFeature?.supported !== false && clients && clients.length > 0 ? (
+			{dynamicsecurityFeature?.supported !== false && clients?.clients?.length > 0 ? (
 				<div>
 					<Hidden xsDown implementation="css">
 						<TableContainer component={Paper} className={classes.tableContainer}>
@@ -307,7 +329,7 @@ const Clients = (props) => {
 								</TableHead>
 								<TableBody>
 									{clients &&
-										clients.map((client) => (
+										clients.clients.map((client) => (
 											<StyledTableRow
 												hover
 												key={client.username}
@@ -395,13 +417,26 @@ const Clients = (props) => {
 											</StyledTableRow>
 										))}
 								</TableBody>
+								<TableFooter>
+									<TableRow>
+										<TablePagination
+											// rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+											colSpan={8}
+											count={clients?.totalCount}
+											rowsPerPage={rowsPerPage}
+											page={page}
+											onChangePage={handleChangePage}
+											onChangeRowsPerPage={handleChangeRowsPerPage}
+										/>
+									</TableRow>
+								</TableFooter>
 							</Table>
 						</TableContainer>
 					</Hidden>
 					<Hidden smUp implementation="css">
 						<Paper>
 							<List className={classes.root}>
-								{clients.map((client) => (
+								{clients.clients.map((client) => (
 									<React.Fragment>
 										<ListItem
 											alignItems="flex-start"
@@ -504,8 +539,8 @@ Clients.defaultProps = {
 
 const mapStateToProps = (state) => {
 	return {
-		groups: state.groups?.groups,
-		roles: state.roles?.roles,
+		groups: state.groups?.groups?.groups,
+		roles: state.roles?.roles?.roles,
 		clients: state.clients?.clients,
 		defaultClient: state.brokerConnections?.defaultClient,
 		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity

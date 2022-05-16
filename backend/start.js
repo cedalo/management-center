@@ -310,7 +310,7 @@ const init = async (licenseContainer) => {
 		// 	console.error(message);
 		// });
 		context.brokerManager.handleNewBrokerConnection(connection, brokerClient, system, topicTreeManager /*, proxyClient */);
-		configManager.updateConnection(connection);
+		configManager.updateConnection(connection.id, connection);
 
 		// try {
 		// 	await proxyClient.connect({ socketEndpointURL: 'ws://localhost:8088' });
@@ -429,8 +429,17 @@ const init = async (licenseContainer) => {
 			}
 			case 'getBrokerConnections': {
 				// const connections = context.brokerManager.getBrokerConnections();
-				const connections = configManager.connections;
-				return connections;
+				if (context.security.acl.isAdmin(user)) {
+					const connections = configManager.connections;
+					return connections;
+				} else {
+					const connections = configManager.connections.map(connection => {
+						const connectionCopy = Object.assign({}, connection);
+						delete connectionCopy.credentials;
+						return connectionCopy;
+					})
+					return connections;
+				}
 			}
 			case 'getBrokerConfigurations': {
 				return config;
@@ -751,7 +760,7 @@ const init = async (licenseContainer) => {
 		response.json({});
 	});
 
-	router.get('/api/config', context.security.isLoggedIn, (request, response) => {
+	router.get('/api/config', context.security.isLoggedIn, context.security.acl.middleware.isAdmin, (request, response) => {
 		response.json(config);
 	});
 

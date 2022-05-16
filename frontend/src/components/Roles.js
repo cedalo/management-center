@@ -29,6 +29,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import UserManagementIcon from '@material-ui/icons/SupervisedUserCircle';
@@ -97,6 +99,27 @@ const Roles = (props) => {
 	const confirm = useConfirm();
 	const { enqueueSnackbar } = useSnackbar();
 	const { client } = context;
+
+	const [page, setPage] = React.useState(0);
+	const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+	const handleChangePage = async (event, newPage) => {
+		setPage(newPage);
+		const count = rowsPerPage;
+		const offset = newPage * rowsPerPage;
+		const roles = await client.listRoles(true, count, offset);
+		dispatch(updateRoles(roles));
+	};
+
+	const handleChangeRowsPerPage = async (event) => {
+		const rowsPerPage = parseInt(event.target.value, 10);
+		setRowsPerPage(rowsPerPage);
+		setPage(0);
+		const count = rowsPerPage;
+		const offset = 0 * count;
+		const roles = await client.listRoles(true, count, offset);
+		dispatch(updateRoles(roles));
+	};
 
 	const onEditDefaultACLAccess = () => {
 		history.push('/security/acl');
@@ -196,7 +219,7 @@ const Roles = (props) => {
 			<br />
 			<br />
 			</>}
-			{dynamicsecurityFeature?.supported !== false && roles && roles.length > 0 ? (
+			{dynamicsecurityFeature?.supported !== false && roles?.roles?.length > 0 ? (
 				<div>
 					<Hidden xsDown implementation="css">
 						<TableContainer component={Paper}>
@@ -221,7 +244,7 @@ const Roles = (props) => {
 									</TableRow>
 								</TableHead>
 								<TableBody>
-									{roles.map((role) => (
+									{roles.roles.map((role) => (
 										<TableRow
 											hover
 											key={role.rolename}
@@ -256,13 +279,26 @@ const Roles = (props) => {
 										</TableRow>
 									))}
 								</TableBody>
+								<TableFooter>
+									<TableRow>
+										<TablePagination
+											// rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+											colSpan={8}
+											count={roles?.totalCount}
+											rowsPerPage={rowsPerPage}
+											page={page}
+											onChangePage={handleChangePage}
+											onChangeRowsPerPage={handleChangeRowsPerPage}
+										/>
+									</TableRow>
+								</TableFooter>
 							</Table>
 						</TableContainer>
 					</Hidden>
 					<Hidden smUp implementation="css">
 						<Paper>
 							<List className={classes.root}>
-								{roles.map((role) => (
+								{roles.roles.map((role) => (
 									<React.Fragment>
 										<ListItem alignItems="flex-start">
 											<ListItemText

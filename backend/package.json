@@ -9,7 +9,7 @@
 	},
 	"author": "Cedalo AG",
 	"dependencies": {
-		"axios": "^0.20.0",
+		"axios": "^0.27.2",
 		"cors": "^2.8.5",
 		"express": "^4.17.1",
 		"express-session": "^1.17.1",
