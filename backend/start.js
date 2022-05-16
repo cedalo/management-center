@@ -310,7 +310,7 @@ const init = async (licenseContainer) => {
 		// 	console.error(message);
 		// });
 		context.brokerManager.handleNewBrokerConnection(connection, brokerClient, system, topicTreeManager /*, proxyClient */);
-		configManager.updateConnection(connection);
+		configManager.updateConnection(connection.id, connection);
 
 		// try {
 		// 	await proxyClient.connect({ socketEndpointURL: 'ws://localhost:8088' });
