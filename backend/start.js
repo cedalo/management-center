@@ -5,7 +5,7 @@ const http = require('http');
 const { v4: uuidv4 } = require('uuid');
 const express = require('express');
 const session = require('express-session');
-const helmet = require('helmet');
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const WebSocket = require('ws');
 const axios = require('axios');
@@ -177,7 +177,6 @@ const init = async (licenseContainer) => {
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));
 	app.use(cors());
-	app.use(helmet());
 
 	const server = http.createServer(app);
 
