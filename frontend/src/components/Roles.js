@@ -111,9 +111,14 @@ const Roles = (props) => {
 		dispatch(updateRoles(roles));
 	};
 
-	const handleChangeRowsPerPage = (event) => {
-		setRowsPerPage(parseInt(event.target.value, 10));
+	const handleChangeRowsPerPage = async (event) => {
+		const rowsPerPage = parseInt(event.target.value, 10);
+		setRowsPerPage(rowsPerPage);
 		setPage(0);
+		const count = rowsPerPage;
+		const offset = 0 * count;
+		const roles = await client.listRoles(true, count, offset);
+		dispatch(updateRoles(roles));
 	};
 
 	const onEditDefaultACLAccess = () => {
@@ -283,7 +288,7 @@ const Roles = (props) => {
 											rowsPerPage={rowsPerPage}
 											page={page}
 											onChangePage={handleChangePage}
-											// onChangeRowsPerPage={handleChangeRowsPerPage}
+											onChangeRowsPerPage={handleChangeRowsPerPage}
 										/>
 									</TableRow>
 								</TableFooter>

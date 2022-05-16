@@ -112,9 +112,14 @@ const Groups = (props) => {
 		dispatch(updateGroups(groups));
 	};
 
-	const handleChangeRowsPerPage = (event) => {
-		setRowsPerPage(parseInt(event.target.value, 10));
+	const handleChangeRowsPerPage = async (event) => {
+		const rowsPerPage = parseInt(event.target.value, 10);
+		setRowsPerPage(rowsPerPage);
 		setPage(0);
+		const count = rowsPerPage;
+		const offset = 0 * count;
+		const groups = await client.listGroups(true, count, offset);
+		dispatch(updateGroups(groups));
 	};
 
 	const onUpdateGroupClients = async (group, clients = []) => {
@@ -339,7 +344,7 @@ const Groups = (props) => {
 											rowsPerPage={rowsPerPage}
 											page={page}
 											onChangePage={handleChangePage}
-											// onChangeRowsPerPage={handleChangeRowsPerPage}
+											onChangeRowsPerPage={handleChangeRowsPerPage}
 										/>
 									</TableRow>
 								</TableFooter>

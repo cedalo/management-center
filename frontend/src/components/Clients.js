@@ -109,14 +109,19 @@ const Clients = (props) => {
 	const handleChangePage = async (event, newPage) => {
 		setPage(newPage);
 		const count = rowsPerPage;
-		const offset = newPage * rowsPerPage;
+		const offset = newPage * count;
 		const clients = await brokerClient.listClients(true, count, offset);
 		dispatch(updateClients(clients));
 	};
 
-	const handleChangeRowsPerPage = (event) => {
-		setRowsPerPage(parseInt(event.target.value, 10));
+	const handleChangeRowsPerPage = async (event) => {
+		const rowsPerPage = parseInt(event.target.value, 10);
+		setRowsPerPage(rowsPerPage);
 		setPage(0);
+		const count = rowsPerPage;
+		const offset = 0 * count;
+		const clients = await brokerClient.listClients(true, count, offset);
+		dispatch(updateClients(clients));
 	};
 
 	const onUpdateClientGroups = async (client, groups = []) => {
@@ -421,7 +426,7 @@ const Clients = (props) => {
 											rowsPerPage={rowsPerPage}
 											page={page}
 											onChangePage={handleChangePage}
-											// onChangeRowsPerPage={handleChangeRowsPerPage}
+											onChangeRowsPerPage={handleChangeRowsPerPage}
 										/>
 									</TableRow>
 								</TableFooter>
