@@ -82,6 +82,16 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 
 	const handleConnectionChange = async (event) => {
 		dispatch(updateBrokerLicenseInformation(null));
+		dispatch(updateInspectClients([]));
+		dispatch(updateClients([]));
+		dispatch(updateClientsAll([]));
+		dispatch(updateGroups([]));
+		dispatch(updateGroupsAll([]));
+		dispatch(updateRoles([]));
+		dispatch(updateRolesAll([]));
+		dispatch(updateStreams([]));
+		dispatch(updateSystemStatus({}));
+
 		const connectionID = event.target.value;
 		const { client } = context;
 		await client.disconnectFromBroker(connection);
