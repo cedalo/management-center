@@ -12,6 +12,9 @@ export default function groups(state = {}, action) {
 		case ActionTypes.UPDATE_GROUPS:
 			newState.groups = action.update;
 			break;
+		case ActionTypes.UPDATE_GROUPS_ALL:
+			newState.groupsAll = action.update;
+			break;
 		default:
 	}
 	return newState;

@@ -39,9 +39,6 @@ const useStyles = makeStyles((theme) => ({
 
 const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus, defaultClient, currentConnection, currentConnectionName }) => {
 	const classes = useStyles();
-
-	console.log("brokerLicense");
-	console.log(brokerLicense);
 	const totalMessages = parseInt(systemStatus?.$SYS?.broker?.messages?.sent);
 	const publishMessages = (parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent) / totalMessages) * 100;
 	const otherMessages =

@@ -72,7 +72,7 @@ export default class BaseMosquittoProxyClient {
 		this._requests = new Map();
 		// TODO: make timeout configurable
 		// request timeout in ms:
-		this._timeout = 5000;
+		this._timeout = 11000;
 	}
 
 	// eslint-disable-next-line consistent-return
