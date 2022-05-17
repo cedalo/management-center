@@ -112,6 +112,7 @@ const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelect
 										<TableCell>{client.protocol}</TableCell>
 										<TableCell>{client.protocol_version}</TableCell>
 										<TableCell>{client.address}</TableCell>
+										<TableCell></TableCell>
 									</StyledTableRow>
 								))}
 						</TableBody>

@@ -82,6 +82,16 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 
 	const handleConnectionChange = async (event) => {
 		dispatch(updateBrokerLicenseInformation(null));
+		dispatch(updateInspectClients([]));
+		dispatch(updateClients([]));
+		dispatch(updateClientsAll([]));
+		dispatch(updateGroups([]));
+		dispatch(updateGroupsAll([]));
+		dispatch(updateRoles([]));
+		dispatch(updateRolesAll([]));
+		dispatch(updateStreams([]));
+		dispatch(updateSystemStatus({}));
+
 		const connectionID = event.target.value;
 		const { client } = context;
 		await client.disconnectFromBroker(connection);
@@ -131,6 +141,14 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 				}));
 			}
 			try {
+				const licenseInformation = await client.getLicenseInformation();
+				dispatch(updateBrokerLicenseInformation(licenseInformation));
+			} catch (error) {
+				console.error('Error loading license information');
+				console.error(error);
+				dispatch(updateBrokerLicenseInformation({}));
+			}
+			try {
 				console.log('Loading inspection');
 				const inspectClients = await client.inspectListClients();
 				dispatch(updateInspectClients(inspectClients));
@@ -145,14 +163,6 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 					feature: 'inspect',
 					status: error
 				}));
-			}
-			try {
-				const licenseInformation = await client.getLicenseInformation();
-				dispatch(updateBrokerLicenseInformation(licenseInformation));
-			} catch (error) {
-				console.error('Error loading license information');
-				console.error(error);
-				dispatch(updateBrokerLicenseInformation({}));
 			}
 			try {
 				console.log('Loading streams');
