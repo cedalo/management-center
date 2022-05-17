@@ -63,7 +63,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 	dispatch(updateRolesAll([]));
 	dispatch(updateStreams([]));
 	dispatch(updateSystemStatus({}));
-	
+
 	// TODO: merge with code from BrokerSelect
 	await client.connect(connectionConfiguration)
 	dispatch(updateProxyConnected(true));
@@ -161,6 +161,15 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		}));
 	}
 	try {
+		console.log('Loading license information');
+		const licenseInformation = await client.getLicenseInformation()
+		dispatch(updateBrokerLicenseInformation(licenseInformation));
+	} catch (error) {
+		console.error('Error loading license information');
+		console.error(error);
+		dispatch(updateBrokerLicenseInformation({}));
+	}
+	try {
 		console.log('Loading inspection');
 		const inspectClients = await client.inspectListClients();
 		dispatch(updateInspectClients(inspectClients));
@@ -178,15 +187,6 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			feature: 'inspect',
 			status: error
 		}));
-	}
-	try {
-		console.log('Loading license information');
-		const licenseInformation = await client.getLicenseInformation()
-		dispatch(updateBrokerLicenseInformation(licenseInformation));
-	} catch (error) {
-		console.error('Error loading license information');
-		console.error(error);
-		dispatch(updateBrokerLicenseInformation({}));
 	}
 	try {
 		console.log('Loading streams');

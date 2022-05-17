@@ -141,6 +141,14 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 				}));
 			}
 			try {
+				const licenseInformation = await client.getLicenseInformation();
+				dispatch(updateBrokerLicenseInformation(licenseInformation));
+			} catch (error) {
+				console.error('Error loading license information');
+				console.error(error);
+				dispatch(updateBrokerLicenseInformation({}));
+			}
+			try {
 				console.log('Loading inspection');
 				const inspectClients = await client.inspectListClients();
 				dispatch(updateInspectClients(inspectClients));
@@ -155,14 +163,6 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 					feature: 'inspect',
 					status: error
 				}));
-			}
-			try {
-				const licenseInformation = await client.getLicenseInformation();
-				dispatch(updateBrokerLicenseInformation(licenseInformation));
-			} catch (error) {
-				console.error('Error loading license information');
-				console.error(error);
-				dispatch(updateBrokerLicenseInformation({}));
 			}
 			try {
 				console.log('Loading streams');
