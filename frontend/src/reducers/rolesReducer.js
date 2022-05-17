@@ -12,6 +12,9 @@ export default function roles(state = {}, action) {
 		case ActionTypes.UPDATE_ROLES:
 			newState.roles = action.update;
 			break;
+		case ActionTypes.UPDATE_ROLES_ALL:
+			newState.rolesAll = action.update;
+			break;
 		default:
 	}
 	return newState;

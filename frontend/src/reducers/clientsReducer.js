@@ -9,6 +9,9 @@ export default function clients(state = {}, action) {
 		case ActionTypes.UPDATE_CLIENTS:
 			newState.clients = action.update;
 			break;
+		case ActionTypes.UPDATE_CLIENTS_ALL:
+			newState.clientsAll = action.update;
+			break;
 		default:
 	}
 	return newState;

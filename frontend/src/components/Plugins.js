@@ -17,10 +17,12 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import { useConfirm } from 'material-ui-confirm';
 import useFetch from '../helpers/useFetch';
@@ -38,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
+
 const Plugins = (props) => {
 	const classes = useStyles();
 	const context = useContext(WebSocketContext);
@@ -46,6 +49,18 @@ const Plugins = (props) => {
 	const { enqueueSnackbar } = useSnackbar();
 	const { client } = context;
 	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/plugins`);
+
+	const [page, setPage] = React.useState(0);
+	const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+	const handleChangePage = (event, newPage) => {
+		setPage(newPage);
+	};
+
+	const handleChangeRowsPerPage = (event) => {
+		setRowsPerPage(parseInt(event.target.value, 10));
+		setPage(0);
+	};
 
 	const handlePluginLoad = async (pluginId, load) => {
 		if (load) {
@@ -63,7 +78,7 @@ const Plugins = (props) => {
 			try {
 				await client.loadPlugin(pluginId);
 				window.location.reload();
-			} catch(error) {
+			} catch (error) {
 				enqueueSnackbar(`Error enabling plugin. Reason: ${error.message || error}.`, {
 					variant: 'error'
 				});
@@ -83,7 +98,7 @@ const Plugins = (props) => {
 			try {
 				await client.unloadPlugin(pluginId);
 				window.location.reload();
-			} catch(error) {
+			} catch (error) {
 				enqueueSnackbar(`Error disabling plugin. Reason: ${error.message || error}.`, {
 					variant: 'error'
 				});
@@ -117,7 +132,10 @@ const Plugins = (props) => {
 							</TableRow>
 						</TableHead>
 						<TableBody>
-							{response.map((plugin) => (
+							{(rowsPerPage > 0
+								? response.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+								: response
+							).map((plugin) => (
 								<TableRow>
 									<TableCell>
 										{plugin.type === 'premium' ? (
@@ -156,6 +174,19 @@ const Plugins = (props) => {
 								</TableRow>
 							))}
 						</TableBody>
+						<TableFooter>
+							<TableRow>
+								<TablePagination
+									// rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+									colSpan={8}
+									count={response?.length}
+									rowsPerPage={rowsPerPage}
+									page={page}
+									onChangePage={handleChangePage}
+									// onChangeRowsPerPage={handleChangeRowsPerPage}
+								/>
+							</TableRow>
+						</TableFooter>
 					</Table>
 				</TableContainer>
 			</div>

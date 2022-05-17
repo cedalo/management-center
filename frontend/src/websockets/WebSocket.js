@@ -6,14 +6,17 @@ import {
 	updateBrokerConnections,
 	updateProxyConnected,
 	updateClients,
+	updateClientsAll,
 	updateWebSocketClients,
 	updateWebSocketClientConnected,
 	updateWebSocketClientDisconnected,
 	updateAnonymousGroup,
 	updateGroups,
+	updateGroupsAll,
 	updateLicense,
 	updateDefaultACLAccess,
 	updateRoles,
+	updateRolesAll,
 	updateSettings,
 	updateStreams,
 	updateSystemStatus,
@@ -115,14 +118,21 @@ const init = async (client, dispatch, connectionConfiguration) => {
 	const settings = await client.getSettings();
 	dispatch(updateSettings(settings));
 	try {
+		console.log('Loading dynamic security');
 		const clients = await client.listClients(true, 10, 0);
 		dispatch(updateClients(clients));
+		const clientsAll = await client.listClients(false);
+		dispatch(updateClientsAll(clientsAll));
 		const groups = await client.listGroups(true, 10, 0);
 		dispatch(updateGroups(groups));
+		const groupsAll = await client.listGroups(false);
+		dispatch(updateGroupsAll(groupsAll));
 		const anonymousGroup = await client.getAnonymousGroup();
 		dispatch(updateAnonymousGroup(anonymousGroup));
 		const roles = await client.listRoles(true, 10, 0);
 		dispatch(updateRoles(roles));
+		const rolesAll = await client.listRoles(false);
+		dispatch(updateRolesAll(rolesAll));
 		const defaultACLAccess = await client.getDefaultACLAccess();
 		dispatch(updateDefaultACLAccess(defaultACLAccess));
 		dispatch(updateFeatures({
@@ -130,6 +140,8 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			status: 'ok'
 		}));
 	} catch(error) {
+		console.error('Error loading dynamic security');
+		console.error(error);
 		// TODO: change when Mosquitto provides feature endpoint
 		// there was an error loading some dynamic security part
 		// --> we assume that feature has not been loaded
@@ -139,6 +151,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		}));
 	}
 	try {
+		console.log('Loading inspection');
 		const inspectClients = await client.inspectListClients();
 		dispatch(updateInspectClients(inspectClients));
 		dispatch(updateFeatures({
@@ -146,6 +159,8 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			status: 'ok'
 		}));
 	} catch (error) {
+		console.error('Error loading inspection');
+		console.error(error);
 		// TODO: change when Mosquitto provides feature endpoint
 		// there was an error loading the inspect feature
 		// --> we assume that feature has not been loaded
@@ -155,6 +170,16 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		}));
 	}
 	try {
+		console.log('Loading license information');
+		const licenseInformation = await client.getLicenseInformation()
+		dispatch(updateBrokerLicenseInformation(licenseInformation));
+	} catch (error) {
+		console.error('Error loading license information');
+		console.error(error);
+		dispatch(updateBrokerLicenseInformation({}));
+	}
+	try {
+		console.log('Loading streams');
 		const streams = await client.listStreams();
 		dispatch(updateStreams(streams));
 		dispatch(updateFeatures({
@@ -162,6 +187,8 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			status: 'ok'
 		}));
 	} catch (error) {
+		console.error('Error loading streams');
+		console.error(error);
 		// TODO: change when Mosquitto provides feature endpoint
 		// there was an error loading the stream feature
 		// --> we assume that feature has not been loaded
@@ -169,12 +196,6 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			feature: 'streamprocessing',
 			status: error
 		}));
-	}
-	try {
-		const licenseInformation = await client.getLicenseInformation()
-		dispatch(updateBrokerLicenseInformation(licenseInformation));
-	} catch (error) {
-		// TODO: handle error
 	}
 }
 

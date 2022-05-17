@@ -13,8 +13,11 @@ import ConnectedIcon from '@material-ui/icons/CheckCircle';
 import {
 	updateAnonymousGroup,
 	updateGroups,
+	updateGroupsAll,
 	updateRoles,
+	updateRolesAll,
 	updateClients,
+	updateClientsAll,
 	updateBrokerConfigurations,
 	updateBrokerConnected,
 	updateBrokerConnections,
@@ -98,14 +101,21 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 			const brokerConfigurations = await client.getBrokerConfigurations();
 			dispatch(updateBrokerConfigurations(brokerConfigurations));
 			try {
+				console.log('Loading dynamic security');
 				const clients = await client.listClients(true, 10, 0);
 				dispatch(updateClients(clients));
+				const clientsAll = await client.listClients(false);
+				dispatch(updateClientsAll(clientsAll));
 				const groups = await client.listGroups(true, 10, 0);
 				dispatch(updateGroups(groups));
+				const groupsAll = await client.listGroups(false);
+				dispatch(updateGroupsAll(groupsAll));
 				const anonymousGroup = await client.getAnonymousGroup();
 				dispatch(updateAnonymousGroup(anonymousGroup));
 				const roles = await client.listRoles(true, 10, 0);
 				dispatch(updateRoles(roles));
+				const rolesAll = await client.listRoles(false);
+				dispatch(updateRolesAll(rolesAll));
 				const defaultACLAccess = await client.getDefaultACLAccess();
 				dispatch(updateDefaultACLAccess(defaultACLAccess));
 				dispatch(updateFeatures({
@@ -113,12 +123,15 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 					status: 'ok'
 				}));
 			} catch (error) {
+				console.error('Error loading dynamic security');
+				console.error(error);
 				dispatch(updateFeatures({
 					feature: 'dynamicsecurity',
 					status: error
 				}));
 			}
 			try {
+				console.log('Loading inspection');
 				const inspectClients = await client.inspectListClients();
 				dispatch(updateInspectClients(inspectClients));
 				dispatch(updateFeatures({
@@ -126,21 +139,10 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 					status: 'ok'
 				}));
 			} catch (error) {
+				console.error('Error loading inspection');
+				console.error(error);
 				dispatch(updateFeatures({
 					feature: 'inspect',
-					status: error
-				}));
-			}
-			try {
-				const streams = await client.listStreams();
-				dispatch(updateStreams(streams));
-				dispatch(updateFeatures({
-					feature: 'streamprocessing',
-					status: 'ok'
-				}));
-			} catch (error) {
-				dispatch(updateFeatures({
-					feature: 'streamprocessing',
 					status: error
 				}));
 			}
@@ -148,7 +150,25 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 				const licenseInformation = await client.getLicenseInformation();
 				dispatch(updateBrokerLicenseInformation(licenseInformation));
 			} catch (error) {
-				// TODO: handle error
+				console.error('Error loading license information');
+				console.error(error);
+				dispatch(updateBrokerLicenseInformation({}));
+			}
+			try {
+				console.log('Loading streams');
+				const streams = await client.listStreams();
+				dispatch(updateStreams(streams));
+				dispatch(updateFeatures({
+					feature: 'streamprocessing',
+					status: 'ok'
+				}));
+			} catch (error) {
+				console.error('Error loading streams');
+				console.error(error);
+				dispatch(updateFeatures({
+					feature: 'streamprocessing',
+					status: error
+				}));
 			}
 			// const plugins = await client.listPlugins();
 			// dispatch(updatePlugins(plugins));

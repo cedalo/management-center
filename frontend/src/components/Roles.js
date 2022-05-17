@@ -115,9 +115,7 @@ const Roles = (props) => {
 		const rowsPerPage = parseInt(event.target.value, 10);
 		setRowsPerPage(rowsPerPage);
 		setPage(0);
-		const count = rowsPerPage;
-		const offset = 0 * count;
-		const roles = await client.listRoles(true, count, offset);
+		const roles = await client.listRoles(true, rowsPerPage, 0);
 		dispatch(updateRoles(roles));
 	};
 
@@ -158,7 +156,7 @@ const Roles = (props) => {
 		enqueueSnackbar('Role successfully deleted', {
 			variant: 'success'
 		});
-		const roles = await client.listRoles();
+		const roles = await client.listRoles(true, rowsPerPage, page * rowsPerPage);
 		dispatch(updateRoles(roles));
 		const clients = await client.listClients();
 		dispatch(updateClients(clients));
@@ -282,7 +280,7 @@ const Roles = (props) => {
 								<TableFooter>
 									<TableRow>
 										<TablePagination
-											// rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+											rowsPerPageOptions={[5, 10, 25]}
 											colSpan={8}
 											count={roles?.totalCount}
 											rowsPerPage={rowsPerPage}

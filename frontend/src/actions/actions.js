@@ -35,6 +35,13 @@ export function updateClients(update) {
 	};
 }
 
+export function updateClientsAll(update) {
+	return {
+		type: ActionTypes.UPDATE_CLIENTS_ALL,
+		update
+	};
+}
+
 export function updateWebSocketClients(update) {
 	return {
 		type: ActionTypes.UPDATE_WEBSOCKET_CLIENTS,
@@ -77,6 +84,13 @@ export function updateGroups(update) {
 	};
 }
 
+export function updateGroupsAll(update) {
+	return {
+		type: ActionTypes.UPDATE_GROUPS_ALL,
+		update
+	};
+}
+
 export function updateDefaultACLAccess(update) {
 	return {
 		type: ActionTypes.UPDATE_DEFAULT_ACL_ACESS,
@@ -94,6 +108,13 @@ export function updateRole(update) {
 export function updateRoles(update) {
 	return {
 		type: ActionTypes.UPDATE_ROLES,
+		update
+	};
+}
+
+export function updateRolesAll(update) {
+	return {
+		type: ActionTypes.UPDATE_ROLES_ALL,
 		update
 	};
 }

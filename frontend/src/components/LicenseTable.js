@@ -69,7 +69,7 @@ const LicenseTable = (props) => {
 					This broker does not provide any license information.
 				</Alert>
 			}
-			{license && (
+			{license && license.edition && (
 				<TableContainer component={Paper} className={classes.tableContainer}>
 					<Table size="medium">
 						<TableBody>

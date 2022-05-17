@@ -118,9 +118,7 @@ const Clients = (props) => {
 		const rowsPerPage = parseInt(event.target.value, 10);
 		setRowsPerPage(rowsPerPage);
 		setPage(0);
-		const count = rowsPerPage;
-		const offset = 0 * count;
-		const clients = await brokerClient.listClients(true, count, offset);
+		const clients = await brokerClient.listClients(true, rowsPerPage, 0);
 		dispatch(updateClients(clients));
 	};
 
@@ -143,7 +141,7 @@ const Clients = (props) => {
 		}
 		const groupnames = groups.map((group) => group.value);
 		await brokerClient.updateClientGroups(client, groupnames);
-		const clients = await brokerClient.listClients();
+		const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
 		dispatch(updateClients(clients));
 		const groupsUpdated = await brokerClient.listGroups();
 		dispatch(updateGroups(groupsUpdated));
@@ -155,7 +153,7 @@ const Clients = (props) => {
 		}
 		const rolenames = roles.map((role) => role.value);
 		await brokerClient.updateClientRoles(client, rolenames);
-		const clients = await brokerClient.listClients();
+		const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
 		dispatch(updateClients(clients));
 	};
 
@@ -204,7 +202,7 @@ const Clients = (props) => {
 		enqueueSnackbar(`Client "${username}" successfully deleted`, {
 			variant: 'success'
 		});
-		const clients = await brokerClient.listClients();
+		const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
 		dispatch(updateClients(clients));
 		const groups = await brokerClient.listGroups();
 		dispatch(updateGroups(groups));
@@ -223,7 +221,7 @@ const Clients = (props) => {
 			}
 		});
 		await brokerClient.disableClient(username);
-		const clients = await brokerClient.listClients();
+		const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
 		enqueueSnackbar('Client successfully disabled', {
 			variant: 'success'
 		});
@@ -232,7 +230,7 @@ const Clients = (props) => {
 
 	const onEnableClient = async (username) => {
 		await brokerClient.enableClient(username);
-		const clients = await brokerClient.listClients();
+		const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
 		enqueueSnackbar('Client successfully enabled', {
 			variant: 'success'
 		});
@@ -245,22 +243,20 @@ const Clients = (props) => {
 			description: `Do you really want to remove client "${client.username}" from group "${group}"?`
 		});
 		await client.removeGroupClient(client, group);
-		const clients = await client.listClients();
+		const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
 		dispatch(updateClients(clients));
 	};
 
-	const { dynamicsecurityFeature, connectionID, defaultClient, groups = [], roles = [], clients = [], onSort, sortBy, sortDirection } = props;
+	const { dynamicsecurityFeature, connectionID, defaultClient, groupsAll = [], rolesAll = [], clients = [], onSort, sortBy, sortDirection } = props;
 
-	const groupSuggestions = groups
-		.map((group) => group.groupname)
+	const groupSuggestions = groupsAll
 		.sort()
 		.map((groupname) => ({
 			label: groupname,
 			value: groupname
 		}));
 
-	const roleSuggestions = roles
-		.map((role) => role.rolename)
+	const roleSuggestions = rolesAll
 		.sort()
 		.map((rolename) => ({
 			label: rolename,
@@ -420,7 +416,7 @@ const Clients = (props) => {
 								<TableFooter>
 									<TableRow>
 										<TablePagination
-											// rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+											rowsPerPageOptions={[5, 10, 25]}
 											colSpan={8}
 											count={clients?.totalCount}
 											rowsPerPage={rowsPerPage}
@@ -540,7 +536,9 @@ Clients.defaultProps = {
 const mapStateToProps = (state) => {
 	return {
 		groups: state.groups?.groups?.groups,
+		groupsAll: state.groups?.groupsAll?.groups,
 		roles: state.roles?.roles?.roles,
+		rolesAll: state.roles?.rolesAll?.roles,
 		clients: state.clients?.clients,
 		defaultClient: state.brokerConnections?.defaultClient,
 		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity

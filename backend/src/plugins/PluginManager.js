@@ -47,7 +47,6 @@ module.exports = class PluginManager {
 	}
 
 	init(pluginConfigurations = [], context) {
-		this._loadOSPlugins(context);
 		if (!PLUGIN_DIR) {
 			console.log('"CEDALO_MC_PLUGIN_DIR" is not set. Skipping loading of plugins');
 			return;
@@ -63,9 +62,6 @@ module.exports = class PluginManager {
 						licenseContainer.license.features &&
 						licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
 					) {
-						plugin.init(context);
-						plugin.load(context);
-						plugin.setLoaded();
 						this._plugins.push(plugin);
 					} else {
 						plugin.setErrored('License does not allow this plugin.');
@@ -81,6 +77,24 @@ module.exports = class PluginManager {
 			console.error('Ignore loading plugins: no premium license provided or license not valid');
 		}
 		
+		this._plugins.forEach(plugin => {
+			if (plugin.preInit) {
+				plugin.preInit(context);
+			}
+		});
+
+		this._loadOSPlugins(context);
+
+		this._plugins.forEach(plugin => {
+			try {
+				plugin.init(context);
+				plugin.load(context);
+				plugin.setLoaded();
+			} catch(error) {
+				console.error(`Failed loading plugin.`);
+				console.error(error);
+			}
+		});
 	}
 
 	add(plugin) {

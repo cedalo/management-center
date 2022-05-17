@@ -116,9 +116,7 @@ const Groups = (props) => {
 		const rowsPerPage = parseInt(event.target.value, 10);
 		setRowsPerPage(rowsPerPage);
 		setPage(0);
-		const count = rowsPerPage;
-		const offset = 0 * count;
-		const groups = await client.listGroups(true, count, offset);
+		const groups = await client.listGroups(true, rowsPerPage, 0);
 		dispatch(updateGroups(groups));
 	};
 
@@ -128,7 +126,7 @@ const Groups = (props) => {
 		}
 		const clientNames = clients.map((client) => client.value);
 		await client.updateGroupClients(group, clientNames);
-		const groups = await client.listGroups();
+		const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
 		dispatch(updateGroups(groups));
 		const clientsUpdated = await client.listClients();
 		dispatch(updateClients(clientsUpdated));
@@ -140,7 +138,7 @@ const Groups = (props) => {
 		}
 		const rolenames = roles.map((role) => role.value);
 		await client.updateGroupRoles(group, rolenames);
-		const groups = await client.listGroups();
+		const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
 		dispatch(updateGroups(groups));
 	};
 
@@ -179,7 +177,7 @@ const Groups = (props) => {
 		enqueueSnackbar(`Group "${groupname}" successfully deleted`, {
 			variant: 'success'
 		});
-		const groups = await client.listGroups();
+		const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
 		dispatch(updateGroups(groups));
 		const clients = await client.listClients();
 		dispatch(updateClients(clients));
@@ -187,23 +185,21 @@ const Groups = (props) => {
 
 	const onRemoveClientFromGroup = async (username, group) => {
 		await client.removeGroupClient(username, group);
-		const groups = await client.listGroups();
+		const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
 		dispatch(updateGroups(groups));
 	};
 
-	const { dynamicsecurityFeature, anonymousGroup, groups = [], roles = [], clients = [], onSort, sortBy, sortDirection } = props;
+	const { dynamicsecurityFeature, anonymousGroup, groups = [], rolesAll = [], clientsAll = [], onSort, sortBy, sortDirection } = props;
 
 	// TODO: probably extract into reducer
-	const clientSuggestions = clients
-		.map((client) => client.username)
+	const clientSuggestions = clientsAll
 		.sort()
 		.map((username) => ({
 			label: username,
 			value: username
 		}));
 
-	const roleSuggestions = roles
-		.map((role) => role.rolename)
+	const roleSuggestions = rolesAll
 		.sort()
 		.map((rolename) => ({
 			label: rolename,
@@ -338,7 +334,7 @@ const Groups = (props) => {
 								<TableFooter>
 									<TableRow>
 										<TablePagination
-											// rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+											rowsPerPageOptions={[5, 10, 25]}
 											colSpan={8}
 											count={groups?.totalCount}
 											rowsPerPage={rowsPerPage}
@@ -447,7 +443,9 @@ const mapStateToProps = (state) => {
 		anonymousGroup: state.groups?.anonymousGroup,
 		groups: state.groups?.groups,
 		roles: state.roles?.roles?.roles,
+		rolesAll: state.roles?.rolesAll?.roles,
 		clients: state.clients?.clients?.clients,
+		clientsAll: state.clients?.clientsAll?.clients,
 		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity
 	};
 };
