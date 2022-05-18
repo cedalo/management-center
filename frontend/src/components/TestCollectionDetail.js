@@ -185,7 +185,7 @@ const TestCollectionDetail = (props) => {
 															<RunTestIcon fontSize="small" />
 														</IconButton>
 													</Tooltip>
-													<Tooltip title="Delete test">
+													{/* <Tooltip title="Delete test">
 														<IconButton
 															size="small"
 															onClick={(event) => {
@@ -195,7 +195,7 @@ const TestCollectionDetail = (props) => {
 														>
 															<DeleteIcon fontSize="small" />
 														</IconButton>
-													</Tooltip>
+													</Tooltip> */}
 												</TableCell>
 											</StyledTableRow>
 										))}
