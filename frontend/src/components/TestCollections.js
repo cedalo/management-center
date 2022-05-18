@@ -203,7 +203,7 @@ const TestCollections = (props) => {
 															<ExportTestCollectionIcon fontSize="small" />
 														</IconButton>
 													</Tooltip>
-													<Tooltip title="Delete test collection">
+													{/* <Tooltip title="Delete test collection">
 														<IconButton
 															size="small"
 															onClick={(event) => {
@@ -213,7 +213,7 @@ const TestCollections = (props) => {
 														>
 															<DeleteIcon fontSize="small" />
 														</IconButton>
-													</Tooltip>
+													</Tooltip> */}
 												</TableCell>
 											</StyledTableRow>
 										))}
