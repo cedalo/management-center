@@ -23,6 +23,7 @@ import PersonIcon from '@material-ui/icons/Person';
 import RoleIcon from '@material-ui/icons/Policy';
 import UsersIcon from '@material-ui/icons/People';
 import ClusterIcon from '@material-ui/icons/Storage';
+import CloudConnectivityIcon from '@material-ui/icons/Cloud';
 import InspectClientsIcon from '@material-ui/icons/Search';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -186,6 +187,16 @@ const CustomDrawer = ({ userProfile = {}, userManagementFeature, dynamicSecurity
 					to="/admin/inspect/clients"
 					primary="Clients"
 					icon={<InspectClientsIcon fontSize="small" />}
+				/>}
+			</List>
+			<Divider />
+			<List>
+				{open ? <ListSubheader className={classes.menuSubHeader}>Connectivity</ListSubheader> : null}
+				{<ListItemLink
+					classes={classes}
+					to="/admin/cloud/bridges"
+					primary="Cloud Bridges"
+					icon={<CloudConnectivityIcon fontSize="small" />}
 				/>}
 			</List>
 			<Divider />
