@@ -117,7 +117,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 			});
 		} catch (error) {
 			// setPremiumFeatureDialogOpen(true);
-			enqueueSnackbar(`Error disconnecting broker. Reason: ${error.message ? error.message : error}`, {
+			enqueueSnackbar(`Error connecting broker. Reason: ${error.message ? error.message : error}`, {
 				variant: 'error'
 			});
 		}

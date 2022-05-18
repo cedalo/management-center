@@ -40,11 +40,10 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-const AnonymousGroupSelect = ({ anonymousGroup, groups = [], onUpdateAnonymousGroup }) => {
+const AnonymousGroupSelect = ({ anonymousGroup, groupsAll = [], onUpdateAnonymousGroup }) => {
 	const classes = useStyles();
 
-	const groupSuggestions = groups
-		.map((group) => group.groupname)
+	const groupSuggestions = groupsAll
 		.sort()
 		.map((groupname) => ({
 			label: groupname,
@@ -85,7 +84,7 @@ const AnonymousGroupSelect = ({ anonymousGroup, groups = [], onUpdateAnonymousGr
 const mapStateToProps = (state) => {
 	return {
 		anonymousGroup: state.groups?.anonymousGroup,
-		groups: state.groups?.groups?.groups,
+		groupsAll: state.groups?.groupsAll?.groups
 	};
 };
 
