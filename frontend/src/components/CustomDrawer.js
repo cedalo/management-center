@@ -29,6 +29,7 @@ import EqualizerIcon from '@material-ui/icons/Equalizer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StreamsheetsIcon from '@material-ui/icons/GridOn';
 import StreamsIcon from '@material-ui/icons/Timeline';
+import TestCollectionsIcon from '@material-ui/icons/PlaylistAddCheck';
 
 const drawerWidth = 240;
 
@@ -254,7 +255,7 @@ icon={<SettingsIcon />}
 			</List>
 			<Divider /></>}
 			<List id="menu-items-tools">
-				{open ? <ListSubheader className={classes.menuSubHeader}>Tools</ListSubheader> : null}
+				{open ? <ListSubheader className={classes.menuSubHeader}>{"Tools & Testing"}</ListSubheader> : null}
 				<ListItemLink
 					classes={classes}
 					to="/tools/streamsheets"
@@ -264,6 +265,7 @@ icon={<SettingsIcon />}
 
 				{userProfile?.isAdmin && <ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon />} />}
 				{userProfile?.isAdmin && <ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon />} />}
+				{userProfile?.isAdmin && <ListItemLink classes={classes} to="/testcollections" primary="Test Collections" icon={<TestCollectionsIcon />} />}
 			</List>
 			<Divider />
 			<List>
