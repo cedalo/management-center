@@ -74,7 +74,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const TABLE_COLUMNS = [
-	{ id: 'status', key: 'Status' },
+	// { id: 'test-status', key: 'Test Status' },
+	{ id: 'broker-status', key: 'Broker Status' },
 	{ id: 'testName', key: 'Test name' },
 	{ id: 'requestTopic', key: 'Request Topic' },
 	{ id: 'target', key: 'Target' },
@@ -92,7 +93,9 @@ const TestCollectionDetail = (props) => {
 	const { enqueueSnackbar } = useSnackbar();
 	const { client: brokerClient } = context;
 
-	const { testCollection, brokerConnections, onSort, sortBy, sortDirection } = props;
+	const { testCollection: testCollectionList, brokerConnections, onSort, sortBy, sortDirection } = props;
+
+	const [testCollection, setTestCollection] = React.useState(testCollectionList);
 
 	console.log(brokerConnections);
 	const onSelectTest = async (id) => {
@@ -104,9 +107,40 @@ const TestCollectionDetail = (props) => {
 	const onDeleteTest = async (id) => {
 	};
 
-	const onRunTest = async (id) => {
+	const onRunTest = async (test) => {
+		const id = test.id;
 		try {
+
+			// let newTestCollection = testCollection.items.map((item) => {
+			// 	if (item.id === id) {
+			// 	  const updatedItem = {
+			// 		...item,
+			// 		isRunning: true,
+			// 	  };
+			// 	  return updatedItem;
+			// 	}
+			// 	return item;
+			//   });
+		  
+			// setTestCollection(newTestCollection);
+
+			console.log(test);
 			const response = await brokerClient.runTest(testCollection?.info?.id, id);
+
+			// newTestCollection = testCollection.items.map((item) => {
+			// 	if (item.id === id) {
+			// 	  const updatedItem = {
+			// 		...item,
+			// 		isRunning: false,
+			// 	  };
+			// 	  return updatedItem;
+			// 	}
+			// 	return item;
+			//   });
+		  
+			// setTestCollection(newTestCollection);
+
+			console.log(test);
 			console.log(response);
 			enqueueSnackbar(`Test successfully executed.`, {
 				variant: 'success'
@@ -164,9 +198,18 @@ const TestCollectionDetail = (props) => {
 											<StyledTableRow
 												hover
 												key={item?.name}
-												onClick={(event) => onSelectTest(item?.id)}
+												onClick={(event) => {
+														if (
+															event.target.nodeName?.toLowerCase() === 'td'
+														) {
+															onSelectTest(item?.id)
+														}
+													}
+												
+												}
 												style={{ cursor: 'pointer' }}
 											>
+												{/* <TableCell> {item.isRunning ? 'isRunning' : 'isStopped'} </TableCell> */}
 												<TableCell><BrokerStatusIcon brokerConnection={getBrokerById(brokerConnections, item?.target?.brokerId)} /></TableCell>
 												<TableCell>{item?.name}</TableCell>
 												<TableCell>{item?.requestTopic}</TableCell>
@@ -179,7 +222,8 @@ const TestCollectionDetail = (props) => {
 															size="small"
 															onClick={(event) => {
 																event.stopPropagation();
-																onRunTest(item?.id);
+																onRunTest(item);
+																event.stopPropagation();
 															}}
 														>
 															<RunTestIcon fontSize="small" />
