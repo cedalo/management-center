@@ -30,6 +30,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				});
 				brokerClient.subscribe('$CONTROL/inspect/v1/#', (error) => {});
 				brokerClient.subscribe('$CONTROL/cedalo/license/v1/#', (error) => {});
+				brokerClient.subscribe('$CONTROL/cedalo/google-bridge/v1/#', (error) => {});
 				brokerClient.on('message', (topic, message) => this._handleBrokerMessage(topic, message.toString()));
 			});
 			brokerClient.on('disconnect', () => {
