@@ -4,18 +4,11 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { updateTest } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 
-import AddIcon from '@material-ui/icons/Add';
-import { Alert, AlertTitle } from '@material-ui/lab';
-import AutoSuggest from './AutoSuggest';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
-import ClientIcon from '@material-ui/icons/Person';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Divider from '@material-ui/core/Divider';
 import EditIcon from '@material-ui/icons/Edit';
 // import Fab from '@material-ui/core/Fab';
-import GroupIcon from '@material-ui/icons/Group';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
