@@ -9,6 +9,7 @@ const createError = (code, message) => ({
 const API_LICENSE = 'cedalo/license';
 const API_INSPECT = 'inspect';
 const API_DYNAMIC_SECURITY = 'dynamic-security';
+const API_GOOGLE_BRIDGE = 'cedalo/google-bridge';
 const API_STREAMS_PROCESSING = 'stream-processing';
 const API_HIGH_AVAILABILITY = 'cedalo/ha';
 const ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED = 'You are not authorized to access the user management.';
@@ -903,6 +904,80 @@ export default class BaseMosquittoProxyClient {
 			},
 			API_DYNAMIC_SECURITY
 		);
+	}
+
+	/**
+	 * ******************************************************************************************
+	 * Methods for managing Google Bridge connectivity
+	 * ******************************************************************************************
+	 */
+
+	async createBridge() {
+		const data = await this.sendCommand(
+			{
+				command: 'createBridge',
+				// TODO: add parameters
+			},
+			API_GOOGLE_BRIDGE
+		);
+		return data;
+	}
+
+	async deleteBridge(bridgename) {
+		const data = await this.sendCommand(
+			{
+				command: 'deleteBridge',
+				bridgename
+			},
+			API_GOOGLE_BRIDGE
+		);
+		return data;
+	}
+
+	async enableBridge(bridgename) {
+		const data = await this.sendCommand(
+			{
+				command: 'enableBridge',
+				bridgename
+			},
+			API_GOOGLE_BRIDGE
+		);
+		return data;
+	}
+
+	async disableBridge(bridgename) {
+		const data = await this.sendCommand(
+			{
+				command: 'disableBridge',
+				bridgename
+			},
+			API_GOOGLE_BRIDGE
+		);
+		return data;
+	}
+
+	async getBridge(bridgename) {
+		const data = await this.sendCommand(
+			{
+				command: 'getBridge',
+				bridgename
+			},
+			API_GOOGLE_BRIDGE
+		);
+		return data;
+	}
+
+	async listBridges(verbose = true, count = -1, offset = 0) {
+		const data = await this.sendCommand(
+			{
+				command: 'listBridges',
+				verbose,
+				count,
+				offset
+			},
+			API_GOOGLE_BRIDGE
+		);
+		return data;
 	}
 
 	/**
