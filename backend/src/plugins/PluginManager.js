@@ -40,8 +40,10 @@ module.exports = class PluginManager {
 			plugin.load(context);
 			plugin.setLoaded();
 			this._plugins.push(plugin);
+			console.log(`Loaded plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
 		} catch (error) {
-			plugin.setErrored(`Could not load plugin. Reason: ${error}`);
+			console.error(`Failed loading plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
+			console.error(error);
 			this._plugins.push(plugin);
 		}
 	}
@@ -64,11 +66,11 @@ module.exports = class PluginManager {
 					) {
 						this._plugins.push(plugin);
 					} else {
-						plugin.setErrored('License does not allow this plugin.');
+						plugin.setErrored(`License does not allow this plugin: "${pluginConfiguration.name}"`);
 						this._plugins.push(plugin);
 					}
 				} catch (error) {
-					console.error(`Failed loading plugin.`);
+					console.error(`Failed loading plugin: "${pluginConfiguration.name}"`);
 					console.error(error);
 					// plugin.setErrored();
 				}
@@ -90,8 +92,9 @@ module.exports = class PluginManager {
 				plugin.init(context);
 				plugin.load(context);
 				plugin.setLoaded();
+				console.log(`Loaded plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
 			} catch(error) {
-				console.error(`Failed loading plugin.`);
+				console.error(`Failed loading plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
 				console.error(error);
 			}
 		});
