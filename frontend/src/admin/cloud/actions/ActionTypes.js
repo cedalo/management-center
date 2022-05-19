@@ -1,0 +1,2 @@
+export const UPDATE_BRIDGE = 'UPDATE_BRIDGE';
+export const UPDATE_BRIDGES = 'UPDATE_BRIDGES';
