@@ -38,6 +38,9 @@ import ClusterNew from './admin/clusters/components/ClusterNew';
 import Clusters from './admin/clusters/components/Clusters';
 import ClusterDetail from './admin/clusters/components/ClusterDetail';
 import InspectClients from './admin/inspect/components/InspectClients';
+import Bridges from './admin/cloud/components/Bridges';
+import BridgeDetail from './admin/cloud/components/BridgeDetail';
+import BridgeNew from './admin/cloud/components/BridgeNew';
 
 import { Switch, Route, Redirect } from 'react-router-dom';
 import DefaultACLAccess from './components/DefaultACLAccess';
@@ -125,6 +128,22 @@ function AppRoutes(props) {
 				<Route path="/system">
 					<System />
 				</Route>
+				<Route path="/system">
+					<System />
+				</Route>
+				{userProfile?.isAdmin && <Route
+						path="/admin/cloud/bridges/detail/:brideId"
+						component={BridgeDetail}
+					/>
+				}
+				{userProfile?.isAdmin && <Route path="/admin/cloud/bridges/new">
+						<BridgeNew />
+					</Route>
+				}
+				{userProfile?.isAdmin && <Route path="/admin/cloud/bridges">
+						<Bridges />
+					</Route>
+				}
 				{userProfile?.isAdmin && <Route path="/config/connections/new">
 					<ConnectionNew />
 				</Route>}
