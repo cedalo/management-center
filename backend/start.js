@@ -8,7 +8,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const WebSocket = require('ws');
-const axios = require('axios');
+const HTTPClient = require('./src/http/HTTPClient');
 const BrokerManager = require('./src/broker/BrokerManager');
 const NodeMosquittoClient = require('./src/client/NodeMosquittoClient');
 const PluginManager = require('./src/plugins/PluginManager');
@@ -749,7 +749,7 @@ const init = async (licenseContainer) => {
 	});
 
 	router.get('/api/update', context.security.isLoggedIn, async (request, response) => {
-		// const update = await axios.get('https://api.cedalo.cloud/rest/request/mosquitto-ui/version');
+		// const update = await HTTPClient.getInstance().get('https://api.cedalo.cloud/rest/request/mosquitto-ui/version');
 		// response.json(update.data);
 		response.json({});
 	});
