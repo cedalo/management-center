@@ -24,6 +24,7 @@ const version = require('./src/utils/version');
 const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
+const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
 
 const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
@@ -766,21 +767,26 @@ const init = async (licenseContainer) => {
 		response.json(settingsManager.settings);
 	});
 
-	const NEWSLETTER_URL = 'https://api.cedalo.cloud/rest/api/v1.0/newsletter/subscribe';
-	router.post('/api/newsletter/subscribe', (request, response) => {
-		const user = request.body;
-		axios
-			.post(NEWSLETTER_URL, user)
-			.then(() => {
-				response.status(200).json({
-					newsletter: true
+	if (!CEDALO_MC_OFFLINE) {
+		const NEWSLETTER_URL = 'https://api.cedalo.cloud/rest/api/v1.0/newsletter/subscribe';
+		router.get('/api/newsletter/subscribe', (request, response) => {
+			response.status(200);
+		});
+		router.post('/api/newsletter/subscribe', (request, response) => {
+			const user = request.body;
+			HTTPClient.getInstance()
+				.post(NEWSLETTER_URL, user)
+				.then(() => {
+					response.status(200).json({
+						newsletter: true
+					});
+				})
+				.catch((error) => {
+					console.error('Error when trying to subscribe for newsletter.');
+					console.error(error);
 				});
-			})
-			.catch((error) => {
-				console.error('Error when trying to subscribe for newsletter.');
-				console.error(error);
-			});
-	});
+		});
+	}
 
 	router.get('/api/config/tools/streamsheets', context.security.isLoggedIn, (request, response) => {
 		if (config?.tools?.streamsheets) {
