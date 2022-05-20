@@ -11,8 +11,8 @@
 	"dependencies": {
 		"axios": "^0.27.2",
 		"cors": "^2.8.5",
-		"express": "^4.17.1",
-		"express-session": "^1.17.1",
+		"express": "^4.18.1",
+		"express-session": "^1.17.3",
 		"jsonwebtoken": "^8.5.1",
 		"lowdb": "^1.0.0",
 		"mqtt": "^4.2.0",
