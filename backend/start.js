@@ -18,14 +18,8 @@ const ConfigManager = require('./src/config/ConfigManager');
 const SettingsManager = require('./src/settings/SettingsManager');
 const { loadInstallation } = require('./src/utils/utils');
 const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
-const packageJSON = require('./package.json');
 
-const version = {
-	name: process.env.CEDALO_MC_NAME || 'Cedalo Management Center',
-	version: process.env.CEDALO_MC_VERSION || packageJSON.version,
-	buildNumber: process.env.TRAVIS_BUILD_NUMBER || process.env.CEDALO_MC_BUILD_NUMBER || uuidv4(),
-	buildDate: process.env.CEDALO_MC_BUILD_DATE || Date.now()
-};
+const version = require('./src/utils/version');
 
 const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
