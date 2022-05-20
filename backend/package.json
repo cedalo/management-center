@@ -17,7 +17,7 @@
 		"lowdb": "^1.0.0",
 		"mqtt": "^4.3.7",
 		"node-cron": "^2.0.3",
-		"passport": "^0.4.1",
+		"passport": "^0.5.3",
 		"passport-local": "^1.0.0",
 		"uuid": "^8.3.2",
 		"winston": "^3.6.0",
