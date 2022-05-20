@@ -21,7 +21,7 @@ import userRolesReducer from './admin/users/reducers/userRolesReducer';
 import usersReducer from './admin/users/reducers/usersReducer';
 import clustersReducer from './admin/clusters/reducers/clustersReducer';
 import inspectClientsReducer from './admin/inspect/reducers/inspectClientsReducer';
-
+// import bridgesReducer from './admin/cloud/reducers/bridgesReducer';
 
 const store = createStore(
 	combineReducers({
@@ -44,7 +44,8 @@ const store = createStore(
 		clusters: clustersReducer,
 		inspectClients: inspectClientsReducer,
 		brokerLicense: brokerLicenseReducer,
-		tests: testsReducer
+		tests: testsReducer,
+		// bridges: bridgesReducer
 	})
 );
 
