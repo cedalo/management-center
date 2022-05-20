@@ -35,8 +35,8 @@
 		"react-scripts": "latest",
 		"react-select": "^3.1.0",
 		"redux": "^4.2.0",
-		"sweetalert2": "^10.10.1",
-		"sweetalert2-react-content": "^3.2.1",
+		"sweetalert2": "^11.4.14",
+		"sweetalert2-react-content": "^5.0.0",
 		"terminal-in-react": "^4.3.1"
 	},
 	"devDependencies": {
