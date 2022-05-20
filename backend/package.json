@@ -19,7 +19,7 @@
 		"node-cron": "^2.0.3",
 		"passport": "^0.4.1",
 		"passport-local": "^1.0.0",
-		"uuid": "^8.3.0",
+		"uuid": "^8.3.2",
 		"winston": "^3.6.0",
 		"ws": "^7.3.1"
 	}
