@@ -1,3 +1,5 @@
+const { v4: uuidv4 } = require('uuid');
+
 const packageJSON = require('../../package.json');
 
 const version = {
