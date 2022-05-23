@@ -770,7 +770,9 @@ const init = async (licenseContainer) => {
 	if (!CEDALO_MC_OFFLINE) {
 		const NEWSLETTER_URL = 'https://api.cedalo.cloud/rest/api/v1.0/newsletter/subscribe';
 		router.get('/api/newsletter/subscribe', (request, response) => {
-			response.status(200);
+			response.status(200).send({
+				newsletterEndpointAvailable: true
+			});
 		});
 		router.post('/api/newsletter/subscribe', (request, response) => {
 			const user = request.body;
@@ -785,6 +787,12 @@ const init = async (licenseContainer) => {
 					console.error('Error when trying to subscribe for newsletter.');
 					console.error(error);
 				});
+		});
+	} else {
+		router.get('/api/newsletter/subscribe', (request, response) => {
+			response.status(200).send({
+				newsletterEndpointAvailable: false
+			});
 		});
 	}
 
