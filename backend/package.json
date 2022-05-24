@@ -19,6 +19,8 @@
 		"node-cron": "^2.0.3",
 		"passport": "^0.5.3",
 		"passport-local": "^1.0.0",
+		"swagger-jsdoc": "^6.2.1",
+		"swagger-ui-express": "^4.4.0",
 		"uuid": "^8.3.2",
 		"winston": "^3.6.0",
 		"ws": "^8.6.0"
