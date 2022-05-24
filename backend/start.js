@@ -746,7 +746,8 @@ const init = async (licenseContainer) => {
 	};
 
 	const pluginManager = new PluginManager();
-	pluginManager.init(config.plugins, context);
+	pluginManager.init(config.plugins, context, swaggerDocument);
+
 	router.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 	// router.use('/api/docs', context.security.isLoggedIn, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
