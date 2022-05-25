@@ -92,7 +92,8 @@ module.exports = class PluginManager {
 				plugin.init(context);
 				plugin.load(context);
 				if (plugin.swagger) {
-					swaggerDocument.paths = Object.assign(swaggerDocument.paths, plugin.swagger().paths);
+					swaggerDocument.tags = Object.assign(swaggerDocument.tags || {}, plugin.swagger.tags);
+					swaggerDocument.paths = Object.assign(swaggerDocument.paths || {}, plugin.swagger.paths);
 				}
 				plugin.setLoaded();
 				console.log(`Loaded plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
