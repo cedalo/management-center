@@ -9,6 +9,8 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const WebSocket = require('ws');
+const swaggerUi = require('swagger-ui-express');
+
 const HTTPClient = require('./src/http/HTTPClient');
 const BrokerManager = require('./src/broker/BrokerManager');
 const NodeMosquittoClient = require('./src/client/NodeMosquittoClient');
@@ -19,6 +21,7 @@ const ConfigManager = require('./src/config/ConfigManager');
 const SettingsManager = require('./src/settings/SettingsManager');
 const { loadInstallation } = require('./src/utils/utils');
 const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
+const swaggerDocument = require('./swagger.js');
 
 const version = require('./src/utils/version');
 

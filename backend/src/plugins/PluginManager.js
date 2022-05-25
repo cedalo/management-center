@@ -48,7 +48,7 @@ module.exports = class PluginManager {
 		}
 	}
 
-	init(pluginConfigurations = [], context) {
+	init(pluginConfigurations = [], context, swaggerDocument) {
 		if (!PLUGIN_DIR) {
 			console.log('"CEDALO_MC_PLUGIN_DIR" is not set. Skipping loading of plugins');
 			return;
@@ -91,6 +91,10 @@ module.exports = class PluginManager {
 			try {
 				plugin.init(context);
 				plugin.load(context);
+				if (plugin.swagger) {
+					swaggerDocument.tags = Object.assign(swaggerDocument.tags || {}, plugin.swagger.tags);
+					swaggerDocument.paths = Object.assign(swaggerDocument.paths || {}, plugin.swagger.paths);
+				}
 				plugin.setLoaded();
 				console.log(`Loaded plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
 			} catch(error) {
