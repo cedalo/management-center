@@ -743,7 +743,17 @@ const init = async (licenseContainer) => {
 	};
 
 	const pluginManager = new PluginManager();
-	pluginManager.init(config.plugins, context);
+	pluginManager.init(config.plugins, context, swaggerDocument);
+
+	// Swagger
+	const theme = config.themes.find((theme) => theme.id === 'custom');
+	let options = {};
+	if (theme?.light?.logo?.path) {
+		options = {
+			customCss: `.topbar-wrapper img { height: 30px; content: url(${theme.light.logo.path})}`
+		};
+	}
+	router.use('/api/docs', context.security.isLoggedIn, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 	router.get('/api/version', context.security.isLoggedIn, (request, response) => {
 		response.json(version);
