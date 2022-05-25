@@ -18,6 +18,7 @@ module.exports = class BasePlugin {
 			],
 		  });
 		this._logger = logger;
+		this._swagger = {};
 	}
 
 	get logger() {
@@ -58,5 +59,9 @@ module.exports = class BasePlugin {
 
 	get status() {
 		return this._status;
+	}
+
+	get swagger() {
+		return this._swagger;
 	}
 }
