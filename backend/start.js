@@ -2,6 +2,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const http = require('http');
+const EventEmitter = require('events');
 const { v4: uuidv4 } = require('uuid');
 const express = require('express');
 const session = require('express-session');
@@ -40,6 +41,7 @@ const TopicTreeManager = require('./src/topictree/TopicTreeManager');
 
 const checker = new LicenseChecker();
 let context = {
+	eventEmitter: new EventEmitter(),
 	brokerManager: new BrokerManager(),
 	requestHandlers: new Map(),
 	security: {
@@ -236,6 +238,7 @@ const init = async (licenseContainer) => {
 			connectionConfiguration.status.connected = true;
 			console.log(`Connected to '${connection.name}' at ${connection.url}`);
 			brokerClient.on('close', () => {
+				context.eventEmitter.emit('close', connectionConfiguration);
 				connectionConfiguration.status = {
 					connected: false,
 					error: {
@@ -246,7 +249,9 @@ const init = async (licenseContainer) => {
 				};
 				sendConnectionsUpdate(brokerClient);
 			});
+			// TODO: this listener is not applied
 			brokerClient.on('connect', () => {
+				context.eventEmitter.emit('connect', connectionConfiguration);
 				connectionConfiguration.status = {
 					connected: true
 				};
