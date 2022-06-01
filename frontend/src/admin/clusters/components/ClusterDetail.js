@@ -28,7 +28,8 @@ import CardContent from '@material-ui/core/CardContent';
 import SelectNodeDialog from './SelectNodeDialog';
 import LeaderIcon from '@material-ui/icons/Person';
 import FollowerIcon from '@material-ui/icons/People';
-import { green } from '@material-ui/core/colors';
+import ErrorIcon from '@material-ui/icons/Error';
+import { green, red } from '@material-ui/core/colors';
 import WaitDialog from '../../../components/WaitDialog';
 
 const clusterShape = PropTypes.shape({
@@ -62,6 +63,24 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbItem: theme.palette.breadcrumbItem,
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
+
+const getNodeIcon = (node) => {
+	if (node?.error) {
+		return <Tooltip title={node.error.message} aria-label="Leader">
+			<ErrorIcon style={{ color: red[500] }} />
+		</Tooltip> 
+	} else {
+		if (node?.leader) {
+			return <Tooltip title="Leader" aria-label="Leader">
+				<LeaderIcon style={{ color: green[500] }} />
+			</Tooltip> 
+		} else {
+			return <Tooltip title="Follower" aria-label="Follower">
+				<FollowerIcon />
+			</Tooltip>
+		}
+	}
+}
 
 const ClusterDetail = (props) => {
 	const classes = useStyles();
@@ -243,15 +262,7 @@ const ClusterDetail = (props) => {
 							<Grid item xs={12} md={4}>
 								<Card variant="outlined">
 									<CardHeader
-										avatar={
-											node?.leader 
-												? <Tooltip title="Leader" aria-label="Leader">
-													<LeaderIcon style={{ color: green[500] }} />
-												</Tooltip> 
-												: <Tooltip title="Follower" aria-label="Follower">
-													<FollowerIcon />
-												</Tooltip>
-										}
+										avatar={getNodeIcon(node)}
 										subheader={node.broker}
 									/>
 									<CardContent>
