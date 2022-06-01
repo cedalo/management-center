@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Button from '@material-ui/core/Button';
@@ -40,9 +40,14 @@ const clusterDoesNotContainNode = (brokerConnection, cluster) => {
 	return result ? false : true;
 }
 
+const validNodeIdRange = (nodeId) => {
+	return nodeId >= 1 && nodeId <= 1023;
+};
+
 const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, defaultNode = {} }) => {
 
 	const classes = useStyles();
+	const [validNodeId, setValidNodeId] = useState(true);
 
 	const availableBrokerConnections = brokerConnections?.filter((brokerConnection) => clusterDoesNotContainNode(brokerConnection, cluster))
 		.filter((brokerConnection) => brokerConnection.status ? brokerConnection.status.connected : false) || [];
@@ -59,7 +64,17 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 					required={true}
 					id="node-id"
 					label="Node ID"
-					onChange={(event) => defaultNode.nodeId = parseInt(event.target.value)}
+					InputProps={{ inputProps: { min: 1, max: 1023 } }}
+					onChange={(event) => {
+						const nodeId = parseInt(event.target.value);
+						const valid = validNodeIdRange(nodeId);
+						setValidNodeId(valid);
+						if (valid) {
+							defaultNode.nodeId = parseInt(event.target.value);
+						}
+					}}
+					error={!validNodeId}
+					helperText={!validNodeId && 'Node ID must be a number in the range of 1 to 1023.'}
 					defaultValue={defaultNode.nodeId}
 					variant="outlined"
 					fullWidth
