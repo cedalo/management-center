@@ -61,7 +61,6 @@ const AnonymousGroupSelect = ({ anonymousGroup, groupsAll = [], onUpdateAnonymou
 			</InputLabel>
 			<Select
 				label="Anonymous group"
-				classes={classes}
 				classes={{
 					root: classes.select
 				}}

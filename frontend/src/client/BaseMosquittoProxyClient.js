@@ -303,7 +303,7 @@ export default class BaseMosquittoProxyClient {
 			type: 'request',
 			request: 'getCluster',
 			clustername
-		});
+		}, 20000);
 		return response.response;
 	}
 

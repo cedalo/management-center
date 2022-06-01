@@ -3,6 +3,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
+import useFetch from '../helpers/useFetch';
 
 import useLocalStorage from '../helpers/useLocalStorage';
 
@@ -30,6 +31,7 @@ const NewsletterPopup = () => {
 	const classes = useStyles();
 	const [subscribed, setSubscribed] = useLocalStorage('cedalo.managementcenter.subscribedToNewsletter');
 	const [showNewsletterPopup, setShowNewsletterPopup] = useLocalStorage('cedalo.managementcenter.showNewsletterPopup');
+	const [newsletterEndpointResponse, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/newsletter/subscribe`);
 
 	const subscribeNewsletter = async (email) => {
 		try {
@@ -51,35 +53,35 @@ const NewsletterPopup = () => {
 
 	useEffect(() => {
 		const timer = setTimeout(async () => {
-
-			if (subscribed !== 'true' && showNewsletterPopup !== 'false') {
-				const { value: email, isConfirmed } = await MySwal.fire({
-					position: 'bottom-end',
-					title: 'Want to get all the news?',
-					input: 'email',
-					inputLabel: 'Subscribe to our newsletter!',
-					inputPlaceholder: 'Enter your email address here',
-					showCancelButton: true,
-					width: 500,
-				  });
-				  if (isConfirmed) {
-					await subscribeNewsletter(email);
-					setShowNewsletterPopup('false');
-					MySwal.fire({
+			if (newsletterEndpointResponse?.newsletterEndpointAvailable) {
+				if (subscribed !== 'true' && showNewsletterPopup !== 'false') {
+					const { value: email, isConfirmed } = await MySwal.fire({
 						position: 'bottom-end',
-						title: 'That worked!',
-						text: 'You now get all the news for Mosquitto, MQTT and Streamsheets.',
-						icon: 'success',
+						title: 'Want to get all the news?',
+						input: 'email',
+						inputLabel: 'Subscribe to our newsletter!',
+						inputPlaceholder: 'Enter your email address here',
+						showCancelButton: true,
 						width: 500,
-					})
-				  } else {
-					setShowNewsletterPopup('false');
-				  }
+					  });
+					  if (isConfirmed) {
+						await subscribeNewsletter(email);
+						setShowNewsletterPopup('false');
+						MySwal.fire({
+							position: 'bottom-end',
+							title: 'That worked!',
+							text: 'You now get all the news for Mosquitto, MQTT and Streamsheets.',
+							icon: 'success',
+							width: 500,
+						})
+					  } else {
+						setShowNewsletterPopup('false');
+					  }
+				}
 			}
-
 		}, NEWSLETTER_POPUP_DELAY);
 		return () => clearTimeout(timer);
-	  }, []);
+	  }, [newsletterEndpointResponse]);
 	return null;
 };
 

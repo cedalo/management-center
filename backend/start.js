@@ -2,13 +2,16 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const http = require('http');
+const EventEmitter = require('events');
 const { v4: uuidv4 } = require('uuid');
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const WebSocket = require('ws');
-const axios = require('axios');
+const swaggerUi = require('swagger-ui-express');
+
+const HTTPClient = require('./src/http/HTTPClient');
 const BrokerManager = require('./src/broker/BrokerManager');
 const NodeMosquittoClient = require('./src/client/NodeMosquittoClient');
 const PluginManager = require('./src/plugins/PluginManager');
@@ -18,18 +21,14 @@ const ConfigManager = require('./src/config/ConfigManager');
 const SettingsManager = require('./src/settings/SettingsManager');
 const { loadInstallation } = require('./src/utils/utils');
 const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
-const packageJSON = require('./package.json');
+const swaggerDocument = require('./swagger.js');
 
-const version = {
-	name: process.env.CEDALO_MC_NAME || 'Cedalo Management Center',
-	version: process.env.CEDALO_MC_VERSION || packageJSON.version,
-	buildNumber: process.env.TRAVIS_BUILD_NUMBER || process.env.CEDALO_MC_BUILD_NUMBER || uuidv4(),
-	buildDate: process.env.CEDALO_MC_BUILD_DATE || Date.now()
-};
+const version = require('./src/utils/version');
 
 const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
+const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
 
 const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
@@ -45,6 +44,7 @@ const TopicTreeManager = require('./src/topictree/TopicTreeManager');
 
 const checker = new LicenseChecker();
 let context = {
+	eventEmitter: new EventEmitter(),
 	brokerManager: new BrokerManager(),
 	requestHandlers: new Map(),
 	security: {
@@ -241,6 +241,7 @@ const init = async (licenseContainer) => {
 			connectionConfiguration.status.connected = true;
 			console.log(`Connected to '${connection.name}' at ${connection.url}`);
 			brokerClient.on('close', () => {
+				context.eventEmitter.emit('close', connectionConfiguration);
 				connectionConfiguration.status = {
 					connected: false,
 					error: {
@@ -251,7 +252,9 @@ const init = async (licenseContainer) => {
 				};
 				sendConnectionsUpdate(brokerClient);
 			});
+			// TODO: this listener is not applied
 			brokerClient.on('connect', () => {
+				context.eventEmitter.emit('connect', connectionConfiguration);
 				connectionConfiguration.status = {
 					connected: true
 				};
@@ -748,14 +751,24 @@ const init = async (licenseContainer) => {
 	};
 
 	const pluginManager = new PluginManager();
-	pluginManager.init(config.plugins, context);
+	pluginManager.init(config.plugins, context, swaggerDocument);
+
+	// Swagger
+	const theme = config.themes.find((theme) => theme.id === 'custom');
+	let options = {};
+	if (theme?.light?.logo?.path) {
+		options = {
+			customCss: `.topbar-wrapper img { height: 30px; content: url(${theme.light.logo.path})}`
+		};
+	}
+	router.use('/api/docs', context.security.isLoggedIn, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 	router.get('/api/version', context.security.isLoggedIn, (request, response) => {
 		response.json(version);
 	});
 
 	router.get('/api/update', context.security.isLoggedIn, async (request, response) => {
-		// const update = await axios.get('https://api.cedalo.cloud/rest/request/mosquitto-ui/version');
+		// const update = await HTTPClient.getInstance().get('https://api.cedalo.cloud/rest/request/mosquitto-ui/version');
 		// response.json(update.data);
 		response.json({});
 	});
@@ -772,21 +785,34 @@ const init = async (licenseContainer) => {
 		response.json(settingsManager.settings);
 	});
 
-	const NEWSLETTER_URL = 'https://api.cedalo.cloud/rest/api/v1.0/newsletter/subscribe';
-	router.post('/api/newsletter/subscribe', (request, response) => {
-		const user = request.body;
-		axios
-			.post(NEWSLETTER_URL, user)
-			.then(() => {
-				response.status(200).json({
-					newsletter: true
-				});
-			})
-			.catch((error) => {
-				console.error('Error when trying to subscribe for newsletter.');
-				console.error(error);
+	if (!CEDALO_MC_OFFLINE) {
+		const NEWSLETTER_URL = 'https://api.cedalo.cloud/rest/api/v1.0/newsletter/subscribe';
+		router.get('/api/newsletter/subscribe', (request, response) => {
+			response.status(200).send({
+				newsletterEndpointAvailable: true
 			});
-	});
+		});
+		router.post('/api/newsletter/subscribe', (request, response) => {
+			const user = request.body;
+			HTTPClient.getInstance()
+				.post(NEWSLETTER_URL, user)
+				.then(() => {
+					response.status(200).json({
+						newsletter: true
+					});
+				})
+				.catch((error) => {
+					console.error('Error when trying to subscribe for newsletter.');
+					console.error(error);
+				});
+		});
+	} else {
+		router.get('/api/newsletter/subscribe', (request, response) => {
+			response.status(200).send({
+				newsletterEndpointAvailable: false
+			});
+		});
+	}
 
 	router.get('/api/config/tools/streamsheets', context.security.isLoggedIn, (request, response) => {
 		if (config?.tools?.streamsheets) {

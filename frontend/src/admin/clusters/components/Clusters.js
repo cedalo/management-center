@@ -37,6 +37,7 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../../../websockets/WebSocket';
+import WaitDialog from '../../../components/WaitDialog';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
 
@@ -182,6 +183,18 @@ const createClusterTable = (clusters, classes, props, onCheckHealthStatus, onDel
 											size="small"
 											onClick={(event) => {
 												event.stopPropagation();
+												onCheckHealthStatus(cluster.clustername);
+											}}
+											aria-label="delete"
+										>
+											<CheckHealthStatusIcon fontSize="small" />
+										</IconButton>
+
+										<IconButton
+											edge="end"
+											size="small"
+											onClick={(event) => {
+												event.stopPropagation();
 												onDeleteCluster(cluster.clustername);
 											}}
 											aria-label="delete"
@@ -212,13 +225,21 @@ const Clusters = (props) => {
 	const confirm = useConfirm();
 	const { enqueueSnackbar } = useSnackbar();
 	const { client: brokerClient } = context;
-
+	const [progressDialogOpen, setProgressDialogOpen] = React.useState(false);
 	const { clusterManagementFeature, clusters = [], onSort, sortBy, sortDirection } = props;
 
 	const onSelectCluster = async (clustername) => {
-		const cluster = await brokerClient.getCluster(clustername);
-		dispatch(updateCluster(cluster));
-		history.push(`/admin/clusters/detail/${clustername}`);
+		setProgressDialogOpen(true);
+		try {
+			const cluster = await brokerClient.getCluster(clustername);
+			dispatch(updateCluster(cluster));
+			setProgressDialogOpen(false);
+			history.push(`/admin/clusters/detail/${clustername}`);
+		} catch(error) {
+			enqueueSnackbar(`Cluster loading failed. Reason: ${error.message || error}`, {
+				variant: 'error'
+			});
+		}
 	};
 
 	const onNewCluster = () => {
@@ -303,6 +324,11 @@ const Clusters = (props) => {
 			</Button>
 			<br />
 			<br />
+			<WaitDialog
+				title='Loading cluster details'
+				open={progressDialogOpen}
+				handleClose={() => setProgressDialogOpen(false)}
+			/>
 			</>}
 			
 			{ createClusterTable(clusters, classes, props, onCheckHealthStatus, onDeleteCluster, onSelectCluster) }

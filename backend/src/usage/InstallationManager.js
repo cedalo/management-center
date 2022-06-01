@@ -1,6 +1,7 @@
-const axios = require('axios');
+const HTTPClient = require('../http/HTTPClient');
 
 const URL = 'https://api.cedalo.cloud/rest/request/mosquitto-ui/installation';
+const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
 
 module.exports = class InstallationManager {
 	constructor({ license, version, installation }) {
@@ -10,17 +11,19 @@ module.exports = class InstallationManager {
 	}
 
 	async send(data) {
-		const sendData = {
-			installation: this._installation,
-			license: this._license,
-			timestamp: Date.now(),
-			version: this._version,
-		};
-		try {
-			const response = await axios.post(URL, sendData);
-			return response;
-		} catch (error) {
-			console.error(error);
+		if(!CEDALO_MC_OFFLINE) {
+			const sendData = {
+				installation: this._installation,
+				license: this._license,
+				timestamp: Date.now(),
+				version: this._version,
+			};
+			try {
+				const response = await HTTPClient.getInstance().post(URL, sendData);
+				return response;
+			} catch (error) {
+				console.error(error);
+			}
 		}
 	}
 
