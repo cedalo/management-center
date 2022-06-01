@@ -1,6 +1,6 @@
-import BaseMosquittoClient from './BaseMosquittoProxyClient';
+import BaseMosquittoProxyClient from './BaseMosquittoProxyClient';
 
-export default class WebMosquittoProxyClient extends BaseMosquittoClient {
+export default class WebMosquittoProxyClient extends BaseMosquittoProxyClient {
 	constructor({ name = 'Web Mosquitto Proxy Client', defaultListener } = {}) {
 		super({ name, logger: console, defaultListener });
 	}
