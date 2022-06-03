@@ -1,6 +1,6 @@
 {
 	"name": "@cedalo/management-center-frontend",
-	"version": "2.4.6-rc1",
+	"version": "2.4.6",
 	"private": true,
 	"author": "Cedalo AG",
 	"homepage": ".",
