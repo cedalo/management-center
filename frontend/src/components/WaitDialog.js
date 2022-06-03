@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 
 // import MessagePage from './MessagePage';
 
-const WaitDialog = ({ open, title, handleClose }) => {
+const WaitDialog = ({ open, title, message, handleClose }) => {
 
 	return (
 		<Dialog
@@ -24,6 +24,8 @@ const WaitDialog = ({ open, title, handleClose }) => {
 			<DialogContent>
 				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
 					<Grid item xs={12} align="center">
+						{message}
+						{message ? <><br/><br/></> : null}
 						<img src="/inprogress.png" />
 					</Grid>
 				</Grid>
