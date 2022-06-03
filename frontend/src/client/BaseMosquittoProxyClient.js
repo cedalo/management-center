@@ -297,13 +297,14 @@ export default class BaseMosquittoProxyClient {
 		return response.response;
 	}
 
-	async getCluster(clustername) {
+	async getCluster(clustername, numberOfNodes) {
+		const timeout = numberOfNodes ? numberOfNodes * 20000 : 20000;
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
 			request: 'getCluster',
 			clustername
-		}, 20000);
+		}, timeout);
 		return response.response;
 	}
 

@@ -104,7 +104,7 @@ const createClusterTable = (clusters, classes, props, onCheckHealthStatus, onDel
 										hover
 										key={cluster.clustername}
 										onClick={(event) => {
-											onSelectCluster(cluster.clustername);
+											onSelectCluster(cluster.clustername, cluster.nodes?.length);
 										}}
 										style={{ cursor: 'pointer' }}
 									>
@@ -148,7 +148,7 @@ const createClusterTable = (clusters, classes, props, onCheckHealthStatus, onDel
 							<React.Fragment>
 								<ListItem
 									alignItems="flex-start"
-									onClick={(event) => onSelectCluster(cluster.clustername)}
+									onClick={(event) => onSelectCluster(cluster.clustername, cluster.nodes?.length)}
 								>
 									<ListItemText
 										primary={<span>{cluster.clustername}</span>}
@@ -171,7 +171,7 @@ const createClusterTable = (clusters, classes, props, onCheckHealthStatus, onDel
 											size="small"
 											onClick={(event) => {
 												event.stopPropagation();
-												onSelectCluster(cluster.clustername);
+												onSelectCluster(cluster.clustername, cluster.nodes?.length);
 											}}
 											aria-label="edit"
 										>
@@ -228,10 +228,10 @@ const Clusters = (props) => {
 	const [progressDialogOpen, setProgressDialogOpen] = React.useState(false);
 	const { clusterManagementFeature, clusters = [], onSort, sortBy, sortDirection } = props;
 
-	const onSelectCluster = async (clustername) => {
+	const onSelectCluster = async (clustername, numberOfNodes) => {
 		setProgressDialogOpen(true);
 		try {
-			const cluster = await brokerClient.getCluster(clustername);
+			const cluster = await brokerClient.getCluster(clustername, numberOfNodes);
 			dispatch(updateCluster(cluster));
 			setProgressDialogOpen(false);
 			history.push(`/admin/clusters/detail/${clustername}`);
@@ -326,6 +326,7 @@ const Clusters = (props) => {
 			<br />
 			<WaitDialog
 				title='Loading cluster details'
+				message='Note that this can take a while depending on the size and status of your cluster.'
 				open={progressDialogOpen}
 				handleClose={() => setProgressDialogOpen(false)}
 			/>
