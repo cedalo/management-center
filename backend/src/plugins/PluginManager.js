@@ -49,13 +49,13 @@ module.exports = class PluginManager {
 	}
 
 	init(pluginConfigurations = [], context, swaggerDocument) {
-		if (!PLUGIN_DIR) {
-			console.log('"CEDALO_MC_PLUGIN_DIR" is not set. Skipping loading of plugins');
-			return;
-		}
 		this._context = context;
 		const { licenseContainer } = context;
 		if (licenseContainer.license.isValid) {
+			if (!PLUGIN_DIR) {
+				console.log('"CEDALO_MC_PLUGIN_DIR" is not set. Skipping loading of plugins');
+				return;
+			}
 			pluginConfigurations.forEach((pluginConfiguration) => {
 				try {
 					const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
