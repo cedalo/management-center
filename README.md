@@ -15,7 +15,7 @@ Either go to [official documentation page](https://docs.cedalo.com/management-ce
 * Intstall `yarn` package manager
 
 
-* Run mosquitto queue:
+* Run the Mosquitto broker:
     * Create `mosquitto` directory
     * Go inside this directory, create `config` and `data` directories
     * Go inside `config` directory and create config file `mosquitto.conf`
@@ -48,12 +48,12 @@ Either go to [official documentation page](https://docs.cedalo.com/management-ce
                 driver: bridge
         ```
 
-    * Inside `mosquitto` directory run the following command to start the queue:
+    * Inside `mosquitto` directory run the following command to start the broker:
         ```
             docker-compose up
         ```
 
-* Now, when mosquitto queue is installed, go to the root directory of the Management Center and run:
+* Now, when Mosquitto broker is installed, go to the root directory of the Management Center and run:
 
     ```
         yarn install
@@ -74,8 +74,6 @@ Either go to [official documentation page](https://docs.cedalo.com/management-ce
         export CEDALO_MC_USERNAME="cedalo" \
         export CEDALO_MC_PASSWORD="tests" \
         export CEDALO_MC_PROXY_HOST="localhost" \
-        export CEDALO_API_USERNAME="cedalo" \
-        export CEDALO_API_PASSWORD="secret"
     ```
 
 * Go to the `backend` directory and run:
@@ -84,4 +82,4 @@ Either go to [official documentation page](https://docs.cedalo.com/management-ce
     ```
 
 
-* Go to `http://localhost:8088` to start working with the Manager
+* Go to `http://localhost:8088` to start working with the Management Center for Eclipse Mosquitto
