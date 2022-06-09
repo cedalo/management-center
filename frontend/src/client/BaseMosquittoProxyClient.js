@@ -184,7 +184,7 @@ export default class BaseMosquittoProxyClient {
 			const response = await axios.get(url);
 			return response.data;
 		} catch (error) {
-			throw new NotAuthorizedError()();
+			throw new NotAuthorizedError();
 		}
 	}
 
