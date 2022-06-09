@@ -754,7 +754,7 @@ const init = async (licenseContainer) => {
 	pluginManager.init(config.plugins, context, swaggerDocument);
 
 	// Swagger
-	const theme = config.themes.find((theme) => theme.id === 'custom');
+	const theme = config.themes?.find((theme) => theme.id === 'custom');
 	let options = {};
 	if (theme?.light?.logo?.path) {
 		options = {

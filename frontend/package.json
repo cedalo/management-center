@@ -7,8 +7,12 @@
 	"scripts": {
 		"start": "react-scripts start",
 		"build": "react-scripts build",
-		"build-without-base-path": "rm -rf ../backend/public && cross-env PUBLIC_URL=/ react-scripts build && mv build ../backend/public",
-		"build-with-base-path": "cross-env PUBLIC_URL=/mosquitto-management-center react-scripts build && mv build ../backend/public",
+		"build-without-base-path": "run-script-os",
+		"build-without-base-path:win32": "(if exist ..\\backend\\public rmdir ..\\backend\\public /s /q) && cross-env PUBLIC_URL=/ react-scripts build && move build ../backend/public",
+		"build-without-base-path:darwin:linux": "rm -rf ../backend/public && cross-env PUBLIC_URL=/ react-scripts build && mv build ../backend/public",
+		"build-with-base-path": "run-script-os",
+		"build-with-base-path:win32": "cross-env PUBLIC_URL=/mosquitto-management-center react-scripts build && move build ../backend/public",
+		"build-with-base-path:darwin:linux": "cross-env PUBLIC_URL=/mosquitto-management-center react-scripts build && mv build ../backend/public",
 		"test": "react-scripts test",
 		"test-client": "npx jest tests/client.test.js --detectOpenHandles",
 		"eject": "react-scripts eject",
@@ -43,7 +47,8 @@
 		"chart.js": "^2.9.3",
 		"clsx": "latest",
 		"cross-env": "^7.0.3",
-		"jest": "24"
+		"jest": "24",
+		"run-script-os": "^1.1.6"
 	},
 	"browserslist": {
 		"production": [
