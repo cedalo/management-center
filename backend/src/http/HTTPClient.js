@@ -1,4 +1,5 @@
 const os = require('os');
+const urlModule = require('url');
 const axios = require('axios');
 
 const version = require('../utils/version');
@@ -58,8 +59,19 @@ class HTTPClient {
 	async post(url, body, headers, config = {}) {
 		config.headers = headers;
 		config = this._checkConfig(config);
-		// axios serialize json data
-		return axios.post(url, body, config)
+		if (headers['Content-Type'] && headers['Content-Type'] === 'application/x-www-form-urlencoded') {
+			const formParams = {
+				...body
+			}
+			try {
+				const params = new urlModule.URLSearchParams(formParams);
+				console.log(params)
+				return axios.post(url, params.toString(), config);
+			} catch (error) {
+				console.error(error);
+			}
+		}
+		return axios.post(url, body, config);
 	}
 
 	async put(url, body, headers, config = {}) {
