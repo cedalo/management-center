@@ -193,9 +193,6 @@ export default class BaseMosquittoProxyClient {
 			const url = `${this._httpEndpointURL}/api/user-management/roles`;
 			const response = await axios.get(url);
 			return response.data;
-			if (!Array.isArray(response.data)) {
-				throw new APINotFoundError();
-			}
 		} catch (error) {
 			throw new NotAuthorizedError();
 		}
