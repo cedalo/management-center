@@ -56,7 +56,7 @@ class HTTPClient {
 		return axios.options(url, config)
 	}
 
-	async post(url, body, headers, config = {}) {
+	async post(url, body, headers = {}, config = {}) {
 		config.headers = headers;
 		config = this._checkConfig(config);
 		if (headers['Content-Type'] && headers['Content-Type'] === 'application/x-www-form-urlencoded') {
