@@ -58,7 +58,7 @@ const createID = () => uuid();
 
 
 module.exports = class BaseMosquittoProxyClient {
-	constructor({ name, logger, defaultListener } = {}) {
+	constructor({ name, logger, defaultListener } = {}, { socketEndpointURL, httpEndpointURL } = {}, headers=undefined) {
 		this.name = name || 'Default Base Mosquitto Proxy Client';
 		this._logger = logger || {
 			log() { },
@@ -67,6 +67,9 @@ module.exports = class BaseMosquittoProxyClient {
 			debug() { },
 			error() { }
 		};
+		this._headers = headers ? { headers } : undefined;
+		this._socketEndpointURL = socketEndpointURL;
+		this._httpEndpointURL = httpEndpointURL;
 		this._eventHandler = (event) => this.logger.info(event);
 		this._closeHandler = () => this.logger.info('Close Mosquitto Proxy Client');
 		this._eventListeners = new Map();
@@ -78,7 +81,7 @@ module.exports = class BaseMosquittoProxyClient {
 	}
 
 	// eslint-disable-next-line consistent-return
-	async connect({ socketEndpointURL, httpEndpointURL } = {}) {
+	async connect({ socketEndpointURL, httpEndpointURL } = {}, sid=undefined) {
 		if (this._isConnected || this._isConnecting) {
 			return Promise.resolve({});
 		}
@@ -87,7 +90,7 @@ module.exports = class BaseMosquittoProxyClient {
 		this._socketEndpointURL = socketEndpointURL || this._socketEndpointURL;
 		this._httpEndpointURL = httpEndpointURL || this._httpEndpointURL;
 		try {
-			const ws = await this._connectSocketServer(`${this._socketEndpointURL}?authToken=${this._token}`);
+			const ws = await this._connectSocketServer(`${this._socketEndpointURL}?authToken=${this._token}`, sid);
 			this._ws = ws;
 			this._isConnected = true;
 			this._keepAlive();
@@ -173,7 +176,7 @@ module.exports = class BaseMosquittoProxyClient {
 	 async getUser(username) {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/users/${username}`;
-			const response = await axios.get(url);
+			const response = await axios.get(url, this._headers);
 			return response.data;
 		} catch (error) {
 			throw new NotAuthorizedError()();
@@ -183,7 +186,7 @@ module.exports = class BaseMosquittoProxyClient {
 	async getUserProfile() {
 		try {
 			const url = `${this._httpEndpointURL}/api/profile`;
-			const response = await axios.get(url);
+			const response = await axios.get(url, this._headers);
 			return response.data;
 		} catch (error) {
 			throw new NotAuthorizedError()();
@@ -193,11 +196,8 @@ module.exports = class BaseMosquittoProxyClient {
 	async listUserRoles() {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/roles`;
-			const response = await axios.get(url);
+			const response = await axios.get(url, this._headers);
 			return response.data;
-			if (!Array.isArray(response.data)) {
-				throw new APINotFoundError();
-			}
 		} catch (error) {
 			throw new NotAuthorizedError();
 		}
@@ -208,7 +208,7 @@ module.exports = class BaseMosquittoProxyClient {
 			const url = `${this._httpEndpointURL}/api/user-management/users/${user.username}`;
 			const response = await axios.put(url, {
 				roles
-			});
+			}, this._headers);
 			return response.data;
 		} catch (error) {
 			throw new NotAuthorizedError()
@@ -218,7 +218,7 @@ module.exports = class BaseMosquittoProxyClient {
 	async listUsers() {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/users`;
-			const response = await axios.get(url);
+			const response = await axios.get(url, this._headers);
 			return response.data;
 		} catch (error) {
 			throw new NotAuthorizedError()
@@ -233,7 +233,7 @@ module.exports = class BaseMosquittoProxyClient {
 				roles
 			}
 			const url = `${this._httpEndpointURL}/api/user-management/users`;
-			const response = await axios.post(url, user);
+			const response = await axios.post(url, user, this._headers);
 			return response.data;
 		} catch (error) {
 			throw new NotAuthorizedError()
@@ -243,7 +243,7 @@ module.exports = class BaseMosquittoProxyClient {
 	async deleteUser(username) {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/users/${username}`;
-			const response = await axios.delete(url);
+			const response = await axios.delete(url, this._headers);
 			return response.data;
 		} catch (error) {
 			throw new NotAuthorizedError()
@@ -253,7 +253,7 @@ module.exports = class BaseMosquittoProxyClient {
 	async updateUser(user) {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/users/${user.username}`;
-			const response = await axios.put(url, user);
+			const response = await axios.put(url, user, this._headers);
 			return response.data;
 		} catch (error) {
 			throw new NotAuthorizedError()
@@ -263,7 +263,7 @@ module.exports = class BaseMosquittoProxyClient {
 	async updateUserProfile(user) {
 		try {
 			const url = `${this._httpEndpointURL}/api/profile/${user.username}`;
-			const response = await axios.put(url, user);
+			const response = await axios.put(url, user, this._headers);
 			return response.data;
 		} catch (error) {
 			if (error?.response?.status === 404) {
@@ -967,7 +967,7 @@ module.exports = class BaseMosquittoProxyClient {
 	async exportTestCollection(testCollectionId) {
 		try {
 			const url = `${this._httpEndpointURL}/api/mqtt-testing/testcollections/${testCollectionId}`;
-			const response = await axios.get(url);
+			const response = await axios.get(url, this._headers);
 			return response.data;
 		} catch (error) {
 			throw new NotAuthorizedError()();
