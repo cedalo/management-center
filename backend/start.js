@@ -180,7 +180,7 @@ const init = async (licenseContainer) => {
 
 	const globalSystem = {};
 	const globalTopicTree = {};
-	app = express();
+	const app = express();
 
 	const sessionParser = session({ secret: process.env.CEDALO_MC_SESSION_SECRET || "secret" });
 	app.use(sessionParser);
@@ -188,7 +188,7 @@ const init = async (licenseContainer) => {
 	app.use(express.urlencoded({ extended: true }));
 	app.use(cors());
 
-	server = http.createServer(app);
+	const server = http.createServer(app);
 
 	// TODO: add error handling
 	const config = loadConfig();
@@ -734,7 +734,7 @@ const init = async (licenseContainer) => {
 		});
 	});
 
-	router = express.Router();
+	const router = express.Router();
 	app.use(CEDALO_MC_PROXY_BASE_PATH, router);
 
 	context = {
