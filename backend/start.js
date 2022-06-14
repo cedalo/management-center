@@ -156,13 +156,11 @@ const addStreamsheetsConfig = (config) => {
 	}
 };
 
-
-const router 				= { value: undefined };
-const app 					= { value: undefined };
-const server 				= { value: undefined };
-const serverStarted 		= { value: false };
-const stopServerFunction 	= { func: undefined };
-const stopFunctions 		= [];
+const controlElements = {
+	serverStarted: false,
+	stopFunctions: [],
+	logger: console
+};
 
 
 const init = async (licenseContainer) => {
@@ -182,15 +180,15 @@ const init = async (licenseContainer) => {
 
 	const globalSystem = {};
 	const globalTopicTree = {};
-	app.value = express();
+	app = express();
 
 	const sessionParser = session({ secret: process.env.CEDALO_MC_SESSION_SECRET || "secret" });
-	app.value.use(sessionParser);
-	app.value.use(express.json());
-	app.value.use(express.urlencoded({ extended: true }));
-	app.value.use(cors());
+	app.use(sessionParser);
+	app.use(express.json());
+	app.use(express.urlencoded({ extended: true }));
+	app.use(cors());
 
-	server.value = http.createServer(app.value);
+	server = http.createServer(app);
 
 	// TODO: add error handling
 	const config = loadConfig();
@@ -248,7 +246,7 @@ const init = async (licenseContainer) => {
 				connectTimeout: process.env.CEDALO_MC_TIMOUT_MOSQUITTO_CONNECT || 5000
 			});
 
-			stopFunctions.push(async () => await brokerClient.disconnect()); //!! disconnect broker client
+			controlElements.stopFunctions.push(async () => await brokerClient.disconnect()); //!! disconnect broker client
 
 			topicTreeManager.start();
 
@@ -736,8 +734,8 @@ const init = async (licenseContainer) => {
 		});
 	});
 
-	router.value = express.Router();
-	app.value.use(CEDALO_MC_PROXY_BASE_PATH, router.value);
+	router = express.Router();
+	app.use(CEDALO_MC_PROXY_BASE_PATH, router);
 
 	context = {
 		...context,
@@ -748,8 +746,8 @@ const init = async (licenseContainer) => {
 			}
 		},
 		configManager,
-		app: app.value,
-		router: router.value,
+		app: app,
+		router: router,
 		config,
 		globalSystem,
 		globalTopicTree,
@@ -775,38 +773,38 @@ const init = async (licenseContainer) => {
 			customCss: `.topbar-wrapper img { height: 30px; content: url(${theme.light.logo.path})}`
 		};
 	}
-	router.value.use('/api/docs', context.security.isLoggedIn, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+	router.use('/api/docs', context.security.isLoggedIn, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-	router.value.get('/api/version', context.security.isLoggedIn, (request, response) => {
+	router.get('/api/version', context.security.isLoggedIn, (request, response) => {
 		response.json(version);
 	});
 
-	router.value.get('/api/update', context.security.isLoggedIn, async (request, response) => {
+	router.get('/api/update', context.security.isLoggedIn, async (request, response) => {
 		// const update = await HTTPClient.getInstance().get('https://api.cedalo.cloud/rest/request/mosquitto-ui/version');
 		// response.json(update.data);
 		response.json({});
 	});
 
-	router.value.get('/api/config', context.security.isLoggedIn, context.security.acl.middleware.isAdmin, (request, response) => {
+	router.get('/api/config', context.security.isLoggedIn, context.security.acl.middleware.isAdmin, (request, response) => {
 		response.json(config);
 	});
 
-	router.value.get('/api/installation', context.security.isLoggedIn, (request, response) => {
+	router.get('/api/installation', context.security.isLoggedIn, (request, response) => {
 		response.json(installation);
 	});
 
-	router.value.get('/api/settings', context.security.isLoggedIn, (request, response) => {
+	router.get('/api/settings', context.security.isLoggedIn, (request, response) => {
 		response.json(settingsManager.settings);
 	});
 
 	if (!CEDALO_MC_OFFLINE) {
 		const NEWSLETTER_URL = 'https://api.cedalo.cloud/rest/api/v1.0/newsletter/subscribe';
-		router.value.get('/api/newsletter/subscribe', (request, response) => {
+		router.get('/api/newsletter/subscribe', (request, response) => {
 			response.status(200).send({
 				newsletterEndpointAvailable: true
 			});
 		});
-		router.value.post('/api/newsletter/subscribe', (request, response) => {
+		router.post('/api/newsletter/subscribe', (request, response) => {
 			const user = request.body;
 			HTTPClient.getInstance()
 				.post(NEWSLETTER_URL, user)
@@ -821,14 +819,14 @@ const init = async (licenseContainer) => {
 				});
 		});
 	} else {
-		router.value.get('/api/newsletter/subscribe', (request, response) => {
+		router.get('/api/newsletter/subscribe', (request, response) => {
 			response.status(200).send({
 				newsletterEndpointAvailable: false
 			});
 		});
 	}
 
-	router.value.get('/api/config/tools/streamsheets', context.security.isLoggedIn, (request, response) => {
+	router.get('/api/config/tools/streamsheets', context.security.isLoggedIn, (request, response) => {
 		if (config?.tools?.streamsheets) {
 			response.json(config?.tools?.streamsheets);
 		} else {
@@ -836,11 +834,11 @@ const init = async (licenseContainer) => {
 		}
 	});
 
-	router.value.get('/api/license', context.security.isLoggedIn, (request, response) => {
+	router.get('/api/license', context.security.isLoggedIn, (request, response) => {
 		response.json(licenseContainer.license);
 	});
 
-	router.value.get('/api/plugins', context.security.isLoggedIn, context.security.acl.middleware.isAdmin, (request, response) => {
+	router.get('/api/plugins', context.security.isLoggedIn, context.security.acl.middleware.isAdmin, (request, response) => {
 		response.json(
 			pluginManager.plugins.map((plugin) => ({
 				...plugin.meta,
@@ -849,7 +847,7 @@ const init = async (licenseContainer) => {
 		);
 	});
 
-	router.value.get('/*', context.security.isLoggedIn, (request, response) => {
+	router.get('/*', context.security.isLoggedIn, (request, response) => {
 		let filePath = path.join(__dirname, 'public', request.path);
 		// TODO: handle better
 		filePath = filePath.replace(CEDALO_MC_PROXY_BASE_PATH, '');
@@ -860,16 +858,16 @@ const init = async (licenseContainer) => {
 		}
 	});
 
-	router.value.use(express.static(path.join(__dirname, 'public')));
+	router.use(express.static(path.join(__dirname, 'public')));
 
-	server.value.listen({
+	server.listen({
 		host: CEDALO_MC_PROXY_HOST,
 		port: CEDALO_MC_PROXY_PORT
 	}, () => {
-		console.log(`Mosquitto proxy server started on port ${server.value.address().port}`);
-		serverStarted.value = true;
+		console.log(`Mosquitto proxy server started on port ${server.address().port}`);
+		controlElements.serverStarted = true;
 	});
-	server.value.on('upgrade', (request, socket, head) => {
+	server.on('upgrade', (request, socket, head) => {
 		wss.handleUpgrade(request, socket, head, socket => {
 			wss.emit('connection', socket, request);
 		});
@@ -927,13 +925,13 @@ const init = async (licenseContainer) => {
 		}
 	});
 
-	stopServerFunction.func = () => server.value.close();
-	stopFunctions.push(() => server.value.close());
-	stopFunctions.push(() => {
+	stopServerFunction = () => server.close();
+	controlElements.stopFunctions.push(() => server.close());
+	controlElements.stopFunctions.push(() => {
 		clearInterval(intervalD)
 	});
-	stopFunctions.push(() => checker.stop());
-	stopFunctions.push(() => wss.close());
+	controlElements.stopFunctions.push(() => checker.stop());
+	controlElements.stopFunctions.push(() => wss.close());
 };
 
 const licenseContainer = {};
@@ -950,12 +948,4 @@ const licenseContainer = {};
 })();
 
 
-module.exports = {
-	app,
-	router,
-	server,
-	serverStarted,
-	stopServerFunction,
-	stopFunctions,
-	logger: console
-};
+module.exports = controlElements;
