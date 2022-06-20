@@ -400,14 +400,26 @@ const init = async (licenseContainer) => {
 			if (broker.connected) {
 				sendSystemStatusUpdate(system, broker, brokerConnection);
 				sendTopicTreeUpdate(topicTreeManager.topicTree, broker, brokerConnection);
+				return {
+					connected: true
+				}
 			} else {
 				throw new Error('Broker not connected');
 			}
 		}
 	};
 
-	const disconnectFromBroker = (brokerName, client) => {
-		context.brokerManager.disconnectClient(client);  //!!
+	const disconnectFromBroker = async (brokerName, client) => {
+		try {
+			const brokerConnection = context.brokerManager.getBrokerConnection(brokerName);
+			const { broker } = brokerConnection;
+			await context.brokerManager.disconnectClient(client);
+			return {
+				connected: broker.connected
+			}
+		} catch (error) {
+			throw error;
+		}
 	};
 
 	// TODO: extract in separate WebSocket API class
