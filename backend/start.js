@@ -156,9 +156,18 @@ const addStreamsheetsConfig = (config) => {
 	}
 };
 
+
+const stopFunctions = [];
+
+const stop = async () => {
+	for (const stopFunction of stopFunctions) {
+		await stopFunction();
+	}
+}
+
 const controlElements = {
 	serverStarted: false,
-	stopFunctions: [],
+	stop,
 	logger: console
 };
 
@@ -246,7 +255,7 @@ const init = async (licenseContainer) => {
 				connectTimeout: process.env.CEDALO_MC_TIMOUT_MOSQUITTO_CONNECT || 5000
 			});
 
-			controlElements.stopFunctions.push(async () => await brokerClient.disconnect()); //!! disconnect broker client
+			stopFunctions.push(async () => await brokerClient.disconnect()); //!! disconnect broker client
 
 			topicTreeManager.start();
 
@@ -926,12 +935,12 @@ const init = async (licenseContainer) => {
 	});
 
 	stopServerFunction = () => server.close();
-	controlElements.stopFunctions.push(() => server.close());
-	controlElements.stopFunctions.push(() => {
+	stopFunctions.push(() => server.close());
+	stopFunctions.push(() => {
 		clearInterval(intervalD)
 	});
-	controlElements.stopFunctions.push(() => checker.stop());
-	controlElements.stopFunctions.push(() => wss.close());
+	stopFunctions.push(() => checker.stop());
+	stopFunctions.push(() => wss.close());
 };
 
 const licenseContainer = {};
