@@ -1,5 +1,6 @@
 const { v1: uuid } = require('uuid');
 const axios = require('axios');
+const { default: cluster } = require('cluster');
 
 const createError = (code, message) => ({
 	code,
@@ -75,9 +76,14 @@ module.exports = class BaseMosquittoProxyClient {
 		this._eventListeners = new Map();
 		this._isConnected = false;
 		this._requests = new Map();
+		this._clusterConfigurations = [];
 		// TODO: make timeout configurable
 		// request timeout in ms:
 		this._timeout = 11000;
+	}
+
+	setHeaders(headers) {
+		this._headers = { headers };
 	}
 
 	// eslint-disable-next-line consistent-return
@@ -274,6 +280,21 @@ module.exports = class BaseMosquittoProxyClient {
 		}
 	}
 
+
+	async getConnections() {
+		try {
+			const url = `${this._httpEndpointURL}/api/connections`;
+			const response = await axios.get(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
 	/**
 	 * ******************************************************************************************
 	 * Methods for cluster management
@@ -287,7 +308,9 @@ module.exports = class BaseMosquittoProxyClient {
 			request: 'createCluster',
 			clusterConfiguration
 		});
+		this._clusterConfigurations.push(clusterConfiguration);
 		return response.response;
+
 	}
 
 	 async listClusters() {
@@ -337,7 +360,23 @@ module.exports = class BaseMosquittoProxyClient {
 			request: 'deleteCluster',
 			clustername
 		});
+		this._clusterConfigurations = this._clusterConfigurations.filter((el) => el.clustername !== clustername);
 		return response.response;
+	}
+
+	async deleteAllClusters() {
+		const responses = [];
+
+		for (const clusterConfig of this._clusterConfigurations) {
+			const response = await this.deleteCluster(clusterConfig.clustername)
+
+			responses.push({
+				clustername: clusterConfig.clustername,
+				response
+			});
+		}
+
+		return responses;
 	}
 
 	async joinCluster(clustername, node) {
@@ -387,7 +426,7 @@ module.exports = class BaseMosquittoProxyClient {
 	}
 
 	async connectToBroker(brokerName) {
-		return this.sendRequest({
+		return await this.sendRequest({
 			id: createID(),
 			type: 'request',
 			request: 'connectToBroker',
