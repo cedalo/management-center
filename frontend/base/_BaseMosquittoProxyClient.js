@@ -76,7 +76,6 @@ module.exports = class BaseMosquittoProxyClient {
 		this._eventListeners = new Map();
 		this._isConnected = false;
 		this._requests = new Map();
-		this._clusterConfigurations = [];
 		// TODO: make timeout configurable
 		// request timeout in ms:
 		this._timeout = 11000;
@@ -308,7 +307,6 @@ module.exports = class BaseMosquittoProxyClient {
 			request: 'createCluster',
 			clusterConfiguration
 		});
-		this._clusterConfigurations.push(clusterConfiguration);
 		return response.response;
 
 	}
@@ -360,23 +358,18 @@ module.exports = class BaseMosquittoProxyClient {
 			request: 'deleteCluster',
 			clustername
 		});
-		this._clusterConfigurations = this._clusterConfigurations.filter((el) => el.clustername !== clustername);
 		return response.response;
 	}
 
 	async deleteAllClusters() {
-		const responses = [];
-
-		for (const clusterConfig of this._clusterConfigurations) {
-			const response = await this.deleteCluster(clusterConfig.clustername)
-
-			responses.push({
-				clustername: clusterConfig.clustername,
-				response
-			});
-		}
-
-		return responses;
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'deleteAllClusters',
+			clustername,
+			node
+		}, 20000);
+		return response.response;
 	}
 
 	async joinCluster(clustername, node) {
