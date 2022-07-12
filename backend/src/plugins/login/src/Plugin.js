@@ -57,7 +57,8 @@ module.exports = class Plugin extends BasePlugin {
 			if (request.isAuthenticated()) {
 				return next();
 			}
-			response.redirect(`${CEDALO_MC_PROXY_BASE_PATH}/login`);
+
+			response.redirect(303, `${CEDALO_MC_PROXY_BASE_PATH}/login`);
 		}
 
 		router.use(express.static(path.join(__dirname, '..', 'component')));
