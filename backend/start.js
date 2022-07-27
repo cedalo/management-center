@@ -22,6 +22,9 @@ const SettingsManager = require('./src/settings/SettingsManager');
 const { loadInstallation } = require('./src/utils/utils');
 const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
 const swaggerDocument = require('./swagger.js');
+const Logger = require('./src/utils/Logger');
+
+console = new Logger(console, false);
 
 const version = require('./src/utils/version');
 
@@ -153,6 +156,25 @@ const addStreamsheetsConfig = (config) => {
 	}
 };
 
+
+const stopFunctions = [];
+
+
+const controlElements = {
+	serverStarted: false,
+	stop: null,
+	logger: console
+};
+const stop = async () => {
+	for (const stopFunction of stopFunctions) {
+		await stopFunction();
+	}
+	controlElements.serverStarted = false;
+};
+controlElements.stop = stop;
+
+
+
 const init = async (licenseContainer) => {
 	const installation = loadInstallation();
 	const usageTracker = new UsageTracker({ license: licenseContainer, version, installation });
@@ -261,12 +283,15 @@ const init = async (licenseContainer) => {
 				sendConnectionsUpdate(brokerClient);
 			});
 		} catch (error) {
+			//  //!! disconnect broker client
 			console.error(error);
 			connectionConfiguration.status = {
 				connected: false,
 				error: error
 			};
 			sendConnectionsUpdate(brokerClient);
+		} finally {
+			stopFunctions.push(async () => await brokerClient.disconnect());
 		}
 		brokerClient.subscribe('$SYS/#', (error) => {
 			console.log(`Subscribed to system topics for '${connection.name}'`);
@@ -314,7 +339,7 @@ const init = async (licenseContainer) => {
 		// });
 		context.brokerManager.handleNewBrokerConnection(connection, brokerClient, system, topicTreeManager /*, proxyClient */);
 		configManager.updateConnection(connection.id, connection);
-
+		
 		// try {
 		// 	await proxyClient.connect({ socketEndpointURL: 'ws://localhost:8088' });
 		// 	await proxyClient.connectToBroker(connection.name);
@@ -395,7 +420,7 @@ const init = async (licenseContainer) => {
 	};
 
 	const disconnectFromBroker = (brokerName, client) => {
-		context.brokerManager.disconnectClient(client);
+		context.brokerManager.disconnectClient(client);  //!!
 	};
 
 	// TODO: extract in separate WebSocket API class
@@ -734,8 +759,8 @@ const init = async (licenseContainer) => {
 			}
 		},
 		configManager,
-		app,
-		router,
+		app: app,
+		router: router,
 		config,
 		globalSystem,
 		globalTopicTree,
@@ -853,6 +878,7 @@ const init = async (licenseContainer) => {
 		port: CEDALO_MC_PROXY_PORT
 	}, () => {
 		console.log(`Mosquitto proxy server started on port ${server.address().port}`);
+		controlElements.serverStarted = true;
 	});
 	server.on('upgrade', (request, socket, head) => {
 		wss.handleUpgrade(request, socket, head, socket => {
@@ -860,7 +886,7 @@ const init = async (licenseContainer) => {
 		});
 	});
 
-	setInterval(() => {
+	const intervalD = setInterval(() => {
 		if (settingsManager.settings.allowTrackingUsageData) {
 			const data = Object.values(globalSystem);
 			usageTracker.send({
@@ -911,6 +937,13 @@ const init = async (licenseContainer) => {
 			broadcastWebSocketMessage(message);
 		}
 	});
+
+	stopFunctions.push(() => server.close());
+	stopFunctions.push(() => {
+		clearInterval(intervalD)
+	});
+	stopFunctions.push(() => checker.stop());
+	stopFunctions.push(() => wss.close());
 };
 
 const licenseContainer = {};
@@ -925,3 +958,6 @@ const licenseContainer = {};
 		await init(licenseContainer);
 	});
 })();
+
+
+module.exports = controlElements;

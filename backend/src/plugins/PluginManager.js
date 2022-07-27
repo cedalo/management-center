@@ -66,6 +66,7 @@ module.exports = class PluginManager {
 					) {
 						this._plugins.push(plugin);
 					} else {
+						console.log(`Plugin not loaded: License does not allow this plugin: "${pluginConfiguration.name}"`)
 						plugin.setErrored(`License does not allow this plugin: "${pluginConfiguration.name}"`);
 						this._plugins.push(plugin);
 					}
@@ -78,7 +79,7 @@ module.exports = class PluginManager {
 		} else {
 			console.error('Ignore loading plugins: no premium license provided or license not valid');
 		}
-		
+
 		this._plugins.forEach(plugin => {
 			if (plugin.preInit) {
 				plugin.preInit(context);
@@ -90,13 +91,17 @@ module.exports = class PluginManager {
 		this._plugins.forEach(plugin => {
 			try {
 				plugin.init(context);
-				plugin.load(context);
 				if (plugin.swagger) {
 					swaggerDocument.tags = Object.assign(swaggerDocument.tags || {}, plugin.swagger.tags);
 					swaggerDocument.paths = Object.assign(swaggerDocument.paths || {}, plugin.swagger.paths);
 				}
-				plugin.setLoaded();
-				console.log(`Loaded plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
+
+				if (plugin._status.type !== 'error') {
+					plugin.load(context);
+					plugin.setLoaded();
+					console.log(`Loaded plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
+				}
+
 			} catch(error) {
 				console.error(`Failed loading plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
 				console.error(error);
