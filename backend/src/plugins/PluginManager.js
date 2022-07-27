@@ -96,13 +96,12 @@ module.exports = class PluginManager {
 					swaggerDocument.paths = Object.assign(swaggerDocument.paths || {}, plugin.swagger.paths);
 				}
 
-				if (plugin._status.type === 'error') {
-					return;
+				if (plugin._status.type !== 'error') {
+					plugin.load(context);
+					plugin.setLoaded();
+					console.log(`Loaded plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
 				}
 
-				plugin.load(context);
-				plugin.setLoaded();
-				console.log(`Loaded plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
 			} catch(error) {
 				console.error(`Failed loading plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
 				console.error(error);
