@@ -4,6 +4,7 @@ import { connect, useDispatch } from 'react-redux';
 import { useSnackbar } from 'notistack';
 import useLocalStorage from '../helpers/useLocalStorage';
 
+
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import DisconnectedIcon from '@material-ui/icons/Cloud';
 import ConnectedIcon from '@material-ui/icons/CloudDone';
@@ -23,6 +24,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
 import { updateBrokerConfigurations, updateBrokerConnections } from '../actions/actions';
+
+
+import CloudUpload from '@material-ui/icons/CloudUpload';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -46,7 +54,61 @@ const useStyles = makeStyles((theme) => ({
 		}
 	},
 	margin: {
-		margin: theme.spacing(1)
+		margin: theme.spacing(1),
+	},
+	marginBottom: {
+		marginBottom: theme.spacing(1)
+	},
+	container: {
+		borderStyle: 'solid',
+		borderWidth: '1px',
+		borderColor: theme.palette.mode === 'dark' ? '#1A2027' : '#6e6e6e', // '#6e6e6e' : '#c7c7c7'
+		borderRadius: '5px',
+		padding: theme.spacing(1),
+		paddingLeft: theme.spacing(2),
+		marginTop: '-1px', //!!
+	},
+	overlayed: {
+		position: "absolute",
+		top: 0,
+   		left: "10px",
+		backgroundColor: theme.palette.background.paper,
+		paddingLeft: "5px",
+		paddingRight: "5px",
+		zIndex: 3,
+		userSelect: 'none',
+		// backgroundColor: 'red',
+		
+	},
+	parent: {
+		position: "relative",
+		// backgroundColor: 'green',
+		marginBottom: '1px',
+	},
+	paper: {
+		padding: theme.spacing(2),
+		textAlign: 'center',
+		color: theme.palette.text.secondary,
+	},
+	padSidesSmall: {
+		paddingLeft: '3px',
+		paddingRight: '3px'
+	},
+	padTop: {
+		paddingTop: '10px',
+		zIndex: 1,
+	},
+	padTop2: {
+		paddingTop: '20px',
+		zIndex: 1,
+	},
+	filenameField: {
+		width: '50%',
+		paddingLeft: '10px',
+		maxWidth: '150px'
+	},
+	smallFont: {
+		fontSize: '12px',
 	}
 }));
 
@@ -300,6 +362,90 @@ const ConnectionDetailComponent = (props) => {
 								/>
 							</Grid>
 						</Grid>
+
+						<div style={{padding: '5px'}}></div>
+						<div className={`${classes.parent} ${classes.padTop} ${classes.padSidesSmall}`}>
+							<div className={classes.overlayed}><Typography className={classes.smallFont}>Server certificate</Typography></div>
+							<Grid container direction={'row'} spacing={1} alignItems="flex-end" className={`${classes.container} ${classes.parent} ${classes.padTop2}`}>
+								<Grid item xl={6} md={6} sm={6} xs={6}>
+									<FormGroup>
+										<FormControlLabel control={<Switch size="small" disabled={!editMode}/>} label="Verify server certificate" />
+									</FormGroup>
+								</Grid>
+								<Grid item xl={6} md={6} sm={6} xs={6}>
+								</Grid>
+								<Grid item xl={3} md={3} sm={4} xs={4}>
+									<Typography align="left">CA Certificate</Typography>
+								</Grid>
+								<Grid item xl={7} md={7} sm={7} xs={7}>
+									<FormGroup row>
+										<Button
+											disabled={!editMode}
+											size="small"
+											variant="contained"
+											className={classes.button}
+											color="secondary"
+											startIcon={<CloudUpload />}
+										>
+											Choose File
+											<input hidden type="file" />
+										</Button>
+										<TextField disabled={!editMode} className={classes.filenameField} size="small" inputProps={{ readOnly: true, }} id="standard-basic" label="" variant="standard" />
+									</FormGroup>
+								</Grid>
+								<Grid item xl={2} md={2} sm={1} xs={1}>
+								</Grid>
+							</Grid>
+						</div>
+						<div className={`${classes.parent} ${classes.padTop} ${classes.padSidesSmall}`}>
+							<div className={classes.overlayed}><Typography className={classes.smallFont}>Client certificate</Typography></div>
+							<Grid container direction={'row'} spacing={1} alignItems="flex-end" className={`${classes.container} ${classes.parent} ${classes.padTop2}`}>
+								<Grid item xl={3} md={3} sm={4} xs={4}>
+									<Typography align="left">Certificate</Typography>
+								</Grid>
+								<Grid item xl={7} md={7} sm={7} xs={7}>
+									<FormGroup row>
+										<Button
+											disabled={!editMode}
+											size="small"
+											variant="contained"
+											color="secondary"
+											className={classes.button}
+											startIcon={<CloudUpload />}
+										>
+											Choose File
+											<input hidden type="file" />
+										</Button>
+										<TextField disabled={!editMode} className={classes.filenameField} size="small" inputProps={{ readOnly: true, }} id="standard-basic" label="" variant="standard" />
+									</FormGroup>
+								</Grid>
+								<Grid item xl={2} md={2} sm={1} xs={1}>
+								</Grid>
+
+
+								<Grid item xl={3} md={3} sm={4} xs={4}>
+									<Typography align="left">Private Key</Typography>
+								</Grid>
+								<Grid item xl={7} md={7} sm={7} xs={7}>
+									<FormGroup row>
+										<Button
+											disabled={!editMode}
+											size="small"
+											variant="contained"
+											color="secondary"
+											className={classes.button}
+											startIcon={<CloudUpload />}
+										>
+											Choose File
+											<input hidden type="file" />
+										</Button>
+										<TextField disabled={!editMode} className={classes.filenameField} size="small" inputProps={{ readOnly: true, }} id="standard-basic" label="" variant="standard" />
+									</FormGroup>
+								</Grid>
+								<Grid item xl={2} md={2} sm={1} xs={1}>
+								</Grid>
+							</Grid>
+						</div>
 					</div>
 				</form>
 					<Grid item xs={12} className={classes.buttons}>
