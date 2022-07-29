@@ -107,6 +107,11 @@ const useStyles = makeStyles((theme) => ({
 		paddingLeft: '10px',
 		maxWidth: '150px'
 	},
+	filenameFieldExpanded: {
+		width: '100%',
+		paddingLeft: '10px',
+		maxWidth: '300px'
+	},
 	smallFont: {
 		fontSize: '12px',
 	}
@@ -232,6 +237,93 @@ const ConnectionDetailComponent = (props) => {
 		});
 		setEditMode(false);
 	};
+
+
+	const [verifyServerCertificate, setVerifyServerCertificate] = React.useState(false);
+
+	const [clientPrivateKeyFileName, setClientPrivateKeyFileName] = React.useState('');
+	const [customCACertificateFileName, setCustomCACertificateFileName] = React.useState('');
+	const [clientCertificateFileName, setClientCertificateFileName] = React.useState('');
+
+	const [errors, setErrors] = React.useState({});
+
+
+	const handleFileUpload = (e) => {
+		console.log('handle file is kinda called');
+
+        const fileReader = new FileReader();
+        const name = e.target.getAttribute('name');
+		const filename = e.target.files[0].name;
+		
+		if (!name) {
+			console.error('No "name" (e.target.getAttribute("name") passed into handleFileUpload')
+		}
+		
+		
+		console.log("name === 'clientPrivateKey' && !clientCertificateFileName", name === 'clientPrivateKey' && !clientCertificateFileName)
+		console.log("name === 'clientCertificate' && !clientPrivateKeyFileName", name === 'clientCertificate' && !clientPrivateKeyFileName)
+		if (name === 'clientPrivateKey' && !clientCertificateFileName) {
+			setErrors({...errors, clientCertificate: {message: 'You have provided a private key but no certificate'}}, () => {console.log('state set 1'); console.log('errors:', errors); });
+		}
+		else if (name === 'clientCertificate' && !clientPrivateKeyFileName) {
+			setErrors({...errors, clientPrivateKey: {message: 'You have provided a certificate but no private key'}}, () => {console.log('state set 1'); console.log('errors:', errors);});
+		}
+
+        fileReader.readAsDataURL(e.target.files[0]);
+
+
+		fileReader.onerror = (e) => {
+			const errorMessage = '';
+
+			console.log('onerrorcalled')
+
+			switch (name) {
+				case 'clientPrivateKey':
+					setClientPrivateKeyFileName('');
+					setErrors((prevState) => ({...prevState, clientPrivateKey: {message: errorMessage}}));
+					break;
+				case 'customCACertificate':
+					setCustomCACertificateFileName('');
+					setErrors((prevState) => ({...prevState, customCACertificate: {message: errorMessage}}));
+					break;
+				case 'clientCertificate':
+					setClientCertificateFileName('');
+					setErrors((prevState) => ({...prevState, clientCertificate: {message: errorMessage}}));
+					break;
+				default:
+					;
+			}
+		};
+
+
+        fileReader.onload = (e) => {
+			setUpdatedConnection((prevState) => ({
+				...prevState,
+				[name]: e.target.result
+			}));
+			
+			switch (name) {
+				case 'clientPrivateKey':
+					setClientPrivateKeyFileName(filename);
+					setErrors((prevState) => ({...prevState, clientPrivateKey: null}));
+					break;
+				case 'customCACertificate':
+					setCustomCACertificateFileName(filename);
+					setErrors((prevState) => ({...prevState, customCACertificate: null}));
+					break;
+				case 'clientCertificate':
+					setClientCertificateFileName(filename);
+					setErrors((prevState) => ({...prevState, clientCertificate: null}));
+					break;
+				default:
+					;
+			}
+
+			setConnected(false); // ??!!
+    	};
+    };
+
+
 
 	return connection?.id ? (
 		<div>
@@ -369,7 +461,25 @@ const ConnectionDetailComponent = (props) => {
 							<Grid container direction={'row'} spacing={1} alignItems="flex-end" className={`${classes.container} ${classes.parent} ${classes.padTop2}`}>
 								<Grid item xl={6} md={6} sm={6} xs={6}>
 									<FormGroup>
-										<FormControlLabel control={<Switch size="small" disabled={!editMode}/>} label="Verify server certificate" />
+										<FormControlLabel
+											control={
+													<Switch
+														size="small"
+														disabled={!editMode}
+														value={verifyServerCertificate}
+														onChange={(event) => {
+															if (editMode) {
+																setVerifyServerCertificate({
+																	...updatedConnection,
+																	verifyServerCertificate: event.target.value
+																});
+																setConnected(false);
+															}
+														}}
+													/>
+												} 
+											label="Verify server certificate"
+										/>
 									</FormGroup>
 								</Grid>
 								<Grid item xl={6} md={6} sm={6} xs={6}>
@@ -382,15 +492,28 @@ const ConnectionDetailComponent = (props) => {
 										<Button
 											disabled={!editMode}
 											size="small"
+											onChange={handleFileUpload}
 											variant="contained"
 											className={classes.button}
 											color="secondary"
 											startIcon={<CloudUpload />}
+											component="label"
 										>
 											Choose File
-											<input hidden type="file" />
+											<input name="customCACertificate" hidden type="file" />
 										</Button>
-										<TextField disabled={!editMode} className={classes.filenameField} size="small" inputProps={{ readOnly: true, }} id="standard-basic" label="" variant="standard" />
+										<TextField
+											disabled={!editMode}
+											className={ (errors?.customCACertificate) ? classes.filenameFieldExpanded : classes.filenameField }
+											size="small"
+											inputProps={{ readOnly: true, }}
+											id="standard-basic"
+											label=""
+											variant="standard"
+											value={customCACertificateFileName}
+											error={!!errors.customCACertificate}
+											helperText={errors?.customCACertificate?.message}
+										/>
 									</FormGroup>
 								</Grid>
 								<Grid item xl={2} md={2} sm={1} xs={1}>
@@ -408,15 +531,28 @@ const ConnectionDetailComponent = (props) => {
 										<Button
 											disabled={!editMode}
 											size="small"
+											onChange={handleFileUpload}
 											variant="contained"
 											color="secondary"
 											className={classes.button}
 											startIcon={<CloudUpload />}
+											component="label"
 										>
 											Choose File
-											<input hidden type="file" />
+											<input name="clientCertificate" hidden type="file" />
 										</Button>
-										<TextField disabled={!editMode} className={classes.filenameField} size="small" inputProps={{ readOnly: true, }} id="standard-basic" label="" variant="standard" />
+										<TextField 
+											disabled={!editMode}
+											className={ (errors?.clientCertificate) ? classes.filenameFieldExpanded : classes.filenameField }
+											size="small"
+											inputProps={{ readOnly: true, }}
+											id="standard-basic"
+											label=""
+											variant="standard"
+											value={clientCertificateFileName}
+											error={!!errors.clientCertificate}
+											helperText={errors?.clientCertificate?.message}
+										/>
 									</FormGroup>
 								</Grid>
 								<Grid item xl={2} md={2} sm={1} xs={1}>
@@ -431,15 +567,28 @@ const ConnectionDetailComponent = (props) => {
 										<Button
 											disabled={!editMode}
 											size="small"
+											onChange={handleFileUpload}
 											variant="contained"
 											color="secondary"
 											className={classes.button}
 											startIcon={<CloudUpload />}
+											component="label"
 										>
 											Choose File
-											<input hidden type="file" />
+											<input name="clientPrivateKey" hidden type="file" />
 										</Button>
-										<TextField disabled={!editMode} className={classes.filenameField} size="small" inputProps={{ readOnly: true, }} id="standard-basic" label="" variant="standard" />
+										<TextField
+											disabled={!editMode}
+											className={ (errors?.clientPrivateKey) ? classes.filenameFieldExpanded : classes.filenameField }
+											size="small"
+											inputProps={{ readOnly: true, }}
+											id="standard-basic"
+											label=""
+											variant="standard"
+											value={clientPrivateKeyFileName}
+											error={!!errors.clientPrivateKey}
+											helperText={errors?.clientPrivateKey?.message}
+										/>
 									</FormGroup>
 								</Grid>
 								<Grid item xl={2} md={2} sm={1} xs={1}>
