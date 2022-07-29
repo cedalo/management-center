@@ -11,7 +11,7 @@ const API_INSPECT = 'inspect';
 const API_DYNAMIC_SECURITY = 'dynamic-security';
 const API_STREAMS_PROCESSING = 'stream-processing';
 const API_HIGH_AVAILABILITY = 'cedalo/ha';
-const ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED = 'You are not authorized to access the user management.';
+const ERROR_MESSAGE_NOT_AUTHORIZED = 'You are not authorized to use this feature.';
 const ERROR_MESSAGE_API_NOT_FOUND = 'API not found. Note that this is a premium feature.';
 
 class APIError extends Error {
@@ -24,7 +24,7 @@ class APIError extends Error {
 
 class NotAuthorizedError extends APIError {
 	constructor() {
-		super('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+		super('Not authorized', ERROR_MESSAGE_NOT_AUTHORIZED);
 		this.name = 'NotAuthorizedError';
 	}
 }
