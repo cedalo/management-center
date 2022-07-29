@@ -159,17 +159,20 @@ const addStreamsheetsConfig = (config) => {
 
 const stopFunctions = [];
 
+
+const controlElements = {
+	serverStarted: false,
+	stop: null,
+	logger: console
+};
 const stop = async () => {
 	for (const stopFunction of stopFunctions) {
 		await stopFunction();
 	}
-}
-
-const controlElements = {
-	serverStarted: false,
-	stop,
-	logger: console
+	controlElements.serverStarted = false;
 };
+controlElements.stop = stop;
+
 
 
 const init = async (licenseContainer) => {
@@ -255,8 +258,6 @@ const init = async (licenseContainer) => {
 				connectTimeout: process.env.CEDALO_MC_TIMOUT_MOSQUITTO_CONNECT || 5000
 			});
 
-			stopFunctions.push(async () => await brokerClient.disconnect()); //!! disconnect broker client
-
 			topicTreeManager.start();
 
 			connectionConfiguration.status.connected = true;
@@ -282,12 +283,15 @@ const init = async (licenseContainer) => {
 				sendConnectionsUpdate(brokerClient);
 			});
 		} catch (error) {
+			//  //!! disconnect broker client
 			console.error(error);
 			connectionConfiguration.status = {
 				connected: false,
 				error: error
 			};
 			sendConnectionsUpdate(brokerClient);
+		} finally {
+			stopFunctions.push(async () => await brokerClient.disconnect());
 		}
 		brokerClient.subscribe('$SYS/#', (error) => {
 			console.log(`Subscribed to system topics for '${connection.name}'`);
@@ -946,7 +950,6 @@ const init = async (licenseContainer) => {
 		}
 	});
 
-	stopServerFunction = () => server.close();
 	stopFunctions.push(() => server.close());
 	stopFunctions.push(() => {
 		clearInterval(intervalD)

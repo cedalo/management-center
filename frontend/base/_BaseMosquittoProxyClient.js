@@ -1,6 +1,7 @@
 const { v1: uuid } = require('uuid');
 const axios = require('axios');
 
+
 const createError = (code, message) => ({
 	code,
 	message
@@ -78,6 +79,10 @@ module.exports = class BaseMosquittoProxyClient {
 		// TODO: make timeout configurable
 		// request timeout in ms:
 		this._timeout = 11000;
+	}
+
+	setHeaders(headers) {
+		this._headers = { headers };
 	}
 
 	// eslint-disable-next-line consistent-return
@@ -179,7 +184,11 @@ module.exports = class BaseMosquittoProxyClient {
 			const response = await axios.get(url, this._headers);
 			return response.data;
 		} catch (error) {
-			throw new NotAuthorizedError()();
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
 		}
 	}
 
@@ -189,7 +198,7 @@ module.exports = class BaseMosquittoProxyClient {
 			const response = await axios.get(url, this._headers);
 			return response.data;
 		} catch (error) {
-			throw new NotAuthorizedError()();
+			throw new NotAuthorizedError();
 		}
 	}
 
@@ -199,7 +208,11 @@ module.exports = class BaseMosquittoProxyClient {
 			const response = await axios.get(url, this._headers);
 			return response.data;
 		} catch (error) {
-			throw new NotAuthorizedError();
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
 		}
 	}
 
@@ -211,7 +224,11 @@ module.exports = class BaseMosquittoProxyClient {
 			}, this._headers);
 			return response.data;
 		} catch (error) {
-			throw new NotAuthorizedError()
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
 		}
 	}
 
@@ -221,7 +238,11 @@ module.exports = class BaseMosquittoProxyClient {
 			const response = await axios.get(url, this._headers);
 			return response.data;
 		} catch (error) {
-			throw new NotAuthorizedError()
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
 		}
 	}
 
@@ -236,7 +257,11 @@ module.exports = class BaseMosquittoProxyClient {
 			const response = await axios.post(url, user, this._headers);
 			return response.data;
 		} catch (error) {
-			throw new NotAuthorizedError()
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
 		}
 	}
 
@@ -246,7 +271,11 @@ module.exports = class BaseMosquittoProxyClient {
 			const response = await axios.delete(url, this._headers);
 			return response.data;
 		} catch (error) {
-			throw new NotAuthorizedError()
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
 		}
 	}
 
@@ -256,7 +285,11 @@ module.exports = class BaseMosquittoProxyClient {
 			const response = await axios.put(url, user, this._headers);
 			return response.data;
 		} catch (error) {
-			throw new NotAuthorizedError()
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
 		}
 	}
 
@@ -264,6 +297,21 @@ module.exports = class BaseMosquittoProxyClient {
 		try {
 			const url = `${this._httpEndpointURL}/api/profile/${user.username}`;
 			const response = await axios.put(url, user, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
+	async getConnections() {
+		try {
+			const url = `${this._httpEndpointURL}/api/connections`;
+			const response = await axios.get(url, this._headers);
 			return response.data;
 		} catch (error) {
 			if (error?.response?.status === 404) {
@@ -288,6 +336,7 @@ module.exports = class BaseMosquittoProxyClient {
 			clusterConfiguration
 		});
 		return response.response;
+
 	}
 
 	 async listClusters() {
@@ -340,6 +389,15 @@ module.exports = class BaseMosquittoProxyClient {
 		return response.response;
 	}
 
+	async deleteAllClusters() {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'deleteAllClusters',
+		}, 20000);
+		return response.response;
+	}
+
 	async joinCluster(clustername, node) {
 		const response = await this.sendRequest({
 			id: createID(),
@@ -387,7 +445,7 @@ module.exports = class BaseMosquittoProxyClient {
 	}
 
 	async connectToBroker(brokerName) {
-		return this.sendRequest({
+		return await this.sendRequest({
 			id: createID(),
 			type: 'request',
 			request: 'connectToBroker',
