@@ -30,6 +30,7 @@ module.exports = class Plugin extends BasePlugin {
 			// function of username, password, done(callback)
 			(username, password, done) => {
 				if (username === USERNAME && password === PASSWORD) {
+					this.logger.info(`Successful login: ${username}`);
 					return done(null, {
 						username,
 						roles: ['admin']
@@ -37,9 +38,11 @@ module.exports = class Plugin extends BasePlugin {
 				}
 				const valid = (username === USERNAME && password === PASSWORD) || context.security?.usersManager?.checkUser(username, password);
 				if (valid) {
+					this.logger.info(`Successful login: ${username}`);
 					const user = context.security.usersManager.getUser(username);
 					return done(null, user);
 				} else {
+					this.logger.info(`Login failed: ${username}`);
 					return done(null, false, { message: 'Invalid credentials' });
 				}
 			}
