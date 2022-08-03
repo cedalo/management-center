@@ -114,10 +114,32 @@ const useStyles = makeStyles((theme) => ({
 	},
 	smallFont: {
 		fontSize: '12px',
+	},
+	restrictButtonHeight: {
+		maxHeight: '27px',
+	},
+	verticallyPad: {
+		paddingBottom: '14%',
 	}
 }));
 
+const makeFileField = (fieldName) => {
+	return `${fieldName}File`;
+}
+
+
 const ConnectionDetailComponent = (props) => {
+	const [errors, setErrors] = React.useState({});
+
+	const customCACertificateFieldName = 'ca';
+	const clientCertificateFieldName = 'cert';
+	const clientPrivateKeyFieldName = 'key';
+	const verifyServerCertificateFieldName = 'rejectUnauthorized';
+
+	const customCACertificateFileFieldName 	= makeFileField(customCACertificateFieldName);
+	const clientCertificateFileFieldName 	= makeFileField(clientCertificateFieldName);
+	const clientPrivateKeyFileFieldName 	= makeFileField(clientPrivateKeyFieldName);
+
 	const [connected, setConnected] = React.useState(false);
 	const { selectedConnectionToEdit: connection = {} } = props;
 	let editModeEnabledByDefault = false;
@@ -133,7 +155,11 @@ const ConnectionDetailComponent = (props) => {
 	const { enqueueSnackbar } = useSnackbar();
 
 	const [updatedConnection, setUpdatedConnection] = React.useState({
-		...connection
+		...connection,
+		[verifyServerCertificateFieldName]: true,
+		[customCACertificateFileFieldName]: connection[customCACertificateFileFieldName],
+		[clientCertificateFileFieldName]: connection[clientCertificateFileFieldName],
+		[clientPrivateKeyFileFieldName]: connection[clientPrivateKeyFileFieldName],
 	});
 
 	const context = useContext(WebSocketContext);
@@ -142,7 +168,12 @@ const ConnectionDetailComponent = (props) => {
 	const history = useHistory();
 	const { client: brokerClient } = context;
 
+
 	const validate = () => {
+		if (errors[customCACertificateFieldName] || errors[clientCertificateFieldName] || errors[clientPrivateKeyFieldName]) {
+			return false;
+		}
+
 		if (editMode) {
 			return connection.id !== ''
 			&& connection.name !== ''
@@ -185,8 +216,11 @@ const ConnectionDetailComponent = (props) => {
 		}
 	}
 
+	// const fs = require('fs');
+
 	const loadConnections = async () => {
 		const brokerConnections = await brokerClient.getBrokerConnections();
+		// fs.appendFileSync('logFront.txt', `(((((((((((((((((((((((((((((((BROKER CONNECTIONS ${JSON.stringify(brokerConnections)}\n`)
 		dispatch(updateBrokerConnections(brokerConnections));
 		const brokerConfigurations = await brokerClient.getBrokerConfigurations();
 		dispatch(updateBrokerConfigurations(brokerConfigurations));
@@ -196,6 +230,7 @@ const ConnectionDetailComponent = (props) => {
 		try {
 			await brokerClient.disconnectServerFromBroker(connection.id);
 			await brokerClient.modifyConnection(connection.id, updatedConnection);
+			// fs.appendFileSync('logFront.txt', `(((((((((((((((((((((((((((((((loading connections\n`)
 			await loadConnections();
 			enqueueSnackbar('Connection successfully updated', {
 				variant: 'success'
@@ -203,7 +238,8 @@ const ConnectionDetailComponent = (props) => {
 			setEditMode(false);
 			if (connect) {
 				try {
-					await doConnect(connection);
+					// await doConnect(connection);
+					await doConnect(updatedConnection);
 					await brokerClient.connectServerToBroker(connection.id);
 					await loadConnections();
 					history.push(`/config/connections`);
@@ -239,18 +275,7 @@ const ConnectionDetailComponent = (props) => {
 	};
 
 
-	const [verifyServerCertificate, setVerifyServerCertificate] = React.useState(false);
-
-	const [clientPrivateKeyFileName, setClientPrivateKeyFileName] = React.useState('');
-	const [customCACertificateFileName, setCustomCACertificateFileName] = React.useState('');
-	const [clientCertificateFileName, setClientCertificateFileName] = React.useState('');
-
-	const [errors, setErrors] = React.useState({});
-
-
 	const handleFileUpload = (e) => {
-		console.log('handle file is kinda called');
-
         const fileReader = new FileReader();
         const name = e.target.getAttribute('name');
 		const filename = e.target.files[0].name;
@@ -259,70 +284,40 @@ const ConnectionDetailComponent = (props) => {
 			console.error('No "name" (e.target.getAttribute("name") passed into handleFileUpload')
 		}
 		
-		
-		console.log("name === 'clientPrivateKey' && !clientCertificateFileName", name === 'clientPrivateKey' && !clientCertificateFileName)
-		console.log("name === 'clientCertificate' && !clientPrivateKeyFileName", name === 'clientCertificate' && !clientPrivateKeyFileName)
-		if (name === 'clientPrivateKey' && !clientCertificateFileName) {
-			setErrors({...errors, clientCertificate: {message: 'You have provided a private key but no certificate'}}, () => {console.log('state set 1'); console.log('errors:', errors); });
+		// the !clientCertificateFile part means that clientCertificate was not loaded because the respective input field hasn't been set with its name yet
+		if (name === clientPrivateKeyFieldName && !updatedConnection[clientCertificateFileFieldName]) {
+			setErrors({...errors, [clientCertificateFieldName]: {message: 'You have provided a private key but no certificate'}});
 		}
-		else if (name === 'clientCertificate' && !clientPrivateKeyFileName) {
-			setErrors({...errors, clientPrivateKey: {message: 'You have provided a certificate but no private key'}}, () => {console.log('state set 1'); console.log('errors:', errors);});
+		else if (name === clientCertificateFieldName && !updatedConnection[clientPrivateKeyFileFieldName]) {
+			setErrors({...errors, [clientPrivateKeyFieldName]: {message: 'You have provided a certificate but no private key'}});
 		}
 
-        fileReader.readAsDataURL(e.target.files[0]);
+        fileReader.readAsText(e.target.files[0]);
 
 
 		fileReader.onerror = (e) => {
 			const errorMessage = '';
 
-			console.log('onerrorcalled')
+			setUpdatedConnection((prevState) => ({
+				...prevState,
+				[makeFileField(name)]: ''
+			}));
 
-			switch (name) {
-				case 'clientPrivateKey':
-					setClientPrivateKeyFileName('');
-					setErrors((prevState) => ({...prevState, clientPrivateKey: {message: errorMessage}}));
-					break;
-				case 'customCACertificate':
-					setCustomCACertificateFileName('');
-					setErrors((prevState) => ({...prevState, customCACertificate: {message: errorMessage}}));
-					break;
-				case 'clientCertificate':
-					setClientCertificateFileName('');
-					setErrors((prevState) => ({...prevState, clientCertificate: {message: errorMessage}}));
-					break;
-				default:
-					;
-			}
+			setErrors((prevState) => ({...prevState, [name]: {message: errorMessage}}));
 		};
 
 
         fileReader.onload = (e) => {
 			setUpdatedConnection((prevState) => ({
 				...prevState,
-				[name]: e.target.result
+				[name]: e.target.result,
+				[makeFileField(name)]: filename
 			}));
-			
-			switch (name) {
-				case 'clientPrivateKey':
-					setClientPrivateKeyFileName(filename);
-					setErrors((prevState) => ({...prevState, clientPrivateKey: null}));
-					break;
-				case 'customCACertificate':
-					setCustomCACertificateFileName(filename);
-					setErrors((prevState) => ({...prevState, customCACertificate: null}));
-					break;
-				case 'clientCertificate':
-					setClientCertificateFileName(filename);
-					setErrors((prevState) => ({...prevState, clientCertificate: null}));
-					break;
-				default:
-					;
-			}
 
+			setErrors((prevState) => ({...prevState, [name]: null}));
 			setConnected(false); // ??!!
     	};
     };
-
 
 
 	return connection?.id ? (
@@ -466,12 +461,15 @@ const ConnectionDetailComponent = (props) => {
 													<Switch
 														size="small"
 														disabled={!editMode}
-														value={verifyServerCertificate}
+														checked={updatedConnection[verifyServerCertificateFieldName]}
 														onChange={(event) => {
+															console.log('connection:', connection);
+															console.log('updatedConnection:', updatedConnection);
+
 															if (editMode) {
-																setVerifyServerCertificate({
+																setUpdatedConnection({
 																	...updatedConnection,
-																	verifyServerCertificate: event.target.value
+																	[verifyServerCertificateFieldName]: event.target.checked
 																});
 																setConnected(false);
 															}
@@ -485,7 +483,7 @@ const ConnectionDetailComponent = (props) => {
 								<Grid item xl={6} md={6} sm={6} xs={6}>
 								</Grid>
 								<Grid item xl={3} md={3} sm={4} xs={4}>
-									<Typography align="left">CA Certificate</Typography>
+									<Typography className={errors[customCACertificateFieldName] ? classes.verticallyPad : ''} align="left">CA Certificate</Typography>
 								</Grid>
 								<Grid item xl={7} md={7} sm={7} xs={7}>
 									<FormGroup row>
@@ -494,25 +492,25 @@ const ConnectionDetailComponent = (props) => {
 											size="small"
 											onChange={handleFileUpload}
 											variant="contained"
-											className={classes.button}
+											className={`${classes.button} ${classes.restrictButtonHeight}`}
 											color="secondary"
 											startIcon={<CloudUpload />}
 											component="label"
 										>
 											Choose File
-											<input name="customCACertificate" hidden type="file" />
+											<input name={customCACertificateFieldName} hidden type="file" />
 										</Button>
 										<TextField
 											disabled={!editMode}
-											className={ (errors?.customCACertificate) ? classes.filenameFieldExpanded : classes.filenameField }
+											className={ (errors[customCACertificateFieldName]) ? classes.filenameFieldExpanded : classes.filenameField }
 											size="small"
 											inputProps={{ readOnly: true, }}
 											id="standard-basic"
 											label=""
 											variant="standard"
-											value={customCACertificateFileName}
-											error={!!errors.customCACertificate}
-											helperText={errors?.customCACertificate?.message}
+											value={updatedConnection[customCACertificateFileFieldName]}
+											error={!!errors[customCACertificateFieldName]}
+											helperText={errors[customCACertificateFieldName]?.message}
 										/>
 									</FormGroup>
 								</Grid>
@@ -524,7 +522,7 @@ const ConnectionDetailComponent = (props) => {
 							<div className={classes.overlayed}><Typography className={classes.smallFont}>Client certificate</Typography></div>
 							<Grid container direction={'row'} spacing={1} alignItems="flex-end" className={`${classes.container} ${classes.parent} ${classes.padTop2}`}>
 								<Grid item xl={3} md={3} sm={4} xs={4}>
-									<Typography align="left">Certificate</Typography>
+									<Typography className={errors[clientCertificateFieldName] ? classes.verticallyPad : ''} align="left">Certificate</Typography>
 								</Grid>
 								<Grid item xl={7} md={7} sm={7} xs={7}>
 									<FormGroup row>
@@ -534,24 +532,24 @@ const ConnectionDetailComponent = (props) => {
 											onChange={handleFileUpload}
 											variant="contained"
 											color="secondary"
-											className={classes.button}
+											className={`${classes.button} ${classes.restrictButtonHeight}`}
 											startIcon={<CloudUpload />}
 											component="label"
 										>
 											Choose File
-											<input name="clientCertificate" hidden type="file" />
+											<input name={clientCertificateFieldName} hidden type="file" />
 										</Button>
 										<TextField 
 											disabled={!editMode}
-											className={ (errors?.clientCertificate) ? classes.filenameFieldExpanded : classes.filenameField }
+											className={ (errors[clientCertificateFieldName]) ? classes.filenameFieldExpanded : classes.filenameField }
 											size="small"
 											inputProps={{ readOnly: true, }}
 											id="standard-basic"
 											label=""
 											variant="standard"
-											value={clientCertificateFileName}
-											error={!!errors.clientCertificate}
-											helperText={errors?.clientCertificate?.message}
+											value={updatedConnection[clientCertificateFileFieldName]}
+											error={!!errors[clientCertificateFieldName]}
+											helperText={errors[clientCertificateFieldName]?.message}
 										/>
 									</FormGroup>
 								</Grid>
@@ -560,7 +558,7 @@ const ConnectionDetailComponent = (props) => {
 
 
 								<Grid item xl={3} md={3} sm={4} xs={4}>
-									<Typography align="left">Private Key</Typography>
+									<Typography className={(errors[clientPrivateKeyFieldName]) ? classes.verticallyPad : ''} align="left">Private Key</Typography>
 								</Grid>
 								<Grid item xl={7} md={7} sm={7} xs={7}>
 									<FormGroup row>
@@ -570,24 +568,24 @@ const ConnectionDetailComponent = (props) => {
 											onChange={handleFileUpload}
 											variant="contained"
 											color="secondary"
-											className={classes.button}
+											className={`${classes.button} ${classes.restrictButtonHeight}`}
 											startIcon={<CloudUpload />}
 											component="label"
 										>
 											Choose File
-											<input name="clientPrivateKey" hidden type="file" />
+											<input name={clientPrivateKeyFieldName} hidden type="file" />
 										</Button>
 										<TextField
 											disabled={!editMode}
-											className={ (errors?.clientPrivateKey) ? classes.filenameFieldExpanded : classes.filenameField }
+											className={ (errors[clientPrivateKeyFieldName]) ? classes.filenameFieldExpanded : classes.filenameField }
 											size="small"
 											inputProps={{ readOnly: true, }}
 											id="standard-basic"
 											label=""
 											variant="standard"
-											value={clientPrivateKeyFileName}
-											error={!!errors.clientPrivateKey}
-											helperText={errors?.clientPrivateKey?.message}
+											value={updatedConnection[clientPrivateKeyFileFieldName]}
+											error={!!errors[clientPrivateKeyFieldName]}
+											helperText={errors[clientPrivateKeyFieldName]?.message}
 										/>
 									</FormGroup>
 								</Grid>

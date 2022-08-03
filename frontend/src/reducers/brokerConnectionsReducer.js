@@ -9,6 +9,15 @@ export default function brokerConnections(state = {}, action) {
 			break;
 		case ActionTypes.UPDATE_BROKER_CONNECTIONS:
 			newState.brokerConnections = action.update;
+
+			// if (newState.selectedConnectionToEdit) {
+			// 	newState.brokerConnections.forEach(el => {
+			// 		if (newState.selectedConnectionToEdit.id === el.id) {
+			// 			newState.selectedConnectionToEdit = JSON.parse(JSON.stringify(el));
+			// 		}
+			// 	})
+			// }
+			
 			break;
 		case ActionTypes.UPDATE_EDIT_DEFAULT_CLIENT:
 			newState.editDefaultClient = action.edit;
