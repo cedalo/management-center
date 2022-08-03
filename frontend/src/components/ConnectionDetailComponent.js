@@ -292,7 +292,8 @@ const ConnectionDetailComponent = (props) => {
 			setErrors({...errors, [clientPrivateKeyFieldName]: {message: 'You have provided a certificate but no private key'}});
 		}
 
-        fileReader.readAsText(e.target.files[0]);
+        fileReader.readAsDataURL(e.target.files[0]);
+		const encoding = 'base64';
 
 
 		fileReader.onerror = (e) => {
@@ -308,9 +309,11 @@ const ConnectionDetailComponent = (props) => {
 
 
         fileReader.onload = (e) => {
+			const base64FileData = e.target.result.split(',')[1];
+
 			setUpdatedConnection((prevState) => ({
 				...prevState,
-				[name]: e.target.result,
+				[name]: {data: base64FileData, encoding},
 				[makeFileField(name)]: filename
 			}));
 
