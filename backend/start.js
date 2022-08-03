@@ -173,6 +173,15 @@ const stop = async () => {
 };
 controlElements.stop = stop;
 
+const createOptions = (connection) => {
+	const {name: _name, id: _id, status: _status, url: _url, credentials, ...restOfConnection} = connection;
+	return {
+		...credentials,
+		...restOfConnection,
+		connectTimeout: process.env.CEDALO_MC_TIMOUT_MOSQUITTO_CONNECT || 5000,
+	}
+}
+
 
 
 const init = async (licenseContainer) => {
@@ -254,8 +263,7 @@ const init = async (licenseContainer) => {
 		try {
 			await brokerClient.connect({
 				mqttEndpointURL: connection.url,
-				credentials: connection.credentials,
-				connectTimeout: process.env.CEDALO_MC_TIMOUT_MOSQUITTO_CONNECT || 5000
+				options: createOptions(connection)
 			});
 
 			topicTreeManager.start();
@@ -356,7 +364,7 @@ const init = async (licenseContainer) => {
 		}
 		context.brokerManager.handleDeleteBrokerConnection(connection);
 		connection.status.connected = false;
-		configManager.updateConnection(connection);
+		configManager.updateConnection(connection.id, connection);
 	}
 
 	for (let i = 0; i < connections.length; i++) {
@@ -509,10 +517,10 @@ const init = async (licenseContainer) => {
 				});
 				await testClient.connect({
 					mqttEndpointURL: connection.url,
-					credentials: connection.credentials,
-					connectTimeout: process.env.CEDALO_MC_TIMOUT_MOSQUITTO_CONNECT || 5000
+					options: createOptions(connection)
 				});
 				await testClient.disconnect();
+
 				return {
 					connected: true
 				}
@@ -540,6 +548,7 @@ const init = async (licenseContainer) => {
 				if (context.security.acl.isAdmin(user)) {
 					const { oldConnectionId, connection } = message;
 					configManager.updateConnection(oldConnectionId, connection);
+
 					return configManager.connections;
 				} else {
 					throw new NotAuthorizedError();

@@ -45,14 +45,14 @@ module.exports = class BaseMosquittoClient {
 	}
 
 	// eslint-disable-next-line consistent-return
-	async connect({ mqttEndpointURL, credentials, connectTimeout } = {}) {
+	async connect({ mqttEndpointURL, options } = {}) {
 		if (this._isConnected || this._isConnecting) {
 			return Promise.resolve({});
 		}
 		this._isConnecting = true;
 		this._mqttEndpointURL = mqttEndpointURL || this._mqttEndpointURL;
 		try {
-			const brokerClient = await this._connectBroker(mqttEndpointURL, credentials, connectTimeout);
+			const brokerClient = await this._connectBroker(mqttEndpointURL, options);
 			this._brokerClient = brokerClient;
 			this._isConnected = true;
 		} catch (error) {
