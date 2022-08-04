@@ -1,10 +1,13 @@
 const path = require('path');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
+const { isObject } = require('util');
 
 const configFile = process.env.CEDALO_MC_PROXY_CONFIG || path.join(process.env.CEDALO_MC_PROXY_CONFIG_DIR || __dirname, 'config.json');
 const adapter = new FileSync(configFile);
 const db = low(adapter);
+
+
 
 module.exports = class ConfigManager {
 
@@ -33,22 +36,59 @@ module.exports = class ConfigManager {
 		return connection;
 	}
 
+	filterConnectionObject(connection) {
+		return {
+			id: connection.id,
+			name: connection.name,
+			url: connection.url,
+			credentials: {
+				username: connection.credentials?.username,
+				password: connection.credentials?.password,
+			}
+		};
+	}
+
 	createConnection(connection) {
+		if (!isObject(connection) || (isObject(connection) && (Object.keys(connection).length === 0))) {
+			throw new Error('Connection is of invalid type/empty/not provided');
+		}
+
+		const connectionToSave = this.filterConnectionObject(connection);
+
 		if (db.get('connections').value().length >= this._maxBrokerConnections) {
 			throw new Error('Max broker connections reached.');
 		}
 		db.get('connections')
-			.push(connection)
+			.push(connectionToSave)
 			.write();
 	}
 
 	updateConnection(oldConnectionId, connection) {
+		if (!isObject(connection)) {
+			throw new Error('Connection is of invalid type/empty/not provided');
+		}
+
+		const newConnection = this.filterConnectionObject(connection);
+
 		const result = db.get('connections')
 			.find({ id: oldConnectionId })
-			.assign({...connection})
+			.assign({...newConnection})
 			.write();
 		return result;
 	}
+
+	// updateConnection(oldConnectionId, connection) {
+	// 	const a =  {...connection};
+	// 	// if (!connection)
+	// 	// 	return;
+	// 	const b = db.get('connections').find({ id: oldConnectionId });
+
+	// 	const result = db.get('connections')
+	// 		.find({ id: oldConnectionId })
+	// 		.assign({...connection})
+	// 		.write();
+	// 	return result;
+	// }
 
 	deleteConnection(id) {
 		db.get('connections')

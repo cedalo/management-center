@@ -109,6 +109,23 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		}));
 	}
 
+
+	try {
+		const _ = await client.checkTLSEnabled();
+
+		dispatch(updateFeatures({
+			feature: 'tls',
+			status: 'ok'
+		}));
+	} catch (error) {
+		dispatch(updateFeatures({
+			feature: 'tls',
+			status: {message: "BaseMosquittoProxyClient: Timeout", satatus: 'failed'},
+			error
+		}));
+	}
+
+
 	const brokerConnections = await client.getBrokerConnections();
 	dispatch(updateBrokerConnections(brokerConnections));
 

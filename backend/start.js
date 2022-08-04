@@ -174,6 +174,28 @@ const stop = async () => {
 controlElements.stop = stop;
 
 
+const createOptions = (connection) => {
+	// remove unwanted parameters
+	const {name: _name, id: _id, status: _status, url: _url, credentials, ...restOfConnection} = connection;
+
+	// decode all base64 encoded fields
+	for (const property in restOfConnection) {
+		if (restOfConnection[property]?.encoding === 'base64' && restOfConnection[property]?.data) {
+			restOfConnection[property] = Buffer.from(restOfConnection[property].data, 'base64');
+		} else {
+			restOfConnection[property] = (restOfConnection[property] && restOfConnection[property].data) || restOfConnection[property];
+		}
+	}
+
+	// compose the result together by adding credentials, the rest of the connection and connectTimeout into one options object
+	return {
+		...credentials,
+		...restOfConnection,
+		connectTimeout: process.env.CEDALO_MC_TIMOUT_MOSQUITTO_CONNECT || 5000,
+	}
+}
+
+
 
 const init = async (licenseContainer) => {
 	const installation = loadInstallation();
@@ -254,8 +276,7 @@ const init = async (licenseContainer) => {
 		try {
 			await brokerClient.connect({
 				mqttEndpointURL: connection.url,
-				credentials: connection.credentials,
-				connectTimeout: process.env.CEDALO_MC_TIMOUT_MOSQUITTO_CONNECT || 5000
+				options: createOptions(connection)
 			});
 
 			topicTreeManager.start();
@@ -356,7 +377,7 @@ const init = async (licenseContainer) => {
 		}
 		context.brokerManager.handleDeleteBrokerConnection(connection);
 		connection.status.connected = false;
-		configManager.updateConnection(connection);
+		configManager.updateConnection(connection.id, connection);
 	}
 
 	for (let i = 0; i < connections.length; i++) {
@@ -509,10 +530,10 @@ const init = async (licenseContainer) => {
 				});
 				await testClient.connect({
 					mqttEndpointURL: connection.url,
-					credentials: connection.credentials,
-					connectTimeout: process.env.CEDALO_MC_TIMOUT_MOSQUITTO_CONNECT || 5000
+					options: createOptions(connection)
 				});
 				await testClient.disconnect();
+
 				return {
 					connected: true
 				}
@@ -540,6 +561,7 @@ const init = async (licenseContainer) => {
 				if (context.security.acl.isAdmin(user)) {
 					const { oldConnectionId, connection } = message;
 					configManager.updateConnection(oldConnectionId, connection);
+
 					return configManager.connections;
 				} else {
 					throw new NotAuthorizedError();
