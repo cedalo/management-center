@@ -308,6 +308,22 @@ module.exports = class BaseMosquittoProxyClient {
 	}
 
 
+	async checkTLSEnabled() {
+		try {
+			const url = `${this._httpEndpointURL}/api/tls/ping`;
+			const response = await axios.get(url);
+			return response.data?.pong;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
+
 	async getConnections() {
 		try {
 			const url = `${this._httpEndpointURL}/api/connections`;

@@ -27,9 +27,13 @@ import { updateBrokerConfigurations, updateBrokerConnections } from '../actions/
 
 
 import CloudUpload from '@material-ui/icons/CloudUpload';
+import Close from '@material-ui/icons/Close';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
+import IconButton from '@material-ui/core/IconButton';
+
+import { Alert, AlertTitle } from '@material-ui/lab';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -120,6 +124,23 @@ const useStyles = makeStyles((theme) => ({
 	},
 	verticallyPad: {
 		paddingBottom: '14%',
+	},
+	crossButton: {
+		// fontSize: '0.8em',
+		borderRadius: "100%",
+	},
+	closeIcon: {
+		maxHeight: '60%',
+		maxWidth: '60%',
+	},
+	invisible: {
+		display: 'none',
+	},
+	notEnabledBlock: {
+		opacity: '0.5',
+	},
+	alert: {
+		textAlign: 'left',
 	}
 }));
 
@@ -141,7 +162,7 @@ const ConnectionDetailComponent = (props) => {
 	const clientPrivateKeyFileFieldName 	= makeFileField(clientPrivateKeyFieldName);
 
 	const [connected, setConnected] = React.useState(false);
-	const { selectedConnectionToEdit: connection = {} } = props;
+	const { selectedConnectionToEdit: connection = {}, tlsFeature } = props;
 	let editModeEnabledByDefault = false;
 	if (!connection.id) {
 		connection.id = 'default';
@@ -299,11 +320,6 @@ const ConnectionDetailComponent = (props) => {
 		fileReader.onerror = (e) => {
 			const errorMessage = '';
 
-			setUpdatedConnection((prevState) => ({
-				...prevState,
-				[makeFileField(name)]: ''
-			}));
-
 			setErrors((prevState) => ({...prevState, [name]: {message: errorMessage}}));
 		};
 
@@ -321,6 +337,14 @@ const ConnectionDetailComponent = (props) => {
 			setConnected(false); // ??!!
     	};
     };
+
+	const deleteFile = (fieldName) => {
+		setUpdatedConnection((prevState) => ({
+			...prevState,
+			[fieldName]: '',
+			[makeFileField(fieldName)]: '',
+		}));
+	};
 
 
 	return connection?.id ? (
@@ -453,148 +477,193 @@ const ConnectionDetailComponent = (props) => {
 							</Grid>
 						</Grid>
 
-						<div style={{padding: '5px'}}></div>
-						<div className={`${classes.parent} ${classes.padTop} ${classes.padSidesSmall}`}>
-							<div className={classes.overlayed}><Typography className={classes.smallFont}>Server certificate</Typography></div>
-							<Grid container direction={'row'} spacing={1} alignItems="flex-end" className={`${classes.container} ${classes.parent} ${classes.padTop2}`}>
-								<Grid item xl={6} md={6} sm={6} xs={6}>
-									<FormGroup>
-										<FormControlLabel
-											control={
-													<Switch
-														size="small"
-														disabled={!editMode}
-														checked={updatedConnection[verifyServerCertificateFieldName]}
-														onChange={(event) => {
-															console.log('connection:', connection);
-															console.log('updatedConnection:', updatedConnection);
+						{!(tlsFeature?.supported) ? 
+								(<>
+									<div style={{padding: '10px'}}></div>
+									<Alert severity="warning" className={classes.alert}>
+										<AlertTitle>TLS feature is not available</AlertTitle>
+										Make sure that support for custom TLS certificates is included in your MMC license.
+									</Alert>
+								</>) : (<></>)
+						}
 
-															if (editMode) {
-																setUpdatedConnection({
-																	...updatedConnection,
-																	[verifyServerCertificateFieldName]: event.target.checked
-																});
-																setConnected(false);
-															}
-														}}
-													/>
-												} 
-											label="Verify server certificate"
-										/>
-									</FormGroup>
+						<div className={(!tlsFeature?.supported) ? classes.notEnabledBlock : ''}>
+							<div style={{padding: '5px'}}></div>
+							<div className={`${classes.parent} ${classes.padTop} ${classes.padSidesSmall}`}>
+								<div className={classes.overlayed}><Typography className={classes.smallFont}>Server certificate</Typography></div>
+								<Grid container direction={'row'} spacing={1} alignItems="flex-end" className={`${classes.container} ${classes.parent} ${classes.padTop2}`}>
+									<Grid item xl={6} md={6} sm={6} xs={6}>
+										<FormGroup>
+											<FormControlLabel
+												control={
+														<Switch
+															size="small"
+															disabled={!editMode || !tlsFeature?.supported}
+															checked={updatedConnection[verifyServerCertificateFieldName]}
+															onChange={(event) => {
+																console.log('connection:', connection);
+																console.log('updatedConnection:', updatedConnection);
+
+																if (editMode) {
+																	setUpdatedConnection({
+																		...updatedConnection,
+																		[verifyServerCertificateFieldName]: event.target.checked
+																	});
+																	setConnected(false);
+																}
+															}}
+														/>
+													} 
+												label="Verify server certificate"
+											/>
+										</FormGroup>
+									</Grid>
+									<Grid item xl={6} md={6} sm={6} xs={6}>
+									</Grid>
+									<Grid item xl={3} md={3} sm={4} xs={4}>
+										<Typography className={errors[customCACertificateFieldName] ? classes.verticallyPad : ''} align="left">CA Certificate</Typography>
+									</Grid>
+									<Grid item xl={7} md={7} sm={7} xs={7}>
+										<FormGroup row>
+											<Button
+												disabled={!editMode || !tlsFeature?.supported}
+												size="small"
+												onChange={handleFileUpload}
+												variant="contained"
+												className={`${classes.button} ${classes.restrictButtonHeight}`}
+												color="secondary"
+												startIcon={<CloudUpload />}
+												component="label"
+											>
+												Choose File
+												<input name={customCACertificateFieldName} hidden type="file" />
+											</Button>
+											<TextField
+												disabled={!editMode || !tlsFeature?.supported}
+												className={ (errors[customCACertificateFieldName]) ? classes.filenameFieldExpanded : classes.filenameField }
+												size="small"
+												inputProps={{ readOnly: true, }}
+												id="standard-basic"
+												label=""
+												variant="standard"
+												value={updatedConnection[customCACertificateFileFieldName]}
+												error={!!errors[customCACertificateFieldName]}
+												helperText={errors[customCACertificateFieldName]?.message}
+												InputProps={{
+													endAdornment:
+														<IconButton
+																className={(editMode && updatedConnection[customCACertificateFileFieldName]) ? classes.crossButton : classes.invisible}
+																size="small"
+																onClick={() => deleteFile(customCACertificateFieldName)}
+														>
+															<Close className={classes.closeIcon} />
+														</IconButton>,
+												}}
+											/>
+										</FormGroup>
+									</Grid>
+									<Grid item xl={2} md={2} sm={1} xs={1}>
+									</Grid>
 								</Grid>
-								<Grid item xl={6} md={6} sm={6} xs={6}>
-								</Grid>
-								<Grid item xl={3} md={3} sm={4} xs={4}>
-									<Typography className={errors[customCACertificateFieldName] ? classes.verticallyPad : ''} align="left">CA Certificate</Typography>
-								</Grid>
-								<Grid item xl={7} md={7} sm={7} xs={7}>
-									<FormGroup row>
-										<Button
-											disabled={!editMode}
-											size="small"
-											onChange={handleFileUpload}
-											variant="contained"
-											className={`${classes.button} ${classes.restrictButtonHeight}`}
-											color="secondary"
-											startIcon={<CloudUpload />}
-											component="label"
-										>
-											Choose File
-											<input name={customCACertificateFieldName} hidden type="file" />
-										</Button>
-										<TextField
-											disabled={!editMode}
-											className={ (errors[customCACertificateFieldName]) ? classes.filenameFieldExpanded : classes.filenameField }
-											size="small"
-											inputProps={{ readOnly: true, }}
-											id="standard-basic"
-											label=""
-											variant="standard"
-											value={updatedConnection[customCACertificateFileFieldName]}
-											error={!!errors[customCACertificateFieldName]}
-											helperText={errors[customCACertificateFieldName]?.message}
-										/>
-									</FormGroup>
-								</Grid>
-								<Grid item xl={2} md={2} sm={1} xs={1}>
-								</Grid>
-							</Grid>
-						</div>
-						<div className={`${classes.parent} ${classes.padTop} ${classes.padSidesSmall}`}>
-							<div className={classes.overlayed}><Typography className={classes.smallFont}>Client certificate</Typography></div>
-							<Grid container direction={'row'} spacing={1} alignItems="flex-end" className={`${classes.container} ${classes.parent} ${classes.padTop2}`}>
-								<Grid item xl={3} md={3} sm={4} xs={4}>
-									<Typography className={errors[clientCertificateFieldName] ? classes.verticallyPad : ''} align="left">Certificate</Typography>
-								</Grid>
-								<Grid item xl={7} md={7} sm={7} xs={7}>
-									<FormGroup row>
-										<Button
-											disabled={!editMode}
-											size="small"
-											onChange={handleFileUpload}
-											variant="contained"
-											color="secondary"
-											className={`${classes.button} ${classes.restrictButtonHeight}`}
-											startIcon={<CloudUpload />}
-											component="label"
-										>
-											Choose File
-											<input name={clientCertificateFieldName} hidden type="file" />
-										</Button>
-										<TextField 
-											disabled={!editMode}
-											className={ (errors[clientCertificateFieldName]) ? classes.filenameFieldExpanded : classes.filenameField }
-											size="small"
-											inputProps={{ readOnly: true, }}
-											id="standard-basic"
-											label=""
-											variant="standard"
-											value={updatedConnection[clientCertificateFileFieldName]}
-											error={!!errors[clientCertificateFieldName]}
-											helperText={errors[clientCertificateFieldName]?.message}
-										/>
-									</FormGroup>
-								</Grid>
-								<Grid item xl={2} md={2} sm={1} xs={1}>
-								</Grid>
+							</div>
+							<div className={`${classes.parent} ${classes.padTop} ${classes.padSidesSmall}`}>
+								<div className={classes.overlayed}><Typography className={classes.smallFont}>Client certificate</Typography></div>
+								<Grid container direction={'row'} spacing={1} alignItems="flex-end" className={`${classes.container} ${classes.parent} ${classes.padTop2}`}>
+									<Grid item xl={3} md={3} sm={4} xs={4}>
+										<Typography className={errors[clientCertificateFieldName] ? classes.verticallyPad : ''} align="left">Certificate</Typography>
+									</Grid>
+									<Grid item xl={7} md={7} sm={7} xs={7}>
+										<FormGroup row>
+											<Button
+												disabled={!editMode || !tlsFeature?.supported}
+												size="small"
+												onChange={handleFileUpload}
+												variant="contained"
+												color="secondary"
+												className={`${classes.button} ${classes.restrictButtonHeight}`}
+												startIcon={<CloudUpload />}
+												component="label"
+											>
+												Choose File
+												<input name={clientCertificateFieldName} hidden type="file" />
+											</Button>
+											<TextField 
+												disabled={!editMode || !tlsFeature?.supported}
+												className={ (errors[clientCertificateFieldName]) ? classes.filenameFieldExpanded : classes.filenameField }
+												size="small"
+												inputProps={{ readOnly: true, }}
+												id="standard-basic"
+												label=""
+												variant="standard"
+												value={updatedConnection[clientCertificateFileFieldName]}
+												error={!!errors[clientCertificateFieldName]}
+												helperText={errors[clientCertificateFieldName]?.message}
+												InputProps={{
+													endAdornment:
+														<IconButton
+																className={(editMode && updatedConnection[clientCertificateFileFieldName]) ? classes.crossButton : classes.invisible}
+																size="small"
+																onClick={() => deleteFile(clientCertificateFieldName)}
+														>
+															<Close className={classes.closeIcon} />
+														</IconButton>,
+												}}
+											/>
+										</FormGroup>
+									</Grid>
+									<Grid item xl={2} md={2} sm={1} xs={1}>
+									</Grid>
 
 
-								<Grid item xl={3} md={3} sm={4} xs={4}>
-									<Typography className={(errors[clientPrivateKeyFieldName]) ? classes.verticallyPad : ''} align="left">Private Key</Typography>
+									<Grid item xl={3} md={3} sm={4} xs={4}>
+										<Typography className={(errors[clientPrivateKeyFieldName]) ? classes.verticallyPad : ''} align="left">Private Key</Typography>
+									</Grid>
+									<Grid item xl={7} md={7} sm={7} xs={7}>
+										<FormGroup row>
+											<Button
+												disabled={!editMode || !tlsFeature?.supported}
+												size="small"
+												onChange={handleFileUpload}
+												variant="contained"
+												color="secondary"
+												className={`${classes.button} ${classes.restrictButtonHeight}`}
+												startIcon={<CloudUpload />}
+												component="label"
+											>
+												Choose File
+												<input name={clientPrivateKeyFieldName} hidden type="file" />
+											</Button>
+											<TextField
+												disabled={!editMode || !tlsFeature?.supported}
+												className={ (errors[clientPrivateKeyFieldName]) ? classes.filenameFieldExpanded : classes.filenameField }
+												size="small"
+												inputProps={{ readOnly: true, }}
+												id="standard-basic"
+												label=""
+												variant="standard"
+												value={updatedConnection[clientPrivateKeyFileFieldName]}
+												error={!!errors[clientPrivateKeyFieldName]}
+												helperText={errors[clientPrivateKeyFieldName]?.message}
+												InputProps={{
+													endAdornment:
+														<IconButton
+																className={(editMode && updatedConnection[clientPrivateKeyFileFieldName]) ? classes.crossButton : classes.invisible}
+																size="small"
+																onClick={() => deleteFile(clientPrivateKeyFieldName)}
+														>
+															<Close className={classes.closeIcon} />
+														</IconButton>,
+													// classes: {
+													// 		   adornedEnd: classes.adornedEnd
+													// 		  }
+												}}
+											/>
+										</FormGroup>
+									</Grid>
+									<Grid item xl={2} md={2} sm={1} xs={1}>
+									</Grid>
 								</Grid>
-								<Grid item xl={7} md={7} sm={7} xs={7}>
-									<FormGroup row>
-										<Button
-											disabled={!editMode}
-											size="small"
-											onChange={handleFileUpload}
-											variant="contained"
-											color="secondary"
-											className={`${classes.button} ${classes.restrictButtonHeight}`}
-											startIcon={<CloudUpload />}
-											component="label"
-										>
-											Choose File
-											<input name={clientPrivateKeyFieldName} hidden type="file" />
-										</Button>
-										<TextField
-											disabled={!editMode}
-											className={ (errors[clientPrivateKeyFieldName]) ? classes.filenameFieldExpanded : classes.filenameField }
-											size="small"
-											inputProps={{ readOnly: true, }}
-											id="standard-basic"
-											label=""
-											variant="standard"
-											value={updatedConnection[clientPrivateKeyFileFieldName]}
-											error={!!errors[clientPrivateKeyFieldName]}
-											helperText={errors[clientPrivateKeyFieldName]?.message}
-										/>
-									</FormGroup>
-								</Grid>
-								<Grid item xl={2} md={2} sm={1} xs={1}>
-								</Grid>
-							</Grid>
+							</div>
 						</div>
 					</div>
 				</form>
@@ -673,7 +742,8 @@ const ConnectionDetailComponent = (props) => {
 
 const mapStateToProps = (state) => {
 	return {
-		selectedConnectionToEdit: state.brokerConnections?.selectedConnectionToEdit
+		selectedConnectionToEdit: state.brokerConnections?.selectedConnectionToEdit,
+		tlsFeature: state.systemStatus?.features?.tls,
 	};
 };
 
