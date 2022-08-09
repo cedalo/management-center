@@ -6,13 +6,10 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		super({ name, logger: logger });
 	}
 
-	_connectBroker(url, credentials, connectTimeout) {
+	_connectBroker(url, options) {
 		return new Promise((resolve, reject) => {
-			const brokerClient = mqtt.connect(url, {
-				username: credentials?.username,
-				password: credentials?.password,
-				connectTimeout
-			});
+			const brokerClient = mqtt.connect(url, options);
+
 			brokerClient.on('error', (error) => {
 				this.logger.error(error);
 				reject(error);

@@ -9,6 +9,17 @@ export default function brokerConnections(state = {}, action) {
 			break;
 		case ActionTypes.UPDATE_BROKER_CONNECTIONS:
 			newState.brokerConnections = action.update;
+
+			// TODO: figure out if it is necessary to also update selectedConnectionToEdit when updating all broker conenctions
+			// TODO contunue: because technically a user can have a tab where only selectedConnectionToEdit is mapped to props open when update of all the connections is initiated (I belive this happens in connectionDetailComponent)
+			// if (newState.selectedConnectionToEdit) {
+			// 	newState.brokerConnections.forEach(el => {
+			// 		if (newState.selectedConnectionToEdit.id === el.id) {
+			// 			newState.selectedConnectionToEdit = JSON.parse(JSON.stringify(el));
+			// 		}
+			// 	})
+			// }
+			
 			break;
 		case ActionTypes.UPDATE_EDIT_DEFAULT_CLIENT:
 			newState.editDefaultClient = action.edit;

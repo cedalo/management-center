@@ -65,7 +65,6 @@ class HTTPClient {
 			}
 			try {
 				const params = new urlModule.URLSearchParams(formParams);
-				console.log(params)
 				return axios.post(url, params.toString(), config);
 			} catch (error) {
 				console.error(error);
