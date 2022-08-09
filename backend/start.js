@@ -23,6 +23,7 @@ const { loadInstallation } = require('./src/utils/utils');
 const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
 const swaggerDocument = require('./swagger.js');
 const Logger = require('./src/utils/Logger');
+const contentTypeParser = require('./src/middleware/ContentTypeParser');
 
 console = new Logger(console, false);
 
@@ -199,6 +200,7 @@ const init = async (licenseContainer) => {
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));
 	app.use(cors());
+	app.use(contentTypeParser);
 
 	const server = http.createServer(app);
 
