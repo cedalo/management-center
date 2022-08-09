@@ -250,7 +250,8 @@ const init = async (licenseContainer) => {
 		if (connectionConfiguration) {
 			// TODO: handle disconnection
 			connectionConfiguration.status = {
-				connected: false
+				connected: false,
+				timestamp: Date.now()
 			};
 		}
 		try {
@@ -263,11 +264,13 @@ const init = async (licenseContainer) => {
 			topicTreeManager.start();
 
 			connectionConfiguration.status.connected = true;
+			connectionConfiguration.status.timestamp = Date.now();
 			console.log(`Connected to '${connection.name}' at ${connection.url}`);
 			brokerClient.on('close', () => {
 				context.eventEmitter.emit('close', connectionConfiguration);
 				connectionConfiguration.status = {
 					connected: false,
+					timestamp: Date.now(),
 					error: {
 						errno: 1,
 						code: 'ECONNCLOSED',
@@ -280,7 +283,8 @@ const init = async (licenseContainer) => {
 			brokerClient.on('connect', () => {
 				context.eventEmitter.emit('connect', connectionConfiguration);
 				connectionConfiguration.status = {
-					connected: true
+					connected: true,
+					timestamp: Date.now()
 				};
 				sendConnectionsUpdate(brokerClient);
 			});
@@ -289,6 +293,7 @@ const init = async (licenseContainer) => {
 			console.error(error);
 			connectionConfiguration.status = {
 				connected: false,
+				timestamp: Date.now(),
 				error: error
 			};
 			sendConnectionsUpdate(brokerClient);
@@ -358,6 +363,7 @@ const init = async (licenseContainer) => {
 		}
 		context.brokerManager.handleDeleteBrokerConnection(connection);
 		connection.status.connected = false;
+		connection.status.timestamp = Date.now();
 		configManager.updateConnection(connection);
 	}
 
