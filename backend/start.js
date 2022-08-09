@@ -115,7 +115,8 @@ const initConnections = (config) => {
 				};
 			}
 			connection.status = {
-				connected: true
+				connected: true,
+				timestamp: Date.now()
 			}
 			connections.push(connection);
 		} else {
