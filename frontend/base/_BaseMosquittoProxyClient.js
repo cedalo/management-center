@@ -296,7 +296,7 @@ module.exports = class BaseMosquittoProxyClient {
 	async updateUserProfile(user) {
 		try {
 			const url = `${this._httpEndpointURL}/api/profile/${user.username}`;
-			const response = await axios.put(url, user, this._options);
+			const response = await axios.put(url, user, this._headers);
 			return response.data;
 		} catch (error) {
 			if (error?.response?.status === 404) {
@@ -312,7 +312,7 @@ module.exports = class BaseMosquittoProxyClient {
 	async getUserGroup(groupname) {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/groups/${groupname}`;
-			const response = await axios.get(url, this._options);
+			const response = await axios.get(url, this._headers);
 			return response.data;
 		} catch (error) {
 			if (error?.response?.status === 404) {
@@ -327,7 +327,7 @@ module.exports = class BaseMosquittoProxyClient {
 	async listUserGroupsOfUser(username) {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/groups/user/${username}`;
-			const response = await axios.get(url, this._options);
+			const response = await axios.get(url, this._headers);
 			return response.data;
 		} catch (error) {
 			if (error?.response?.status === 404) {
@@ -342,7 +342,7 @@ module.exports = class BaseMosquittoProxyClient {
 	async listUserGroups() {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/groups`;
-			const response = await axios.get(url, this._options);
+			const response = await axios.get(url, this._headers);
 			return response.data;
 		} catch (error) {
 			if (error?.response?.status === 404) {
@@ -364,7 +364,7 @@ module.exports = class BaseMosquittoProxyClient {
 				connections,
 			}
 			const url = `${this._httpEndpointURL}/api/user-management/groups`;
-			const response = await axios.post(url, group, this._options);
+			const response = await axios.post(url, group, this._headers);
 			return response.data;
 		} catch (error) {
 			if (error?.response?.status === 404) {
@@ -379,7 +379,7 @@ module.exports = class BaseMosquittoProxyClient {
 	async deleteUserGroup(groupname) {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/groups/${groupname}`;
-			const response = await axios.delete(url, this._options);
+			const response = await axios.delete(url, this._headers);
 			return response.data;
 		} catch (error) {
 			if (error?.response?.status === 404) {
@@ -394,7 +394,7 @@ module.exports = class BaseMosquittoProxyClient {
 	async updateUserGroup(group) {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/groups/${group.name}`;
-			const response = await axios.put(url, group, this._options);
+			const response = await axios.put(url, group, this._headers);
 			return response.data;
 		} catch (error) {
 			if (error?.response?.status === 404) {
