@@ -296,7 +296,105 @@ module.exports = class BaseMosquittoProxyClient {
 	async updateUserProfile(user) {
 		try {
 			const url = `${this._httpEndpointURL}/api/profile/${user.username}`;
-			const response = await axios.put(url, user, this._headers);
+			const response = await axios.put(url, user, this._options);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
+
+	async getUserGroup(groupname) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/groups/${groupname}`;
+			const response = await axios.get(url, this._options);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
+	async listUserGroupsOfUser(username) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/groups/user/${username}`;
+			const response = await axios.get(url, this._options);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
+	async listUserGroups() {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/groups`;
+			const response = await axios.get(url, this._options);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
+	async createUserGroup(name, role, description='', users=[], connections=[]) {
+		try {
+			const group = {
+				name,
+				description,
+				role,
+				users,
+				connections,
+			}
+			const url = `${this._httpEndpointURL}/api/user-management/groups`;
+			const response = await axios.post(url, group, this._options);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
+	async deleteUserGroup(groupname) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/groups/${groupname}`;
+			const response = await axios.delete(url, this._options);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
+	async updateUserGroup(group) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/groups/${group.name}`;
+			const response = await axios.put(url, group, this._options);
 			return response.data;
 		} catch (error) {
 			if (error?.response?.status === 404) {
