@@ -562,6 +562,7 @@ const ConnectionDetailComponent = (props) => {
 																className={(editMode && updatedConnection[customCACertificateFileFieldName]) ? classes.crossButton : classes.invisible}
 																size="small"
 																onClick={() => deleteFile(customCACertificateFieldName)}
+																disabled={!tlsFeature?.supported}
 														>
 															<Close className={classes.closeIcon} />
 														</IconButton>,
@@ -611,6 +612,7 @@ const ConnectionDetailComponent = (props) => {
 																className={(editMode && updatedConnection[clientCertificateFileFieldName]) ? classes.crossButton : classes.invisible}
 																size="small"
 																onClick={() => deleteFile(clientCertificateFieldName)}
+																disabled={!tlsFeature?.supported}
 														>
 															<Close className={classes.closeIcon} />
 														</IconButton>,
@@ -657,6 +659,7 @@ const ConnectionDetailComponent = (props) => {
 																className={(editMode && updatedConnection[clientPrivateKeyFileFieldName]) ? classes.crossButton : classes.invisible}
 																size="small"
 																onClick={() => deleteFile(clientPrivateKeyFieldName)}
+																disabled={!tlsFeature?.supported}
 														>
 															<Close className={classes.closeIcon} />
 														</IconButton>,

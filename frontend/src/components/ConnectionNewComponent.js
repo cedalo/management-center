@@ -530,6 +530,7 @@ const ConnectionNewComponent = ({ connections, tlsFeature }) => {
 																className={(connection[customCACertificateFileFieldName]) ? classes.crossButton : classes.invisible}
 																size="small"
 																onClick={() => deleteFile(customCACertificateFieldName)}
+																disabled={!tlsFeature?.supported}
 														>
 															<Close className={classes.closeIcon} />
 														</IconButton>,
@@ -579,6 +580,7 @@ const ConnectionNewComponent = ({ connections, tlsFeature }) => {
 																className={(connection[clientCertificateFileFieldName]) ? classes.crossButton : classes.invisible}
 																size="small"
 																onClick={() => deleteFile(clientCertificateFieldName)}
+																disabled={!tlsFeature?.supported}
 														>
 															<Close className={classes.closeIcon} />
 														</IconButton>,
@@ -625,6 +627,7 @@ const ConnectionNewComponent = ({ connections, tlsFeature }) => {
 																className={(connection[clientPrivateKeyFileFieldName]) ? classes.crossButton : classes.invisible}
 																size="small"
 																onClick={() => deleteFile(clientPrivateKeyFieldName)}
+																disabled={!tlsFeature?.supported}
 														>
 															<Close className={classes.closeIcon} />
 														</IconButton>,
