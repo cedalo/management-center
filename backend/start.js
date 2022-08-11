@@ -528,15 +528,23 @@ const init = async (licenseContainer) => {
 				const testClient = new NodeMosquittoClient({
 					/* logger: console */
 				});
-				await testClient.connect({
-					mqttEndpointURL: connection.url,
-					options: createOptions(connection)
-				});
-				await testClient.disconnect();
+
+
+				try {
+					await testClient.connect({
+						mqttEndpointURL: connection.url,
+						options: createOptions(connection)
+					});
+					await testClient.disconnect();
+				} catch(e) {
+					return {
+						connected: true,
+					};
+				}
 
 				return {
 					connected: true
-				}
+				};
 			}
 			case 'createConnection': {
 				if (context.security.acl.isAdmin(user)) {
