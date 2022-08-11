@@ -528,9 +528,12 @@ const init = async (licenseContainer) => {
 				const testClient = new NodeMosquittoClient({
 					/* logger: console */
 				});
+
+				const filteredConnection = configManager.filterConnectionObject(connection);
+
 				await testClient.connect({
-					mqttEndpointURL: connection.url,
-					options: createOptions(connection)
+					mqttEndpointURL: filteredConnection.url,
+					options: createOptions(filteredConnection)
 				});
 				await testClient.disconnect();
 
