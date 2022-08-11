@@ -286,6 +286,11 @@ const ConnectionNewComponent = ({ connections, tlsFeature }) => {
 	const handleFileUpload = (e) => {
         const fileReader = new FileReader();
         const name = e.target.getAttribute('name');
+
+		if (!e.target.files[0]) {
+			return;
+		}
+		
 		const filename = e.target.files[0].name;
 		
 		if (!name) {
@@ -300,10 +305,13 @@ const ConnectionNewComponent = ({ connections, tlsFeature }) => {
 		}
 
         fileReader.readAsDataURL(e.target.files[0]);
+		e.target.value = ''; // null out the value of input component to make it possible to trigger it on uploading the same file several times
 		const encoding = 'base64';
 
+
 		fileReader.onerror = (e) => {
-			const errorMessage = '';
+			const errorMessage = fileReader.error || `Error occured while loading ${filename}`;
+			console.error(`File loading error (${filename}):`, errorMessage);
 
 			setErrors((prevState) => ({...prevState, [name]: {message: errorMessage}}));
 		};
@@ -522,6 +530,7 @@ const ConnectionNewComponent = ({ connections, tlsFeature }) => {
 																className={(connection[customCACertificateFileFieldName]) ? classes.crossButton : classes.invisible}
 																size="small"
 																onClick={() => deleteFile(customCACertificateFieldName)}
+																disabled={!tlsFeature?.supported}
 														>
 															<Close className={classes.closeIcon} />
 														</IconButton>,
@@ -571,6 +580,7 @@ const ConnectionNewComponent = ({ connections, tlsFeature }) => {
 																className={(connection[clientCertificateFileFieldName]) ? classes.crossButton : classes.invisible}
 																size="small"
 																onClick={() => deleteFile(clientCertificateFieldName)}
+																disabled={!tlsFeature?.supported}
 														>
 															<Close className={classes.closeIcon} />
 														</IconButton>,
@@ -617,6 +627,7 @@ const ConnectionNewComponent = ({ connections, tlsFeature }) => {
 																className={(connection[clientPrivateKeyFileFieldName]) ? classes.crossButton : classes.invisible}
 																size="small"
 																onClick={() => deleteFile(clientPrivateKeyFieldName)}
+																disabled={!tlsFeature?.supported}
 														>
 															<Close className={classes.closeIcon} />
 														</IconButton>,
