@@ -265,7 +265,7 @@ const getDialogContent = (handleClose, brokerConnections, connected, proxyConnec
 				{ !connected ? 'Applying changes' : 'Changes applied' }
 			</DialogTitle>
 			<DialogContent>
-				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
+				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
 					<Grid item xs={12} align="center">
 						<DialogContentText id="alert-dialog-description">
 						{ 
@@ -298,7 +298,7 @@ const getDialogContent = (handleClose, brokerConnections, connected, proxyConnec
 				You have not configured any broker.
 			</DialogTitle>
 			<DialogContent>
-				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
+				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
 					<Grid item xs={12} align="center">
 						<DialogContentText id="alert-dialog-description">
 							Please create a connection first.
@@ -328,7 +328,7 @@ const getDialogContent = (handleClose, brokerConnections, connected, proxyConnec
 				) : null}
 			</DialogTitle>
 			<DialogContent>
-				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
+				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
 					<Grid item xs={12} align="center">
 						<img src={disconnectedImage} />
 					</Grid>
@@ -360,7 +360,7 @@ const getDialogContent = (handleClose, brokerConnections, connected, proxyConnec
 				We could not connect to the proxy server
 			</DialogTitle>
 			<DialogContent>
-				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
+				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
 					<Grid item xs={12} align="center">
 						<img src={disconnectedImage} />
 					</Grid>

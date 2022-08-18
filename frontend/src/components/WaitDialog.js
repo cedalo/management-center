@@ -22,7 +22,7 @@ const WaitDialog = ({ open, title, message, handleClose }) => {
 				{title}
 			</DialogTitle>
 			<DialogContent>
-				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
+				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
 					<Grid item xs={12} align="center">
 						{message}
 						{message ? <><br/><br/></> : null}
