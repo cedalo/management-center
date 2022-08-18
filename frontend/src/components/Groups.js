@@ -189,6 +189,7 @@ const Groups = (props) => {
 		dispatch(updateGroups(groups));
 	};
 
+
 	const { dynamicsecurityFeature, anonymousGroup, groups = [], rolesAll = [], clientsAll = [], onSort, sortBy, sortDirection } = props;
 
 	// TODO: probably extract into reducer
@@ -205,6 +206,7 @@ const Groups = (props) => {
 			label: rolename,
 			value: rolename
 		}));
+
 
 	return (
 		<div>
@@ -253,13 +255,22 @@ const Groups = (props) => {
 												key={column.id}
 												sortDirection={sortBy === column.id ? sortDirection : false}
 											>
-												<TableSortLabel
-													active={sortBy === column.id}
-													direction={sortDirection}
-													onClick={() => onSort(column.id)}
-												>
-													{column.key}
-												</TableSortLabel>
+												{sortBy && sortDirection && onSort ?
+													(
+														<TableSortLabel
+															active={sortBy === column.id}
+															direction={sortDirection}
+															onClick={() => onSort(column.id)}
+														>
+															{column.key}
+														</TableSortLabel>
+													) : (
+														<>
+															{column.key}
+														</>
+													)
+												}
+												
 											</TableCell>
 										))}
 										<TableCell />
@@ -339,8 +350,8 @@ const Groups = (props) => {
 											count={groups?.totalCount}
 											rowsPerPage={rowsPerPage}
 											page={page}
-											onChangePage={handleChangePage}
-											onChangeRowsPerPage={handleChangeRowsPerPage}
+											onPageChange={handleChangePage}
+											onRowsPerPageChange={handleChangeRowsPerPage}
 										/>
 									</TableRow>
 								</TableFooter>
@@ -351,7 +362,7 @@ const Groups = (props) => {
 						<Paper>
 							<List className={classes.root}>
 								{groups.groups.map((group) => (
-									<React.Fragment>
+									<React.Fragment key={group.groupname}>
 										<ListItem
 											alignItems="flex-start"
 											onClick={(event) => onSelectGroup(group.groupname)}
@@ -426,11 +437,18 @@ const Groups = (props) => {
 	);
 };
 
+
 Groups.propTypes = {
-	groups: PropTypes.arrayOf(groupShape).isRequired,
+	groups: PropTypes.oneOfType([
+		PropTypes.shape({
+			totalCount: PropTypes.number,
+			groups: PropTypes.arrayOf(groupShape)
+		}),
+		PropTypes.arrayOf(groupShape)
+	]).isRequired,
 	sortBy: PropTypes.string,
 	sortDirection: PropTypes.string,
-	onSort: PropTypes.func.isRequired
+	onSort: PropTypes.func
 };
 
 Groups.defaultProps = {
