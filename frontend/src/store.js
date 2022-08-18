@@ -17,6 +17,7 @@ import webSocketConnectionsReducer from './reducers/webSocketConnectionsReducer'
 import brokerLicenseReducer from './reducers/brokerLicenseReducer';
 import testsReducer from './reducers/testsReducer';
 
+import userGroupsReducer from './admin/users/reducers/userGroupsReducer';
 import userRolesReducer from './admin/users/reducers/userRolesReducer';
 import usersReducer from './admin/users/reducers/usersReducer';
 import clustersReducer from './admin/clusters/reducers/clustersReducer';
@@ -29,6 +30,7 @@ const store = createStore(
 		brokerConnections: brokerConnectionsReducer,
 		proxyConnection: proxyConnectionReducer,
 		groups: groupsReducer,
+		userGroups:	userGroupsReducer,
 		license: licenseReducer,
 		version: versionsReducer,
 		roles: rolesReducer,
