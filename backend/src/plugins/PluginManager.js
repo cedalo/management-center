@@ -56,6 +56,17 @@ module.exports = class PluginManager {
 				console.log('"CEDALO_MC_PLUGIN_DIR" is not set. Skipping loading of plugins');
 				return;
 			}
+
+			const userManagementPluginIndex = pluginConfigurations.findIndex((el) => {
+				return el.name === 'user-management';
+			});
+			if (userManagementPluginIndex !== -1) {
+				const userManagementPlugin = pluginConfigurations[userManagementPluginIndex];
+				pluginConfigurations.splice(userManagementPluginIndex, 1);
+				pluginConfigurations.unshift(userManagementPlugin);
+			}
+
+
 			pluginConfigurations.forEach((pluginConfiguration) => {
 				try {
 					const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
