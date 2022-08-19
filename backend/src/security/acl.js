@@ -8,7 +8,13 @@ module.exports = {
         },
         isViewer(request, response, next) {
             return next();
-        }
+        },
+        isConnectionCreator(request, response, next) {
+            return next();
+        },
+        noRestrictedRoles(request, response, next) {
+            return next();
+        },
     },
     isAdmin(user) {
         return true;
@@ -17,6 +23,12 @@ module.exports = {
         return true;
     },
     isViewer(user) {
+        return true;
+    },
+    isConnectionCreator(user) {
+        return true;
+    },
+    noRestrictedRoles(user) {
         return true;
     },
 }
