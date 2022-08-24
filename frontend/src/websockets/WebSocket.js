@@ -111,16 +111,23 @@ const init = async (client, dispatch, connectionConfiguration) => {
 
 
 	try {
-		const _ = await client.checkTLSEnabled();
-
-		dispatch(updateFeatures({
-			feature: 'tls',
-			status: 'ok'
-		}));
+		const isEnabled = await client.checkTLSEnabled();
+		if (isEnabled) {
+		  	dispatch(updateFeatures({
+				feature: 'tls',
+				status: 'ok'
+			}));
+		} else {
+		  	dispatch(updateFeatures({
+				feature: 'tls',
+				status: {message: ERROR_MESSAGE, satatus: 'failed'},
+				error
+		  	}));
+		}
 	} catch (error) {
 		dispatch(updateFeatures({
-			feature: 'tls',
-			status: {message: "BaseMosquittoProxyClient: Timeout", satatus: 'failed'},
+		  	feature: 'tls',
+		  	status: {message: ERROR_MESSAGE, satatus: 'failed'},
 			error
 		}));
 	}
