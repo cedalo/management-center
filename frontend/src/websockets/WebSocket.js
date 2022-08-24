@@ -51,6 +51,9 @@ const WebSocketContext = createContext(null);
 
 export { WebSocketContext };
 
+const ERROR_MESSAGE = "BaseMosquittoProxyClient: Timeout";
+
+
 
 const init = async (client, dispatch, connectionConfiguration) => {
 	dispatch(updateBrokerLicenseInformation(null));
