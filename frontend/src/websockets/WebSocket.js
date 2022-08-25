@@ -73,6 +73,11 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		const userRoles = await client.listUserRoles();
 		dispatch(updateUserRoles(userRoles));
 		const users = await client.listUsers();
+
+		if (!Array.isArray(users)) {
+			console.log('THROWING ERROR')
+			throw {name: 'NotAuthorizedError', message: 'Usermanagement is not accessible'}
+		} 
 		dispatch(updateUsers(users));
 		dispatch(updateFeatures({
 			feature: 'usermanagement',
