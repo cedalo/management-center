@@ -15,5 +15,7 @@ module.exports = {
     "https"
   ],
   "paths": {
+  },
+  "components": {
   }
 }
