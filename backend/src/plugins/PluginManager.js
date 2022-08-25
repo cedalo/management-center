@@ -49,35 +49,35 @@ module.exports = class PluginManager {
 	}
 
 	init(pluginConfigurations = [], context, swaggerDocument) {
-		if (!PLUGIN_DIR) {
+    this._context = context;
+    const { licenseContainer } = context;
+    if (licenseContainer.license.isValid && PLUGIN_DIR) {
+		pluginConfigurations.forEach((pluginConfiguration) => {
+			try {
+			const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
+			const plugin = new Plugin();
+			if (
+				licenseContainer.license.features &&
+				licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
+			) {
+				this._plugins.push(plugin);
+			} else {
+				console.log(`Plugin not loaded: License does not allow this plugin: "${pluginConfiguration.name}"`)
+				plugin.setErrored(`License does not allow this plugin: "${pluginConfiguration.name}"`);
+				this._plugins.push(plugin);
+			}
+			} catch (error) {
+			console.error(`Failed loading plugin: "${pluginConfiguration.name}"`);
+			console.error(error);
+			// plugin.setErrored();
+			}
+		});
+		} else if (licenseContainer.license.isValid && !PLUGIN_DIR) {
 			console.log('"CEDALO_MC_PLUGIN_DIR" is not set. Skipping loading of plugins');
-			return;
-		}
-		this._context = context;
-		const { licenseContainer } = context;
-		if (licenseContainer.license.isValid) {
-			pluginConfigurations.forEach((pluginConfiguration) => {
-				try {
-					const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
-					const plugin = new Plugin();
-					if (
-						licenseContainer.license.features &&
-						licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
-					) {
-						this._plugins.push(plugin);
-					} else {
-						plugin.setErrored(`License does not allow this plugin: "${pluginConfiguration.name}"`);
-						this._plugins.push(plugin);
-					}
-				} catch (error) {
-					console.error(`Failed loading plugin: "${pluginConfiguration.name}"`);
-					console.error(error);
-					// plugin.setErrored();
-				}
-			});
 		} else {
 			console.error('Ignore loading plugins: no premium license provided or license not valid');
 		}
+
 		
 		this._plugins.forEach(plugin => {
 			if (plugin.preInit) {
@@ -95,8 +95,12 @@ module.exports = class PluginManager {
 					swaggerDocument.tags = Object.assign(swaggerDocument.tags || {}, plugin.swagger.tags);
 					swaggerDocument.paths = Object.assign(swaggerDocument.paths || {}, plugin.swagger.paths);
 				}
-				plugin.setLoaded();
-				console.log(`Loaded plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
+
+				if (plugin._status.type !== 'error') {
+					plugin.load(context);
+					plugin.setLoaded();
+					console.log(`Loaded plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
+				}
 			} catch(error) {
 				console.error(`Failed loading plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
 				console.error(error);
