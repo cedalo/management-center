@@ -177,7 +177,7 @@ const ConnectionDetailComponent = (props) => {
 
 	const [updatedConnection, setUpdatedConnection] = React.useState({
 		...connection,
-		[verifyServerCertificateFieldName]: true,
+		[verifyServerCertificateFieldName]: connection[verifyServerCertificateFieldName],
 		[customCACertificateFileFieldName]: connection[customCACertificateFileFieldName],
 		[clientCertificateFileFieldName]: connection[clientCertificateFileFieldName],
 		[clientPrivateKeyFileFieldName]: connection[clientPrivateKeyFileFieldName],
@@ -299,6 +299,11 @@ const ConnectionDetailComponent = (props) => {
 	const handleFileUpload = (e) => {
         const fileReader = new FileReader();
         const name = e.target.getAttribute('name');
+
+		if (!e.target.files[0]) {
+			return;
+		}
+
 		const filename = e.target.files[0].name;
 		
 		if (!name) {
@@ -314,11 +319,13 @@ const ConnectionDetailComponent = (props) => {
 		}
 
         fileReader.readAsDataURL(e.target.files[0]);
+		e.target.value = ''; // null out the value of input component to make it possible to trigger it on uploading the same file several times
 		const encoding = 'base64';
 
 
 		fileReader.onerror = (e) => {
-			const errorMessage = '';
+			const errorMessage = fileReader.error || `Error occured while loading ${filename}`;
+			console.error(`File loading error (${filename}):`, errorMessage);
 
 			setErrors((prevState) => ({...prevState, [name]: {message: errorMessage}}));
 		};
@@ -555,6 +562,7 @@ const ConnectionDetailComponent = (props) => {
 																className={(editMode && updatedConnection[customCACertificateFileFieldName]) ? classes.crossButton : classes.invisible}
 																size="small"
 																onClick={() => deleteFile(customCACertificateFieldName)}
+																disabled={!tlsFeature?.supported}
 														>
 															<Close className={classes.closeIcon} />
 														</IconButton>,
@@ -604,6 +612,7 @@ const ConnectionDetailComponent = (props) => {
 																className={(editMode && updatedConnection[clientCertificateFileFieldName]) ? classes.crossButton : classes.invisible}
 																size="small"
 																onClick={() => deleteFile(clientCertificateFieldName)}
+																disabled={!tlsFeature?.supported}
 														>
 															<Close className={classes.closeIcon} />
 														</IconButton>,
@@ -650,6 +659,7 @@ const ConnectionDetailComponent = (props) => {
 																className={(editMode && updatedConnection[clientPrivateKeyFileFieldName]) ? classes.crossButton : classes.invisible}
 																size="small"
 																onClick={() => deleteFile(clientPrivateKeyFieldName)}
+																disabled={!tlsFeature?.supported}
 														>
 															<Close className={classes.closeIcon} />
 														</IconButton>,

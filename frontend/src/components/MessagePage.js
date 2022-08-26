@@ -28,7 +28,7 @@ const MessagePage = ({ message, buttonText, buttonIcon, callToAction, image = '/
 	const classes = useStyles();
 	return (
 		<Paper>
-			<Grid container spacing={24} justify="center" style={{ minHeight: '500px', maxWidth: '100%' }}>
+			<Grid container spacing={24} justifyContent="center" style={{ minHeight: '500px', maxWidth: '100%' }}>
 				<Grid item xs={12} align="center"></Grid>
 				<Grid item xs={12} align="center">
 					<img src={image} />

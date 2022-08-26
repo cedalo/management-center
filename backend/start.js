@@ -23,6 +23,7 @@ const { loadInstallation } = require('./src/utils/utils');
 const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
 const swaggerDocument = require('./swagger.js');
 const Logger = require('./src/utils/Logger');
+const contentTypeParser = require('./src/middleware/ContentTypeParser');
 
 console = new Logger(console, false);
 
@@ -114,7 +115,8 @@ const initConnections = (config) => {
 				};
 			}
 			connection.status = {
-				connected: true
+				connected: true,
+				timestamp: Date.now()
 			}
 			connections.push(connection);
 		} else {
@@ -221,6 +223,7 @@ const init = async (licenseContainer) => {
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));
 	app.use(cors());
+	app.use(contentTypeParser);
 
 	const server = http.createServer(app);
 
@@ -270,7 +273,8 @@ const init = async (licenseContainer) => {
 		if (connectionConfiguration) {
 			// TODO: handle disconnection
 			connectionConfiguration.status = {
-				connected: false
+				connected: false,
+				timestamp: Date.now()
 			};
 		}
 		try {
@@ -282,11 +286,13 @@ const init = async (licenseContainer) => {
 			topicTreeManager.start();
 
 			connectionConfiguration.status.connected = true;
+			connectionConfiguration.status.timestamp = Date.now();
 			console.log(`Connected to '${connection.name}' at ${connection.url}`);
 			brokerClient.on('close', () => {
 				context.eventEmitter.emit('close', connectionConfiguration);
 				connectionConfiguration.status = {
 					connected: false,
+					timestamp: Date.now(),
 					error: {
 						errno: 1,
 						code: 'ECONNCLOSED',
@@ -299,7 +305,8 @@ const init = async (licenseContainer) => {
 			brokerClient.on('connect', () => {
 				context.eventEmitter.emit('connect', connectionConfiguration);
 				connectionConfiguration.status = {
-					connected: true
+					connected: true,
+					timestamp: Date.now()
 				};
 				sendConnectionsUpdate(brokerClient);
 			});
@@ -308,6 +315,7 @@ const init = async (licenseContainer) => {
 			console.error(error);
 			connectionConfiguration.status = {
 				connected: false,
+				timestamp: Date.now(),
 				error: error
 			};
 			sendConnectionsUpdate(brokerClient);
@@ -377,6 +385,7 @@ const init = async (licenseContainer) => {
 		}
 		context.brokerManager.handleDeleteBrokerConnection(connection);
 		connection.status.connected = false;
+		connection.status.timestamp = Date.now();
 		configManager.updateConnection(connection.id, connection);
 	}
 
@@ -545,6 +554,9 @@ const init = async (licenseContainer) => {
 					const testClient = new NodeMosquittoClient({
 						/* logger: console */
 					});
+          
+          const filteredConnection = configManager.filterConnectionObject(connection);
+          
 					await testClient.connect({
 						mqttEndpointURL: connection.url,
 						options: createOptions(connection)

@@ -26,6 +26,8 @@ import { makeStyles } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import LicenseTable from './LicenseTable';
 
+const formatAsNumber = (metric) => new Intl.NumberFormat().format(metric);
+
 const useStyles = makeStyles((theme) => ({
 	root: {
 		backgroundColor: theme.palette.background.dark,
@@ -103,49 +105,49 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
 							label="Subscriptions"
-							value={systemStatus?.$SYS?.broker?.subscriptions?.count}
+							value={formatAsNumber(systemStatus?.$SYS?.broker?.subscriptions?.count)}
 							icon={<SubscriptionIcon />}
 						/>
 					</Grid>
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
 							label="PUBLISH received"
-							value={systemStatus?.$SYS?.broker?.publish?.messages?.received}
+							value={formatAsNumber(systemStatus?.$SYS?.broker?.publish?.messages?.received)}
 							icon={<MessageIcon />}
 						/>
 					</Grid>
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
 							label="PUBLISH sent"
-							value={systemStatus?.$SYS?.broker?.publish?.messages?.sent}
+							value={formatAsNumber(systemStatus?.$SYS?.broker?.publish?.messages?.sent)}
 							icon={<MessageIcon />}
 						/>
 					</Grid>
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
 							label="Bytes received"
-							value={systemStatus?.$SYS?.broker?.bytes?.received}
+							value={formatAsNumber(systemStatus?.$SYS?.broker?.bytes?.received)}
 							icon={<DataReceivedIcon />}
 						/>
 					</Grid>
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
 							label="Bytes sent"
-							value={systemStatus?.$SYS?.broker?.bytes?.sent}
+							value={formatAsNumber(systemStatus?.$SYS?.broker?.bytes?.sent)}
 							icon={<DataSentIcon />}
 						/>
 					</Grid>
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
 							label="Total received"
-							value={systemStatus?.$SYS?.broker?.messages?.received}
+							value={formatAsNumber(systemStatus?.$SYS?.broker?.messages?.received)}
 							icon={<MessageIcon />}
 						/>
 					</Grid>
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
 							label="Total messages sent"
-							value={systemStatus?.$SYS?.broker?.messages?.sent}
+							value={formatAsNumber(systemStatus?.$SYS?.broker?.messages?.sent)}
 							icon={<MessageIcon />}
 						/>
 					</Grid>
@@ -190,7 +192,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 											Total clients
 										</TableCell>
 										<TableCell align="right">
-											{systemStatus?.$SYS?.broker?.clients?.total}
+											{formatAsNumber(systemStatus?.$SYS?.broker?.clients?.total)}
 										</TableCell>
 									</TableRow>
 									<TableRow key="clients-active">
@@ -198,7 +200,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 											Active clients
 										</TableCell>
 										<TableCell align="right">
-											{systemStatus?.$SYS?.broker?.clients?.active}
+											{formatAsNumber(systemStatus?.$SYS?.broker?.clients?.active)}
 										</TableCell>
 									</TableRow>
 									<TableRow key="clients-connected">
@@ -225,7 +227,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 											Received messages
 										</TableCell>
 										<TableCell align="right">
-											{systemStatus?.$SYS?.broker?.messages?.received}
+											{formatAsNumber(systemStatus?.$SYS?.broker?.messages?.received)}
 										</TableCell>
 									</TableRow>
 									<TableRow key="messsages-sent">
@@ -233,7 +235,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 											Sent messages
 										</TableCell>
 										<TableCell align="right">
-											{systemStatus?.$SYS?.broker?.messages?.sent}
+											{formatAsNumber(systemStatus?.$SYS?.broker?.messages?.sent)}
 										</TableCell>
 									</TableRow>
 									<TableRow key="messsages-stored">
@@ -241,7 +243,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 											Stored messages
 										</TableCell>
 										<TableCell align="right">
-											{systemStatus?.$SYS?.broker?.messages?.stored}
+											{formatAsNumber(systemStatus?.$SYS?.broker?.messages?.stored)}
 										</TableCell>
 									</TableRow>
 								</TableBody>
