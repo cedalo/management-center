@@ -106,6 +106,7 @@ module.exports = class PluginManager {
 					swaggerDocument.tags = Object.assign(swaggerDocument.tags || {}, plugin.swagger.tags);
 					swaggerDocument.paths = Object.assign(swaggerDocument.paths || {}, plugin.swagger.paths);
 					swaggerDocument.components.schemas = Object.assign(swaggerDocument.components.schemas || {}, plugin.swagger.components?.schemas);
+					swaggerDocument.components.errors = Object.assign(swaggerDocument.components.errors || {}, plugin.swagger.components?.errors);
 				}
 
 				if (plugin._status.type !== 'error') {
