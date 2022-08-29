@@ -81,19 +81,26 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		const userRoles = await client.listUserRoles();
 		dispatch(updateUserRoles(userRoles));
 		const users = await client.listUsers();
+
+
+		if (!Array.isArray(users)) {
+			console.log('THROWING ERROR')
+			throw {name: 'NotAuthorizedError', message: 'Usermanagement is not accessible'}
+		} 
+		
 		dispatch(updateUsers(users));
-		try {
-			if (userProfile && !userProfile.isAdmin) {
-			}
-			else{
-				const userGroups = await client.listUserGroups();
-				dispatch(updateUserGroups(userGroups));
-			}
-		} catch(error) {
-			console.error('Error while loading user groups');
-			console.error(error);
-			throw error;
-		}
+		// try {
+		// 	if (userProfile && !userProfile.isAdmin) {
+		// 	}
+		// 	else{
+		// 		const userGroups = await client.listUserGroups();
+		// 		dispatch(updateUserGroups(userGroups));
+		// 	}
+		// } catch(error) {
+		// 	console.error('Error while loading user groups');
+		// 	console.error(error);
+		// 	throw error;
+		// }
 		
 		dispatch(updateFeatures({
 			feature: 'usermanagement',
