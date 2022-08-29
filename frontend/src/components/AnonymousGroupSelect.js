@@ -73,7 +73,7 @@ const AnonymousGroupSelect = ({ anonymousGroup, groupsAll = [], onUpdateAnonymou
 			>
 				{
 					groupSuggestions.map(group => 
-						<MenuItem value={group.value} primaryText={group.label}>{group.label}</MenuItem>
+						<MenuItem key={group.value} value={group.value} primaryText={group.label}>{group.label}</MenuItem>
 					)
 				}
 			</Select>

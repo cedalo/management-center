@@ -20,3 +20,19 @@ export function updateUsers(update) {
 		update
 	};
 }
+
+
+export function updateUserGroups(update) {
+	return {
+		type: ActionTypes.UPDATE_USER_GROUPS,
+		update
+	};
+}
+
+
+export function updateUserGroup(update) {
+	return {
+		type: ActionTypes.UPDATE_USER_GROUP,
+		update
+	};
+}

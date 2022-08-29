@@ -177,7 +177,7 @@ const ConnectionDetailComponent = (props) => {
 
 	const [updatedConnection, setUpdatedConnection] = React.useState({
 		...connection,
-		[verifyServerCertificateFieldName]: true,
+		[verifyServerCertificateFieldName]: connection[verifyServerCertificateFieldName],
 		[customCACertificateFileFieldName]: connection[customCACertificateFileFieldName],
 		[clientCertificateFileFieldName]: connection[clientCertificateFileFieldName],
 		[clientPrivateKeyFileFieldName]: connection[clientPrivateKeyFileFieldName],

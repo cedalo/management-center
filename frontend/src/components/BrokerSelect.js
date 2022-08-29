@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sendMessage }) => {
+const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sendMessage, userProfile }) => {
 	const classes = useStyles();
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
@@ -126,6 +126,7 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 				dispatch(updateRoles(roles));
 				const rolesAll = await client.listRoles(false);
 				dispatch(updateRolesAll(rolesAll));
+
 				const defaultACLAccess = await client.getDefaultACLAccess();
 				dispatch(updateDefaultACLAccess(defaultACLAccess));
 				dispatch(updateFeatures({
@@ -216,6 +217,7 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 							.filter((brokerConnection) => brokerConnection.status ? brokerConnection.status.connected : false)
 							.map((brokerConnection) => (
 								<MenuItem
+									key={brokerConnection.name}
 									value={brokerConnection.name}
 									classes={{
 										root: classes.select
@@ -234,7 +236,8 @@ const mapStateToProps = (state) => {
 	return {
 		brokerConnections: state.brokerConnections.brokerConnections,
 		connected: state.brokerConnections.connected,
-		currentConnectionName: state.brokerConnections.currentConnectionName
+		currentConnectionName: state.brokerConnections.currentConnectionName,
+		userProfile: state.userProfile?.userProfile,
 	};
 };
 

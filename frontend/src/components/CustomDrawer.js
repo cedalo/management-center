@@ -257,6 +257,14 @@ icon={<SettingsIcon />}
 			<Divider />
 			<List>
 				{(userProfile?.isAdmin && open) ? <ListSubheader className={classes.menuSubHeader}>Admin</ListSubheader> : null}
+
+				{/* {userProfile?.isAdmin && <ListItemLink
+					classes={classes}
+					to="/admin/user-groups"
+					primary="User Groups"
+					icon={<UsersIcon fontSize="small" />}
+				/>} */}
+
 				{(userProfile?.isAdmin && !hideConnections) ? <ListItemLink
 					classes={classes}
 					to="/config/connections"

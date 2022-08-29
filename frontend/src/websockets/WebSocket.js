@@ -33,6 +33,7 @@ import {
 import {
 	updateUserRoles,
 	updateUsers,
+	updateUserGroups,
 } from '../admin/users/actions/actions';
 
 import {
@@ -51,6 +52,9 @@ const WebSocketContext = createContext(null);
 
 export { WebSocketContext };
 
+const ERROR_MESSAGE = "BaseMosquittoProxyClient: Timeout";
+
+
 
 const init = async (client, dispatch, connectionConfiguration) => {
 	dispatch(updateBrokerLicenseInformation(null));
@@ -59,21 +63,45 @@ const init = async (client, dispatch, connectionConfiguration) => {
 	dispatch(updateClientsAll([]));
 	dispatch(updateGroups([]));
 	dispatch(updateGroupsAll([]));
+	dispatch(updateUserGroups({}));
 	dispatch(updateRoles([]));
 	dispatch(updateRolesAll([]));
 	dispatch(updateStreams([]));
 	dispatch(updateSystemStatus({}));
 
+
 	// TODO: merge with code from BrokerSelect
 	await client.connect(connectionConfiguration)
 	dispatch(updateProxyConnected(true));
+
+	let userProfile;
 	try {
-		const userProfile = await client.getUserProfile();
+		userProfile = await client.getUserProfile();
 		dispatch(updateUserProfile(userProfile));
 		const userRoles = await client.listUserRoles();
 		dispatch(updateUserRoles(userRoles));
 		const users = await client.listUsers();
+
+
+		if (!Array.isArray(users)) {
+			console.log('THROWING ERROR')
+			throw {name: 'NotAuthorizedError', message: 'Usermanagement is not accessible'}
+		} 
+		
 		dispatch(updateUsers(users));
+		// try {
+		// 	if (userProfile && !userProfile.isAdmin) {
+		// 	}
+		// 	else{
+		// 		const userGroups = await client.listUserGroups();
+		// 		dispatch(updateUserGroups(userGroups));
+		// 	}
+		// } catch(error) {
+		// 	console.error('Error while loading user groups');
+		// 	console.error(error);
+		// 	throw error;
+		// }
+		
 		dispatch(updateFeatures({
 			feature: 'usermanagement',
 			status: 'ok'
@@ -111,16 +139,27 @@ const init = async (client, dispatch, connectionConfiguration) => {
 
 
 	try {
-		const _ = await client.checkTLSEnabled();
-
-		dispatch(updateFeatures({
-			feature: 'tls',
-			status: 'ok'
-		}));
+		const isEnabled = await client.checkTLSEnabled();
+		if (isEnabled) {
+		  	dispatch(updateFeatures({
+				feature: 'tls',
+				status: 'ok'
+			}));
+		} else {
+		  	dispatch(updateFeatures({
+				feature: 'tls',
+				status: {message: ERROR_MESSAGE, satatus: 'failed'},
+				error
+		  	}));
+		}
 	} catch (error) {
+		// dispatch(updateFeatures({
+		// 	feature: 'tls',
+		// 	status: 'ok'
+		// }));
 		dispatch(updateFeatures({
-			feature: 'tls',
-			status: {message: "BaseMosquittoProxyClient: Timeout", satatus: 'failed'},
+		  	feature: 'tls',
+		  	status: {message: ERROR_MESSAGE, satatus: 'failed'},
 			error
 		}));
 	}
@@ -139,13 +178,16 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			break;
 		}
 	}
+
 	
 	const brokerConfigurations = await client.getBrokerConfigurations();
 	dispatch(updateBrokerConfigurations(brokerConfigurations));
 	const settings = await client.getSettings();
 	dispatch(updateSettings(settings));
+
 	try {
 		console.log('Loading dynamic security');
+
 		const clients = await client.listClients(true, 10, 0);
 		dispatch(updateClients(clients));
 		const clientsAll = await client.listClients(false);
@@ -160,6 +202,8 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		dispatch(updateRoles(roles));
 		const rolesAll = await client.listRoles(false);
 		dispatch(updateRolesAll(rolesAll));
+
+
 		const defaultACLAccess = await client.getDefaultACLAccess();
 		dispatch(updateDefaultACLAccess(defaultACLAccess));
 		dispatch(updateFeatures({

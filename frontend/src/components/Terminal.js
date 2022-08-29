@@ -351,7 +351,7 @@ Topic:      ${acl.topic}
 			} else {
 				brokerClient.listClients()
 					.then((clients) => {
-						const message = clients
+						const message = clients?.clients
 							.map((client) => `${client.username}\t${client.clientid ? client.clientid : ''}`)
 							.join('\n');
 						print(message);
@@ -379,7 +379,7 @@ Topic:      ${acl.topic}
 			} else {
 				brokerClient.listGroups()
 					.then((groups) => {
-						const message = groups.map((group) => `${group.groupname}`).join('\n');
+						const message = groups?.groups.map((group) => `${group.groupname}`).join('\n');
 						print(message);
 					})
 					.catch((error) => {
@@ -393,7 +393,7 @@ Topic:      ${acl.topic}
 			} else {
 				brokerClient.listRoles()
 					.then((roles) => {
-						const message = roles.map((role) => `${role.rolename}`).join('\n');
+						const message = roles?.roles.map((role) => `${role.rolename}`).join('\n');
 						print(message);
 					})
 					.catch((error) => {

@@ -2,7 +2,8 @@ const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
 
 module.exports = {
-  "swagger": "2.0",
+  "openapi": "3.0.3",
+  // "swagger": "2.0",
   "info": {
     "title": "Management Center REST API",
     "description": "API description for the Management Center.",
@@ -15,5 +16,11 @@ module.exports = {
     "https"
   ],
   "paths": {
+  },
+  "components": {
+    "schemas": {
+    },
+    "errors": {
+    }
   }
 }

@@ -477,13 +477,21 @@ const init = async (licenseContainer) => {
 			}
 			case 'connectToBroker': {
 				const { brokerName } = message;
-				const response = await connectToBroker(brokerName, client);
-				return response;
+				if (context.security.acl.noRestrictedRoles(user)) {
+					const response = await connectToBroker(brokerName, client);
+					return response;
+				} else {
+					throw new NotAuthorizedError();
+				}
 			}
 			case 'disconnectFromBroker': {
 				const { brokerName } = message;
-				const response = await disconnectFromBroker(brokerName, client);
-				return response;
+				if (context.security.acl.noRestrictedRoles(user)) {
+					const response = await disconnectFromBroker(brokerName, client);
+					return response;
+				} else {
+					throw new NotAuthorizedError();
+				}
 			}
 			case 'getBrokerConnections': {
 				// const connections = context.brokerManager.getBrokerConnections();
@@ -500,10 +508,18 @@ const init = async (licenseContainer) => {
 				}
 			}
 			case 'getBrokerConfigurations': {
-				return config;
+				if (context.security.acl.noRestrictedRoles(user)) {
+					return config;
+				} else {
+					throw new NotAuthorizedError();
+				}
 			}
 			case 'getSettings': {
-				return settingsManager.settings;
+				if (context.security.acl.noRestrictedRoles(user)) {
+					return settingsManager.settings;
+				} else {
+					throw new NotAuthorizedError();
+				}
 			}
 			case 'updateSettings': {
 				if (context.security.acl.isAdmin(user)) {
@@ -533,21 +549,25 @@ const init = async (licenseContainer) => {
 				}
 			}
 			case 'testConnection': {
-				const { connection } = message;
-				const testClient = new NodeMosquittoClient({
-					/* logger: console */
-				});
+				if (context.security.acl.noRestrictedRoles(user)) {
+					const { connection } = message;
+					const testClient = new NodeMosquittoClient({
+						/* logger: console */
+					});
+          
+          			const filteredConnection = configManager.filterConnectionObject(connection);
+          
+					await testClient.connect({
+						mqttEndpointURL: filteredConnection.url,
+						options: createOptions(filteredConnection)
+					});
+					await testClient.disconnect();
 
-				const filteredConnection = configManager.filterConnectionObject(connection);
-
-				await testClient.connect({
-					mqttEndpointURL: filteredConnection.url,
-					options: createOptions(filteredConnection)
-				});
-				await testClient.disconnect();
-
-				return {
-					connected: true
+					return {
+						connected: true
+					}
+				} else {
+					throw new NotAuthorizedError();
 				}
 			}
 			case 'createConnection': {
@@ -589,12 +609,16 @@ const init = async (licenseContainer) => {
 				}
 			}
 			default: {
-				const handler = context.requestHandlers.get(request);
-				if (handler) {
-					const result = await handler[request](message, user);
-					return result;
+				if (context.security.acl.noRestrictedRoles(user)) {
+					const handler = context.requestHandlers.get(request);
+					if (handler) {
+						const result = await handler[request](message, user);
+						return result;
+					} else {
+						throw new Error(`Unsupported request: ${request}`);
+					}
 				} else {
-					throw new Error(`Unsupported request: ${request}`);
+					throw new NotAuthorizedError();
 				}
 			}
 		}
