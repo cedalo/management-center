@@ -1086,6 +1086,15 @@ module.exports = class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
+	 async restartBroker() {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'restartBroker',
+		});
+		return response?.response;
+	}
+
 	 async listTestCollections() {
 		const response = await this.sendRequest({
 			id: createID(),

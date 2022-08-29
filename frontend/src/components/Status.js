@@ -5,12 +5,15 @@ import ClientIcon from '@material-ui/icons/RecordVoiceOver';
 import Container from '@material-ui/core/Container';
 import DataReceivedIcon from '@material-ui/icons/CallReceived';
 import DataSentIcon from '@material-ui/icons/CallMade';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import RestartIcon from '@material-ui/icons/Replay';
 import Grid from '@material-ui/core/Grid';
 import Info from './Info';
 import MessageIcon from '@material-ui/icons/Email';
 import moment from 'moment';
 import Paper from '@material-ui/core/Paper';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import SubscriptionIcon from '@material-ui/icons/PhonelinkRing';
 import Table from '@material-ui/core/Table';
@@ -24,9 +27,14 @@ import { colors } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
+import { useSnackbar } from 'notistack';
 import LicenseTable from './LicenseTable';
+import { WebSocketContext } from '../websockets/WebSocket';
 
 const formatAsNumber = (metric) => new Intl.NumberFormat().format(metric);
+
+// TODO: read from environment variable
+const CLOUD_BROKER_URL = '';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -41,11 +49,27 @@ const useStyles = makeStyles((theme) => ({
 
 const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus, defaultClient, currentConnection, currentConnectionName }) => {
 	const classes = useStyles();
+	const { enqueueSnackbar } = useSnackbar();
+	const context = useContext(WebSocketContext);
+	const { client: brokerClient } = context;
 	const totalMessages = parseInt(systemStatus?.$SYS?.broker?.messages?.sent);
 	const publishMessages = (parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent) / totalMessages) * 100;
 	const otherMessages =
 		((totalMessages - parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent)) / totalMessages) * 100;
 
+	const onRestart = async (brokerConnectionName) => {
+		try {
+			const result = await brokerClient.restartBroker(brokerConnectionName);
+			enqueueSnackbar(`Broker "${brokerConnectionName}" will be restarted.`, {
+				variant: 'success'
+			});
+		} catch(error) {
+			enqueueSnackbar(`Error restarting broker "${brokerConnectionName}". Reason: ${error.message || error}`, {
+				variant: 'error'
+			});
+		}
+	}
+	
 	const data = {
 		datasets: [
 			{
@@ -90,11 +114,26 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 			<br />
 			{systemStatus?.$SYS ? <Container maxWidth={false}>
 				<Grid container spacing={3}>
-					<Grid item xs={12}>
+					<Grid item xs={10}>
 						<Typography variant="h5" component="div" gutterBottom>
 							{currentConnectionName}
 						</Typography>
 					</Grid>
+					{currentConnection?.url === CLOUD_BROKER_URL && <Grid item xs={2}>
+						<Button
+							variant="contained"
+							color="primary"
+							size="small"
+							onClick={(event) => {
+								event.stopPropagation();
+								onRestart(currentConnectionName);
+							}}
+							className={classes.button}
+							startIcon={<RestartIcon />}
+						>
+							Restart
+						</Button>
+					</Grid>}
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
 							label="Clients total"
