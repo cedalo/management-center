@@ -51,12 +51,7 @@ module.exports = class PluginManager {
 	init(pluginConfigurations = [], context, swaggerDocument) {
 		this._context = context;
 		const { licenseContainer } = context;
-		if (licenseContainer.license.isValid) {
-			if (!PLUGIN_DIR) {
-				console.log('"CEDALO_MC_PLUGIN_DIR" is not set. Skipping loading of plugins');
-				return;
-			}
-
+		if (licenseContainer.license.isValid && PLUGIN_DIR) {
 			const userManagementPluginIndex = pluginConfigurations.findIndex((el) => {
 				return el.name === 'user-management';
 			});
@@ -87,6 +82,8 @@ module.exports = class PluginManager {
 					// plugin.setErrored();
 				}
 			});
+		} else if (licenseContainer.license.isValid && !PLUGIN_DIR) {
+			console.log('"CEDALO_MC_PLUGIN_DIR" is not set. Skipping loading of plugins');
 		} else {
 			console.error('Ignore loading plugins: no premium license provided or license not valid');
 		}
