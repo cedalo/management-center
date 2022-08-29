@@ -237,11 +237,10 @@ const ConnectionDetailComponent = (props) => {
 		}
 	}
 
-	// const fs = require('fs');
 
 	const loadConnections = async () => {
 		const brokerConnections = await brokerClient.getBrokerConnections();
-		// fs.appendFileSync('logFront.txt', `(((((((((((((((((((((((((((((((BROKER CONNECTIONS ${JSON.stringify(brokerConnections)}\n`)
+
 		dispatch(updateBrokerConnections(brokerConnections));
 		const brokerConfigurations = await brokerClient.getBrokerConfigurations();
 		dispatch(updateBrokerConfigurations(brokerConfigurations));
@@ -251,7 +250,7 @@ const ConnectionDetailComponent = (props) => {
 		try {
 			await brokerClient.disconnectServerFromBroker(connection.id);
 			await brokerClient.modifyConnection(connection.id, updatedConnection);
-			// fs.appendFileSync('logFront.txt', `(((((((((((((((((((((((((((((((loading connections\n`)
+
 			await loadConnections();
 			enqueueSnackbar('Connection successfully updated', {
 				variant: 'success'
