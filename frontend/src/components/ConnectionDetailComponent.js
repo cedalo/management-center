@@ -26,6 +26,7 @@ import { useHistory } from 'react-router-dom';
 import { updateBrokerConfigurations, updateBrokerConnections } from '../actions/actions';
 
 
+import CloudDownload from '@material-ui/icons/CloudDownload';
 import CloudUpload from '@material-ui/icons/CloudUpload';
 import Close from '@material-ui/icons/Close';
 import FormGroup from '@material-ui/core/FormGroup';
@@ -127,11 +128,11 @@ const useStyles = makeStyles((theme) => ({
 	},
 	crossButton: {
 		// fontSize: '0.8em',
-		borderRadius: "100%",
+		borderRadius: "100%"
 	},
 	closeIcon: {
 		maxHeight: '60%',
-		maxWidth: '60%',
+		maxWidth: '60%'
 	},
 	invisible: {
 		display: 'none',
@@ -141,7 +142,12 @@ const useStyles = makeStyles((theme) => ({
 	},
 	alert: {
 		textAlign: 'left',
-	}
+	},
+	fileDownloadButton: {
+		marginLeft: '10px',
+		opacity: '75%',
+		borderRadius: '6px'
+	},
 }));
 
 const makeFileField = (fieldName) => {
@@ -350,6 +356,20 @@ const ConnectionDetailComponent = (props) => {
 			[fieldName]: '',
 			[makeFileField(fieldName)]: '',
 		}));
+	};
+
+
+	const handleFileDownload = (fieldName) => {
+		const fileContent = Buffer.from(updatedConnection[fieldName].data, 'base64'); // base64 to string
+		const fileString = new TextDecoder().decode(fileContent);
+
+		const element = document.createElement('a');
+		const file = new Blob([fileString], {type: 'text/plain'});
+		element.href = URL.createObjectURL(file);
+		element.download = updatedConnection[makeFileField(fieldName)];
+		document.body.appendChild(element); // Required for this to work in FireFox
+
+		element.click();
 	};
 
 
@@ -567,6 +587,15 @@ const ConnectionDetailComponent = (props) => {
 														</IconButton>,
 												}}
 											/>
+											<IconButton
+												disabled={!editMode || !tlsFeature?.supported || !updatedConnection[customCACertificateFieldName]}
+												// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
+												className={`${classes.fileDownloadButton}`}
+												size="small"
+												onClick={() => handleFileDownload(customCACertificateFieldName)}
+											>
+												<CloudDownload></CloudDownload>
+											</IconButton>
 										</FormGroup>
 									</Grid>
 									<Grid item xl={2} md={2} sm={1} xs={1}>
@@ -617,6 +646,15 @@ const ConnectionDetailComponent = (props) => {
 														</IconButton>,
 												}}
 											/>
+											<IconButton
+												disabled={!editMode || !tlsFeature?.supported || !updatedConnection[clientCertificateFieldName]}
+												// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
+												className={`${classes.fileDownloadButton}`}
+												size="small"
+												onClick={() => handleFileDownload(clientCertificateFieldName)}
+											>
+												<CloudDownload></CloudDownload>
+											</IconButton>
 										</FormGroup>
 									</Grid>
 									<Grid item xl={2} md={2} sm={1} xs={1}>
@@ -667,6 +705,15 @@ const ConnectionDetailComponent = (props) => {
 													// 		  }
 												}}
 											/>
+											<IconButton
+												disabled={!editMode || !tlsFeature?.supported || !updatedConnection[clientPrivateKeyFieldName]}
+												// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
+												className={`${classes.fileDownloadButton}`}
+												size="small"
+												onClick={() => handleFileDownload(clientPrivateKeyFieldName)}
+											>
+												<CloudDownload></CloudDownload>
+											</IconButton>
 										</FormGroup>
 									</Grid>
 									<Grid item xl={2} md={2} sm={1} xs={1}>
