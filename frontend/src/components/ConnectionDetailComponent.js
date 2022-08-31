@@ -579,6 +579,7 @@ const ConnectionDetailComponent = (props) => {
 													endAdornment:
 														<IconButton
 																className={(editMode && updatedConnection[customCACertificateFileFieldName]) ? classes.crossButton : classes.invisible}
+																style={{backgroundColor: 'transparent'}}
 																size="small"
 																onClick={() => deleteFile(customCACertificateFieldName)}
 																disabled={!tlsFeature?.supported}
@@ -590,6 +591,7 @@ const ConnectionDetailComponent = (props) => {
 											<IconButton
 												disabled={!editMode || !tlsFeature?.supported || !updatedConnection[customCACertificateFieldName]}
 												// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
+												style={{backgroundColor: 'transparent'}}
 												className={`${classes.fileDownloadButton}`}
 												size="small"
 												onClick={() => handleFileDownload(customCACertificateFieldName)}
@@ -638,6 +640,7 @@ const ConnectionDetailComponent = (props) => {
 													endAdornment:
 														<IconButton
 																className={(editMode && updatedConnection[clientCertificateFileFieldName]) ? classes.crossButton : classes.invisible}
+																style={{backgroundColor: 'transparent'}}
 																size="small"
 																onClick={() => deleteFile(clientCertificateFieldName)}
 																disabled={!tlsFeature?.supported}
@@ -649,6 +652,7 @@ const ConnectionDetailComponent = (props) => {
 											<IconButton
 												disabled={!editMode || !tlsFeature?.supported || !updatedConnection[clientCertificateFieldName]}
 												// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
+												style={{backgroundColor: 'transparent'}}
 												className={`${classes.fileDownloadButton}`}
 												size="small"
 												onClick={() => handleFileDownload(clientCertificateFieldName)}
@@ -694,6 +698,7 @@ const ConnectionDetailComponent = (props) => {
 													endAdornment:
 														<IconButton
 																className={(editMode && updatedConnection[clientPrivateKeyFileFieldName]) ? classes.crossButton : classes.invisible}
+																style={{backgroundColor: 'transparent'}}
 																size="small"
 																onClick={() => deleteFile(clientPrivateKeyFieldName)}
 																disabled={!tlsFeature?.supported}
@@ -707,6 +712,7 @@ const ConnectionDetailComponent = (props) => {
 											/>
 											<IconButton
 												disabled={!editMode || !tlsFeature?.supported || !updatedConnection[clientPrivateKeyFieldName]}
+												style={{backgroundColor: 'transparent'}}
 												// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
 												className={`${classes.fileDownloadButton}`}
 												size="small"
