@@ -32,6 +32,9 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import IconButton from '@material-ui/core/IconButton';
 
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
+
 import { Alert, AlertTitle } from '@material-ui/lab';
 
 
@@ -158,6 +161,9 @@ const ConnectionNewComponent = ({ connections, tlsFeature }) => {
 	const clientCertificateFileFieldName 	= makeFileField(clientCertificateFieldName);
 	const clientPrivateKeyFileFieldName 	= makeFileField(clientPrivateKeyFieldName);
 
+	const [showPassword, setShowPassword] = React.useState(false);
+	const handleClickShowPassword = () => setShowPassword(!showPassword);
+	const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
 	const classes = useStyles();
 	const [connection, setConnection] = React.useState({
@@ -437,7 +443,7 @@ const ConnectionNewComponent = ({ connections, tlsFeature }) => {
 							<Grid item xs={12}>
 								<TextField
 									id="password"
-									type="password"
+									type={showPassword ? "text" : "password"}
 									label="Password"
 									value={connection.credentials?.password}
 									defaultValue=""
@@ -453,6 +459,19 @@ const ConnectionNewComponent = ({ connections, tlsFeature }) => {
 											}
 										});
 										setConnected(false);
+									}}
+									InputProps={{ // <-- This is where the toggle button is added.
+										endAdornment: (
+										  <InputAdornment position="end">
+											<IconButton
+											  	aria-label="toggle password visibility"
+											  	onClick={handleClickShowPassword}
+											  	onMouseDown={handleMouseDownPassword}
+											>
+												{showPassword ? <Visibility /> : <VisibilityOff />}
+											</IconButton>
+										  </InputAdornment>
+										)
 									}}
 								/>
 							</Grid>
