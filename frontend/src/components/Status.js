@@ -33,9 +33,6 @@ import { WebSocketContext } from '../websockets/WebSocket';
 
 const formatAsNumber = (metric) => new Intl.NumberFormat().format(metric);
 
-// TODO: read from environment variable
-const CLOUD_BROKER_URL = '';
-
 const useStyles = makeStyles((theme) => ({
 	root: {
 		backgroundColor: theme.palette.background.dark,
@@ -57,10 +54,10 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 	const otherMessages =
 		((totalMessages - parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent)) / totalMessages) * 100;
 
-	const onRestart = async (brokerConnectionName) => {
+	const onRestart = async (brokerConnectionName, serviceName) => {
 		try {
-			const result = await brokerClient.restartBroker(brokerConnectionName);
-			enqueueSnackbar(`Broker "${brokerConnectionName}" will be restarted.`, {
+			const result = await brokerClient.restartBroker(brokerConnectionName, serviceName);
+			enqueueSnackbar(`Broker "${brokerConnectionName}" successfully restarted.`, {
 				variant: 'success'
 			});
 		} catch(error) {
@@ -119,14 +116,14 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 							{currentConnectionName}
 						</Typography>
 					</Grid>
-					{currentConnection?.url === CLOUD_BROKER_URL && <Grid item xs={2}>
+					{currentConnection?.supportsRestart === true && <Grid item xs={2}>
 						<Button
 							variant="contained"
 							color="primary"
 							size="small"
 							onClick={(event) => {
 								event.stopPropagation();
-								onRestart(currentConnectionName);
+								onRestart(currentConnectionName, currentConnection?.serviceName);
 							}}
 							className={classes.button}
 							startIcon={<RestartIcon />}
