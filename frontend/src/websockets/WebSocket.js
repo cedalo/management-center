@@ -139,6 +139,31 @@ const init = async (client, dispatch, connectionConfiguration) => {
 
 
 	try {
+		const isEnabled = await client.checkTopictreeRestEnabled();
+		if (isEnabled) {
+			dispatch(updateFeatures({
+				feature: 'topictreerest',
+				status: 'ok'
+			}));
+		} else {
+			console.log('TOPICTREE FEATURE FAILED!!!2: ', error)
+			dispatch(updateFeatures({
+				feature: 'topictreerest',
+				status: {message: "BaseMosquittoProxyClient: Timeout", status: 'failed'},
+				error: {name: 'Response invalid', message: 'No pong in reply'}
+			}));
+		}
+	} catch(error) {
+		console.log('TOPICTREE FEATURE FAILED!!!: ', error)
+		dispatch(updateFeatures({
+			feature: 'topictreerest',
+			status: 'failed',
+			error
+		}));
+	}
+
+
+	try {
 		const isEnabled = await client.checkTLSEnabled();
 		if (isEnabled) {
 		  	dispatch(updateFeatures({
