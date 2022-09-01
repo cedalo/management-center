@@ -1,5 +1,4 @@
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Chart from './Chart';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ClientIcon from '@material-ui/icons/RecordVoiceOver';
 import Container from '@material-ui/core/Container';
@@ -28,6 +27,8 @@ import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { useSnackbar } from 'notistack';
+import { useConfirm } from 'material-ui-confirm';
+import Chart from './Chart';
 import LicenseTable from './LicenseTable';
 import { WebSocketContext } from '../websockets/WebSocket';
 
@@ -46,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus, defaultClient, currentConnection, currentConnectionName }) => {
 	const classes = useStyles();
+	const confirm = useConfirm();
 	const { enqueueSnackbar } = useSnackbar();
 	const context = useContext(WebSocketContext);
 	const { client: brokerClient } = context;
@@ -55,6 +57,17 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 		((totalMessages - parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent)) / totalMessages) * 100;
 
 	const onRestart = async (brokerConnectionName, serviceName) => {
+		await confirm({
+			title: 'Confirm restart',
+			description: `Note that when the broker is restarted, every connected client will be disconnected and it is up to the client to reconnect.`,
+			cancellationButtonProps: {
+				variant: 'contained'
+			},
+			confirmationButtonProps: {
+				color: 'primary',
+				variant: 'contained'
+			}
+		});
 		try {
 			const result = await brokerClient.restartBroker(brokerConnectionName, serviceName);
 			enqueueSnackbar(`Broker "${brokerConnectionName}" successfully restarted.`, {
