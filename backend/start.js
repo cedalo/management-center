@@ -105,7 +105,9 @@ const initConnections = (config) => {
 			// connection did not exist previously in configuration file
 			connection = {
 				name: process.env.CEDALO_MC_BROKER_NAME,
-				url: process.env.CEDALO_MC_BROKER_URL
+				url: process.env.CEDALO_MC_BROKER_URL,
+				supportsRestart: process.env.CEDALO_MC_BROKER_SUPPORTS_RESTART === 'true' ? true : false,
+				serviceName: process.env.CEDALO_MC_BROKER_SERVICE_NAME
 			};
 			connection.id = process.env.CEDALO_MC_BROKER_ID || uuidv4();
 			if (process.env.CEDALO_MC_BROKER_USERNAME && process.env.CEDALO_MC_BROKER_PASSWORD) {
@@ -122,7 +124,9 @@ const initConnections = (config) => {
 		} else {
 			// connection did exist previously in configuration file
 			// configuration file needs to be updated from environment variables
-			connection.url = process.env.CEDALO_MC_BROKER_URL
+			connection.url = process.env.CEDALO_MC_BROKER_URL;
+			connection.supportsRestart = process.env.CEDALO_MC_BROKER_SUPPORTS_RESTART === 'true' ? true : false;
+			connection.serviceName = process.env.CEDALO_MC_BROKER_SERVICE_NAME;
 			if (process.env.CEDALO_MC_BROKER_USERNAME && process.env.CEDALO_MC_BROKER_PASSWORD) {
 				connection.credentials = {
 					username: process.env.CEDALO_MC_BROKER_USERNAME,
