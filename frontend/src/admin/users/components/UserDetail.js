@@ -165,6 +165,7 @@ const UserDetail = (props) => {
 								required
 								id="password"
 								label="Password"
+								helperText="You can change the password here, empty password will be ignored"
 								value={updatedUser?.password}
 								defaultValue=""
 								variant="outlined"
@@ -181,7 +182,7 @@ const UserDetail = (props) => {
 								}}
 							/>
 						</Grid>
-						<Grid item xs={12}>
+						<Grid item xs={12} style={{paddingTop: '10px'}}>
 							<AutoSuggest
 								disabled={!editMode}
 								suggestions={roleSuggestions}

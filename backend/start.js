@@ -222,7 +222,14 @@ const init = async (licenseContainer) => {
 	const globalTopicTree = {};
 	const app = express();
 
-	const sessionParser = session({ secret: process.env.CEDALO_MC_SESSION_SECRET || "secret" });
+	const sessionParser = session({ secret: process.env.CEDALO_MC_SESSION_SECRET || "secret",
+									cookie: (process.env.CEDALO_MC_SESSION_MAXAGE ?
+												( (parseInt(process.env.CEDALO_MC_SESSION_MAXAGE) === -1) ?
+													undefined
+													: {maxAge: parseInt(process.env.CEDALO_MC_SESSION_MAXAGE)}
+												)
+											: undefined)
+									});
 	app.use(sessionParser);
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));

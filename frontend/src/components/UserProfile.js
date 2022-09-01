@@ -34,6 +34,9 @@ import Adjust from '@material-ui/icons/Adjust';
    
 // import AutoSuggest from './AutoSuggest';
 
+const ROOT_USERNAME = 'cedalo';
+
+
 const userShape = PropTypes.shape({
 	username: PropTypes.string,
 });
@@ -175,7 +178,7 @@ const UserProfile = (props) => {
 								required
 								disabled={!editMode}
 								id="password"
-								label="Password"
+								label="Password Change"
 								error={!passwordsMatch}
 								helperText={!passwordsMatch && 'Passwords must match.'}
 								onChange={(event) => setPassword(event.target.value)}
@@ -230,7 +233,7 @@ const UserProfile = (props) => {
 				</div>
 			</form>
 
-			{!editMode && (
+			{(!editMode && userProfile?.username !== ROOT_USERNAME) && (
 				<Grid item xs={12} className={classes.buttons}>
 					<Button
 						variant="contained"
