@@ -1086,11 +1086,13 @@ module.exports = class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	 async restartBroker() {
+	 async restartBroker(connectionName, serviceName) {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
 			request: 'restartBroker',
+			connectionName,
+			serviceName
 		});
 		return response?.response;
 	}
