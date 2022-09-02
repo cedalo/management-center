@@ -26,6 +26,9 @@ import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import { useConfirm } from 'material-ui-confirm';
 import useFetch from '../helpers/useFetch';
+import Checkbox from '@material-ui/core/Checkbox';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 
 const useStyles = makeStyles((theme) => ({
 	updateButton: {
@@ -52,6 +55,7 @@ const Plugins = (props) => {
 
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(10);
+	const [isEnableNextStartupLoading, setIsEnableNextStartupLoading] = React.useState({});
 
 	const handleChangePage = (event, newPage) => {
 		setPage(newPage);
@@ -61,6 +65,20 @@ const Plugins = (props) => {
 		setRowsPerPage(parseInt(event.target.value, 10));
 		setPage(0);
 	};
+
+
+	const handlePluginNextStartupStatusChange = async (pluginId, pluginFeatureId, nextStatus) => {
+		setIsEnableNextStartupLoading( (prevState) => ({...prevState, ...{[pluginId]: true}}) );
+		try {
+			await client.setPluginStatusAtNextStartup(pluginFeatureId, nextStatus);
+			window.location.reload();
+		} catch (error) {
+			enqueueSnackbar(`Error disabling plugin. Reason: ${error.message || error}.`, {
+				variant: 'error'
+			});
+		}
+	};
+
 
 	const handlePluginLoad = async (pluginId, load) => {
 		if (load) {
@@ -129,6 +147,7 @@ const Plugins = (props) => {
 								<TableCell>Feature</TableCell>
 								<TableCell>Status</TableCell>
 								<TableCell>Actions</TableCell>
+								<TableCell>Enable Next Startup</TableCell>
 							</TableRow>
 						</TableHead>
 						<TableBody>
@@ -170,6 +189,26 @@ const Plugins = (props) => {
 												inputProps={{ 'aria-label': 'Plugin enabled' }}
 											/>
 										</Tooltip>
+									</TableCell>
+									<TableCell>
+										{isEnableNextStartupLoading[plugin.id] ?
+											<CircularProgress color="primary" style={{width: "25px", height: "auto"}}/>
+												:
+											<Checkbox
+												checked={plugin.enableAtNextStartup}
+												onChange={(event) => {
+													handlePluginNextStartupStatusChange(plugin.id, plugin.featureId, event.target.checked);
+												}}
+												inputProps={{ 'aria-label': 'Enable plugin at next startup'}}
+											/>
+										}
+										{/* <Checkbox
+											checked={plugin.enableAtNextStartup}
+											onChange={(event) => {
+												handlePluginNextStartupStatusChange(plugin.featureId, event.target.checked);
+											}}
+											inputProps={{ 'aria-label': 'Enable plugin at next startup'}}
+										/> */}
 									</TableCell>
 								</TableRow>
 							))}

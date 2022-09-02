@@ -64,13 +64,21 @@ module.exports = class PluginManager {
 
 			pluginConfigurations.forEach((pluginConfiguration) => {
 				try {
+					const enableAtNextStartup = (pluginConfiguration.enableAtNextStartup !== undefined) ? pluginConfiguration.enableAtNextStartup : true;
+
 					const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
-					const plugin = new Plugin();
+					const plugin = new Plugin({enableAtNextStartup});
 					if (
 						licenseContainer.license.features &&
 						licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
 					) {
-						this._plugins.push(plugin);
+						if (!enableAtNextStartup) {
+							console.log(`Plugin not loaded: Plugin set to be disabled at current startup: "${pluginConfiguration.name}"`)
+							plugin.setErrored(`Plugin set to be disabled at current startup: "${pluginConfiguration.name}"`);
+							this._plugins.push(plugin);
+						} else {
+							this._plugins.push(plugin);
+						}
 					} else {
 						console.log(`Plugin not loaded: License does not allow this plugin: "${pluginConfiguration.name}"`)
 						plugin.setErrored(`License does not allow this plugin: "${pluginConfiguration.name}"`);
@@ -135,6 +143,19 @@ module.exports = class PluginManager {
 	loadPlugin(pluginId) {
 		const plugin = this._getPluginById(pluginId);
 		plugin.load(this._context);
+	}
+
+	setPluginStatusAtNextStartup(pluginFeatureId, nextStatus) {
+		this._plugins = this._plugins.map((plugin) => {
+			if (plugin.meta.featureId === pluginFeatureId) {
+				plugin.options.enableAtNextStartup = nextStatus;
+			}
+			return plugin;
+	
+		});
+		
+
+		this._context.configManager.updatePluginFromConfiguration(pluginFeatureId, {enableAtNextStartup: nextStatus});
 	}
 
 	get plugins() {

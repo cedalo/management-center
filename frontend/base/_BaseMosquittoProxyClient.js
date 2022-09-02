@@ -172,6 +172,16 @@ module.exports = class BaseMosquittoProxyClient {
 		});
 	}
 
+	async setPluginStatusAtNextStartup(pluginFeatureId, nextStatus) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'setPluginStatusAtNextStartup',
+			pluginFeatureId,
+			nextStatus
+		});
+	}
+
 	/**
 	 * ******************************************************************************************
 	 * Methods for user management

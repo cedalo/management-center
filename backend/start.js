@@ -486,6 +486,15 @@ const init = async (licenseContainer) => {
 					throw new NotAuthorizedError();
 				}
 			}
+			case 'setPluginStatusAtNextStartup': {
+				const { pluginFeatureId, nextStatus } = message;
+				if (context.security.acl.isAdmin(user)) {
+					const response = pluginManager.setPluginStatusAtNextStartup(pluginFeatureId, !!nextStatus);
+					return response;
+				} else {
+					throw new NotAuthorizedError();
+				}
+			}
 			case 'connectToBroker': {
 				const { brokerName } = message;
 				if (context.security.acl.noRestrictedRoles(user)) {
@@ -924,6 +933,7 @@ const init = async (licenseContainer) => {
 		response.json(
 			pluginManager.plugins.map((plugin) => ({
 				...plugin.meta,
+				...plugin.options,
 				status: plugin.status
 			}))
 		);
