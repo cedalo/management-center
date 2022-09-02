@@ -60,6 +60,9 @@ const useStyles = makeStyles((theme) => ({
 			margin: theme.spacing(0.3)
 		}
 	},
+	disabled: {
+		opacity: '45%',
+	},
 	// fab: {
 	// 	position: 'absolute',
 	// 	bottom: theme.spacing(2),
@@ -263,6 +266,11 @@ const Clients = (props) => {
 			value: rolename
 		}));
 
+
+	const getClassForCell = (client) => {
+		return `${(defaultClient?.username === client.username) ? classes.disabled : ''}`;
+	}
+
 	return (
 		<div>
 			<Breadcrumbs aria-label="breadcrumb">
@@ -326,91 +334,97 @@ const Clients = (props) => {
 								<TableBody>
 									{clients &&
 										clients.clients.map((client) => (
-											<StyledTableRow
-												hover
-												key={client.username}
-												onClick={(event) => {
-													if (
-														event.target.nodeName?.toLowerCase() === 'td' ||
-														defaultClient?.username === client.username
-													) {
-														onSelectClient(client.username);
-													}
-												}}
-												style={{ cursor: 'pointer' }}
+											<Tooltip	
+												enterDelay={0}
+												disableHoverListener={defaultClient?.username !== client.username}
+												title={<span style={{fontSize: '13px'}}>User used for connection cannot be edited</span>}
 											>
-												<TableCell>{client.username}</TableCell>
-												<TableCell>{client.clientid}</TableCell>
-												<TableCell>{client.textname}</TableCell>
-												<TableCell>{client.textdescription}</TableCell>
-												<TableCell className={classes.badges}>
-													<AutoSuggest
-														disabled={defaultClient?.username === client.username}
-														suggestions={groupSuggestions}
-														values={client.groups.map((group) => ({
-															label: group.groupname,
-															value: group.groupname
-														}))}
-														handleChange={(value) => {
-															onUpdateClientGroups(client, value);
-														}}
-													/>
-												</TableCell>
-												<TableCell className={classes.badges}>
-													<AutoSuggest
-														disabled={defaultClient?.username === client.username}
-														suggestions={roleSuggestions}
-														values={client.roles.map((role) => ({
-															label: role.rolename,
-															value: role.rolename
-														}))}
-														handleChange={(value) => {
-															onUpdateClientRoles(client, value);
-														}}
-													/>
-												</TableCell>
-												<TableCell align="right">
-													{/* <IconButton
-						  size="small"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            onEditClient(client.username);
-                          }}
-                        >
-                          <EditIcon fontSize="small" />
-                        </IconButton> */}
-
-													<Tooltip title="Delete client">
-														<IconButton
+												<StyledTableRow
+													hover
+													key={client.username}
+													onClick={(event) => {
+														if (
+															event.target.nodeName?.toLowerCase() === 'td' ||
+															defaultClient?.username === client.username
+														) {
+															onSelectClient(client.username);
+														}
+													}}
+													style={{ cursor: 'pointer' }}
+												>
+													<TableCell className={getClassForCell(client)}>{client.username}</TableCell>
+													<TableCell className={getClassForCell(client)}>{client.clientid}</TableCell>
+													<TableCell className={getClassForCell(client)}>{client.textname}</TableCell>
+													<TableCell className={getClassForCell(client)}>{client.textdescription}</TableCell>
+													<TableCell className={`${classes.badges} ${getClassForCell(client)}`}>
+														<AutoSuggest
 															disabled={defaultClient?.username === client.username}
-															size="small"
-															onClick={(event) => {
-																event.stopPropagation();
-																onDeleteClient(client.username);
-															}}
-														>
-															<DeleteIcon fontSize="small" />
-														</IconButton>
-													</Tooltip>
-													<Tooltip title="Enable / disable client">
-														<Switch
-															disabled={defaultClient?.username === client.username}
-															checked={
-																typeof client.disabled === 'undefined' ||
-																client.disabled === false
-															}
-															onClick={(event) => {
-																event.stopPropagation();
-																if (event.target.checked) {
-																	onEnableClient(client.username);
-																} else {
-																	onDisableClient(client.username);
-																}
+															suggestions={groupSuggestions}
+															values={client.groups.map((group) => ({
+																label: group.groupname,
+																value: group.groupname
+															}))}
+															handleChange={(value) => {
+																onUpdateClientGroups(client, value);
 															}}
 														/>
-													</Tooltip>
-												</TableCell>
-											</StyledTableRow>
+													</TableCell>
+													<TableCell className={`${classes.badges} ${getClassForCell(client)}`}>
+														<AutoSuggest
+															disabled={defaultClient?.username === client.username}
+															suggestions={roleSuggestions}
+															values={client.roles.map((role) => ({
+																label: role.rolename,
+																value: role.rolename
+															}))}
+															handleChange={(value) => {
+																onUpdateClientRoles(client, value);
+															}}
+														/>
+													</TableCell>
+													<TableCell align="right">
+														{/* <IconButton
+							size="small"
+							onClick={(event) => {
+								event.stopPropagation();
+								onEditClient(client.username);
+							}}
+							>
+							<EditIcon fontSize="small" />
+							</IconButton> */}
+
+														<Tooltip title="Delete client">
+															<IconButton
+																disabled={defaultClient?.username === client.username}
+																size="small"
+																onClick={(event) => {
+																	event.stopPropagation();
+																	onDeleteClient(client.username);
+																}}
+															>
+																<DeleteIcon fontSize="small" />
+															</IconButton>
+														</Tooltip>
+														<Tooltip title="Enable / disable client">
+															<Switch
+																disabled={defaultClient?.username === client.username}
+																checked={
+																	typeof client.disabled === 'undefined' ||
+																	client.disabled === false
+																}
+																onClick={(event) => {
+																	event.stopPropagation();
+																	if (event.target.checked) {
+																		onEnableClient(client.username);
+																	} else {
+																		onDisableClient(client.username);
+																	}
+																}}
+															/>
+														</Tooltip>
+													</TableCell>
+												</StyledTableRow>
+											</Tooltip>
 										))}
 								</TableBody>
 								<TableFooter>
