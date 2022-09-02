@@ -27,8 +27,30 @@ module.exports = class ConfigManager {
 		return connections;
 	}
 
-	set connections(connections) {
+	set connections(connections) { 
 		db.update('connections', (oldConnections) => connections).write();
+	}
+
+	get plugins() {
+		let plugins = db.get('plugins').value();
+		return plugins;
+	}
+
+	set plugins(plugins) {
+		db.update('plugins', (oldPlugins) => plugins).write();
+	}
+
+	updatePluginFromConfiguration(oldPluginFeatureId, plugin) {
+		if (!isObject(plugin)) {
+			throw new Error('Pluin is of invalid type/empty/not provided');
+		}
+
+		const result = db.get('plugins')
+					.find({ name: oldPluginFeatureId })
+					.assign({...plugin})
+					.write();
+
+		return result;
 	}
 
 	getConnection(id) {
@@ -53,10 +75,17 @@ module.exports = class ConfigManager {
 			throw new Error('Connection is of invalid type/empty/not provided');
 		}
 
+		const connections = db.get('connections').value();
+		connections.forEach((el) => {
+			if (el.name === connection.name || el.id === connection.id) {
+				throw new Error('Connection with the same name/id already exists');
+			}
+		})
+
 		const connectionToSave = this.filterConnectionObject(connection);
 
 		if (db.get('connections').value().length >= this._maxBrokerConnections) {
-			throw new Error('Max broker connections reached.');
+			throw new Error('Max broker connections reached');
 		}
 		db.get('connections')
 			.push(connectionToSave)

@@ -300,13 +300,13 @@ const Clusters = (props) => {
 				</Typography>
 			</Breadcrumbs>
 			{/* TODO: Quick hack to detect whether feature is supported */}
-			{clusterManagementFeature?.error ? <><br/><Alert severity="warning">
-				<AlertTitle>{clusterManagementFeature.error.title}</AlertTitle>
-				{clusterManagementFeature.error.message}
-			</Alert></> : null}
-			{!clusterManagementFeature?.error && clusterManagementFeature?.supported === false ? <><br/><Alert severity="warning">
+			{clusterManagementFeature?.supported === false ? <><br/><Alert severity="warning">
 				<AlertTitle>Feature not available</AlertTitle>
 				Make sure that this feature is included in your MMC license.
+			</Alert></> : null}
+			{clusterManagementFeature?.error && clusterManagementFeature?.supported === true ? <><br/><Alert severity="warning">
+				<AlertTitle>{clusterManagementFeature.error.title || 'An error has occured'}</AlertTitle>
+				{clusterManagementFeature.error.message || clusterManagementFeature.error}
 			</Alert></> : null}
 			<br />
 			{!clusterManagementFeature?.error && clusterManagementFeature?.supported !== false && <><Button

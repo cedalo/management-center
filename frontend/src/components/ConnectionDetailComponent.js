@@ -26,12 +26,16 @@ import { useHistory } from 'react-router-dom';
 import { updateBrokerConfigurations, updateBrokerConnections } from '../actions/actions';
 
 
+import CloudDownload from '@material-ui/icons/CloudDownload';
 import CloudUpload from '@material-ui/icons/CloudUpload';
 import Close from '@material-ui/icons/Close';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import IconButton from '@material-ui/core/IconButton';
+
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
 
 import { Alert, AlertTitle } from '@material-ui/lab';
 
@@ -127,11 +131,11 @@ const useStyles = makeStyles((theme) => ({
 	},
 	crossButton: {
 		// fontSize: '0.8em',
-		borderRadius: "100%",
+		borderRadius: "100%"
 	},
 	closeIcon: {
 		maxHeight: '60%',
-		maxWidth: '60%',
+		maxWidth: '60%'
 	},
 	invisible: {
 		display: 'none',
@@ -141,7 +145,12 @@ const useStyles = makeStyles((theme) => ({
 	},
 	alert: {
 		textAlign: 'left',
-	}
+	},
+	fileDownloadButton: {
+		marginLeft: '10px',
+		opacity: '75%',
+		borderRadius: '6px'
+	},
 }));
 
 const makeFileField = (fieldName) => {
@@ -172,12 +181,14 @@ const ConnectionDetailComponent = (props) => {
 	const classes = useStyles();
 	const [value, setValue] = React.useState(0);
 	const [showPassword, setShowPassword] = React.useState(false);
+	const handleClickShowPassword = () => setShowPassword(!showPassword);
+	const handleMouseDownPassword = () => setShowPassword(!showPassword);
 	const [editMode, setEditMode] = React.useState(editModeEnabledByDefault);
 	const { enqueueSnackbar } = useSnackbar();
 
 	const [updatedConnection, setUpdatedConnection] = React.useState({
 		...connection,
-		[verifyServerCertificateFieldName]: true,
+		[verifyServerCertificateFieldName]: connection[verifyServerCertificateFieldName],
 		[customCACertificateFileFieldName]: connection[customCACertificateFileFieldName],
 		[clientCertificateFileFieldName]: connection[clientCertificateFileFieldName],
 		[clientPrivateKeyFileFieldName]: connection[clientPrivateKeyFileFieldName],
@@ -237,11 +248,10 @@ const ConnectionDetailComponent = (props) => {
 		}
 	}
 
-	// const fs = require('fs');
 
 	const loadConnections = async () => {
 		const brokerConnections = await brokerClient.getBrokerConnections();
-		// fs.appendFileSync('logFront.txt', `(((((((((((((((((((((((((((((((BROKER CONNECTIONS ${JSON.stringify(brokerConnections)}\n`)
+
 		dispatch(updateBrokerConnections(brokerConnections));
 		const brokerConfigurations = await brokerClient.getBrokerConfigurations();
 		dispatch(updateBrokerConfigurations(brokerConfigurations));
@@ -251,7 +261,7 @@ const ConnectionDetailComponent = (props) => {
 		try {
 			await brokerClient.disconnectServerFromBroker(connection.id);
 			await brokerClient.modifyConnection(connection.id, updatedConnection);
-			// fs.appendFileSync('logFront.txt', `(((((((((((((((((((((((((((((((loading connections\n`)
+
 			await loadConnections();
 			enqueueSnackbar('Connection successfully updated', {
 				variant: 'success'
@@ -351,6 +361,20 @@ const ConnectionDetailComponent = (props) => {
 			[fieldName]: '',
 			[makeFileField(fieldName)]: '',
 		}));
+	};
+
+
+	const handleFileDownload = (fieldName) => {
+		const fileContent = Buffer.from(updatedConnection[fieldName].data, 'base64'); // base64 to string
+		const fileString = new TextDecoder().decode(fileContent);
+
+		const element = document.createElement('a');
+		const file = new Blob([fileString], {type: 'text/plain'});
+		element.href = URL.createObjectURL(file);
+		element.download = updatedConnection[makeFileField(fieldName)];
+		document.body.appendChild(element); // Required for this to work in FireFox
+
+		element.click();
 	};
 
 
@@ -461,7 +485,7 @@ const ConnectionDetailComponent = (props) => {
 									required={false}
 									disabled={!editMode}
 									id="password"
-									type="password"
+									type={showPassword ? "text" : "password"}
 									label="Password"
 									value={updatedConnection.credentials?.password}
 									defaultValue=""
@@ -479,6 +503,20 @@ const ConnectionDetailComponent = (props) => {
 											});
 											setConnected(false);
 										}
+									}}
+									InputProps={{ // <-- This is where the toggle button is added.
+										endAdornment: (
+										  <InputAdornment position="end">
+											<IconButton
+												disabled={!editMode}
+											  	aria-label="toggle password visibility"
+											  	onClick={handleClickShowPassword}
+											  	onMouseDown={handleMouseDownPassword}
+											>
+												{showPassword ? <Visibility /> : <VisibilityOff />}
+											</IconButton>
+										  </InputAdornment>
+										)
 									}}
 								/>
 							</Grid>
@@ -560,6 +598,7 @@ const ConnectionDetailComponent = (props) => {
 													endAdornment:
 														<IconButton
 																className={(editMode && updatedConnection[customCACertificateFileFieldName]) ? classes.crossButton : classes.invisible}
+																style={{backgroundColor: 'transparent'}}
 																size="small"
 																onClick={() => deleteFile(customCACertificateFieldName)}
 																disabled={!tlsFeature?.supported}
@@ -568,6 +607,16 @@ const ConnectionDetailComponent = (props) => {
 														</IconButton>,
 												}}
 											/>
+											<IconButton
+												disabled={!editMode || !tlsFeature?.supported || !updatedConnection[customCACertificateFieldName]}
+												// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
+												style={{backgroundColor: 'transparent'}}
+												className={`${classes.fileDownloadButton}`}
+												size="small"
+												onClick={() => handleFileDownload(customCACertificateFieldName)}
+											>
+												<CloudDownload></CloudDownload>
+											</IconButton>
 										</FormGroup>
 									</Grid>
 									<Grid item xl={2} md={2} sm={1} xs={1}>
@@ -610,6 +659,7 @@ const ConnectionDetailComponent = (props) => {
 													endAdornment:
 														<IconButton
 																className={(editMode && updatedConnection[clientCertificateFileFieldName]) ? classes.crossButton : classes.invisible}
+																style={{backgroundColor: 'transparent'}}
 																size="small"
 																onClick={() => deleteFile(clientCertificateFieldName)}
 																disabled={!tlsFeature?.supported}
@@ -618,6 +668,16 @@ const ConnectionDetailComponent = (props) => {
 														</IconButton>,
 												}}
 											/>
+											<IconButton
+												disabled={!editMode || !tlsFeature?.supported || !updatedConnection[clientCertificateFieldName]}
+												// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
+												style={{backgroundColor: 'transparent'}}
+												className={`${classes.fileDownloadButton}`}
+												size="small"
+												onClick={() => handleFileDownload(clientCertificateFieldName)}
+											>
+												<CloudDownload></CloudDownload>
+											</IconButton>
 										</FormGroup>
 									</Grid>
 									<Grid item xl={2} md={2} sm={1} xs={1}>
@@ -657,6 +717,7 @@ const ConnectionDetailComponent = (props) => {
 													endAdornment:
 														<IconButton
 																className={(editMode && updatedConnection[clientPrivateKeyFileFieldName]) ? classes.crossButton : classes.invisible}
+																style={{backgroundColor: 'transparent'}}
 																size="small"
 																onClick={() => deleteFile(clientPrivateKeyFieldName)}
 																disabled={!tlsFeature?.supported}
@@ -668,6 +729,16 @@ const ConnectionDetailComponent = (props) => {
 													// 		  }
 												}}
 											/>
+											<IconButton
+												disabled={!editMode || !tlsFeature?.supported || !updatedConnection[clientPrivateKeyFieldName]}
+												style={{backgroundColor: 'transparent'}}
+												// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
+												className={`${classes.fileDownloadButton}`}
+												size="small"
+												onClick={() => handleFileDownload(clientPrivateKeyFieldName)}
+											>
+												<CloudDownload></CloudDownload>
+											</IconButton>
 										</FormGroup>
 									</Grid>
 									<Grid item xl={2} md={2} sm={1} xs={1}>

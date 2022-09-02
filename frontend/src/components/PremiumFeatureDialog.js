@@ -258,7 +258,7 @@ const getDialogContent = () => {
 				Premium feature
 			</DialogTitle>
 			<DialogContent>
-				<Grid container spacing={24} justify="center" style={{ maxWidth: '100%' }}>
+				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
 					<Grid item xs={12} align="center">
 						<img src={image} />
 					</Grid>

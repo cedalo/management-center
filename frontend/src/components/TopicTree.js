@@ -24,7 +24,13 @@ import TreeView from '@material-ui/lab/TreeView';
 import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
+import Button  from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { WebSocketContext } from '../websockets/WebSocket';
+import DeleteIcon from '@material-ui/icons/Delete';
+
 import moment from 'moment';
+
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -205,11 +211,21 @@ const generateTreeData = (id, name, object, index = 0) => {
 	return node;
 };
 
-const TopicTree = ({ topicTree, lastUpdated, currentConnectionName, settings }) => {
+const TopicTree = ({ topicTree, lastUpdated, currentConnectionName, settings, topicTreeRestFeature }) => {
 	const classes = useStyles();
+	const [error, setError] = React.useState({occured: false, message: ''})
 	const [messageHistory, setMessageHistory] = React.useState([]);
 	const [selectedNode, setSelectedNode] = React.useState({});
 	const [selectedNodeId, setSelectedNodeId] = React.useState('');
+	const [isLoading, setIsLoading] = React.useState(false);
+	const context = React.useContext(WebSocketContext);
+	const { client } = context;
+
+
+	useEffect(() => {
+		setIsLoading(false);
+	}, [topicTree]);
+
 
 	useEffect(() => {
 		const parts = selectedNodeId.split('/');
@@ -237,7 +253,9 @@ const TopicTree = ({ topicTree, lastUpdated, currentConnectionName, settings }) 
 		setMessageHistory([]);
 	};
 
+	// console.log('topicTree before::::::::::::::::::::::::::::::::::::::::::::::::::::::::', topicTree)
 	const data = generateTreeData('topic-tree-root', 'Topic Tree', topicTree);
+	// console.log('topicTree after::::::::::::::::::::::::::::::::::::::::::::::::::::::::', topicTree)
 
 	useEffect(() => {
 		setSelectedNode(null);
@@ -265,6 +283,17 @@ const TopicTree = ({ topicTree, lastUpdated, currentConnectionName, settings }) 
 		</StyledTreeItem>
 	);
 
+
+	const clearTopicTreeCache = async () => {
+		try {
+			setIsLoading(true);
+			await client.clearTopicTreeCache();
+		} catch(error) {
+			setError({occured: true, message: 'Something went wrong when clearing cache'})
+		}
+	};
+
+
 	return (
 		<div>
 			<Breadcrumbs aria-label="breadcrumb">
@@ -278,10 +307,28 @@ const TopicTree = ({ topicTree, lastUpdated, currentConnectionName, settings }) 
 					Topic Tree
 				</Typography>
 			</Breadcrumbs>
+			{(settings?.topicTreeEnabled !== false && topicTreeRestFeature?.supported) ?
+			<>
+				<Grid
+					container justify="flex-end"
+				>
+					<Button 
+						style={{backgroundColor: '#f50057'}}
+						onClick={clearTopicTreeCache}
+						startIcon={isLoading ? <CircularProgress color="white" style={{width: "20px", height: "auto"}}/> : <DeleteIcon />}
+					>
+						Clear Cache
+					</Button>
+				</Grid>
+			</> : null}
 			{(settings?.topicTreeEnabled === false) ? <><br/><Alert severity="warning">
 				<AlertTitle>Topic tree not enabled</AlertTitle>
 				The MMC is currently not collecting topic tree data. If you want to collect data, please enable the topic tree feature in the settings page.
 				Note that if you enable this setting and the MMC is collecting topic tree data, the performance of the MMC backend might decrease.
+			</Alert></> : null}
+			{(error.occured) ? <><br/><Alert severity="error">
+				<AlertTitle>An error has occured</AlertTitle>
+				{error.message}
 			</Alert></> : null}
 			<br />
 
@@ -458,7 +505,8 @@ const mapStateToProps = (state) => {
 		settings: state.settings?.settings,
 		lastUpdated: state.topicTree.lastUpdated,
 		topicTree: state.topicTree,
-		currentConnectionName: state.brokerConnections.currentConnectionName
+		currentConnectionName: state.brokerConnections.currentConnectionName,
+		topicTreeRestFeature: state.systemStatus?.features?.topictreerest,
 	};
 };
 

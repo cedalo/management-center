@@ -8,7 +8,8 @@ export default function topicTreeReducer(state = {}, action) {
 	switch (action.type) {
 		case ActionTypes.UPDATE_TOPIC_TREE:
 			// Quick fix: only update if selected topic tree is the same
-			if (state.topicTree === undefined || currentTopicTreeConnectionName === action.update._name) {
+
+			if (state.topicTree === undefined || currentTopicTreeConnectionName === action.update?._name) {
 				newState.topicTree = action.update;
 				newState.lastUpdated = Date.now();
 			}

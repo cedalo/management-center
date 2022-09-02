@@ -5,7 +5,7 @@ const STATUS_UNLOADED = 'unloaded';
 const STATUS_LOADED = 'loaded';
 
 module.exports = class BasePlugin {
-	constructor(meta) {
+	constructor(meta, options) {
 		this._status = {
 			type: STATUS_UNLOADED
 		};
@@ -19,6 +19,16 @@ module.exports = class BasePlugin {
 		  });
 		this._logger = logger;
 		this._swagger = {};
+		this.options = {};
+
+		if (!options) {
+			return;
+		} else if (!(typeof option === 'object' && option !== null)) {
+			throw new Error('options argument passed to BasePlugin is not of type "Object"')
+		}
+		for (const option in options) {
+			this.options[option] = options[option];
+		}
 	}
 
 	get logger() {

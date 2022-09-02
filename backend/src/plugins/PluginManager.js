@@ -51,20 +51,34 @@ module.exports = class PluginManager {
 	init(pluginConfigurations = [], context, swaggerDocument) {
 		this._context = context;
 		const { licenseContainer } = context;
-		if (licenseContainer.license.isValid) {
-			if (!PLUGIN_DIR) {
-				console.log('"CEDALO_MC_PLUGIN_DIR" is not set. Skipping loading of plugins');
-				return;
+		if (licenseContainer.license.isValid && PLUGIN_DIR) {
+			const userManagementPluginIndex = pluginConfigurations.findIndex((el) => {
+				return el.name === 'user-management';
+			});
+			if (userManagementPluginIndex !== -1) {
+				const userManagementPlugin = pluginConfigurations[userManagementPluginIndex];
+				pluginConfigurations.splice(userManagementPluginIndex, 1);
+				pluginConfigurations.unshift(userManagementPlugin);
 			}
+
+
 			pluginConfigurations.forEach((pluginConfiguration) => {
 				try {
+					const enableAtNextStartup = (pluginConfiguration.enableAtNextStartup !== undefined) ? pluginConfiguration.enableAtNextStartup : true;
+
 					const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
-					const plugin = new Plugin();
+					const plugin = new Plugin({enableAtNextStartup});
 					if (
 						licenseContainer.license.features &&
 						licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
 					) {
-						this._plugins.push(plugin);
+						if (!enableAtNextStartup) {
+							console.log(`Plugin not loaded: Plugin set to be disabled at current startup: "${pluginConfiguration.name}"`)
+							plugin.setErrored(`Plugin set to be disabled at current startup: "${pluginConfiguration.name}"`);
+							this._plugins.push(plugin);
+						} else {
+							this._plugins.push(plugin);
+						}
 					} else {
 						console.log(`Plugin not loaded: License does not allow this plugin: "${pluginConfiguration.name}"`)
 						plugin.setErrored(`License does not allow this plugin: "${pluginConfiguration.name}"`);
@@ -76,6 +90,8 @@ module.exports = class PluginManager {
 					// plugin.setErrored();
 				}
 			});
+		} else if (licenseContainer.license.isValid && !PLUGIN_DIR) {
+			console.log('"CEDALO_MC_PLUGIN_DIR" is not set. Skipping loading of plugins');
 		} else {
 			console.error('Ignore loading plugins: no premium license provided or license not valid');
 		}
@@ -94,6 +110,8 @@ module.exports = class PluginManager {
 				if (plugin.swagger) {
 					swaggerDocument.tags = Object.assign(swaggerDocument.tags || {}, plugin.swagger.tags);
 					swaggerDocument.paths = Object.assign(swaggerDocument.paths || {}, plugin.swagger.paths);
+					swaggerDocument.components.schemas = Object.assign(swaggerDocument.components.schemas || {}, plugin.swagger.components?.schemas);
+					swaggerDocument.components.errors = Object.assign(swaggerDocument.components.errors || {}, plugin.swagger.components?.errors);
 				}
 
 				if (plugin._status.type !== 'error') {
@@ -125,6 +143,19 @@ module.exports = class PluginManager {
 	loadPlugin(pluginId) {
 		const plugin = this._getPluginById(pluginId);
 		plugin.load(this._context);
+	}
+
+	setPluginStatusAtNextStartup(pluginFeatureId, nextStatus) {
+		this._plugins = this._plugins.map((plugin) => {
+			if (plugin.meta.featureId === pluginFeatureId) {
+				plugin.options.enableAtNextStartup = nextStatus;
+			}
+			return plugin;
+	
+		});
+		
+
+		this._context.configManager.updatePluginFromConfiguration(pluginFeatureId, {enableAtNextStartup: nextStatus});
 	}
 
 	get plugins() {

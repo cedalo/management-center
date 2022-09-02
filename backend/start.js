@@ -105,7 +105,9 @@ const initConnections = (config) => {
 			// connection did not exist previously in configuration file
 			connection = {
 				name: process.env.CEDALO_MC_BROKER_NAME,
-				url: process.env.CEDALO_MC_BROKER_URL
+				url: process.env.CEDALO_MC_BROKER_URL,
+				supportsRestart: process.env.CEDALO_MC_BROKER_SUPPORTS_RESTART === 'true' ? true : false,
+				serviceName: process.env.CEDALO_MC_BROKER_SERVICE_NAME
 			};
 			connection.id = process.env.CEDALO_MC_BROKER_ID || uuidv4();
 			if (process.env.CEDALO_MC_BROKER_USERNAME && process.env.CEDALO_MC_BROKER_PASSWORD) {
@@ -122,7 +124,9 @@ const initConnections = (config) => {
 		} else {
 			// connection did exist previously in configuration file
 			// configuration file needs to be updated from environment variables
-			connection.url = process.env.CEDALO_MC_BROKER_URL
+			connection.url = process.env.CEDALO_MC_BROKER_URL;
+			connection.supportsRestart = process.env.CEDALO_MC_BROKER_SUPPORTS_RESTART === 'true' ? true : false;
+			connection.serviceName = process.env.CEDALO_MC_BROKER_SERVICE_NAME;
 			if (process.env.CEDALO_MC_BROKER_USERNAME && process.env.CEDALO_MC_BROKER_PASSWORD) {
 				connection.credentials = {
 					username: process.env.CEDALO_MC_BROKER_USERNAME,
@@ -218,7 +222,14 @@ const init = async (licenseContainer) => {
 	const globalTopicTree = {};
 	const app = express();
 
-	const sessionParser = session({ secret: process.env.CEDALO_MC_SESSION_SECRET || "secret" });
+	const sessionParser = session({ secret: process.env.CEDALO_MC_SESSION_SECRET || "secret",
+									cookie: (process.env.CEDALO_MC_SESSION_MAXAGE ?
+												( (parseInt(process.env.CEDALO_MC_SESSION_MAXAGE) === -1) ?
+													undefined
+													: {maxAge: parseInt(process.env.CEDALO_MC_SESSION_MAXAGE)}
+												)
+											: undefined)
+									});
 	app.use(sessionParser);
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));
@@ -475,15 +486,32 @@ const init = async (licenseContainer) => {
 					throw new NotAuthorizedError();
 				}
 			}
+			case 'setPluginStatusAtNextStartup': {
+				const { pluginFeatureId, nextStatus } = message;
+				if (context.security.acl.isAdmin(user)) {
+					const response = pluginManager.setPluginStatusAtNextStartup(pluginFeatureId, !!nextStatus);
+					return response;
+				} else {
+					throw new NotAuthorizedError();
+				}
+			}
 			case 'connectToBroker': {
 				const { brokerName } = message;
-				const response = await connectToBroker(brokerName, client);
-				return response;
+				if (context.security.acl.noRestrictedRoles(user)) {
+					const response = await connectToBroker(brokerName, client);
+					return response;
+				} else {
+					throw new NotAuthorizedError();
+				}
 			}
 			case 'disconnectFromBroker': {
 				const { brokerName } = message;
-				const response = await disconnectFromBroker(brokerName, client);
-				return response;
+				if (context.security.acl.noRestrictedRoles(user)) {
+					const response = await disconnectFromBroker(brokerName, client);
+					return response;
+				} else {
+					throw new NotAuthorizedError();
+				}
 			}
 			case 'getBrokerConnections': {
 				// const connections = context.brokerManager.getBrokerConnections();
@@ -500,10 +528,18 @@ const init = async (licenseContainer) => {
 				}
 			}
 			case 'getBrokerConfigurations': {
-				return config;
+				if (context.security.acl.noRestrictedRoles(user)) {
+					return config;
+				} else {
+					throw new NotAuthorizedError();
+				}
 			}
 			case 'getSettings': {
-				return settingsManager.settings;
+				if (context.security.acl.noRestrictedRoles(user)) {
+					return settingsManager.settings;
+				} else {
+					throw new NotAuthorizedError();
+				}
 			}
 			case 'updateSettings': {
 				if (context.security.acl.isAdmin(user)) {
@@ -533,21 +569,25 @@ const init = async (licenseContainer) => {
 				}
 			}
 			case 'testConnection': {
-				const { connection } = message;
-				const testClient = new NodeMosquittoClient({
-					/* logger: console */
-				});
+				if (context.security.acl.noRestrictedRoles(user)) {
+					const { connection } = message;
+					const testClient = new NodeMosquittoClient({
+						/* logger: console */
+					});
+          
+          			const filteredConnection = configManager.filterConnectionObject(connection);
+          
+					await testClient.connect({
+						mqttEndpointURL: filteredConnection.url,
+						options: createOptions(filteredConnection)
+					});
+					await testClient.disconnect();
 
-				const filteredConnection = configManager.filterConnectionObject(connection);
-
-				await testClient.connect({
-					mqttEndpointURL: filteredConnection.url,
-					options: createOptions(filteredConnection)
-				});
-				await testClient.disconnect();
-
-				return {
-					connected: true
+					return {
+						connected: true
+					}
+				} else {
+					throw new NotAuthorizedError();
 				}
 			}
 			case 'createConnection': {
@@ -589,12 +629,16 @@ const init = async (licenseContainer) => {
 				}
 			}
 			default: {
-				const handler = context.requestHandlers.get(request);
-				if (handler) {
-					const result = await handler[request](message, user);
-					return result;
+				if (context.security.acl.noRestrictedRoles(user)) {
+					const handler = context.requestHandlers.get(request);
+					if (handler) {
+						const result = await handler[request](message, user);
+						return result;
+					} else {
+						throw new Error(`Unsupported request: ${request}`);
+					}
 				} else {
-					throw new Error(`Unsupported request: ${request}`);
+					throw new NotAuthorizedError();
 				}
 			}
 		}
@@ -889,6 +933,7 @@ const init = async (licenseContainer) => {
 		response.json(
 			pluginManager.plugins.map((plugin) => ({
 				...plugin.meta,
+				...plugin.options,
 				status: plugin.status
 			}))
 		);

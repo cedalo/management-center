@@ -1,16 +1,18 @@
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Chart from './Chart';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ClientIcon from '@material-ui/icons/RecordVoiceOver';
 import Container from '@material-ui/core/Container';
 import DataReceivedIcon from '@material-ui/icons/CallReceived';
 import DataSentIcon from '@material-ui/icons/CallMade';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import RestartIcon from '@material-ui/icons/Replay';
 import Grid from '@material-ui/core/Grid';
 import Info from './Info';
 import MessageIcon from '@material-ui/icons/Email';
 import moment from 'moment';
 import Paper from '@material-ui/core/Paper';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import SubscriptionIcon from '@material-ui/icons/PhonelinkRing';
 import Table from '@material-ui/core/Table';
@@ -24,7 +26,13 @@ import { colors } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
+import { useSnackbar } from 'notistack';
+import { useConfirm } from 'material-ui-confirm';
+import Chart from './Chart';
 import LicenseTable from './LicenseTable';
+import { WebSocketContext } from '../websockets/WebSocket';
+
+const formatAsNumber = (metric) => new Intl.NumberFormat().format(metric);
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -39,11 +47,39 @@ const useStyles = makeStyles((theme) => ({
 
 const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus, defaultClient, currentConnection, currentConnectionName }) => {
 	const classes = useStyles();
+	const confirm = useConfirm();
+	const { enqueueSnackbar } = useSnackbar();
+	const context = useContext(WebSocketContext);
+	const { client: brokerClient } = context;
 	const totalMessages = parseInt(systemStatus?.$SYS?.broker?.messages?.sent);
 	const publishMessages = (parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent) / totalMessages) * 100;
 	const otherMessages =
 		((totalMessages - parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent)) / totalMessages) * 100;
 
+	const onRestart = async (brokerConnectionName, serviceName) => {
+		await confirm({
+			title: 'Confirm restart',
+			description: `Note that when the broker is restarted, every connected client will be disconnected and it is up to the client to reconnect.`,
+			cancellationButtonProps: {
+				variant: 'contained'
+			},
+			confirmationButtonProps: {
+				color: 'primary',
+				variant: 'contained'
+			}
+		});
+		try {
+			const result = await brokerClient.restartBroker(brokerConnectionName, serviceName);
+			enqueueSnackbar(`Broker "${brokerConnectionName}" successfully restarted.`, {
+				variant: 'success'
+			});
+		} catch(error) {
+			enqueueSnackbar(`Error restarting broker "${brokerConnectionName}". Reason: ${error.message || error}`, {
+				variant: 'error'
+			});
+		}
+	}
+	
 	const data = {
 		datasets: [
 			{
@@ -88,11 +124,26 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 			<br />
 			{systemStatus?.$SYS ? <Container maxWidth={false}>
 				<Grid container spacing={3}>
-					<Grid item xs={12}>
+					<Grid item xs={10}>
 						<Typography variant="h5" component="div" gutterBottom>
 							{currentConnectionName}
 						</Typography>
 					</Grid>
+					{currentConnection?.supportsRestart === true && <Grid item xs={2}>
+						<Button
+							variant="contained"
+							color="primary"
+							size="small"
+							onClick={(event) => {
+								event.stopPropagation();
+								onRestart(currentConnectionName, currentConnection?.serviceName);
+							}}
+							className={classes.button}
+							startIcon={<RestartIcon />}
+						>
+							Restart
+						</Button>
+					</Grid>}
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
 							label="Clients total"
@@ -103,49 +154,49 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
 							label="Subscriptions"
-							value={systemStatus?.$SYS?.broker?.subscriptions?.count}
+							value={formatAsNumber(systemStatus?.$SYS?.broker?.subscriptions?.count)}
 							icon={<SubscriptionIcon />}
 						/>
 					</Grid>
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
 							label="PUBLISH received"
-							value={systemStatus?.$SYS?.broker?.publish?.messages?.received}
+							value={formatAsNumber(systemStatus?.$SYS?.broker?.publish?.messages?.received)}
 							icon={<MessageIcon />}
 						/>
 					</Grid>
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
 							label="PUBLISH sent"
-							value={systemStatus?.$SYS?.broker?.publish?.messages?.sent}
+							value={formatAsNumber(systemStatus?.$SYS?.broker?.publish?.messages?.sent)}
 							icon={<MessageIcon />}
 						/>
 					</Grid>
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
 							label="Bytes received"
-							value={systemStatus?.$SYS?.broker?.bytes?.received}
+							value={formatAsNumber(systemStatus?.$SYS?.broker?.bytes?.received)}
 							icon={<DataReceivedIcon />}
 						/>
 					</Grid>
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
 							label="Bytes sent"
-							value={systemStatus?.$SYS?.broker?.bytes?.sent}
+							value={formatAsNumber(systemStatus?.$SYS?.broker?.bytes?.sent)}
 							icon={<DataSentIcon />}
 						/>
 					</Grid>
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
 							label="Total received"
-							value={systemStatus?.$SYS?.broker?.messages?.received}
+							value={formatAsNumber(systemStatus?.$SYS?.broker?.messages?.received)}
 							icon={<MessageIcon />}
 						/>
 					</Grid>
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
 							label="Total messages sent"
-							value={systemStatus?.$SYS?.broker?.messages?.sent}
+							value={formatAsNumber(systemStatus?.$SYS?.broker?.messages?.sent)}
 							icon={<MessageIcon />}
 						/>
 					</Grid>
@@ -190,7 +241,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 											Total clients
 										</TableCell>
 										<TableCell align="right">
-											{systemStatus?.$SYS?.broker?.clients?.total}
+											{formatAsNumber(systemStatus?.$SYS?.broker?.clients?.total)}
 										</TableCell>
 									</TableRow>
 									<TableRow key="clients-active">
@@ -198,7 +249,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 											Active clients
 										</TableCell>
 										<TableCell align="right">
-											{systemStatus?.$SYS?.broker?.clients?.active}
+											{formatAsNumber(systemStatus?.$SYS?.broker?.clients?.active)}
 										</TableCell>
 									</TableRow>
 									<TableRow key="clients-connected">
@@ -225,7 +276,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 											Received messages
 										</TableCell>
 										<TableCell align="right">
-											{systemStatus?.$SYS?.broker?.messages?.received}
+											{formatAsNumber(systemStatus?.$SYS?.broker?.messages?.received)}
 										</TableCell>
 									</TableRow>
 									<TableRow key="messsages-sent">
@@ -233,7 +284,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 											Sent messages
 										</TableCell>
 										<TableCell align="right">
-											{systemStatus?.$SYS?.broker?.messages?.sent}
+											{formatAsNumber(systemStatus?.$SYS?.broker?.messages?.sent)}
 										</TableCell>
 									</TableRow>
 									<TableRow key="messsages-stored">
@@ -241,7 +292,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 											Stored messages
 										</TableCell>
 										<TableCell align="right">
-											{systemStatus?.$SYS?.broker?.messages?.stored}
+											{formatAsNumber(systemStatus?.$SYS?.broker?.messages?.stored)}
 										</TableCell>
 									</TableRow>
 								</TableBody>

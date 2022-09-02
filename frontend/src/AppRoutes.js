@@ -27,6 +27,11 @@ import RoleNew from './components/RoleNew';
 import StreamNew from './components/StreamNew';
 import Clients from './components/Clients';
 import UserProfile from './components/UserProfile';
+import UserGroupNew from './components/UserGroupNew';
+import UserGroups from './components/UserGroups';
+import UserGroupDetail from './components/UserGroupDetail';
+import SortableTablePage from './components/SortableTablePage';
+
 import useFetch from './helpers/useFetch';
 
 import UserNew from './admin/users/components/UserNew';
@@ -147,6 +152,19 @@ function AppRoutes(props) {
 					path="/admin/users/detail/:userId"
 					component={UserDetail}
 				/>
+	
+
+				{userProfile?.isAdmin && <Route path="/admin/user-groups/new">
+					<UserGroupNew />
+				</Route>}
+				{userProfile?.isAdmin && <Route path="/admin/user-groups/detail/:groupId"
+						component={UserGroupDetail}
+				/>}
+				{userProfile?.isAdmin && <Route path="/admin/user-groups">
+					<SortableTablePage Component={UserGroups} />
+				</Route>}
+
+
 				<Route path="/admin/users/new">
 					<UserNew />
 				</Route>

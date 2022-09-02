@@ -28,7 +28,7 @@ const Info = ({ className, label, value, icon, ...rest }) => {
 	return (
 		<Card className={clsx(classes.root, className)} {...rest}>
 			<CardContent>
-				<Grid container justify="space-between" spacing={3}>
+				<Grid container justifyContent="space-between" spacing={3}>
 					<Grid item>
 						<Typography color="textSecondary" gutterBottom>
 							{label}

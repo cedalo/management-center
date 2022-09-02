@@ -172,6 +172,16 @@ module.exports = class BaseMosquittoProxyClient {
 		});
 	}
 
+	async setPluginStatusAtNextStartup(pluginFeatureId, nextStatus) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'setPluginStatusAtNextStartup',
+			pluginFeatureId,
+			nextStatus
+		});
+	}
+
 	/**
 	 * ******************************************************************************************
 	 * Methods for user management
@@ -308,6 +318,104 @@ module.exports = class BaseMosquittoProxyClient {
 	}
 
 
+
+	async getUserGroup(groupname) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/groups/${groupname}`;
+			const response = await axios.get(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
+	async listUserGroupsOfUser(username) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/groups/user/${username}`;
+			const response = await axios.get(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
+	async listUserGroups() {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/groups`;
+			const response = await axios.get(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
+	async createUserGroup(name, role, description='', users=[], connections=[]) {
+		try {
+			const group = {
+				name,
+				description,
+				role,
+				users,
+				connections,
+			}
+			const url = `${this._httpEndpointURL}/api/user-management/groups`;
+			const response = await axios.post(url, group, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
+	async deleteUserGroup(groupname) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/groups/${groupname}`;
+			const response = await axios.delete(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
+	async updateUserGroup(group) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/groups/${group.name}`;
+			const response = await axios.put(url, group, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
 	async checkTLSEnabled() {
 		try {
 			const url = `${this._httpEndpointURL}/api/tls/ping`;
@@ -337,6 +445,44 @@ module.exports = class BaseMosquittoProxyClient {
 			}
 		}
 	}
+
+
+
+	/**
+	* ******************************************************************************************
+	* Methods for topic tree management
+	* ******************************************************************************************
+	*/
+
+	async clearTopicTreeCache() {
+		try {
+			const url = `${this._httpEndpointURL}/api/system/topictree`;
+			const response = await axios.delete(url, this._options);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+	
+	async checkTopictreeRestEnabled() {
+		try {
+			const url = `${this._httpEndpointURL}/api/system/topictree/ping`;
+			const response = await axios.get(url, this._options);
+			return response.data?.pong;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
 
 	/**
 	 * ******************************************************************************************
@@ -987,6 +1133,17 @@ module.exports = class BaseMosquittoProxyClient {
 	 * Additional methods not specified in the Mosquitto API
 	 * ******************************************************************************************
 	 */
+
+	 async restartBroker(connectionName, serviceName) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'restartBroker',
+			connectionName,
+			serviceName
+		});
+		return response?.response;
+	}
 
 	 async listTestCollections() {
 		const response = await this.sendRequest({

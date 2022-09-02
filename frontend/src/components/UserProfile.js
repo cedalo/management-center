@@ -15,12 +15,27 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
 import SaveIcon from '@material-ui/icons/Save';
+
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
+
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItem from '@material-ui/core/ListItem';
+import Box from '@material-ui/core/Box';
+import Divider  from '@material-ui/core/Divider';
+import List from '@material-ui/core/List';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Star from '@material-ui/icons/Star';
+import Adjust from '@material-ui/icons/Adjust';
+
+   
 // import AutoSuggest from './AutoSuggest';
+
+const ROOT_USERNAME = 'cedalo';
+
 
 const userShape = PropTypes.shape({
 	username: PropTypes.string,
@@ -163,7 +178,7 @@ const UserProfile = (props) => {
 								required
 								disabled={!editMode}
 								id="password"
-								label="Password"
+								label="Password Change"
 								error={!passwordsMatch}
 								helperText={!passwordsMatch && 'Passwords must match.'}
 								onChange={(event) => setPassword(event.target.value)}
@@ -214,9 +229,11 @@ const UserProfile = (props) => {
 							/>
 						</Grid> */}
 					</Grid>
+
 				</div>
 			</form>
-			{!editMode && (
+
+			{(!editMode && userProfile?.username !== ROOT_USERNAME) && (
 				<Grid item xs={12} className={classes.buttons}>
 					<Button
 						variant="contained"
@@ -255,6 +272,90 @@ const UserProfile = (props) => {
 					</Button>
 				</Grid>
 			)}
+			<Grid container style={{marginLeft: "10px", marginTop: "6px"}}>
+
+				<Grid item xs={6}>
+					<div>
+						{/* <Grid container style={{border: "1px solid", borderRadius: '10px'}}> */}
+						<Grid container>
+							<Grid item xs={6}>
+								<div style={{marginTop: "10px"}}>
+									<div style={{marginTop: "10px"}}></div>
+									<Typography sx={{ mt: 0, mb: 0 }} variant="p" component="div"> 
+										<Typography variant="subtitle2" display="inline">Roles: </Typography>
+											{(!userProfile.roles || (userProfile.roles && !userProfile.roles.length)) ?
+												<Box display="inline" sx={{ fontStyle: 'italic', m: 1 }}>
+													None
+												</Box>
+												: ''
+											}
+									</Typography>
+									<Divider />
+									{userProfile.roles && userProfile.roles.length ? (
+											<List style={{marginTop: "0px"}} dense>
+												{userProfile.roles.map((role) => {
+														return <><ListItem align="center">
+															<ListItemIcon>
+																<Star />
+															</ListItemIcon>
+															<ListItemText
+																primary={role}
+																// secondary="Secondary text"
+															/>
+														</ListItem>
+														<Divider />
+														</>
+													})
+												}
+											</List>
+										) : (<></>)
+									}
+									{/* {userProfile.roles}<br/> */}
+									{/* {userProfile.groups.map((el) => ' ' + el)} */}
+								</div>
+							</Grid>
+							<Grid item xs={6}>
+								<div>
+									<div style={{marginTop: "10px"}}></div>
+									<Typography sx={{ mt: 0, mb: 0 }} variant="p" component="div"> 
+										<Typography variant="subtitle2" display="inline">Groups: </Typography>
+											{(!userProfile.groups || (userProfile.groups && !userProfile.groups.length)) ?
+												<Box display="inline" sx={{ fontStyle: 'italic', m: 1 }}>
+													None
+												</Box>
+												: ''
+											}
+									</Typography>
+									<Divider />
+									{userProfile.groups && userProfile.groups.length ? (
+											<List style={{marginTop: "0px"}} dense>
+												{userProfile.groups.map((group) => {
+														return <><ListItem>
+															<ListItemIcon>
+																<Adjust />
+															</ListItemIcon>
+															<ListItemText
+																primary={group}
+																// secondary="Secondary text"
+															/>
+														</ListItem>
+														<Divider />
+														</>
+													})
+												}
+											</List>
+										) : (<></>)
+									}
+									{/* {userProfile.roles}<br/> */}
+									{/* {userProfile.groups.map((el) => ' ' + el)} */}
+								</div>
+							</Grid>
+						</Grid>
+					</div>
+				</Grid>
+				<Grid item xs={6}>
+				</Grid>
+			</Grid>
 		</Paper>
 	</div>) : null;
 };
