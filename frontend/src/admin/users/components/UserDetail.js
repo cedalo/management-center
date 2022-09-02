@@ -20,10 +20,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
 import AutoSuggest from '../../../components/AutoSuggest';
 
+
+const PASSWORD_ERROR_MESSAGE = 'Password should not be empty';
+
 const userShape = PropTypes.shape({
 	username: PropTypes.string,
 	roles: PropTypes.array
 });
+
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -58,6 +62,16 @@ const UserDetail = (props) => {
 	const [value, setValue] = React.useState(0);
 	const [editMode, setEditMode] = React.useState(false);
 	const { enqueueSnackbar } = useSnackbar();
+	const ref = React.useRef();
+	const [passwordError, setPasswordError] = React.useState(null); 
+
+	React.useEffect(() => {
+		if (document.hasFocus() && ref.current.contains(document.activeElement)) {
+			if (!ref.current.value) {
+				setPasswordError(PASSWORD_ERROR_MESSAGE);
+			}
+		}
+	}, []);
 
 	const { user, userRoles = [] } = props;
 	if (user) {
@@ -80,6 +94,9 @@ const UserDetail = (props) => {
 	const { client: brokerClient } = context;
 
 	const validate = () => {
+		if (passwordError) {
+			return false;
+		}
 		if (editMode) {
 			return updatedUser.username !== '';
 		}
@@ -165,7 +182,7 @@ const UserDetail = (props) => {
 								required
 								id="password"
 								label="Password"
-								helperText="You can change the password here, empty password will be ignored"
+								helperText={passwordError || "You can change the password here, empty password will be ignored"}
 								value={updatedUser?.password}
 								defaultValue=""
 								variant="outlined"
@@ -173,6 +190,11 @@ const UserDetail = (props) => {
 								type="password"
 								className={classes.textField}
 								onChange={(event) => {
+									if (event.target.value) {
+										setPasswordError(null);
+									} else {
+										setPasswordError(PASSWORD_ERROR_MESSAGE);
+									}
 									if (editMode) {
 										setUpdatedUser({
 											...updatedUser,
@@ -180,6 +202,16 @@ const UserDetail = (props) => {
 										});
 									}
 								}}
+								error={!!passwordError}
+								onFocus={() => {
+									if (!updatedUser?.password) {
+										setPasswordError(PASSWORD_ERROR_MESSAGE);
+									}
+								}}
+								onBlur={() => {
+									setPasswordError(null);
+								}}
+								inputRef={ref}
 							/>
 						</Grid>
 						<Grid item xs={12} style={{paddingTop: '10px'}}>
