@@ -487,9 +487,9 @@ const init = async (licenseContainer) => {
 				}
 			}
 			case 'setPluginStatusAtNextStartup': {
-				const { pluginFeatureId, nextStatus } = message;
+				const { pluginId, nextStatus } = message;
 				if (context.security.acl.isAdmin(user)) {
-					const response = pluginManager.setPluginStatusAtNextStartup(pluginFeatureId, !!nextStatus);
+					const response = pluginManager.setPluginStatusAtNextStartup(pluginId, !!nextStatus);
 					return response;
 				} else {
 					throw new NotAuthorizedError();

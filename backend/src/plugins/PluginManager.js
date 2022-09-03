@@ -145,17 +145,18 @@ module.exports = class PluginManager {
 		plugin.load(this._context);
 	}
 
-	setPluginStatusAtNextStartup(pluginFeatureId, nextStatus) {
+	setPluginStatusAtNextStartup(pluginId, nextStatus) {
 		this._plugins = this._plugins.map((plugin) => {
-			if (plugin.meta.featureId === pluginFeatureId) {
-				plugin.options.enableAtNextStartup = nextStatus;
+			if (plugin.meta.id === pluginId) {
+				if (plugin.meta.type !== 'os') {
+					plugin.options.enableAtNextStartup = nextStatus;
+				}
 			}
 			return plugin;
 	
-		});
-		
+		});	
 
-		this._context.configManager.updatePluginFromConfiguration(pluginFeatureId, {enableAtNextStartup: nextStatus});
+		this._context.configManager.updatePluginFromConfiguration(pluginId, {enableAtNextStartup: nextStatus});
 	}
 
 	get plugins() {

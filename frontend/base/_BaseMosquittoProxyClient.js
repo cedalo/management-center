@@ -172,12 +172,12 @@ module.exports = class BaseMosquittoProxyClient {
 		});
 	}
 
-	async setPluginStatusAtNextStartup(pluginFeatureId, nextStatus) {
+	async setPluginStatusAtNextStartup(pluginId, nextStatus) {
 		return this.sendRequest({
 			id: createID(),
 			type: 'request',
 			request: 'setPluginStatusAtNextStartup',
-			pluginFeatureId,
+			pluginId,
 			nextStatus
 		});
 	}
