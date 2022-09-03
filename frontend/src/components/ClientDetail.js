@@ -237,8 +237,7 @@ const ClientDetail = (props) => {
       </Tabs> */}
 				{/* <TabPanel value={value} index={0}> */}
 				<form className={classes.form} noValidate autoComplete="off">
-					<div className={classes.margin}>
-						<Grid container spacing={1} alignItems="flex-end">
+						<Grid container spacing={1} alignItems="flex-end" className={classes.margin}>
 							<Grid item xs={12}>
 								<TextField
 									required={editMode}
@@ -391,7 +390,6 @@ const ClientDetail = (props) => {
 								/>
 							</Grid>
 						</Grid>
-					</div>
 				</form>
 				{/* </TabPanel> */}
 				{/* <TabPanel value={value} index={1}>
