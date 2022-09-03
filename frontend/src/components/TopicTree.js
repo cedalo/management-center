@@ -307,7 +307,7 @@ const TopicTree = ({ topicTree, lastUpdated, currentConnectionName, settings, to
 					Topic Tree
 				</Typography>
 			</Breadcrumbs>
-			{(settings?.topicTreeEnabled !== false && topicTreeRestFeature?.supported) ?
+			{(topicTreeRestFeature?.supported) ?
 			<>
 				<Grid
 					container justify="flex-end"
