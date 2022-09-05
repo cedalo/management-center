@@ -9,7 +9,8 @@ module.exports = class SettingsManager {
 	constructor() {
 		db.defaults({
 			settings: {
-				allowTrackingUsageData: false
+				allowTrackingUsageData: false,
+				topicTreeEnabled: false
 			}
 		}).write();
 	}

@@ -27,8 +27,32 @@ module.exports = class ConfigManager {
 		return connections;
 	}
 
-	set connections(connections) {
+	set connections(connections) { 
 		db.update('connections', (oldConnections) => connections).write();
+	}
+
+	get plugins() {
+		let plugins = db.get('plugins').value();
+		return plugins;
+	}
+
+	set plugins(plugins) {
+		db.update('plugins', (oldPlugins) => plugins).write();
+	}
+
+	updatePluginFromConfiguration(pluginId, plugin) {
+		if (!isObject(plugin)) {
+			throw new Error('Pluin is of invalid type/empty/not provided');
+		}
+
+		const pluginName = pluginId.replace('_', '-');
+
+		const result = db.get('plugins')
+					.find({ name: pluginName })
+					.assign({...plugin})
+					.write();
+
+		return result;
 	}
 
 	getConnection(id) {

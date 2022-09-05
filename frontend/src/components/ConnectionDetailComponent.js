@@ -608,7 +608,7 @@ const ConnectionDetailComponent = (props) => {
 												}}
 											/>
 											<IconButton
-												disabled={!editMode || !tlsFeature?.supported || !updatedConnection[customCACertificateFieldName]}
+												disabled={!tlsFeature?.supported || !updatedConnection[customCACertificateFieldName]}
 												// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
 												style={{backgroundColor: 'transparent'}}
 												className={`${classes.fileDownloadButton}`}
@@ -669,7 +669,7 @@ const ConnectionDetailComponent = (props) => {
 												}}
 											/>
 											<IconButton
-												disabled={!editMode || !tlsFeature?.supported || !updatedConnection[clientCertificateFieldName]}
+												disabled={!tlsFeature?.supported || !updatedConnection[clientCertificateFieldName]}
 												// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
 												style={{backgroundColor: 'transparent'}}
 												className={`${classes.fileDownloadButton}`}
@@ -730,7 +730,7 @@ const ConnectionDetailComponent = (props) => {
 												}}
 											/>
 											<IconButton
-												disabled={!editMode || !tlsFeature?.supported || !updatedConnection[clientPrivateKeyFieldName]}
+												disabled={!tlsFeature?.supported || !updatedConnection[clientPrivateKeyFieldName]}
 												style={{backgroundColor: 'transparent'}}
 												// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
 												className={`${classes.fileDownloadButton}`}

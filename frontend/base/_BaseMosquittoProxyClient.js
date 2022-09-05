@@ -172,6 +172,16 @@ module.exports = class BaseMosquittoProxyClient {
 		});
 	}
 
+	async setPluginStatusAtNextStartup(pluginId, nextStatus) {
+		return this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'setPluginStatusAtNextStartup',
+			pluginId,
+			nextStatus
+		});
+	}
+
 	/**
 	 * ******************************************************************************************
 	 * Methods for user management
@@ -435,6 +445,44 @@ module.exports = class BaseMosquittoProxyClient {
 			}
 		}
 	}
+
+
+
+	/**
+	* ******************************************************************************************
+	* Methods for topic tree management
+	* ******************************************************************************************
+	*/
+
+	async clearTopicTreeCache() {
+		try {
+			const url = `${this._httpEndpointURL}/api/system/topictree`;
+			const response = await axios.delete(url, this._options);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+	
+	async checkTopictreeRestEnabled() {
+		try {
+			const url = `${this._httpEndpointURL}/api/system/topictree/ping`;
+			const response = await axios.get(url, this._options);
+			return response.data?.pong;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
 
 	/**
 	 * ******************************************************************************************

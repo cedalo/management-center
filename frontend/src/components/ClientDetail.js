@@ -43,6 +43,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import qs from 'qs';
 import { useConfirm } from 'material-ui-confirm';
 
+
+
+const PASSWORD_ERROR_MESSAGE = 'Password should not be empty';
+
+
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -117,6 +122,16 @@ const ClientDetail = (props) => {
 	const [showPassword, setShowPassword] = React.useState(false);
 	const [editMode, setEditMode] = React.useState(false);
 	const { enqueueSnackbar } = useSnackbar();
+	const ref = React.useRef();
+	const [passwordError, setPasswordError] = React.useState(null); 
+
+	React.useEffect(() => {
+		if (document.hasFocus() && ref.current.contains(document.activeElement)) {
+			if (!ref.current.value) {
+				setPasswordError(PASSWORD_ERROR_MESSAGE);
+			}
+		}
+	}, []);
 
 	const { client = {}, defaultClient } = props;
 	const [updatedClient, setUpdatedClient] = React.useState({
@@ -129,6 +144,9 @@ const ClientDetail = (props) => {
 	const { client: brokerClient } = context;
 
 	const validate = () => {
+		if (passwordError) {
+			return false;
+		}
 		if (editMode) {
 			return updatedClient.username !== '';
 		} else {
@@ -219,8 +237,7 @@ const ClientDetail = (props) => {
       </Tabs> */}
 				{/* <TabPanel value={value} index={0}> */}
 				<form className={classes.form} noValidate autoComplete="off">
-					<div className={classes.margin}>
-						<Grid container spacing={1} alignItems="flex-end">
+						<Grid container spacing={1} alignItems="flex-end" className={classes.margin}>
 							<Grid item xs={12}>
 								<TextField
 									required={editMode}
@@ -252,18 +269,35 @@ const ClientDetail = (props) => {
 							<Grid item xs={12}>
 								<TextField
 									disabled={!editMode}
-									  onChange={(event) => {
-										  if (editMode) {
+									onChange={(event) => {
+										if (event.target.value) {
+											setPasswordError(null);
+										} else {
+											setPasswordError(PASSWORD_ERROR_MESSAGE);
+										}
+										if (editMode) {
 											setUpdatedClient({
 												...updatedClient,
 												password: event.target.value
 											})
-										  }
-									  }}
+										}
+									}}
 									id="password"
 									label="Password"
+									helperText={passwordError || "You can change the password here, empty password will be ignored"}
+									style={{paddingBottom: '10px'}}
 									value={client.password}
+									error={!!passwordError}
 									// defaultValue="*****"
+									onFocus={() => {
+										if (!updatedClient.password) {
+											setPasswordError(PASSWORD_ERROR_MESSAGE);
+										}
+									}}
+									onBlur={() => {
+										setPasswordError(null);
+									}}
+									inputRef={ref}
 									variant="outlined"
 									fullWidth
 									type={showPassword ? 'text' : 'password'}
@@ -356,7 +390,6 @@ const ClientDetail = (props) => {
 								/>
 							</Grid>
 						</Grid>
-					</div>
 				</form>
 				{/* </TabPanel> */}
 				{/* <TabPanel value={value} index={1}>
