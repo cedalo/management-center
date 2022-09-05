@@ -333,42 +333,45 @@ const init = async (licenseContainer) => {
 		} finally {
 			stopFunctions.push(async () => await brokerClient.disconnect());
 		}
-		brokerClient.subscribe('$SYS/#', (error) => {
-			console.log(`Subscribed to system topics for '${connection.name}'`);
-			if (error) {
-				console.error(error);
-			}
-		});
-		brokerClient.subscribe('#', (error) => {
-			console.log(`Subscribed to all topics for '${connection.name}'`);
-			if (error) {
-				console.error(error);
-			}
-		});
-		brokerClient.subscribe('$CONTROL/dynamic-security/v1/#', (error) => {
-			console.log(`Subscribed to all topics for '${connection.name}'`);
-			if (error) {
-				console.error(error);
-			}
-		});
-		//   });
 
-		brokerClient.on('message', (topic, message, packet) => {
-			if (topic.startsWith('$SYS')) {
-				updateSystemTopics(system, topic, message, packet);
-				sendSystemStatusUpdate(system, brokerClient, connection);
-			} else if (
-				// TODO: change topic
-				topic.startsWith('$CONTROL/dynamic-security/v1/response')
-			) {
-				// TODO: this is already handle by the Mosquitto client
-				console.log('topic');
-				console.log(topic);
-				console.log(message.toString());
-			} else if (topic.startsWith('$CONTROL')) {
-				// Nothing to do
-			}
-		});
+		if (!connectionConfiguration.status.error) {
+			brokerClient.subscribe('$SYS/#', (error) => {
+				console.log(`Subscribed to system topics for '${connection.name}'`);
+				if (error) {
+					console.error(error);
+				}
+			});
+			brokerClient.subscribe('#', (error) => {
+				console.log(`Subscribed to all topics for '${connection.name}'`);
+				if (error) {
+					console.error(error);
+				}
+			});
+			brokerClient.subscribe('$CONTROL/dynamic-security/v1/#', (error) => {
+				console.log(`Subscribed to all topics for '${connection.name}'`);
+				if (error) {
+					console.error(error);
+				}
+			});
+			//   });
+	
+			brokerClient.on('message', (topic, message, packet) => {
+				if (topic.startsWith('$SYS')) {
+					updateSystemTopics(system, topic, message, packet);
+					sendSystemStatusUpdate(system, brokerClient, connection);
+				} else if (
+					// TODO: change topic
+					topic.startsWith('$CONTROL/dynamic-security/v1/response')
+				) {
+					// TODO: this is already handle by the Mosquitto client
+					console.log('topic');
+					console.log(topic);
+					console.log(message.toString());
+				} else if (topic.startsWith('$CONTROL')) {
+					// Nothing to do
+				}
+			});
+		}
 
 		// const proxyClient = new NodeMosquittoProxyClient({
 		// 	name: `Proxy client for "${connection.name}"`,
@@ -395,17 +398,23 @@ const init = async (licenseContainer) => {
 			client.broker.disconnect();
 		}
 		context.brokerManager.handleDeleteBrokerConnection(connection);
+
+		if (!connection.status) {
+			connection.status = {};
+		}
+
 		connection.status.connected = false;
 		connection.status.timestamp = Date.now();
+
 		configManager.updateConnection(connection.id, connection);
 	}
 
 	for (let i = 0; i < connections.length; i++) {
 		if (i < maxBrokerConnections) {
 			const connection = connections[i];
-			const wasNotConnected = connection.status && (connection.status?.connected === false);
-			const wasConnected = !wasNotConnected;
-			if (wasConnected) {
+			const wasConnected = connection.status && connection.status.connected;
+			const hadError = connection.status && connection.status.error;
+			if (wasConnected || hadError || connection.status === undefined) { // Note that we don't connect in case broker was manually disconnected. We connect only in the three cases descirbed in if
 				handleConnectServerToBroker(connections[i]);
 			}
 		}
