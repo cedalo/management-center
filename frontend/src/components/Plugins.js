@@ -225,7 +225,7 @@ const Plugins = (props) => {
 									rowsPerPage={rowsPerPage}
 									page={page}
 									onChangePage={handleChangePage}
-									// onChangeRowsPerPage={handleChangeRowsPerPage}
+									onChangeRowsPerPage={handleChangeRowsPerPage}
 								/>
 							</TableRow>
 						</TableFooter>
