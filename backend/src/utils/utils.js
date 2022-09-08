@@ -23,6 +23,19 @@ const loadInstallation = () => {
 	return installation;
 }
 
+
+const reverseMap = (map) => {
+	const reversedMap = new Map();
+
+	for (const [key, value] of map) {
+		reversedMap.set(value, key);
+	}
+
+	return reversedMap;
+};
+
+
 module.exports = {
-	loadInstallation
+	loadInstallation,
+	reverseMap
 };
