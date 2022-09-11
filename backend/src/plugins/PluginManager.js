@@ -1,16 +1,32 @@
 const path = require('path');
 
 const PLUGIN_DIR = process.env.CEDALO_MC_PLUGIN_DIR;
+const LOGIN_PLUGIN_FEATURE_IDS = ['azure-ad-sso', 'cluster-management'];
+
 
 module.exports = class PluginManager {
 	constructor() {
 		this._plugins = [];
 	}
 
+	_enabledCustomLoginPlugin() {
+		for (const plugin of this._plugins) {
+			if (plugin._status.type !== 'error') {
+				if (LOGIN_PLUGIN_FEATURE_IDS.includes(plugin.meta.featureId)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+
 	_loadOSPlugins(context) {
 		// TODO: support multiple plugins
 		if (process.env.CEDALO_MC_DISABLE_LOGIN !== 'true') {
-			this._loadLoginPlugin(context);
+			if (!this._enabledCustomLoginPlugin()) {
+				this._loadLoginPlugin(context);
+			}
 			this._loadConnectDisconnectPlugin(context);
 			this._loadUserProfilePlugin(context);
 		}
@@ -68,6 +84,7 @@ module.exports = class PluginManager {
 
 					const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
 					const plugin = new Plugin({enableAtNextStartup});
+					const  NAME = plugin.meta.featureId
 					if (
 						licenseContainer.license.features &&
 						licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
