@@ -1,7 +1,7 @@
 const path = require('path');
 
 const PLUGIN_DIR = process.env.CEDALO_MC_PLUGIN_DIR;
-const LOGIN_PLUGIN_FEATURE_IDS = ['azure-ad-sso', 'cluster-management'];
+const LOGIN_PLUGIN_FEATURE_IDS = ['azure-ad-sso', /*'cluster-management'*/];
 
 
 module.exports = class PluginManager {
@@ -24,11 +24,12 @@ module.exports = class PluginManager {
 	_loadOSPlugins(context) {
 		// TODO: support multiple plugins
 		if (process.env.CEDALO_MC_DISABLE_LOGIN !== 'true') {
+			this._loadUserProfilePlugin(context);
+			this._loadConnectDisconnectPlugin(context);
+
 			if (!this._enabledCustomLoginPlugin()) {
 				this._loadLoginPlugin(context);
 			}
-			this._loadConnectDisconnectPlugin(context);
-			this._loadUserProfilePlugin(context);
 		}
 	}
 
@@ -52,31 +53,38 @@ module.exports = class PluginManager {
 
 	_loadPlugin(plugin, context) {
 		try {
-			plugin.init(context);
-			plugin.load(context);
-			plugin.setLoaded();
-			this._plugins.push(plugin);
-			console.log(`Loaded plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
+			this._plugins.unshift(plugin);
 		} catch (error) {
-			console.error(`Failed loading plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
-			console.error(error);
-			this._plugins.push(plugin);
+			plugin.setErrored(`Failed loading plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
+			this._plugins.unshift(plugin);
 		}
 	}
+
+
+	_sortPluginList(pluginConfigurations) {
+		// load user management as a first plugin since we redefine isAdmin and alike functions there
+		// also load application-tokens first as it redefines isLoggedIn function
+		// azure-ad-sso redefines the whole login
+		const PLUGINS_OF_HIGHEST_PRIORITY = ['azure-ad-sso', 'application-tokens', 'user-management'];
+
+		for (const pluginName of PLUGINS_OF_HIGHEST_PRIORITY) {
+			const pluginIndex = pluginConfigurations.findIndex((el) => {
+				return el.name === pluginName;
+			});
+			if (pluginIndex !== -1) {
+				const plugin = pluginConfigurations[pluginIndex];
+				pluginConfigurations.splice(pluginIndex, 1);
+				pluginConfigurations.unshift(plugin);
+			}
+		}
+	}
+
 
 	init(pluginConfigurations = [], context, swaggerDocument) {
 		this._context = context;
 		const { licenseContainer } = context;
 		if (licenseContainer.license.isValid && PLUGIN_DIR) {
-			const userManagementPluginIndex = pluginConfigurations.findIndex((el) => {
-				return el.name === 'user-management';
-			});
-			if (userManagementPluginIndex !== -1) {
-				const userManagementPlugin = pluginConfigurations[userManagementPluginIndex];
-				pluginConfigurations.splice(userManagementPluginIndex, 1);
-				pluginConfigurations.unshift(userManagementPlugin);
-			}
-
+			this._sortPluginList(pluginConfigurations);
 
 			pluginConfigurations.forEach((pluginConfiguration) => {
 				try {
@@ -84,7 +92,6 @@ module.exports = class PluginManager {
 
 					const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
 					const plugin = new Plugin({enableAtNextStartup});
-					const  NAME = plugin.meta.featureId
 					if (
 						licenseContainer.license.features &&
 						licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
@@ -104,7 +111,6 @@ module.exports = class PluginManager {
 				} catch (error) {
 					console.error(`Failed loading plugin: "${pluginConfiguration.name}"`);
 					console.error(error);
-					// plugin.setErrored();
 				}
 			});
 		} else if (licenseContainer.license.isValid && !PLUGIN_DIR) {
