@@ -5,6 +5,7 @@ const LocalStrategy = require('passport-local').Strategy;
 
 const BasePlugin = require('../../BasePlugin');
 const meta = require('./meta');
+const swagger = require('./swagger')
 
 const USERNAME = process.env.CEDALO_MC_USERNAME || 'cedalo';
 const PASSWORD = process.env.CEDALO_MC_PASSWORD || 'secret';
@@ -14,6 +15,7 @@ module.exports = class Plugin extends BasePlugin {
 	constructor() {
 		super();
 		this._meta = meta;
+		this._swagger = swagger;
 	}
 
 	init(context) {

@@ -14,6 +14,8 @@ const API_STREAMS_PROCESSING = 'stream-processing';
 const API_HIGH_AVAILABILITY = 'cedalo/ha';
 const ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED = 'You are not authorized to access the user management.';
 const ERROR_MESSAGE_API_NOT_FOUND = 'API not found. Note that this is a premium feature.';
+const NOT_AUTHORIZED_MESSAGE = 'Not authorized';
+
 
 class APIError extends Error {
 	constructor(title, message) {
@@ -24,8 +26,8 @@ class APIError extends Error {
 }
 
 class NotAuthorizedError extends APIError {
-	constructor() {
-		super('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+	constructor(error_message) {
+		super('Not authorized', error_message || ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
 		this.name = 'NotAuthorizedError';
 	}
 }
@@ -59,7 +61,10 @@ const createID = () => uuid();
 
 
 module.exports = class BaseMosquittoProxyClient {
-	constructor({ name, logger, defaultListener } = {}, { socketEndpointURL, httpEndpointURL } = {}, headers=undefined) {
+	constructor({ name, logger, defaultListener } = {}, { socketEndpointURL, httpEndpointURL } = {}, headers=undefined, version=undefined) {
+		if (!version) {
+			version = 1;
+		}
 		this.name = name || 'Default Base Mosquitto Proxy Client';
 		this._logger = logger || {
 			log() { },
@@ -68,7 +73,8 @@ module.exports = class BaseMosquittoProxyClient {
 			debug() { },
 			error() { }
 		};
-		this._headers = headers ? { headers } : undefined;
+		const acceptHeader = {'Accept': `application/json;version=${version}`};
+		this._headers = headers ? { headers: {...acceptHeader,  ...headers} } :  { headers: acceptHeader };
 		this._socketEndpointURL = socketEndpointURL;
 		this._httpEndpointURL = httpEndpointURL;
 		this._eventHandler = (event) => this.logger.info(event);
@@ -416,6 +422,13 @@ module.exports = class BaseMosquittoProxyClient {
 	}
 
 
+	/**
+	 * ******************************************************************************************
+	 * Methods for TLS plugin
+	 * ******************************************************************************************
+	 */
+
+
 	async checkTLSEnabled() {
 		try {
 			const url = `${this._httpEndpointURL}/api/tls/ping`;
@@ -425,11 +438,18 @@ module.exports = class BaseMosquittoProxyClient {
 			if (error?.response?.status === 404) {
 				throw new APINotFoundError();
 			} else {
-				throw new NotAuthorizedError();
+				throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
 			}
 		}
 	}
 
+
+
+	/**
+	 * ******************************************************************************************
+	 * Methods for connections
+	 * ******************************************************************************************
+	 */
 
 
 	async getConnections() {
@@ -441,7 +461,81 @@ module.exports = class BaseMosquittoProxyClient {
 			if (error?.response?.status === 404) {
 				throw new APINotFoundError();
 			} else {
-				throw new NotAuthorizedError();
+				throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
+			}
+		}
+	}
+
+
+
+	/**
+	 * ******************************************************************************************
+	 * Methods for application token management
+	 * ******************************************************************************************
+	 */
+
+
+	 async listApplicationTokens() {
+		try {
+			const url = `${this._httpEndpointURL}/api/tokens`;
+			const response = await axios.get(url, this._headers);
+			console.log('TOOOOKENS:::', response.data)
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
+			}
+		}
+	}
+
+
+	async getApplicationToken(tokenHash) {
+		try {
+			const url = `${this._httpEndpointURL}/api/tokens/${tokenHash}`;
+			const response = await axios.get(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
+			}
+		}
+	}
+
+
+	async createApplicationToken(name, role, validUntil) {
+		try {
+			const tokenPayload = {
+				name,
+				role,
+				validUntil,
+			};
+			const url = `${this._httpEndpointURL}/api/tokens`;
+			const response = await axios.post(url, tokenPayload, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
+			}
+		}
+	}
+
+
+	async deleteApplicationToken(tokenHash) {
+		try {
+			const url = `${this._httpEndpointURL}/api/tokens/${tokenHash}`;
+			const response = await axios.delete(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
 			}
 		}
 	}

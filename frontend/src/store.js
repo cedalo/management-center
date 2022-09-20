@@ -16,6 +16,7 @@ import settingsReducer from './reducers/settingsReducer';
 import webSocketConnectionsReducer from './reducers/webSocketConnectionsReducer';
 import brokerLicenseReducer from './reducers/brokerLicenseReducer';
 import testsReducer from './reducers/testsReducer';
+import applicationTokensReducer from './reducers/applicationTokensReducer';
 
 import userGroupsReducer from './admin/users/reducers/userGroupsReducer';
 import userRolesReducer from './admin/users/reducers/userRolesReducer';
@@ -47,6 +48,7 @@ const store = createStore(
 		inspectClients: inspectClientsReducer,
 		brokerLicense: brokerLicenseReducer,
 		tests: testsReducer,
+		tokens: applicationTokensReducer,
 		// bridges: bridgesReducer
 	})
 );

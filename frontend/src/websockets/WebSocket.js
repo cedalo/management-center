@@ -27,7 +27,8 @@ import {
 	updateUserProfile,
 	updateBrokerLicenseInformation,
 	updateTests,
-	updateTestCollections
+	updateTestCollections,
+	updateApplicationTokens
 } from '../actions/actions';
 
 import {
@@ -139,6 +140,24 @@ const init = async (client, dispatch, connectionConfiguration) => {
 
 
 	try {
+		const tokens = await client.listApplicationTokens();
+		console.log('TOKEEEENS:::>>>>>>>>>>>>>>>', tokens)
+		dispatch(updateApplicationTokens(tokens));
+		dispatch(updateFeatures({
+			feature: 'applicationtokens',
+			status: 'ok'
+		}));
+	} catch (error) {
+		console.log('Application tokens failed:>>>>>>>>>>>>>', error);
+		dispatch(updateFeatures({
+			feature: 'applicationtokens',
+			status: 'failed',
+			error
+		}));
+	}
+
+
+	try {
 		const isEnabled = await client.checkTopictreeRestEnabled();
 		if (isEnabled) {
 			dispatch(updateFeatures({
@@ -146,7 +165,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 				status: 'ok'
 			}));
 		} else {
-			console.log('TOPICTREE FEATURE FAILED!!!2: ', error)
+			console.log('Topic tree REST is disabled');
 			dispatch(updateFeatures({
 				feature: 'topictreerest',
 				status: {message: "BaseMosquittoProxyClient: Timeout", status: 'failed'},
@@ -154,7 +173,6 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			}));
 		}
 	} catch(error) {
-		console.log('TOPICTREE FEATURE FAILED!!!: ', error)
 		dispatch(updateFeatures({
 			feature: 'topictreerest',
 			status: 'failed',

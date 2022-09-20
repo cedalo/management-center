@@ -28,6 +28,7 @@ import EqualizerIcon from '@material-ui/icons/Equalizer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StreamsheetsIcon from '@material-ui/icons/GridOn';
 import StreamsIcon from '@material-ui/icons/Timeline';
+import SecurityIcon from '@material-ui/icons/Security';
 
 const drawerWidth = 240;
 
@@ -132,7 +133,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const CustomDrawer = ({ userProfile = {}, userManagementFeature, dynamicSecurityFeature, hideConnections, open, handleDrawerOpen, handleDrawerClose }) => {
+const CustomDrawer = ({ userProfile = {}, userManagementFeature, applicationTokensFeature, dynamicSecurityFeature, hideConnections, open, handleDrawerOpen, handleDrawerClose }) => {
 
 	const classes = useStyles();
 	const theme = useTheme();
@@ -283,6 +284,12 @@ icon={<SettingsIcon />}
 					to="/admin/users"
 					primary="User Management"
 					icon={<UsersIcon fontSize="small" />}
+				/> : null}
+				{userProfile?.isAdmin ? <ListItemLink
+					classes={classes}
+					to="/admin/tokens"
+					primary="App Tokens"
+					icon={<SecurityIcon fontSize="small" />}
 				/> : null}
 				{/* {clusterManagementAccess(clusterManagementFeature) ? <ListItemLink
 					classes={classes}
