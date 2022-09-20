@@ -6,7 +6,7 @@ const { isObject } = require('util');
 const { URL } = require('url');
 
 
-const DOCKER_ENV = process.env.CEDALO_DOCKER_ENV;
+const DOCKER_ENV = process.env.CEDALO_DOCKER_ENV; // 
 const configFile = process.env.CEDALO_MC_PROXY_CONFIG || path.join(process.env.CEDALO_MC_PROXY_CONFIG_DIR || __dirname, 'config.json');
 const adapter = new FileSync(configFile);
 const db = low(adapter);
@@ -32,8 +32,8 @@ module.exports = class ConfigManager {
 		// construct objects from env vars
 		this.dockerEnv = DOCKER_ENV;
 		if (this.dockerEnv) {
-			this.externalHostnamesMap = dockerEnvStringToMap(this.dockerEnv);
-			this.internalHostnamesMap = reverseMap(this.externalHostnamesMap);
+			this.toExternalHostnamesMap = dockerEnvStringToMap(this.dockerEnv); // map docker servicename to an actual external server url
+			this.toInternalHostnamesMap = reverseMap(this.toExternalHostnamesMap); // map external server url to docker servicenames
 		}
 	}
 
@@ -96,8 +96,8 @@ module.exports = class ConfigManager {
 
 	processInternalExternalURLs(connection) {
 		const hostname = new URL(connection.url).hostname;
-		const internalHostname = this.internalHostnamesMap.get(hostname) || hostname;
-		const externalHostname = this.externalHostnamesMap.get(hostname) || hostname;
+		const internalHostname = this.toInternalHostnamesMap.get(hostname) || hostname;
+		const externalHostname = this.toExternalHostnamesMap.get(hostname) || hostname;
 
 		const internalURL = connection.url.replace(hostname, internalHostname);
 		const externalURL = connection.url.replace(hostname, externalHostname);
