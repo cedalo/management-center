@@ -133,6 +133,8 @@ const CustomRow = (props) => {
 
 	const externalURLExists = (brokerConnection.externalUrl !== brokerConnection.url);
 	const makeCollapsible = externalURLExists || brokerConnection.ca || brokerConnection.cert || brokerConnection.key;
+	const numberOfAdditionalFields = !!externalURLExists + !!brokerConnection.ca + !!brokerConnection.cert + !!brokerConnection.key;
+	const columnSize = (numberOfAdditionalFields === 1) ? 12 : 6;
 
 	return <>
 		<StyledTableRow
@@ -189,25 +191,25 @@ const CustomRow = (props) => {
 					<Box margin={1} style={{marginTop: '16px'}} align="center">
 						{/* {brokerConnection.externalUrl ? <Typography>Internal URL: {brokerConnection.url}</Typography> : null} */}
 						<Grid container spacing={2} alignItems="flex-end">
-							{externalURLExists ? <Grid item xs={6} align="center">
+							{externalURLExists ? <Grid item xs={columnSize} align="center">
 																<Typography style={{fontSize: 'small'}}>
 																	<span style={{fontWeight: 'bold'}}>Internal URL: </span>{brokerConnection.url}
 																</Typography>
 															</Grid>
 							: null}
-							{brokerConnection.ca ? <Grid item xs={6} align="center">
+							{brokerConnection.ca ? <Grid item xs={columnSize} align="center">
 														<Typography style={{fontSize: 'small'}}>
 															<span style={{fontWeight: 'bold'}}>CA Cert File: </span>{brokerConnection.caFile}
 														</Typography>
 													</Grid>
 							: null}
-							{brokerConnection.cert ? <Grid item md={6} align="center">
+							{brokerConnection.cert ? <Grid item md={columnSize} align="center">
 														<Typography style={{fontSize: 'small'}}>
 															<span style={{fontWeight: 'bold'}}>Client Cert File: </span>{brokerConnection.certFile}
 														</Typography>
 													</Grid>
 							: null}
-							{brokerConnection.key ? <Grid item md={6} align="center">
+							{brokerConnection.key ? <Grid item md={columnSize} align="center">
 														<Typography style={{fontSize: 'small'}}>
 															<span style={{fontWeight: 'bold'}}>Private Key File: </span>{brokerConnection.keyFile}
 														</Typography>
