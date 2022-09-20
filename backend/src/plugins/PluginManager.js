@@ -1,7 +1,7 @@
 const path = require('path');
 
 const PLUGIN_DIR = process.env.CEDALO_MC_PLUGIN_DIR;
-const LOGIN_PLUGIN_FEATURE_IDS = ['azure-ad-sso', /*'cluster-management'*/];
+const LOGIN_PLUGIN_FEATURE_IDS = ['azure-ad-sso', 'security'];
 
 
 module.exports = class PluginManager {
