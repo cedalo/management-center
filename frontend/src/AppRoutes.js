@@ -49,6 +49,7 @@ import DefaultACLAccess from './components/DefaultACLAccess';
 import TestEdit from './components/TestEdit';
 import TestCollections from './components/TestCollections';
 import TestCollectionDetail from './components/TestCollectionDetail';
+import ApplicationTokens from './components/ApplicationTokens';
 
 const useStyles = makeStyles((theme) => ({
 	
@@ -164,6 +165,9 @@ function AppRoutes(props) {
 					<SortableTablePage Component={UserGroups} />
 				</Route>}
 
+				{userProfile?.isAdmin && <Route path="/admin/tokens">
+					<ApplicationTokens />
+				</Route>}
 
 				<Route path="/admin/users/new">
 					<UserNew />

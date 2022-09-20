@@ -256,3 +256,11 @@ export function updateTestCollections(update) {
 		update
 	};
 }
+
+
+export function updateApplicationTokens(update) {
+	return {
+		type: ActionTypes.UPDATE_APPLICATION_TOKENS,
+		update
+	};
+}
