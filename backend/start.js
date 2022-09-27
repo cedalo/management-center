@@ -330,6 +330,7 @@ const init = async (licenseContainer) => {
 				timestamp: Date.now(),
 				error: error
 			};
+
 			sendConnectionsUpdate(brokerClient);
 		} finally {
 			stopFunctions.push(async () => await brokerClient.disconnect());
@@ -586,16 +587,30 @@ const init = async (licenseContainer) => {
 					});
           
           			const filteredConnection = configManager.filterConnectionObject(connection);
-          
+
+					// try {
 					await testClient.connect({
 						mqttEndpointURL: filteredConnection.url,
 						options: createOptions(filteredConnection)
 					});
 					await testClient.disconnect();
+					// } catch(error) {
+					// 	console.error(error);
+
+					// 	connection.status = {
+					// 		connected: false,
+					// 		timestamp: Date.now(),
+					// 		error: error
+					// 	};
+					// 	configManager.updateConnection(connection.id, connection);
+					// 	sendConnectionsUpdate(testClient);
+
+					// 	throw error;
+					// }
 
 					return {
 						connected: true
-					}
+					};
 				} else {
 					throw new NotAuthorizedError();
 				}
