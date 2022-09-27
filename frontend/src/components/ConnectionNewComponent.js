@@ -148,7 +148,7 @@ const makeFileField = (fieldName) => {
 }
 
 
-const ConnectionNewComponent = ({ connections, tlsFeature }) => {
+const ConnectionNewComponent = ({ connections, tlsFeature, handleCloseDialog }) => {
 	const [errors, setErrors] = React.useState({});
 
 
@@ -285,6 +285,11 @@ const ConnectionNewComponent = ({ connections, tlsFeature }) => {
 				variant: 'contained'
 			}
 		});
+
+		if (handleCloseDialog) {
+			handleCloseDialog();
+			return;
+		}
 		history.goBack();
 	};
 
