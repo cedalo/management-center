@@ -35,7 +35,56 @@ const reverseMap = (map) => {
 };
 
 
+
+
+
+
+
+const getCircularReplacer = () => {
+    const seen = new WeakMap();
+    return (key, property) => {
+        if (typeof property !== 'object' || property === null) {
+            return property;	
+        } else if (seen.has(property)) {
+            return `[Circular of ${seen.get(property)}]`;
+        } else {
+            seen.set(property, key);
+            return property;
+        }
+    }
+}
+
+const iterateObject = (key, object, processor) => {
+    if (typeof object !== 'object' || object === null) {
+        return object;
+    }
+
+    object = processor(key, object);
+
+    for (const key in object) {
+        if (!object.hasOwnProperty(key)) {
+            continue;
+        }
+        object[key] = iterateObject(key, object[key], processor);
+    }
+
+    return object;
+}
+
+
+const removeCircular = (object) => {
+    const circularReplacer = getCircularReplacer();
+
+    object = iterateObject('root', object, circularReplacer);
+
+    return object;
+}
+
+
+
+
 module.exports = {
 	loadInstallation,
-	reverseMap
+	reverseMap,
+	removeCircular,
 };
