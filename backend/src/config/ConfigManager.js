@@ -1,9 +1,10 @@
 const path = require('path');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
-const { reverseMap } = require('../utils/utils');
+const { reverseMap, removeCircular } = require('../utils/utils');
 const { isObject } = require('util');
 const { URL } = require('url');
+const { createConnection } = require('net');
 
 
 const DOCKER_ENV = process.env.CEDALO_DOCKER_ENV; // 
@@ -41,8 +42,12 @@ module.exports = class ConfigManager {
 		return db.value();
 	}
 
+	getAllConnections() {
+		return db.get('connections').value();
+	}
+
 	get connections() {
-		let connections = db.get('connections').value();
+		let connections = this.getAllConnections();
 		if (connections.length > this._maxBrokerConnections) {
 			connections = connections.slice(0, this._maxBrokerConnections);
 		}
@@ -109,40 +114,24 @@ module.exports = class ConfigManager {
 		};
 	}
 
-	createConnection(connection) {
-		if (!isObject(connection) || (isObject(connection) && (Object.keys(connection).length === 0))) {
-			throw new Error('Connection is of invalid type/empty/not provided');
-		}
 
-		const connections = db.get('connections').value();
-		connections.forEach((el) => {
-			if (el.name === connection.name || el.id === connection.id) {
-				throw new Error('Connection with the same name/id already exists');
-			}
-		});
-
-		let connectionToSave = this.filterConnectionObject(connection);
-		if (this.dockerEnv) {
-			connectionToSave = this.processInternalExternalURLs(connectionToSave);
-		}
-
-		if (db.get('connections').value().length >= this._maxBrokerConnections) {
-			throw new Error('Max broker connections reached');
-		}
-		db.get('connections')
-			.push(connectionToSave)
-			.write();
-	}
-
-	updateConnection(oldConnectionId, connection) {
+	preprocessConnection(connection) {
 		if (!isObject(connection)) {
 			throw new Error('Connection is of invalid type/empty/not provided');
 		}
+		connection = removeCircular(connection);
 
 		let newConnection = this.filterConnectionObject(connection);
 		if (newConnection.url && this.dockerEnv) {
 			newConnection = this.processInternalExternalURLs(newConnection);
 		}
+
+		return newConnection;
+	}
+
+
+	updateConnection(oldConnectionId, connection) {
+		const newConnection = this.preprocessConnection(connection);
 
 		const result = db.get('connections')
 			.find({ id: oldConnectionId })
@@ -151,18 +140,16 @@ module.exports = class ConfigManager {
 		return result;
 	}
 
-	// updateConnection(oldConnectionId, connection) {
-	// 	const a =  {...connection};
-	// 	// if (!connection)
-	// 	// 	return;
-	// 	const b = db.get('connections').find({ id: oldConnectionId });
 
-	// 	const result = db.get('connections')
-	// 		.find({ id: oldConnectionId })
-	// 		.assign({...connection})
-	// 		.write();
-	// 	return result;
-	// }
+
+	createConnection(connection) {
+		const newConnection = this.preprocessConnection(connection);
+
+		db.get('connections')
+			.push(newConnection)
+			.write();
+	}
+
 
 	deleteConnection(id) {
 		db.get('connections')
