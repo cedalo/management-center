@@ -1,7 +1,8 @@
 const path = require('path');
 
 const PLUGIN_DIR = process.env.CEDALO_MC_PLUGIN_DIR;
-const LOGIN_PLUGIN_FEATURE_IDS = ['azure-ad-sso', /*'security'*/];
+const LOGIN_PLUGIN_FEATURE_IDS = ['saml-sso', 'security'];
+const OS_PLUGINS_IDS = ['cedalo_login', 'cedalo_user_profile', 'cedalo_connect_disconnect'];
 
 
 module.exports = class PluginManager {
@@ -24,12 +25,12 @@ module.exports = class PluginManager {
 	_loadOSPlugins(context) {
 		// TODO: support multiple plugins
 		if (process.env.CEDALO_MC_DISABLE_LOGIN !== 'true') {
-			this._loadUserProfilePlugin(context);
-			this._loadConnectDisconnectPlugin(context);
-
 			if (!this._enabledCustomLoginPlugin()) {
 				this._loadLoginPlugin(context);
 			}
+
+			this._loadUserProfilePlugin(context);
+			this._loadConnectDisconnectPlugin(context);
 		}
 	}
 
@@ -61,20 +62,20 @@ module.exports = class PluginManager {
 	}
 
 
-	_sortPluginList(pluginConfigurations) {
+	_sortPluginList(plugins) {
 		// load user management as a first plugin since we redefine isAdmin and alike functions there
 		// also load application-tokens first as it redefines isLoggedIn function
-		// azure-ad-sso redefines the whole login
-		const PLUGINS_OF_HIGHEST_PRIORITY = ['azure-ad-sso', 'application-tokens', 'user-management'];
+		// saml-sso redefines the whole login
+		const PLUGIN_IDS_OF_HIGHEST_PRIORITY = ['saml_sso', ...OS_PLUGINS_IDS, 'application_tokens', 'user_management'];
 
-		for (const pluginName of PLUGINS_OF_HIGHEST_PRIORITY) {
-			const pluginIndex = pluginConfigurations.findIndex((el) => {
-				return el.name === pluginName;
+		for (const pluginId of PLUGIN_IDS_OF_HIGHEST_PRIORITY.reverse()) {
+			const pluginIndex = plugins.findIndex((el) => {
+				return el._meta.id === pluginId;
 			});
 			if (pluginIndex !== -1) {
-				const plugin = pluginConfigurations[pluginIndex];
-				pluginConfigurations.splice(pluginIndex, 1);
-				pluginConfigurations.unshift(plugin);
+				const plugin = plugins[pluginIndex];
+				plugins.splice(pluginIndex, 1);
+				plugins.unshift(plugin);
 			}
 		}
 	}
@@ -84,17 +85,16 @@ module.exports = class PluginManager {
 		this._context = context;
 		const { licenseContainer } = context;
 		if (licenseContainer.license.isValid && PLUGIN_DIR) {
-			this._sortPluginList(pluginConfigurations);
-
 			pluginConfigurations.forEach((pluginConfiguration) => {
 				try {
 					const enableAtNextStartup = (pluginConfiguration.enableAtNextStartup !== undefined) ? pluginConfiguration.enableAtNextStartup : true;
 
 					const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
 					const plugin = new Plugin({enableAtNextStartup});
-					if (
+					if (plugin.meta.featureId === 'saml-sso' || plugin.meta.featureId === 'application-tokens' || (
 						licenseContainer.license.features &&
 						licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
+					)
 					) {
 						if (!enableAtNextStartup) {
 							console.log(`Plugin not loaded: Plugin set to be disabled at current startup: "${pluginConfiguration.name}"`)
@@ -126,6 +126,8 @@ module.exports = class PluginManager {
 		});
 
 		this._loadOSPlugins(context);
+
+		this._sortPluginList(this._plugins);
 
 		this._plugins.forEach(plugin => {
 			try {

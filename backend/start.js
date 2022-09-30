@@ -59,6 +59,14 @@ let context = {
 	}
 };
 
+
+const noCache = (req, res, next) => {
+	res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+	res.header('Expires', '-1');
+	res.header('Pragma', 'no-cache');
+	next();
+};
+
 const deletePendingRequest = (requestId, requests) => {
 	const request = requests.get(requestId);
 	if (request) {
@@ -236,6 +244,7 @@ const init = async (licenseContainer) => {
 	app.use(express.urlencoded({ extended: true }));
 	app.use(cors());
 	app.use(contentTypeParser);
+	app.use(noCache);
 
 	const server = http.createServer(app);
 

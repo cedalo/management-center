@@ -117,7 +117,17 @@ const USER_TABLE_COLUMNS = [
 ];
 
 
-const getDateString = (date) => {
+const stringToDate = (dateString) => { // ISO 8601 format date string
+	return new Date(new Date(dateString).getTime() + (new Date().getTimezoneOffset() * 60 * 1000)); 
+};
+
+
+const formatDateToHumanReadable = (date) => {
+	return getDateString(date, ' ') + ':' + (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
+};
+
+
+const getDateString = (date) => { // convert to ISO 8601 format date string without seconds portion
 	return date.getFullYear() + '-'
 			+ ((date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)) + '-'
 			+ (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + 'T'
@@ -128,7 +138,7 @@ const getDateString = (date) => {
 
 const shortenTokenName = (tokenName) => {
 	return tokenName && ((tokenName.length > 30) ? tokenName.substring(0, 30) + '...' : tokenName);
-}
+};
 
 
 const isEmptyObject = (object) => {
@@ -164,7 +174,7 @@ const createNewTokenDialog = (dialogOpen, handleDialogClose, client, userRoles, 
 	const [loading, setLoading] = React.useState(false);
 	const [createdToken, setCreatedToken] = React.useState({});
 	const [tokenCopied, setTokenCopied] = React.useState(false);
-	const [copyFieldBackgroundColor, setCopyFieldBackgroundColor] = React.useState('grey');
+	const [copyFieldBackgroundColor, setCopyFieldBackgroundColor] = React.useState('#ababab');
 	const [copyFieldFontColor, setCopyFieldFontColor] = React.useState(null);
 	const [validUntilError, setValidUntilError] = React.useState(null);
 	const [tokenNameError, setTokenNameError] = React.useState(null);
@@ -484,13 +494,13 @@ const createUserTable = (tokens, classes, props, onDeleteToken) => {
 				<TableContainer component={Paper} className={classes.tableContainer}>
 					<Table size="medium">
 						<colgroup>
-							<col key={1} style={{width:'17.5%'}}/>
+							<col key={1} style={{width:'15.5%'}}/>
 							<col key={2} style={{width:'10%'}}/>
 							<col key={3} style={{width:'12%'}}/>
-							<col key={4} style={{width:'17%'}}/>
-							<col key={5} style={{width:'17%'}}/>
-							<col key={6} style={{width:'17%'}}/>
-							<col key={7} style={{width:'10.5%'}}/>
+							<col key={4} style={{width:'18%'}}/>
+							<col key={5} style={{width:'18%'}}/>
+							<col key={6} style={{width:'18%'}}/>
+							<col key={7} style={{width:'9.5%'}}/>
 						</colgroup>
 						<TableHead>
 							<TableRow>
@@ -536,15 +546,20 @@ const createUserTable = (tokens, classes, props, onDeleteToken) => {
                                         </TableCell>
 										<TableCell>{token.role}</TableCell>
                                         <TableCell>
-                                            <Tooltip title={token.requestedBy}>
-                                                <>
-                                                    {(token.requestedBy.length > 18) ? token.requestedBy.substring(0, 20) + '...' : token.requestedBy}
-                                                </>
-                                            </Tooltip>
+											{(token.requestedBy.length > 18) ?
+												<Tooltip title={token.requestedBy}>
+													<div>
+														{token.requestedBy.substring(0, 20) + '...'}
+													</div>
+												</Tooltip> :
+												<>
+													{token.requestedBy}
+												</>
+											}
                                         </TableCell>
-                                        <TableCell>{token.issueDate ? new Date(token.issueDate).toLocaleString() : ''}</TableCell>
-                                        <TableCell>{token.validUntil ? new Date(token.validUntil).toLocaleString() : ''}</TableCell>
-                                        <TableCell>{token.lastUsed ? new Date(token.lastUsed).toLocaleString() : ''}</TableCell>
+                                        <TableCell>{token.issueDate ? formatDateToHumanReadable(stringToDate(token.issueDate)) : ''}</TableCell>
+                                        <TableCell>{token.validUntil ? formatDateToHumanReadable(stringToDate(token.validUntil)) : ''}</TableCell>
+                                        <TableCell>{token.lastUsed ? formatDateToHumanReadable(stringToDate(token.lastUsed)) : ''}</TableCell>
 										<TableCell className={classes.badges}>
                                             <Tooltip title={token.hash}>
                                                 <TextField
@@ -577,7 +592,7 @@ const createUserTable = (tokens, classes, props, onDeleteToken) => {
 										
 
 										<TableCell align="center">
-										{token.validUntil && (new Date(token.validUntil)) > (new Date()) ?
+										{token.validUntil && (stringToDate(token.validUntil)) > (new Date()) ?
 											<Tooltip title={"Token is valid"}>
 											 	<EnabledIcon fontSize="small" style={{ color: green[500] }} />
 										 	</Tooltip>
