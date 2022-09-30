@@ -83,25 +83,11 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		dispatch(updateUserRoles(userRoles));
 		const users = await client.listUsers();
 
-
 		if (!Array.isArray(users)) {
-			console.log('THROWING ERROR')
 			throw {name: 'NotAuthorizedError', message: 'Usermanagement is not accessible'}
 		} 
 		
 		dispatch(updateUsers(users));
-		// try {
-		// 	if (userProfile && !userProfile.isAdmin) {
-		// 	}
-		// 	else{
-		// 		const userGroups = await client.listUserGroups();
-		// 		dispatch(updateUserGroups(userGroups));
-		// 	}
-		// } catch(error) {
-		// 	console.error('Error while loading user groups');
-		// 	console.error(error);
-		// 	throw error;
-		// }
 		
 		dispatch(updateFeatures({
 			feature: 'usermanagement',
@@ -120,7 +106,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		dispatch(updateTestCollections(testCollections));
 	} catch (error) {
 		// TODO: handle error
-		console.log(error);
+		console.log('Test collections:', error);
 	}
 
 	try {
@@ -141,14 +127,12 @@ const init = async (client, dispatch, connectionConfiguration) => {
 
 	try {
 		const tokens = await client.listApplicationTokens();
-		console.log('TOKEEEENS:::>>>>>>>>>>>>>>>', tokens)
 		dispatch(updateApplicationTokens(tokens));
 		dispatch(updateFeatures({
 			feature: 'applicationtokens',
 			status: 'ok'
 		}));
 	} catch (error) {
-		console.log('Application tokens failed:>>>>>>>>>>>>>', error);
 		dispatch(updateFeatures({
 			feature: 'applicationtokens',
 			status: 'failed',
@@ -196,10 +180,6 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		  	}));
 		}
 	} catch (error) {
-		// dispatch(updateFeatures({
-		// 	feature: 'tls',
-		// 	status: 'ok'
-		// }));
 		dispatch(updateFeatures({
 		  	feature: 'tls',
 		  	status: {message: ERROR_MESSAGE, satatus: 'failed'},
