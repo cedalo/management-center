@@ -33,6 +33,7 @@ const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
+const CEDALO_MC_ENABLE_FULL_LOG = !!process.env.CEDALO_MC_ENABLE_FULL_LOG;
 
 const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
@@ -338,6 +339,7 @@ const init = async (licenseContainer) => {
 				timestamp: Date.now(),
 				error: error
 			};
+
 			sendConnectionsUpdate(brokerClient);
 		} finally {
 			stopFunctions.push(async () => await brokerClient.disconnect());
@@ -594,16 +596,30 @@ const init = async (licenseContainer) => {
 					});
           
           			const filteredConnection = configManager.filterConnectionObject(connection);
-          
+
+					// try {
 					await testClient.connect({
 						mqttEndpointURL: filteredConnection.url,
 						options: createOptions(filteredConnection)
 					});
 					await testClient.disconnect();
+					// } catch(error) {
+					// 	console.error(error);
+
+					// 	connection.status = {
+					// 		connected: false,
+					// 		timestamp: Date.now(),
+					// 		error: error
+					// 	};
+					// 	configManager.updateConnection(connection.id, connection);
+					// 	sendConnectionsUpdate(testClient);
+
+					// 	throw error;
+					// }
 
 					return {
 						connected: true
-					}
+					};
 				} else {
 					throw new NotAuthorizedError();
 				}
@@ -664,7 +680,9 @@ const init = async (licenseContainer) => {
 	};
 
 	const handleClientMessage = async (message, client, user = {}) => {
-		console.log(message);
+		if (CEDALO_MC_ENABLE_FULL_LOG) {
+			console.log(message);
+		}
 		switch (message.type) {
 			case 'command': {
 				try {

@@ -295,12 +295,12 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 
 			let connections = await brokerClient.getBrokerConnections();
 			const connected = connections.filter(connection => connection?.status?.connected);
-			if (connected?.length === 1) {
-				enqueueSnackbar(`Error disconnecting broker. Reason: at least one broker needs to be connected.`, {
-					variant: 'error'
-				});
-				return;
-			}
+			// if (connected?.length === 1) {
+			// 	enqueueSnackbar(`Error disconnecting broker. Reason: at least one broker needs to be connected.`, {
+			// 		variant: 'error'
+			// 	});
+			// 	return;
+			// }
 
 			await confirm({
 				title: 'Confirm disconnecting',

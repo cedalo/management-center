@@ -303,7 +303,7 @@ const getDialogContent = (handleClose, brokerConnections, connected, proxyConnec
 						<DialogContentText id="alert-dialog-description">
 							Please create a connection first.
 						</DialogContentText>
-						<ConnectionNewComponent />
+						<ConnectionNewComponent handleCloseDialog={handleClose} />
 					</Grid>
 				</Grid>
 			</DialogContent>
