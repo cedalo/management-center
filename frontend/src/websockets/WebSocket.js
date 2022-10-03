@@ -53,6 +53,7 @@ const WebSocketContext = createContext(null);
 export { WebSocketContext };
 
 
+
 const init = async (client, dispatch, connectionConfiguration) => {
 	dispatch(updateBrokerLicenseInformation(null));
 	dispatch(updateInspectClients([]));
@@ -79,18 +80,18 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		dispatch(updateUserRoles(userRoles));
 		const users = await client.listUsers();
 		dispatch(updateUsers(users));
-		try {
-			if (userProfile && !userProfile.isAdmin) {
-			}
-			else{
-				const userGroups = await client.listUserGroups();
-				dispatch(updateUserGroups(userGroups));
-			}
-		} catch(error) {
-			console.error('Error while loading user groups');
-			console.error(error);
-			throw error;
-		}
+		// try {
+		// 	if (userProfile && !userProfile.isAdmin) {
+		// 	}
+		// 	else{
+		// 		const userGroups = await client.listUserGroups();
+		// 		dispatch(updateUserGroups(userGroups));
+		// 	}
+		// } catch(error) {
+		// 	console.error('Error while loading user groups');
+		// 	console.error(error);
+		// 	throw error;
+		// }
 		
 		dispatch(updateFeatures({
 			feature: 'usermanagement',
