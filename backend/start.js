@@ -23,6 +23,7 @@ const { loadInstallation } = require('./src/utils/utils');
 const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
 const swaggerDocument = require('./swagger.js');
 const Logger = require('./src/utils/Logger');
+const actions = require('./src/actions/actions');
 
 console = new Logger(console, false);
 
@@ -394,11 +395,11 @@ const init = async (licenseContainer) => {
 	console.log(`Started Mosquitto proxy at http://localhost:${CEDALO_MC_PROXY_PORT}`);
 
 	// TODO: move somewhere else
-	const userCanAccessAPI = (user, api) => {
-		if (api === 'stream-processing' && !user.roles.includes('admin')) {
+	const userCanAccessAPI = (user, api, broker) => {
+		if (api === 'stream-processing' && !context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, broker.name)) {
 			return false;
 		}
-		if (api === 'dynamic-security' && !user.roles.includes('admin') && !user.roles.includes('editor')) {
+		if (api === 'dynamic-security' && !context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastEditor, broker.name)) {
 			return false;
 		}
 		return true;
@@ -407,7 +408,7 @@ const init = async (licenseContainer) => {
 	const handleCommandMessage = async (message, client, user = {}) => {
 		const { api, command } = message;
 		const broker = context.brokerManager.getBroker(client);
-		if (!userCanAccessAPI(user, api)) {
+		if (!userCanAccessAPI(user, api, broker)) {
 			throw new NotAuthorizedError();
 		}
 		if (broker) {
@@ -450,7 +451,7 @@ const init = async (licenseContainer) => {
 		switch (request) {
 			case 'unloadPlugin': {
 				const { pluginId } = message;
-				if (context.security.acl.isAdmin(user)) {
+				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
 					const response = pluginManager.unloadPlugin(pluginId);
 					return response;
 				} else {
@@ -459,7 +460,7 @@ const init = async (licenseContainer) => {
 			}
 			case 'loadPlugin': {
 				const { pluginId } = message;
-				if (context.security.acl.isAdmin(user)) {
+				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
 					const response = pluginManager.loadPlugin(pluginId);
 					return response;
 				} else {
@@ -468,7 +469,7 @@ const init = async (licenseContainer) => {
 			}
 			case 'connectToBroker': {
 				const { brokerName } = message;
-				if (context.security.acl.noRestrictedRoles(user)) {
+				if (context.security.acl.isConnectionAuthorized(user, null, brokerName)) {
 					const response = await connectToBroker(brokerName, client);
 					return response;
 				} else {
@@ -477,7 +478,7 @@ const init = async (licenseContainer) => {
 			}
 			case 'disconnectFromBroker': {
 				const { brokerName } = message;
-				if (context.security.acl.noRestrictedRoles(user)) {
+				if (context.security.acl.isConnectionAuthorized(user, null, brokerName)) {
 					const response = await disconnectFromBroker(brokerName, client);
 					return response;
 				} else {
@@ -486,7 +487,7 @@ const init = async (licenseContainer) => {
 			}
 			case 'getBrokerConnections': {
 				// const connections = context.brokerManager.getBrokerConnections();
-				if (context.security.acl.isAdmin(user)) {
+				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
 					const connections = configManager.connections;
 					return connections;
 				} else {
@@ -494,26 +495,34 @@ const init = async (licenseContainer) => {
 						const connectionCopy = Object.assign({}, connection);
 						delete connectionCopy.credentials;
 						return connectionCopy;
-					})
-					return connections;
+					});
+					const result = context.security.acl.filterAllowedConnections(connections, user.connections);
+					return result;
 				}
 			}
 			case 'getBrokerConfigurations': {
-				if (context.security.acl.noRestrictedRoles(user)) {
-					return config;
-				} else {
-					throw new NotAuthorizedError();
+				let configToReturn;
+				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
+					configToReturn = JSON.parse(JSON.stringify(config));
 				}
+				else {
+					const configCopy = JSON.parse(JSON.stringify(config));
+					configCopy.connections = configCopy.connections.map(connection => {
+						delete connection.credentials;
+						return connection;
+					});
+					configToReturn = configCopy;
+				}
+
+				configToReturn.connections = context.security.acl.filterAllowedConnections(configToReturn.connections, user.connections);
+
+				return configToReturn;
 			}
 			case 'getSettings': {
-				if (context.security.acl.noRestrictedRoles(user)) {
-					return settingsManager.settings;
-				} else {
-					throw new NotAuthorizedError();
-				}
+				return settingsManager.settings;
 			}
 			case 'updateSettings': {
-				if (context.security.acl.isAdmin(user)) {
+				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
 					const { settings } = message;
 					settingsManager.updateSettings(
 						{
@@ -540,27 +549,23 @@ const init = async (licenseContainer) => {
 				}
 			}
 			case 'testConnection': {
-				if (context.security.acl.noRestrictedRoles(user)) {
-					const { connection } = message;
-					const testClient = new NodeMosquittoClient({
-						/* logger: console */
-					});
-					await testClient.connect({
-						mqttEndpointURL: connection.url,
-						options: createOptions(connection)
-					});
-					await testClient.disconnect();
+				const { connection } = message;
+				const testClient = new NodeMosquittoClient({
+					/* logger: console */
+				});
+				await testClient.connect({
+					mqttEndpointURL: connection.url,
+					options: createOptions(connection)
+				});
+				await testClient.disconnect();
 
-					return {
-						connected: true
-					}
-				} else {
-					throw new NotAuthorizedError();
+				return {
+					connected: true
 				}
 			}
 			case 'createConnection': {
-				if (context.security.acl.isAdmin(user)) {
-					const { connection } = message;
+				const { connection } = message;
+				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
 					try {
 						if (configManager.connections.length < context.licenseContainer.license.maxBrokerConnections) {
 							configManager.createConnection(connection);
@@ -578,8 +583,8 @@ const init = async (licenseContainer) => {
 				}
 			}
 			case 'modifyConnection': {
-				if (context.security.acl.isAdmin(user)) {
-					const { oldConnectionId, connection } = message;
+				const { oldConnectionId, connection } = message;
+				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, null, oldConnectionId)) {
 					configManager.updateConnection(oldConnectionId, connection);
 
 					return configManager.connections;
@@ -588,8 +593,8 @@ const init = async (licenseContainer) => {
 				}
 			}
 			case 'deleteConnection': {
-				if (context.security.acl.isAdmin(user)) {
-					const { id } = message;
+				const { id } = message;
+				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, null, id)) {
 					configManager.deleteConnection(id);
 					return configManager.connections;
 				} else {
@@ -597,16 +602,12 @@ const init = async (licenseContainer) => {
 				}
 			}
 			default: {
-				if (context.security.acl.noRestrictedRoles(user)) {
-					const handler = context.requestHandlers.get(request);
-					if (handler) {
-						const result = await handler[request](message, user);
-						return result;
-					} else {
-						throw new Error(`Unsupported request: ${request}`);
-					}
+				const handler = context.requestHandlers.get(request);
+				if (handler) {
+					const result = await handler[request](message, user);
+					return result;
 				} else {
-					throw new NotAuthorizedError();
+					throw new Error(`Unsupported request: ${request}`);
 				}
 			}
 		}
@@ -615,8 +616,19 @@ const init = async (licenseContainer) => {
 
 	const handleClientMessage = async (message, client, user = {}) => {
 		console.log(message);
+
+		if (!context.security.acl.noRestrictedRoles(user)) {
+			const responseMessage = {
+				type: 'response',
+				command: message.command.command,
+				requestId: message.id,
+				error: (new NotAuthorizedError()).message
+			};
+			client.send(JSON.stringify(responseMessage));
+		}
+
 		switch (message.type) {
-			case 'command': {
+			case 'command': { // context.security.acl.noRestrictedRoles(user) throw new NotAuthorizedError();
 				try {
 					const response = await handleCommandMessage(message, client, user);
 					const responseMessage = {
@@ -637,7 +649,7 @@ const init = async (licenseContainer) => {
 				}
 				break;
 			}
-			case 'request': {
+			case 'request': { // context.security.acl.noRestrictedRoles(user)
 				try {
 					const response = await handleRequestMessage(message, client, user);
 					const responseMessage = {
@@ -817,8 +829,10 @@ const init = async (licenseContainer) => {
 			handleConnectServerToBroker,
 			handleDisconnectServerFromBroker,
 			sendSystemStatusUpdate,
-			sendTopicTreeUpdate
-		}
+			sendTopicTreeUpdate,
+			preprocessUser: actions.actions.preprocessUser
+		},
+		preprocessUserFunctions: actions.preprocessUserFunctions
 	};
 
 	const pluginManager = new PluginManager();
