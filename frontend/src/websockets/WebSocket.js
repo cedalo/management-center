@@ -57,6 +57,7 @@ const ERROR_MESSAGE = "BaseMosquittoProxyClient: Timeout";
 
 
 
+
 const init = async (client, dispatch, connectionConfiguration) => {
 	dispatch(updateBrokerLicenseInformation(null));
 	dispatch(updateInspectClients([]));
@@ -133,6 +134,10 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			status: 'ok'
 		}));
 	} catch (error) {
+		// dispatch(updateFeatures({
+		// 	feature: 'tls',
+		// 	status: 'ok'
+		// }));
 		dispatch(updateFeatures({
 			feature: 'applicationtokens',
 			status: 'failed',

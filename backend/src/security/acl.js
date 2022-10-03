@@ -1,3 +1,4 @@
+// access control functions to be overriden in user-management plugin if said plugin is installed
 module.exports = {
     middleware: {
         isAdmin(request, response, next) {
@@ -31,4 +32,22 @@ module.exports = {
     noRestrictedRoles(user) {
         return true;
     },
+    filterAllowedConnections(connections, allowedConnections) {
+        return connections;
+    },
+    atLeastAdmin(user) {
+        return true;
+    },
+    atLeastEditor(user) {
+        return true;
+    },
+    atLeastViewer(user) {
+        return true;
+    },
+    atLeastConnectionCreator(user) {
+        return true;
+    },
+    isConnectionAuthorized(user) {
+        return true;
+    }
 }
