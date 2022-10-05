@@ -67,7 +67,7 @@ const UserDetail = (props) => {
 	const [passwordError, setPasswordError] = React.useState(null); 
 
 	React.useEffect(() => {
-		if (document.hasFocus() && ref.current.contains(document.activeElement)) {
+		if (document.hasFocus() && ref.current?.contains(document.activeElement)) {
 			if (!ref.current.value) {
 				setPasswordError(PASSWORD_ERROR_MESSAGE);
 			}
@@ -108,10 +108,17 @@ const UserDetail = (props) => {
 	};
 
 	const onUpdateUserDetail = async () => {
-		await brokerClient.updateUser(updatedUser);
-		enqueueSnackbar('User successfully updated', {
-			variant: 'success'
-		});
+		try {
+			await brokerClient.updateUser(updatedUser);
+			enqueueSnackbar('User successfully updated', {
+				variant: 'success'
+		})
+		} catch (error) {
+			enqueueSnackbar(`Error updating user "${updatedUser.username}". Reason: ${error.message || error}`, {
+				variant: 'error'
+			});
+			throw error;
+		}
 		const userObject = await brokerClient.getUser(updatedUser.username);
 		dispatch(updateUser(userObject));
 		const users = await brokerClient.listUsers();

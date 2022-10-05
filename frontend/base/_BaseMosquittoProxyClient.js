@@ -303,6 +303,8 @@ module.exports = class BaseMosquittoProxyClient {
 		} catch (error) {
 			if (error?.response?.status === 404) {
 				throw new APINotFoundError();
+			} else if (error?.response?.status === 400) {
+				throw new APIError('400', 'Invalid request');
 			} else {
 				throw new NotAuthorizedError();
 			}
