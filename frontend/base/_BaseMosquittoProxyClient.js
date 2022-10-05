@@ -242,6 +242,8 @@ module.exports = class BaseMosquittoProxyClient {
 		} catch (error) {
 			if (error?.response?.status === 404) {
 				throw new APINotFoundError();
+			} else if (error?.response?.status === 400) {
+				throw new APIError('400', error.response.data || 'Invalid request');
 			} else {
 				throw new NotAuthorizedError();
 			}
@@ -304,7 +306,7 @@ module.exports = class BaseMosquittoProxyClient {
 			if (error?.response?.status === 404) {
 				throw new APINotFoundError();
 			} else if (error?.response?.status === 400) {
-				throw new APIError('400', 'Invalid request');
+				throw new APIError('400', error.response.data || 'Invalid request');
 			} else {
 				throw new NotAuthorizedError();
 			}
