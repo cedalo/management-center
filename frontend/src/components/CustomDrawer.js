@@ -29,6 +29,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import StreamsheetsIcon from '@material-ui/icons/GridOn';
 import StreamsIcon from '@material-ui/icons/Timeline';
 import SecurityIcon from '@material-ui/icons/Security';
+import UserGroupsIcon from '@material-ui/icons/PeopleOutline';
 
 const drawerWidth = 240;
 
@@ -298,7 +299,7 @@ icon={<SettingsIcon />}
 					classes={classes}
 					to="/admin/user-groups"
 					primary="User Groups"
-					icon={<UsersIcon fontSize="small" />}
+					icon={<UserGroupsIcon fontSize="small" />}
 				/>}
 
 				{(atLeastAdmin(userProfile) && !hideConnections) ? <ListItemLink
