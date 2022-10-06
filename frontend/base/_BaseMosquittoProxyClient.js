@@ -580,7 +580,6 @@ module.exports = class BaseMosquittoProxyClient {
 		try {
 			const url = `${this._httpEndpointURL}/api/tokens`;
 			const response = await axios.get(url, this._headers);
-			console.log('TOOOOKENS:::', response.data)
 			return response.data;
 		} catch (error) {
 			if (error?.response?.status === 404) {
