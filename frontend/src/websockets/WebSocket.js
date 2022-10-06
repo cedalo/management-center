@@ -313,7 +313,6 @@ export default ({ children }) => {
 		};
 	};
 
-	dispatch(updateLoading(false));
 	if (!client) {
 		client = new WebMosquittoProxyClient({ logger: console });
 		client.closeHandler = (event) => {
