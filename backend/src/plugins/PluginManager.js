@@ -90,7 +90,7 @@ module.exports = class PluginManager {
 					const enableAtNextStartup = (pluginConfiguration.enableAtNextStartup !== undefined) ? pluginConfiguration.enableAtNextStartup : true;
 
 					const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
-					const plugin = new Plugin({enableAtNextStartup});
+					const plugin = new Plugin({enableAtNextStartup, context});
 					if (plugin.meta.featureId === 'saml-sso' || plugin.meta.featureId === 'application-tokens' || (
 						licenseContainer.license.features &&
 						licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
