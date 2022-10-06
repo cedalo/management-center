@@ -232,7 +232,7 @@ const UserNew = (props) => {
 											value: role
 										}))}
 										handleChange={(value) => {
-											setRoles(value.map((role) => role.value));
+											setRoles((value && value.map((role) => role.value)) || []);
 										}}
 									/>
 								</Grid>
