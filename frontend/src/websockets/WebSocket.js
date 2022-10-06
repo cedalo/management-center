@@ -28,7 +28,8 @@ import {
 	updateBrokerLicenseInformation,
 	updateTests,
 	updateTestCollections,
-	updateApplicationTokens
+	updateApplicationTokens,
+	updateLoading
 } from '../actions/actions';
 
 import {
@@ -213,6 +214,8 @@ const init = async (client, dispatch, connectionConfiguration) => {
 	const settings = await client.getSettings();
 	dispatch(updateSettings(settings));
 
+	dispatch(updateLoading(false));
+
 	try {
 		console.log('Loading dynamic security');
 
@@ -310,6 +313,7 @@ export default ({ children }) => {
 		};
 	};
 
+	dispatch(updateLoading(false));
 	if (!client) {
 		client = new WebMosquittoProxyClient({ logger: console });
 		client.closeHandler = (event) => {
@@ -358,7 +362,8 @@ export default ({ children }) => {
 			console.error(message);
 		});
 		
-		init(client, dispatch, { socketEndpointURL: WS_BASE.url, httpEndpointURL: WS_BASE.urlHTTP });
+		dispatch(updateLoading(true));
+		init(client, dispatch, { socketEndpointURL: WS_BASE.url, httpEndpointURL: WS_BASE.urlHTTP })
 
 		ws = {
 			client: client,

@@ -152,6 +152,17 @@ export function updateProxyConnected(connected) {
 	};
 }
 
+
+export function updateLoading(loadingStatus) {
+	return {
+		type: ActionTypes.UPDATE_LOADING,
+		update: {
+			loadingStatus
+		}
+	};
+}
+
+
 export function updateSettings(update) {
 	return {
 		type: ActionTypes.UPDATE_SETTINGS,
