@@ -170,9 +170,6 @@ const atLeastViewer = (userProfile, currentConnectionName) => {
 
 
 const CustomDrawer = ({ userProfile = {}, userManagementFeature, dynamicSecurityFeature, hideConnections, open, handleDrawerOpen, handleDrawerClose, currentConnectionName, connected}) => {
-	console.log('userProfile::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::', userProfile);
-	console.log('connected::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::', connected);
-	console.log('currentConnectionName::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::', currentConnectionName);
 	const classes = useStyles();
 	const theme = useTheme();
 
