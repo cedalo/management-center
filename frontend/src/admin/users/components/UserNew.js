@@ -90,7 +90,8 @@ const UserNew = (props) => {
 			&& !usernameExists 
 			&& username !== '' 
 			&& password !== ''
-			&& username.match(/^[0-9a-zA-Z]+$/);
+			&& roles.length
+			&& username.match(/^[0-9a-zA-Z!#$%&'*+\-/=?^_`{|}~.@]+$/);
 		return valid;
 	};
 
