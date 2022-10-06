@@ -5,6 +5,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import ProfileIcon from '@material-ui/icons/Person';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
+import { useHistory } from 'react-router-dom';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -15,11 +16,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ProfileButton = (props) => {
+	const history = useHistory();
 	const classes = useStyles();
 	const confirm = useConfirm();
 
 	const handleProfile = async () => {
-		window.location.href = '/profile';
+		history.push('/profile');
 	};
 
 	return <Tooltip title="Profile">
