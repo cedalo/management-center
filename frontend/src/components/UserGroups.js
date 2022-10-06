@@ -70,8 +70,15 @@ const GROUP_TABLE_COLUMNS = [
 ];
 
 
+
+const loadUserGroups = async (client, dispatch) => {
+	const userGroups = await client.listUserGroups();
+	dispatch(updateUserGroups(userGroups));
+};
+
+
+
 const UserGroups = (props) => {
-    
     const classes = useStyles();
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
@@ -89,7 +96,9 @@ const UserGroups = (props) => {
     const [userGroupsEntriesPaginated, setUserGroupsEntriesPaginated] = React.useState([]);
 
 	React.useEffect(() => {
+		loadUserGroups(client, dispatch);
 		setUserGroupsEntries(Object.entries(props.userGroups));
+		return () => {};
 	}, []);
 
 
@@ -334,7 +343,9 @@ const UserGroups = (props) => {
 												<TableCell className={classes.badges}>
 													<AutoSuggest
 														suggestions={connectionSuggestions}
-														values={group.connections.map((brokerid) => ({
+														values={group.connections
+																.filter((brokerid) => !!connectionsMap.get(brokerid))
+																.map((brokerid) => ({
 															label: connectionsMap.get(brokerid).name,
 															value: connectionsMap.get(brokerid).id
 														}))}

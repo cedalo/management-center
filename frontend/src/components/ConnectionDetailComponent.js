@@ -181,6 +181,7 @@ const ConnectionDetailComponent = (props) => {
 	const classes = useStyles();
 	const [value, setValue] = React.useState(0);
 	const [showPassword, setShowPassword] = React.useState(false);
+	const [externalUrl, setExternalUrl] = React.useState(connection.externalUrl || 'None');
 	const handleClickShowPassword = () => setShowPassword(!showPassword);
 	const handleMouseDownPassword = () => setShowPassword(!showPassword);
 	const [editMode, setEditMode] = React.useState(editModeEnabledByDefault);
@@ -446,6 +447,7 @@ const ConnectionDetailComponent = (props) => {
 									className={classes.textField}
 									onChange={(event) => {
 										if (editMode) {
+											setExternalUrl('');
 											setUpdatedConnection({
 												...updatedConnection,
 												url: event.target.value
@@ -453,6 +455,20 @@ const ConnectionDetailComponent = (props) => {
 											setConnected(false);
 										}
 									}}
+								/>
+							</Grid>
+							<Grid item xs={12}>
+								<TextField
+									disabled
+									id="external-url"
+									label="External URL"
+									value={externalUrl}
+									helperText="This field is mainly used for docker based environemnts. Not editable"
+									defaultValue=""
+									variant="outlined"
+									fullWidth
+									className={classes.textField}
+									style={{paddingBottom: '10px'}}
 								/>
 							</Grid>
 							<Grid item xs={12}>
@@ -608,7 +624,7 @@ const ConnectionDetailComponent = (props) => {
 												}}
 											/>
 											<IconButton
-												disabled={!editMode || !tlsFeature?.supported || !updatedConnection[customCACertificateFieldName]}
+												disabled={!tlsFeature?.supported || !updatedConnection[customCACertificateFieldName]}
 												// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
 												style={{backgroundColor: 'transparent'}}
 												className={`${classes.fileDownloadButton}`}
@@ -669,7 +685,7 @@ const ConnectionDetailComponent = (props) => {
 												}}
 											/>
 											<IconButton
-												disabled={!editMode || !tlsFeature?.supported || !updatedConnection[clientCertificateFieldName]}
+												disabled={!tlsFeature?.supported || !updatedConnection[clientCertificateFieldName]}
 												// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
 												style={{backgroundColor: 'transparent'}}
 												className={`${classes.fileDownloadButton}`}
@@ -730,7 +746,7 @@ const ConnectionDetailComponent = (props) => {
 												}}
 											/>
 											<IconButton
-												disabled={!editMode || !tlsFeature?.supported || !updatedConnection[clientPrivateKeyFieldName]}
+												disabled={!tlsFeature?.supported || !updatedConnection[clientPrivateKeyFieldName]}
 												style={{backgroundColor: 'transparent'}}
 												// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
 												className={`${classes.fileDownloadButton}`}

@@ -1,18 +1,36 @@
 const path = require('path');
 
 const PLUGIN_DIR = process.env.CEDALO_MC_PLUGIN_DIR;
+const LOGIN_PLUGIN_FEATURE_IDS = ['saml-sso', 'security'];
+const OS_PLUGINS_IDS = ['cedalo_login', 'cedalo_user_profile', 'cedalo_connect_disconnect'];
+
 
 module.exports = class PluginManager {
 	constructor() {
 		this._plugins = [];
 	}
 
+	_enabledCustomLoginPlugin() {
+		for (const plugin of this._plugins) {
+			if (plugin._status.type !== 'error') {
+				if (LOGIN_PLUGIN_FEATURE_IDS.includes(plugin.meta.featureId)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+
 	_loadOSPlugins(context) {
 		// TODO: support multiple plugins
 		if (process.env.CEDALO_MC_DISABLE_LOGIN !== 'true') {
-			this._loadLoginPlugin(context);
-			this._loadConnectDisconnectPlugin(context);
+			if (!this._enabledCustomLoginPlugin()) {
+				this._loadLoginPlugin(context);
+			}
+
 			this._loadUserProfilePlugin(context);
+			this._loadConnectDisconnectPlugin(context);
 		}
 	}
 
@@ -36,41 +54,47 @@ module.exports = class PluginManager {
 
 	_loadPlugin(plugin, context) {
 		try {
-			plugin.init(context);
-			plugin.load(context);
-			plugin.setLoaded();
-			this._plugins.push(plugin);
-			console.log(`Loaded plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
+			this._plugins.unshift(plugin);
 		} catch (error) {
-			console.error(`Failed loading plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
-			console.error(error);
-			this._plugins.push(plugin);
+			plugin.setErrored(`Failed loading plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
+			this._plugins.unshift(plugin);
 		}
 	}
+
+
+	_sortPluginList(plugins) {
+		// load user management as a first plugin since we redefine isAdmin and alike functions there
+		// also load application-tokens first as it redefines isLoggedIn function
+		// saml-sso redefines the whole login
+		const PLUGIN_IDS_OF_HIGHEST_PRIORITY = ['saml_sso', ...OS_PLUGINS_IDS, 'application_tokens', 'user_management'];
+
+		for (const pluginId of PLUGIN_IDS_OF_HIGHEST_PRIORITY.reverse()) {
+			const pluginIndex = plugins.findIndex((el) => {
+				return el._meta.id === pluginId;
+			});
+			if (pluginIndex !== -1) {
+				const plugin = plugins[pluginIndex];
+				plugins.splice(pluginIndex, 1);
+				plugins.unshift(plugin);
+			}
+		}
+	}
+
 
 	init(pluginConfigurations = [], context, swaggerDocument) {
 		this._context = context;
 		const { licenseContainer } = context;
 		if (licenseContainer.license.isValid && PLUGIN_DIR) {
-			const userManagementPluginIndex = pluginConfigurations.findIndex((el) => {
-				return el.name === 'user-management';
-			});
-			if (userManagementPluginIndex !== -1) {
-				const userManagementPlugin = pluginConfigurations[userManagementPluginIndex];
-				pluginConfigurations.splice(userManagementPluginIndex, 1);
-				pluginConfigurations.unshift(userManagementPlugin);
-			}
-
-
 			pluginConfigurations.forEach((pluginConfiguration) => {
 				try {
 					const enableAtNextStartup = (pluginConfiguration.enableAtNextStartup !== undefined) ? pluginConfiguration.enableAtNextStartup : true;
 
 					const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
-					const plugin = new Plugin({enableAtNextStartup});
-					if (
+					const plugin = new Plugin({enableAtNextStartup, context});
+					if (plugin.meta.featureId === 'saml-sso' || plugin.meta.featureId === 'application-tokens' || (
 						licenseContainer.license.features &&
 						licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
+					)
 					) {
 						if (!enableAtNextStartup) {
 							console.log(`Plugin not loaded: Plugin set to be disabled at current startup: "${pluginConfiguration.name}"`)
@@ -87,7 +111,6 @@ module.exports = class PluginManager {
 				} catch (error) {
 					console.error(`Failed loading plugin: "${pluginConfiguration.name}"`);
 					console.error(error);
-					// plugin.setErrored();
 				}
 			});
 		} else if (licenseContainer.license.isValid && !PLUGIN_DIR) {
@@ -103,6 +126,8 @@ module.exports = class PluginManager {
 		});
 
 		this._loadOSPlugins(context);
+
+		this._sortPluginList(this._plugins);
 
 		this._plugins.forEach(plugin => {
 			try {
@@ -145,17 +170,18 @@ module.exports = class PluginManager {
 		plugin.load(this._context);
 	}
 
-	setPluginStatusAtNextStartup(pluginFeatureId, nextStatus) {
+	setPluginStatusAtNextStartup(pluginId, nextStatus) {
 		this._plugins = this._plugins.map((plugin) => {
-			if (plugin.meta.featureId === pluginFeatureId) {
-				plugin.options.enableAtNextStartup = nextStatus;
+			if (plugin.meta.id === pluginId) {
+				if (plugin.meta.type !== 'os') {
+					plugin.options.enableAtNextStartup = nextStatus;
+				}
 			}
 			return plugin;
 	
-		});
-		
+		});	
 
-		this._context.configManager.updatePluginFromConfiguration(pluginFeatureId, {enableAtNextStartup: nextStatus});
+		this._context.configManager.updatePluginFromConfiguration(pluginId, {enableAtNextStartup: nextStatus});
 	}
 
 	get plugins() {

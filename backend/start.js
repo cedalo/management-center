@@ -24,6 +24,7 @@ const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
 const swaggerDocument = require('./swagger.js');
 const Logger = require('./src/utils/Logger');
 const contentTypeParser = require('./src/middleware/ContentTypeParser');
+const actions = require('./src/actions/actions');
 
 console = new Logger(console, false);
 
@@ -33,6 +34,7 @@ const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
+const CEDALO_MC_ENABLE_FULL_LOG = !!process.env.CEDALO_MC_ENABLE_FULL_LOG;
 
 const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
@@ -56,6 +58,14 @@ let context = {
 			...acl
 		}
 	}
+};
+
+
+const noCache = (req, res, next) => {
+	res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+	res.header('Expires', '-1');
+	res.header('Pragma', 'no-cache');
+	next();
 };
 
 const deletePendingRequest = (requestId, requests) => {
@@ -235,6 +245,7 @@ const init = async (licenseContainer) => {
 	app.use(express.urlencoded({ extended: true }));
 	app.use(cors());
 	app.use(contentTypeParser);
+	app.use(noCache);
 
 	const server = http.createServer(app);
 
@@ -329,46 +340,50 @@ const init = async (licenseContainer) => {
 				timestamp: Date.now(),
 				error: error
 			};
+
 			sendConnectionsUpdate(brokerClient);
 		} finally {
 			stopFunctions.push(async () => await brokerClient.disconnect());
 		}
-		brokerClient.subscribe('$SYS/#', (error) => {
-			console.log(`Subscribed to system topics for '${connection.name}'`);
-			if (error) {
-				console.error(error);
-			}
-		});
-		brokerClient.subscribe('#', (error) => {
-			console.log(`Subscribed to all topics for '${connection.name}'`);
-			if (error) {
-				console.error(error);
-			}
-		});
-		brokerClient.subscribe('$CONTROL/dynamic-security/v1/#', (error) => {
-			console.log(`Subscribed to all topics for '${connection.name}'`);
-			if (error) {
-				console.error(error);
-			}
-		});
-		//   });
 
-		brokerClient.on('message', (topic, message, packet) => {
-			if (topic.startsWith('$SYS')) {
-				updateSystemTopics(system, topic, message, packet);
-				sendSystemStatusUpdate(system, brokerClient, connection);
-			} else if (
-				// TODO: change topic
-				topic.startsWith('$CONTROL/dynamic-security/v1/response')
-			) {
-				// TODO: this is already handle by the Mosquitto client
-				console.log('topic');
-				console.log(topic);
-				console.log(message.toString());
-			} else if (topic.startsWith('$CONTROL')) {
-				// Nothing to do
-			}
-		});
+		if (!connectionConfiguration.status.error) {
+			brokerClient.subscribe('$SYS/#', (error) => {
+				console.log(`Subscribed to system topics for '${connection.name}'`);
+				if (error) {
+					console.error(error);
+				}
+			});
+			brokerClient.subscribe('#', (error) => {
+				console.log(`Subscribed to all topics for '${connection.name}'`);
+				if (error) {
+					console.error(error);
+				}
+			});
+			brokerClient.subscribe('$CONTROL/dynamic-security/v1/#', (error) => {
+				console.log(`Subscribed to all topics for '${connection.name}'`);
+				if (error) {
+					console.error(error);
+				}
+			});
+			//   });
+	
+			brokerClient.on('message', (topic, message, packet) => {
+				if (topic.startsWith('$SYS')) {
+					updateSystemTopics(system, topic, message, packet);
+					sendSystemStatusUpdate(system, brokerClient, connection);
+				} else if (
+					// TODO: change topic
+					topic.startsWith('$CONTROL/dynamic-security/v1/response')
+				) {
+					// TODO: this is already handle by the Mosquitto client
+					console.log('topic');
+					console.log(topic);
+					console.log(message.toString());
+				} else if (topic.startsWith('$CONTROL')) {
+					// Nothing to do
+				}
+			});
+		}
 
 		// const proxyClient = new NodeMosquittoProxyClient({
 		// 	name: `Proxy client for "${connection.name}"`,
@@ -395,17 +410,23 @@ const init = async (licenseContainer) => {
 			client.broker.disconnect();
 		}
 		context.brokerManager.handleDeleteBrokerConnection(connection);
+
+		if (!connection.status) {
+			connection.status = {};
+		}
+
 		connection.status.connected = false;
 		connection.status.timestamp = Date.now();
+
 		configManager.updateConnection(connection.id, connection);
 	}
 
 	for (let i = 0; i < connections.length; i++) {
 		if (i < maxBrokerConnections) {
 			const connection = connections[i];
-			const wasNotConnected = connection.status && (connection.status?.connected === false);
-			const wasConnected = !wasNotConnected;
-			if (wasConnected) {
+			const wasConnected = connection.status && connection.status.connected;
+			const hadError = connection.status && connection.status.error;
+			if (wasConnected || hadError || connection.status === undefined) { // Note that we don't connect in case broker was manually disconnected. We connect only in the three cases descirbed in if
 				handleConnectServerToBroker(connections[i]);
 			}
 		}
@@ -414,11 +435,11 @@ const init = async (licenseContainer) => {
 	console.log(`Started Mosquitto proxy at http://localhost:${CEDALO_MC_PROXY_PORT}`);
 
 	// TODO: move somewhere else
-	const userCanAccessAPI = (user, api) => {
-		if (api === 'stream-processing' && !user.roles.includes('admin')) {
+	const userCanAccessAPI = (user, api, broker) => {
+		if (api === 'stream-processing' && !context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, broker.name)) {
 			return false;
 		}
-		if (api === 'dynamic-security' && !user.roles.includes('admin') && !user.roles.includes('editor')) {
+		if (api === 'dynamic-security' && !context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastEditor, broker.name)) {
 			return false;
 		}
 		return true;
@@ -427,7 +448,7 @@ const init = async (licenseContainer) => {
 	const handleCommandMessage = async (message, client, user = {}) => {
 		const { api, command } = message;
 		const broker = context.brokerManager.getBroker(client);
-		if (!userCanAccessAPI(user, api)) {
+		if (!userCanAccessAPI(user, api, broker)) {
 			throw new NotAuthorizedError();
 		}
 		if (broker) {
@@ -470,7 +491,7 @@ const init = async (licenseContainer) => {
 		switch (request) {
 			case 'unloadPlugin': {
 				const { pluginId } = message;
-				if (context.security.acl.isAdmin(user)) {
+				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
 					const response = pluginManager.unloadPlugin(pluginId);
 					return response;
 				} else {
@@ -479,7 +500,7 @@ const init = async (licenseContainer) => {
 			}
 			case 'loadPlugin': {
 				const { pluginId } = message;
-				if (context.security.acl.isAdmin(user)) {
+				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
 					const response = pluginManager.loadPlugin(pluginId);
 					return response;
 				} else {
@@ -487,9 +508,9 @@ const init = async (licenseContainer) => {
 				}
 			}
 			case 'setPluginStatusAtNextStartup': {
-				const { pluginFeatureId, nextStatus } = message;
+				const { pluginId, nextStatus } = message;
 				if (context.security.acl.isAdmin(user)) {
-					const response = pluginManager.setPluginStatusAtNextStartup(pluginFeatureId, !!nextStatus);
+					const response = pluginManager.setPluginStatusAtNextStartup(pluginId, !!nextStatus);
 					return response;
 				} else {
 					throw new NotAuthorizedError();
@@ -497,7 +518,7 @@ const init = async (licenseContainer) => {
 			}
 			case 'connectToBroker': {
 				const { brokerName } = message;
-				if (context.security.acl.noRestrictedRoles(user)) {
+				if (context.security.acl.isConnectionAuthorized(user, null, brokerName)) {
 					const response = await connectToBroker(brokerName, client);
 					return response;
 				} else {
@@ -506,7 +527,7 @@ const init = async (licenseContainer) => {
 			}
 			case 'disconnectFromBroker': {
 				const { brokerName } = message;
-				if (context.security.acl.noRestrictedRoles(user)) {
+				if (context.security.acl.isConnectionAuthorized(user, null, brokerName)) {
 					const response = await disconnectFromBroker(brokerName, client);
 					return response;
 				} else {
@@ -515,7 +536,7 @@ const init = async (licenseContainer) => {
 			}
 			case 'getBrokerConnections': {
 				// const connections = context.brokerManager.getBrokerConnections();
-				if (context.security.acl.isAdmin(user)) {
+				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
 					const connections = configManager.connections;
 					return connections;
 				} else {
@@ -523,16 +544,28 @@ const init = async (licenseContainer) => {
 						const connectionCopy = Object.assign({}, connection);
 						delete connectionCopy.credentials;
 						return connectionCopy;
-					})
-					return connections;
+					});
+					const result = context.security.acl.filterAllowedConnections(connections, user.connections);
+					return result;
 				}
 			}
 			case 'getBrokerConfigurations': {
-				if (context.security.acl.noRestrictedRoles(user)) {
-					return config;
-				} else {
-					throw new NotAuthorizedError();
+				let configToReturn;
+				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
+					configToReturn = JSON.parse(JSON.stringify(config));
 				}
+				else {
+					const configCopy = JSON.parse(JSON.stringify(config));
+					configCopy.connections = configCopy.connections.map(connection => {
+						delete connection.credentials;
+						return connection;
+					});
+					configToReturn = configCopy;
+				}
+
+				configToReturn.connections = context.security.acl.filterAllowedConnections(configToReturn.connections, user.connections);
+
+				return configToReturn;
 			}
 			case 'getSettings': {
 				if (context.security.acl.noRestrictedRoles(user)) {
@@ -542,7 +575,7 @@ const init = async (licenseContainer) => {
 				}
 			}
 			case 'updateSettings': {
-				if (context.security.acl.isAdmin(user)) {
+				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
 					const { settings } = message;
 					settingsManager.updateSettings(
 						{
@@ -576,23 +609,37 @@ const init = async (licenseContainer) => {
 					});
           
           			const filteredConnection = configManager.filterConnectionObject(connection);
-          
+
+					// try {
 					await testClient.connect({
 						mqttEndpointURL: filteredConnection.url,
 						options: createOptions(filteredConnection)
 					});
 					await testClient.disconnect();
+					// } catch(error) {
+					// 	console.error(error);
+
+					// 	connection.status = {
+					// 		connected: false,
+					// 		timestamp: Date.now(),
+					// 		error: error
+					// 	};
+					// 	configManager.updateConnection(connection.id, connection);
+					// 	sendConnectionsUpdate(testClient);
+
+					// 	throw error;
+					// }
 
 					return {
 						connected: true
-					}
+					};
 				} else {
 					throw new NotAuthorizedError();
 				}
 			}
 			case 'createConnection': {
-				if (context.security.acl.isAdmin(user)) {
-					const { connection } = message;
+				const { connection } = message;
+				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
 					try {
 						if (configManager.connections.length < context.licenseContainer.license.maxBrokerConnections) {
 							configManager.createConnection(connection);
@@ -610,8 +657,8 @@ const init = async (licenseContainer) => {
 				}
 			}
 			case 'modifyConnection': {
-				if (context.security.acl.isAdmin(user)) {
-					const { oldConnectionId, connection } = message;
+				const { oldConnectionId, connection } = message;
+				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, null, oldConnectionId)) {
 					configManager.updateConnection(oldConnectionId, connection);
 
 					return configManager.connections;
@@ -620,8 +667,8 @@ const init = async (licenseContainer) => {
 				}
 			}
 			case 'deleteConnection': {
-				if (context.security.acl.isAdmin(user)) {
-					const { id } = message;
+				const { id } = message;
+				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, null, id)) {
 					configManager.deleteConnection(id);
 					return configManager.connections;
 				} else {
@@ -646,9 +693,22 @@ const init = async (licenseContainer) => {
 	};
 
 	const handleClientMessage = async (message, client, user = {}) => {
-		console.log(message);
+		if (CEDALO_MC_ENABLE_FULL_LOG) {
+			console.log(message);
+		}
+
+		if (!context.security.acl.noRestrictedRoles(user)) {
+			const responseMessage = {
+				type: 'response',
+				command: message.command.command,
+				requestId: message.id,
+				error: (new NotAuthorizedError()).message
+			};
+			client.send(JSON.stringify(responseMessage));
+		}
+
 		switch (message.type) {
-			case 'command': {
+			case 'command': { // context.security.acl.noRestrictedRoles(user) throw new NotAuthorizedError();
 				try {
 					const response = await handleCommandMessage(message, client, user);
 					const responseMessage = {
@@ -669,7 +729,7 @@ const init = async (licenseContainer) => {
 				}
 				break;
 			}
-			case 'request': {
+			case 'request': { // context.security.acl.noRestrictedRoles(user)
 				try {
 					const response = await handleRequestMessage(message, client, user);
 					const responseMessage = {
@@ -849,8 +909,10 @@ const init = async (licenseContainer) => {
 			handleConnectServerToBroker,
 			handleDisconnectServerFromBroker,
 			sendSystemStatusUpdate,
-			sendTopicTreeUpdate
-		}
+			sendTopicTreeUpdate,
+			preprocessUser: actions.actions.preprocessUser
+		},
+		preprocessUserFunctions: actions.preprocessUserFunctions
 	};
 
 	const pluginManager = new PluginManager();

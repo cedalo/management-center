@@ -257,9 +257,23 @@ XAAtQ92423UBVChIQNNRXyfcD7wH68D+4i4DPUpA9tgl3x5kC6PCKUrKjP4OOAdmf/G4faap84+8p
 H7Q0IIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBC
 CCGEEEIIIYQQHvx/U3pMvcXL4PYAAAAASUVORK5CYII=`;
 
-const getDialogContent = (handleClose, brokerConnections, connected, proxyConnected, editDefaultClient) => {
-
-	if (editDefaultClient) {
+const getDialogContent = (handleClose, brokerConnections, connected, proxyConnected, editDefaultClient, loading) => {
+	if (loading) {
+		return <>
+			<DialogTitle align="center" id="not-connected-dialog-title">
+				{ 'Loading... Please wait' }
+			</DialogTitle>
+			<DialogContent>
+				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
+					<Grid item xs={12} align="center">
+						<DialogContentText id="alert-dialog-description">
+							<CircularProgress color="secondary" size="3rem" />
+						</DialogContentText>
+					</Grid>
+				</Grid>
+			</DialogContent>
+		</>
+	} else if (editDefaultClient) {
 		return <>
 			<DialogTitle align="center" id="not-connected-dialog-title">
 				{ !connected ? 'Applying changes' : 'Changes applied' }
@@ -303,7 +317,7 @@ const getDialogContent = (handleClose, brokerConnections, connected, proxyConnec
 						<DialogContentText id="alert-dialog-description">
 							Please create a connection first.
 						</DialogContentText>
-						<ConnectionNewComponent />
+						<ConnectionNewComponent handleCloseDialog={handleClose} />
 					</Grid>
 				</Grid>
 			</DialogContent>
@@ -383,8 +397,7 @@ const getDialogContent = (handleClose, brokerConnections, connected, proxyConnec
 		</>
 	}
 }
-const DisconnectedDialog = ({ brokerConnections, connected, proxyConnected, editDefaultClient }) => {
-
+const DisconnectedDialog = ({ brokerConnections, connected, proxyConnected, editDefaultClient, loading }) => {
 	const [open, setOpen] = React.useState(true);
 
 	const handleClose = () => {
@@ -393,12 +406,12 @@ const DisconnectedDialog = ({ brokerConnections, connected, proxyConnected, edit
 
 	return (
 		<Dialog
-			open={open && (editDefaultClient || !connected || !proxyConnected)}
+			open={open && (editDefaultClient || !connected || !proxyConnected || loading)}
 			aria-labelledby="not-connected-dialog-title"
 			aria-describedby="not-connected-dialog-description"
 		>
 			{
-				getDialogContent(handleClose, brokerConnections, connected, proxyConnected, editDefaultClient)
+				getDialogContent(handleClose, brokerConnections, connected, proxyConnected, editDefaultClient, loading)
 			}
 		</Dialog>
 	);
@@ -409,7 +422,8 @@ const mapStateToProps = (state) => {
 		brokerConnections: state.brokerConnections?.brokerConnections,
 		connected: state.brokerConnections?.connected,
 		editDefaultClient: state.brokerConnections?.editDefaultClient,
-		proxyConnected: state.proxyConnection?.connected
+		proxyConnected: state.proxyConnection?.connected,
+		loading: state.loading?.loadingStatus,
 	};
 };
 

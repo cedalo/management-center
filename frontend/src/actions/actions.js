@@ -152,6 +152,17 @@ export function updateProxyConnected(connected) {
 	};
 }
 
+
+export function updateLoading(loadingStatus) {
+	return {
+		type: ActionTypes.UPDATE_LOADING,
+		update: {
+			loadingStatus
+		}
+	};
+}
+
+
 export function updateSettings(update) {
 	return {
 		type: ActionTypes.UPDATE_SETTINGS,
@@ -253,6 +264,14 @@ export function updateTestCollection(update) {
 export function updateTestCollections(update) {
 	return {
 		type: ActionTypes.UPDATE_TESTCOLLECTIONS,
+		update
+	};
+}
+
+
+export function updateApplicationTokens(update) {
+	return {
+		type: ActionTypes.UPDATE_APPLICATION_TOKENS,
 		update
 	};
 }

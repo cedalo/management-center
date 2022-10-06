@@ -53,6 +53,7 @@ const Plugins = (props) => {
 	const { client } = context;
 	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/plugins`);
 
+
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(10);
 	const [isEnableNextStartupLoading, setIsEnableNextStartupLoading] = React.useState({});
@@ -67,12 +68,13 @@ const Plugins = (props) => {
 	};
 
 
-	const handlePluginNextStartupStatusChange = async (pluginId, pluginFeatureId, nextStatus) => {
+	const handlePluginNextStartupStatusChange = async (pluginId, nextStatus) => {
 		setIsEnableNextStartupLoading( (prevState) => ({...prevState, ...{[pluginId]: true}}) );
 		try {
-			await client.setPluginStatusAtNextStartup(pluginFeatureId, nextStatus);
+			await client.setPluginStatusAtNextStartup(pluginId, nextStatus);
 			window.location.reload();
 		} catch (error) {
+			setIsEnableNextStartupLoading( (prevState) => ({...prevState, ...{[pluginId]: false}}) );
 			enqueueSnackbar(`Error disabling plugin. Reason: ${error.message || error}.`, {
 				variant: 'error'
 			});
@@ -195,9 +197,10 @@ const Plugins = (props) => {
 											<CircularProgress color="primary" style={{width: "25px", height: "auto"}}/>
 												:
 											<Checkbox
-												checked={plugin.enableAtNextStartup}
+												checked={plugin.enableAtNextStartup || plugin.type === 'os'}
+												disabled={plugin.type === 'os'}
 												onChange={(event) => {
-													handlePluginNextStartupStatusChange(plugin.id, plugin.featureId, event.target.checked);
+													handlePluginNextStartupStatusChange(plugin.id, event.target.checked);
 												}}
 												inputProps={{ 'aria-label': 'Enable plugin at next startup'}}
 											/>
@@ -222,7 +225,7 @@ const Plugins = (props) => {
 									rowsPerPage={rowsPerPage}
 									page={page}
 									onChangePage={handleChangePage}
-									// onChangeRowsPerPage={handleChangeRowsPerPage}
+									onChangeRowsPerPage={handleChangeRowsPerPage}
 								/>
 							</TableRow>
 						</TableFooter>

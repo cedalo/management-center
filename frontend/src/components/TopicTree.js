@@ -253,9 +253,7 @@ const TopicTree = ({ topicTree, lastUpdated, currentConnectionName, settings, to
 		setMessageHistory([]);
 	};
 
-	// console.log('topicTree before::::::::::::::::::::::::::::::::::::::::::::::::::::::::', topicTree)
 	const data = generateTreeData('topic-tree-root', 'Topic Tree', topicTree);
-	// console.log('topicTree after::::::::::::::::::::::::::::::::::::::::::::::::::::::::', topicTree)
 
 	useEffect(() => {
 		setSelectedNode(null);
@@ -307,7 +305,7 @@ const TopicTree = ({ topicTree, lastUpdated, currentConnectionName, settings, to
 					Topic Tree
 				</Typography>
 			</Breadcrumbs>
-			{(settings?.topicTreeEnabled !== false && topicTreeRestFeature?.supported) ?
+			{(topicTreeRestFeature?.supported) ?
 			<>
 				<Grid
 					container justify="flex-end"

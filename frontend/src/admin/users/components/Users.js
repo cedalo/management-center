@@ -109,7 +109,9 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 										hover
 										key={user.username}
 										onClick={(event) => {
-											onSelectUser(user.username);
+											if (event.target.nodeName?.toLowerCase() === 'td') {
+												onSelectUser(user.username);
+											}
 										}}
 										style={{ cursor: 'pointer' }}
 									>
@@ -228,9 +230,19 @@ const Users = (props) => {
 			roles = [];
 		}
 		const rolenames = roles.map((role) => role.value);
-		await brokerClient.updateUserRoles(user, rolenames);
+		try {
+			await brokerClient.updateUserRoles(user, rolenames);
+		} catch(error) {
+			enqueueSnackbar(`Error updating the user "${user.username}". Reason: ${error.message || error}`, {
+				variant: 'error'
+			});
+			throw error;
+		}
 		const users = await brokerClient.listUsers();
 		dispatch(updateUsers(users));
+		enqueueSnackbar(`User "${user.username}" successfully updated`, {
+			variant: 'success'
+		});
 	};
 
 	const onSelectUser = async (username) => {
@@ -269,7 +281,14 @@ const Users = (props) => {
 			});
 			window.location.href = '/logout';
 		}
-		await brokerClient.deleteUser(username);
+		try {
+			await brokerClient.deleteUser(username);
+		} catch(error) {
+			enqueueSnackbar(`Error deleting the user "${username}". Reason: ${error.message || error}`, {
+				variant: 'error'
+			});
+			throw error
+		}
 		enqueueSnackbar(`User "${username}" successfully deleted`, {
 			variant: 'success'
 		});

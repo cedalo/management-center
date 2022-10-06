@@ -59,7 +59,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 	const onRestart = async (brokerConnectionName, serviceName) => {
 		await confirm({
 			title: 'Confirm restart',
-			description: `Note that when the broker is restarted, every connected client will be disconnected and it is up to the client to reconnect.`,
+			description: `Note that when the broker is restarted, every connected client will be disconnected (including the Management Center) and it is up to the client to reconnect.`,
 			cancellationButtonProps: {
 				variant: 'contained'
 			},

@@ -27,7 +27,9 @@ import {
 	updateUserProfile,
 	updateBrokerLicenseInformation,
 	updateTests,
-	updateTestCollections
+	updateTestCollections,
+	updateApplicationTokens,
+	updateLoading
 } from '../actions/actions';
 
 import {
@@ -53,6 +55,7 @@ const WebSocketContext = createContext(null);
 export { WebSocketContext };
 
 const ERROR_MESSAGE = "BaseMosquittoProxyClient: Timeout";
+
 
 
 
@@ -82,25 +85,11 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		dispatch(updateUserRoles(userRoles));
 		const users = await client.listUsers();
 
-
 		if (!Array.isArray(users)) {
-			console.log('THROWING ERROR')
 			throw {name: 'NotAuthorizedError', message: 'Usermanagement is not accessible'}
 		} 
 		
 		dispatch(updateUsers(users));
-		// try {
-		// 	if (userProfile && !userProfile.isAdmin) {
-		// 	}
-		// 	else{
-		// 		const userGroups = await client.listUserGroups();
-		// 		dispatch(updateUserGroups(userGroups));
-		// 	}
-		// } catch(error) {
-		// 	console.error('Error while loading user groups');
-		// 	console.error(error);
-		// 	throw error;
-		// }
 		
 		dispatch(updateFeatures({
 			feature: 'usermanagement',
@@ -119,7 +108,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		dispatch(updateTestCollections(testCollections));
 	} catch (error) {
 		// TODO: handle error
-		console.log(error);
+		console.log('Test collections:', error);
 	}
 
 	try {
@@ -139,6 +128,26 @@ const init = async (client, dispatch, connectionConfiguration) => {
 
 
 	try {
+		const tokens = await client.listApplicationTokens();
+		dispatch(updateApplicationTokens(tokens));
+		dispatch(updateFeatures({
+			feature: 'applicationtokens',
+			status: 'ok'
+		}));
+	} catch (error) {
+		// dispatch(updateFeatures({
+		// 	feature: 'tls',
+		// 	status: 'ok'
+		// }));
+		dispatch(updateFeatures({
+			feature: 'applicationtokens',
+			status: 'failed',
+			error
+		}));
+	}
+
+
+	try {
 		const isEnabled = await client.checkTopictreeRestEnabled();
 		if (isEnabled) {
 			dispatch(updateFeatures({
@@ -146,7 +155,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 				status: 'ok'
 			}));
 		} else {
-			console.log('TOPICTREE FEATURE FAILED!!!2: ', error)
+			console.log('Topic tree REST is disabled');
 			dispatch(updateFeatures({
 				feature: 'topictreerest',
 				status: {message: "BaseMosquittoProxyClient: Timeout", status: 'failed'},
@@ -154,7 +163,6 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			}));
 		}
 	} catch(error) {
-		console.log('TOPICTREE FEATURE FAILED!!!: ', error)
 		dispatch(updateFeatures({
 			feature: 'topictreerest',
 			status: 'failed',
@@ -178,10 +186,6 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		  	}));
 		}
 	} catch (error) {
-		// dispatch(updateFeatures({
-		// 	feature: 'tls',
-		// 	status: 'ok'
-		// }));
 		dispatch(updateFeatures({
 		  	feature: 'tls',
 		  	status: {message: ERROR_MESSAGE, satatus: 'failed'},
@@ -209,6 +213,8 @@ const init = async (client, dispatch, connectionConfiguration) => {
 	dispatch(updateBrokerConfigurations(brokerConfigurations));
 	const settings = await client.getSettings();
 	dispatch(updateSettings(settings));
+
+	dispatch(updateLoading(false));
 
 	try {
 		console.log('Loading dynamic security');
@@ -355,7 +361,8 @@ export default ({ children }) => {
 			console.error(message);
 		});
 		
-		init(client, dispatch, { socketEndpointURL: WS_BASE.url, httpEndpointURL: WS_BASE.urlHTTP });
+		dispatch(updateLoading(true));
+		init(client, dispatch, { socketEndpointURL: WS_BASE.url, httpEndpointURL: WS_BASE.urlHTTP })
 
 		ws = {
 			client: client,

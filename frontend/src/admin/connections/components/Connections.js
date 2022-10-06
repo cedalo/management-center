@@ -37,12 +37,22 @@ import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import PremiumFeatureDialog from '../../../components/PremiumFeatureDialog';
 import BrokerStatusIcon from '../../../components/BrokerStatusIcon';
+
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import Collapse from '@material-ui/core/Collapse';
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+
 // import {
 // 	colors,
 //   } from '@material-ui/core';
 
 
 const GROUP_TABLE_COLUMNS = [
+	{ id: 'expand', key: '' },
 	{ id: 'id', key: 'ID' },
 	{ id: 'configurationName', key: 'Name' },
 	{ id: 'URL', key: 'URL' },
@@ -73,6 +83,163 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
+
+
+
+const CustomRow = (props) => {
+	const { enqueueSnackbar } = useSnackbar();
+
+	const initialCursorPosInfo = {
+		mouseX: null,
+		mouseY: null,
+	};
+
+	const { brokerConnection, handleBrokerConnectionConnectDisconnect, onDeleteConnection } = props;
+	const [open, setOpen] = React.useState(false);
+
+	const [cursorPosInfo, setCursorPosInfo] = React.useState(initialCursorPosInfo);
+	// const [textToCopy, setTextToCopy] = React.useState({
+	// 	internalUrl: '',
+	// 	externalUrl: '',
+	// });
+
+	const handleClick = (event) => {
+	  event.preventDefault();
+	  setCursorPosInfo({
+		mouseX: event.clientX - 2,
+		mouseY: event.clientY - 4,
+	  });
+	};
+  
+	const handleClose = () => {
+		setCursorPosInfo(initialCursorPosInfo);
+	};
+
+
+	const copyText = (text) => {
+		try {
+			navigator.clipboard.writeText(text);
+			enqueueSnackbar(`Text copied successfully`, {
+				variant: 'success'
+			});
+		} catch(error) {
+			enqueueSnackbar(`Couldn't copy text: ${error.message ? error.message : error}`, {
+				variant: 'error'
+			});
+		}
+
+		handleClose();
+	}
+
+	const externalURLExists = (brokerConnection.externalUrl !== brokerConnection.url);
+	const makeCollapsible = externalURLExists || brokerConnection.ca || brokerConnection.cert || brokerConnection.key;
+	const numberOfAdditionalFields = !!externalURLExists + !!brokerConnection.ca + !!brokerConnection.cert + !!brokerConnection.key;
+	const columnSize = (numberOfAdditionalFields === 1) ? 12 : 6;
+
+	return <>
+		<StyledTableRow
+		//   style={{ cursor: "pointer" }}
+			// onClick={() => onSelectConnection(brokerConnection)}
+			onClick={props.onClick}
+			key={brokerConnection.name}
+			onContextMenu={handleClick}
+		>
+			<TableCell>
+				<IconButton aria-label="expand row" size="small"
+					disabled={!makeCollapsible}
+					onClick={(event) =>{
+						event.stopPropagation();
+						setOpen(!open);
+					}}>
+					{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+				</IconButton>
+			</TableCell>
+			<TableCell>{brokerConnection.id}</TableCell>
+			<TableCell>{brokerConnection.name}</TableCell>
+			<TableCell>{brokerConnection.externalUrl || brokerConnection.url}</TableCell>
+			<TableCell>
+				<BrokerStatusIcon brokerConnection={brokerConnection} />
+				{ }
+			</TableCell>
+			<TableCell align="right">
+				<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}>
+					<Switch
+						checked={brokerConnection.status?.connected}
+						name="connectionConnected"
+						onClick={(event) => {
+							event.stopPropagation();
+							handleBrokerConnectionConnectDisconnect(brokerConnection.id, event.target.checked);
+						}}
+						inputProps={{ 'aria-label': 'Connection connected' }}
+					/>
+				</Tooltip>
+				<IconButton
+					disabled={brokerConnection.status?.connected}
+					size="small"
+					onClick={(event) => {
+						event.stopPropagation();
+						onDeleteConnection(brokerConnection.id);
+					}}
+				>
+					<DeleteIcon fontSize="small" />
+				</IconButton>
+			</TableCell>
+		</StyledTableRow>
+		<TableRow>
+			<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+				<Collapse in={open} timeout="auto" unmountOnExit>
+					<Box margin={1} style={{marginTop: '16px'}} align="center">
+						{/* {brokerConnection.externalUrl ? <Typography>Internal URL: {brokerConnection.url}</Typography> : null} */}
+						<Grid container spacing={2} alignItems="flex-end">
+							{externalURLExists ? <Grid item xs={columnSize} align="center">
+																<Typography style={{fontSize: 'small'}}>
+																	<span style={{fontWeight: 'bold'}}>Internal URL: </span>{brokerConnection.url}
+																</Typography>
+															</Grid>
+							: null}
+							{brokerConnection.ca ? <Grid item xs={columnSize} align="center">
+														<Typography style={{fontSize: 'small'}}>
+															<span style={{fontWeight: 'bold'}}>CA Cert File: </span>{brokerConnection.caFile}
+														</Typography>
+													</Grid>
+							: null}
+							{brokerConnection.cert ? <Grid item md={columnSize} align="center">
+														<Typography style={{fontSize: 'small'}}>
+															<span style={{fontWeight: 'bold'}}>Client Cert File: </span>{brokerConnection.certFile}
+														</Typography>
+													</Grid>
+							: null}
+							{brokerConnection.key ? <Grid item md={columnSize} align="center">
+														<Typography style={{fontSize: 'small'}}>
+															<span style={{fontWeight: 'bold'}}>Private Key File: </span>{brokerConnection.keyFile}
+														</Typography>
+													</Grid>
+							: null}
+						</Grid>
+					</Box>
+				</Collapse>
+			</TableCell>
+		</TableRow>
+		<Menu
+			keepMounted
+			open={cursorPosInfo.mouseY !== null}
+			onClose={handleClose}
+			anchorReference="anchorPosition"
+			anchorPosition={
+			cursorPosInfo.mouseY !== null && cursorPosInfo.mouseX !== null
+				? { top: cursorPosInfo.mouseY, left: cursorPosInfo.mouseX }
+				: undefined
+			}
+		>
+			{!externalURLExists ? <MenuItem onClick={() => copyText(brokerConnection.url)}>Copy URL</MenuItem> : null}
+			{externalURLExists ? <MenuItem onClick={() => copyText(brokerConnection.url)}>Copy Internal URL</MenuItem> : null}
+			{externalURLExists ? <MenuItem onClick={() => copyText(brokerConnection.externalUrl)}>Copy External URL</MenuItem> : null}
+		</Menu>
+	</>
+};
+
+
+
 const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 	const classes = useStyles();
 	const history = useHistory();
@@ -95,6 +262,10 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 	};
 
 
+	const onSelectConnection = async (connection) => {
+		dispatch(updateSelectedConnection(connection));
+		history.push(`/config/connections/detail/${connection.id}`);
+	};
 
 
 	const loadConnections = async () => {
@@ -103,11 +274,6 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 		const brokerConfigurations = await brokerClient.getBrokerConfigurations();
 		dispatch(updateBrokerConfigurations(brokerConfigurations));
 	}
-
-	const onSelectConnection = async (connection) => {
-		dispatch(updateSelectedConnection(connection));
-		history.push(`/config/connections/detail/${connection.id}`);
-	};
 
 	const onConnectServerToBroker = async (id) => {
 		try {
@@ -129,12 +295,12 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 
 			let connections = await brokerClient.getBrokerConnections();
 			const connected = connections.filter(connection => connection?.status?.connected);
-			if (connected?.length === 1) {
-				enqueueSnackbar(`Error disconnecting broker. Reason: at least one broker needs to be connected.`, {
-					variant: 'error'
-				});
-				return;
-			}
+			// if (connected?.length === 1) {
+			// 	enqueueSnackbar(`Error disconnecting broker. Reason: at least one broker needs to be connected.`, {
+			// 		variant: 'error'
+			// 	});
+			// 	return;
+			// }
 
 			await confirm({
 				title: 'Confirm disconnecting',
@@ -264,44 +430,13 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 										brokerConnections
 											.sort((a, b) => a.name.localeCompare(b.name))
 											.map((brokerConnection) => (
-												<StyledTableRow
+												<CustomRow 
 													hover
-													key={brokerConnection.name}
 													onClick={() => onSelectConnection(brokerConnection)}
-												//   style={{ cursor: "pointer" }}
-												>
-													<TableCell>{brokerConnection.id}</TableCell>
-													<TableCell>{brokerConnection.name}</TableCell>
-													<TableCell>{brokerConnection.url}</TableCell>
-													<TableCell>
-														
-														<BrokerStatusIcon brokerConnection={brokerConnection} />
-														{ }
-													</TableCell>
-													<TableCell align="right">
-														<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}>
-															<Switch
-																checked={brokerConnection.status?.connected}
-																name="connectionConnected"
-																onClick={(event) => {
-																	event.stopPropagation();
-																	handleBrokerConnectionConnectDisconnect(brokerConnection.id, event.target.checked);
-																}}
-																inputProps={{ 'aria-label': 'Connection connected' }}
-															/>
-														</Tooltip>
-														<IconButton
-															disabled={brokerConnection.status?.connected}
-															size="small"
-															onClick={(event) => {
-																event.stopPropagation();
-																onDeleteConnection(brokerConnection.id);
-															}}
-														>
-															<DeleteIcon fontSize="small" />
-														</IconButton>
-													</TableCell>
-												</StyledTableRow>
+													brokerConnection={brokerConnection}
+													handleBrokerConnectionConnectDisconnect={handleBrokerConnectionConnectDisconnect}
+													onDeleteConnection={onDeleteConnection}
+												/>
 											))}
 								</TableBody>
 							</Table>
@@ -324,7 +459,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 																className={classes.inline}
 																color="textPrimary"
 															>
-																{brokerConnection.url}
+																{brokerConnection.externalUrl || brokerConnection.url}
 															</Typography>
 														</React.Fragment>
 													}

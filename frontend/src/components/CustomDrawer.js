@@ -28,6 +28,8 @@ import EqualizerIcon from '@material-ui/icons/Equalizer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StreamsheetsIcon from '@material-ui/icons/GridOn';
 import StreamsIcon from '@material-ui/icons/Timeline';
+import SecurityIcon from '@material-ui/icons/Security';
+import UserGroupsIcon from '@material-ui/icons/PeopleOutline';
 
 const drawerWidth = 240;
 
@@ -132,8 +134,43 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const CustomDrawer = ({ userProfile = {}, userManagementFeature, dynamicSecurityFeature, hideConnections, open, handleDrawerOpen, handleDrawerClose }) => {
 
+
+const isConnectionAllowed = (userProfile, currentConnectionName, permissionFunction) => {
+	if (!userProfile || !currentConnectionName) return undefined;
+
+	for (const connection of userProfile.connections) {
+		if (connection.name === currentConnectionName) {
+			return permissionFunction(connection);
+		}
+	}
+
+	return undefined;
+};
+
+const atLeastAdmin = (userProfile, currentConnectionName) => {
+	const adminOrHigher = (x) => x?.isAdmin;
+	const connectionAllowed = isConnectionAllowed(userProfile, currentConnectionName, adminOrHigher);
+
+	return  connectionAllowed === undefined ? adminOrHigher(userProfile) : connectionAllowed;
+};
+
+const atLeastEditor = (userProfile, currentConnectionName) => {
+	const editorOrHigher = (x) => x?.isAdmin || x?.isEditor;
+	const connectionAllowed = isConnectionAllowed(userProfile, currentConnectionName, editorOrHigher);
+
+	return connectionAllowed === undefined ? editorOrHigher(userProfile) : connectionAllowed;
+};
+
+const atLeastViewer = (userProfile, currentConnectionName) => {
+	const viewerOrHigher = (x) => x?.isAdmin || x?.isEditor || x?.isViewer;
+	const connectionAllowed = isConnectionAllowed(userProfile, currentConnectionName, viewerOrHigher);
+
+	return  connectionAllowed === undefined ? viewerOrHigher(userProfile) : connectionAllowed;
+};
+
+
+const CustomDrawer = ({ userProfile = {}, userManagementFeature, dynamicSecurityFeature, hideConnections, open, handleDrawerOpen, handleDrawerClose, currentConnectionName, connected}) => {
 	const classes = useStyles();
 	const theme = useTheme();
 
@@ -189,7 +226,7 @@ const CustomDrawer = ({ userProfile = {}, userManagementFeature, dynamicSecurity
 				/>} */}
 			</List>
 			<Divider />
-			{(userProfile?.isAdmin || userProfile?.isEditor) && <><List>
+			{atLeastEditor(userProfile, currentConnectionName) && <><List>
 				{open ? <ListSubheader className={classes.menuSubHeader}>Dynamic Security</ListSubheader> : null}
 				<ListItemLink
 					id="menu-item-clients"
@@ -225,7 +262,7 @@ icon={<StreamsIcon />}
 <Divider /> */}
 
 			<Divider />
-			{userProfile?.isAdmin && <><List>
+			{atLeastAdmin(userProfile) && <><List>
 				{open ? <ListSubheader className={classes.menuSubHeader}>Management</ListSubheader> : null}
 				<ListItemLink
 					id="menu-item-plugins"
@@ -251,38 +288,44 @@ icon={<SettingsIcon />}
 					icon={<StreamsheetsIcon fontSize="small" />}
 				/>
 
-				{userProfile?.isAdmin && <ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon />} />}
-				{userProfile?.isAdmin && <ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon />} />}
+				{atLeastAdmin(userProfile) && <ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon />} />}
+				{atLeastAdmin(userProfile) && <ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon />} />}
 			</List>
 			<Divider />
 			<List>
-				{(userProfile?.isAdmin && open) ? <ListSubheader className={classes.menuSubHeader}>Admin</ListSubheader> : null}
+				{(atLeastAdmin(userProfile) && open) ? <ListSubheader className={classes.menuSubHeader}>Admin</ListSubheader> : null}
 
-				{/* {userProfile?.isAdmin && <ListItemLink
+				{atLeastAdmin(userProfile) && <ListItemLink
 					classes={classes}
 					to="/admin/user-groups"
 					primary="User Groups"
-					icon={<UsersIcon fontSize="small" />}
-				/>} */}
+					icon={<UserGroupsIcon fontSize="small" />}
+				/>}
 
-				{(userProfile?.isAdmin && !hideConnections) ? <ListItemLink
+				{(atLeastAdmin(userProfile) && !hideConnections) ? <ListItemLink
 					classes={classes}
 					to="/config/connections"
 					primary="Connections"
 					icon={<ConnectionsIcon fontSize="small" />}
 				/> : null}
 				{/* <ListItemLink classes={classes} to="/config/settings" primary="Settings" icon={<SettingsIcon />} /> */}
-				{userProfile?.isAdmin && <ListItemLink
+				{atLeastAdmin(userProfile) && <ListItemLink
 					classes={classes}
 					to="/config/settings"
 					primary="Settings"
 					icon={<SettingsIcon fontSize="small" />}
 				/>}
-				{userManagementAccess(userManagementFeature) ? <ListItemLink
+				{atLeastAdmin(userProfile) && userManagementAccess(userManagementFeature) ? <ListItemLink
 					classes={classes}
 					to="/admin/users"
 					primary="User Management"
 					icon={<UsersIcon fontSize="small" />}
+				/> : null}
+				{userProfile?.isAdmin ? <ListItemLink
+					classes={classes}
+					to="/admin/tokens"
+					primary="App Tokens"
+					icon={<SecurityIcon fontSize="small" />}
 				/> : null}
 				{/* {clusterManagementAccess(clusterManagementFeature) ? <ListItemLink
 					classes={classes}

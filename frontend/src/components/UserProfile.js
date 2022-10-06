@@ -30,6 +30,7 @@ import List from '@material-ui/core/List';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Star from '@material-ui/icons/Star';
 import Adjust from '@material-ui/icons/Adjust';
+import Alert from '@material-ui/lab/Alert';
 
    
 // import AutoSuggest from './AutoSuggest';
@@ -152,13 +153,14 @@ const UserProfile = (props) => {
 		<Paper className={classes.paper}>
 			<form className={classes.form} noValidate autoComplete="off">
 				<div className={classes.margin}>
+					{(userProfile?.username === ROOT_USERNAME) ? <Alert style={{marginBottom: '12px'}} severity="info">Note that you cannot edit a root user</Alert> : <></>}
 					<Grid container spacing={1} alignItems="flex-end">
 						<Grid item xs={12}>
 							<TextField
 								required={editMode}
 								disabled={true}
 								id="username"
-								label="username"
+								label="Username"
 								value={editMode ? updatedUser?.username : userProfile.username}
 								defaultValue=""
 								variant="outlined"

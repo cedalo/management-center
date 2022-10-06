@@ -1,26 +1,53 @@
 const path = require('path');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
+const { reverseMap, removeCircular } = require('../utils/utils');
 const { isObject } = require('util');
+const { URL } = require('url');
+const { createConnection } = require('net');
 
+
+const DOCKER_ENV = process.env.CEDALO_DOCKER_ENV; // 
 const configFile = process.env.CEDALO_MC_PROXY_CONFIG || path.join(process.env.CEDALO_MC_PROXY_CONFIG_DIR || __dirname, 'config.json');
 const adapter = new FileSync(configFile);
 const db = low(adapter);
 
+
+const dockerEnvStringToMap = (string) => {
+	const map = new Map();
+	const parts = string.split(';');
+
+	for (const part of parts) {
+		const [key, value] = part.split(':');
+		map.set(key, value);
+	}
+
+	return map;
+};
 
 
 module.exports = class ConfigManager {
 
 	constructor(maxBrokerConnections) {
 		this._maxBrokerConnections = maxBrokerConnections;
+		// construct objects from env vars
+		this.dockerEnv = DOCKER_ENV;
+		if (this.dockerEnv) {
+			this.toExternalHostnamesMap = dockerEnvStringToMap(this.dockerEnv); // map docker servicename to an actual external server url
+			this.toInternalHostnamesMap = reverseMap(this.toExternalHostnamesMap); // map external server url to docker servicenames
+		}
 	}
 
 	get config() {
 		return db.value();
 	}
 
+	getAllConnections() {
+		return db.get('connections').value();
+	}
+
 	get connections() {
-		let connections = db.get('connections').value();
+		let connections = this.getAllConnections();
 		if (connections.length > this._maxBrokerConnections) {
 			connections = connections.slice(0, this._maxBrokerConnections);
 		}
@@ -40,13 +67,15 @@ module.exports = class ConfigManager {
 		db.update('plugins', (oldPlugins) => plugins).write();
 	}
 
-	updatePluginFromConfiguration(oldPluginFeatureId, plugin) {
+	updatePluginFromConfiguration(pluginId, plugin) {
 		if (!isObject(plugin)) {
 			throw new Error('Pluin is of invalid type/empty/not provided');
 		}
 
+		const pluginName = pluginId.replace('_', '-');
+
 		const result = db.get('plugins')
-					.find({ name: oldPluginFeatureId })
+					.find({ name: pluginName })
 					.assign({...plugin})
 					.write();
 
@@ -70,34 +99,39 @@ module.exports = class ConfigManager {
 		};
 	}
 
-	createConnection(connection) {
-		if (!isObject(connection) || (isObject(connection) && (Object.keys(connection).length === 0))) {
-			throw new Error('Connection is of invalid type/empty/not provided');
-		}
+	processInternalExternalURLs(connection) {
+		const hostname = new URL(connection.url).hostname;
+		const internalHostname = this.toInternalHostnamesMap.get(hostname) || hostname;
+		const externalHostname = this.toExternalHostnamesMap.get(hostname) || hostname;
 
-		const connections = db.get('connections').value();
-		connections.forEach((el) => {
-			if (el.name === connection.name || el.id === connection.id) {
-				throw new Error('Connection with the same name/id already exists');
-			}
-		})
+		const internalURL = connection.url.replace(hostname, internalHostname);
+		const externalURL = connection.url.replace(hostname, externalHostname);
 
-		const connectionToSave = this.filterConnectionObject(connection);
-
-		if (db.get('connections').value().length >= this._maxBrokerConnections) {
-			throw new Error('Max broker connections reached');
-		}
-		db.get('connections')
-			.push(connectionToSave)
-			.write();
+		return {
+			...connection,
+			url: internalURL,
+			externalUrl: externalURL,
+		};
 	}
 
-	updateConnection(oldConnectionId, connection) {
+
+	preprocessConnection(connection) {
 		if (!isObject(connection)) {
 			throw new Error('Connection is of invalid type/empty/not provided');
 		}
+		connection = removeCircular(connection);
 
-		const newConnection = this.filterConnectionObject(connection);
+		let newConnection = this.filterConnectionObject(connection);
+		if (newConnection.url && this.dockerEnv) {
+			newConnection = this.processInternalExternalURLs(newConnection);
+		}
+
+		return newConnection;
+	}
+
+
+	updateConnection(oldConnectionId, connection) {
+		const newConnection = this.preprocessConnection(connection);
 
 		const result = db.get('connections')
 			.find({ id: oldConnectionId })
@@ -106,18 +140,16 @@ module.exports = class ConfigManager {
 		return result;
 	}
 
-	// updateConnection(oldConnectionId, connection) {
-	// 	const a =  {...connection};
-	// 	// if (!connection)
-	// 	// 	return;
-	// 	const b = db.get('connections').find({ id: oldConnectionId });
 
-	// 	const result = db.get('connections')
-	// 		.find({ id: oldConnectionId })
-	// 		.assign({...connection})
-	// 		.write();
-	// 	return result;
-	// }
+
+	createConnection(connection) {
+		const newConnection = this.preprocessConnection(connection);
+
+		db.get('connections')
+			.push(newConnection)
+			.write();
+	}
+
 
 	deleteConnection(id) {
 		db.get('connections')

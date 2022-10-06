@@ -14,6 +14,8 @@ const API_STREAMS_PROCESSING = 'stream-processing';
 const API_HIGH_AVAILABILITY = 'cedalo/ha';
 const ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED = 'You are not authorized to access the user management.';
 const ERROR_MESSAGE_API_NOT_FOUND = 'API not found. Note that this is a premium feature.';
+const NOT_AUTHORIZED_MESSAGE = 'Not authorized';
+
 
 class APIError extends Error {
 	constructor(title, message) {
@@ -24,8 +26,8 @@ class APIError extends Error {
 }
 
 class NotAuthorizedError extends APIError {
-	constructor() {
-		super('Not authorized', ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+	constructor(error_message) {
+		super('Not authorized', error_message || ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
 		this.name = 'NotAuthorizedError';
 	}
 }
@@ -59,7 +61,10 @@ const createID = () => uuid();
 
 
 module.exports = class BaseMosquittoProxyClient {
-	constructor({ name, logger, defaultListener } = {}, { socketEndpointURL, httpEndpointURL } = {}, headers=undefined) {
+	constructor({ name, logger, defaultListener } = {}, { socketEndpointURL, httpEndpointURL } = {}, headers=undefined, version=undefined) {
+		if (!version) {
+			version = 1;
+		}
 		this.name = name || 'Default Base Mosquitto Proxy Client';
 		this._logger = logger || {
 			log() { },
@@ -68,7 +73,8 @@ module.exports = class BaseMosquittoProxyClient {
 			debug() { },
 			error() { }
 		};
-		this._headers = headers ? { headers } : undefined;
+		const acceptHeader = {'Accept': `application/json;version=${version}`};
+		this._headers = headers ? { headers: {...acceptHeader,  ...headers} } :  { headers: acceptHeader };
 		this._socketEndpointURL = socketEndpointURL;
 		this._httpEndpointURL = httpEndpointURL;
 		this._eventHandler = (event) => this.logger.info(event);
@@ -172,12 +178,12 @@ module.exports = class BaseMosquittoProxyClient {
 		});
 	}
 
-	async setPluginStatusAtNextStartup(pluginFeatureId, nextStatus) {
+	async setPluginStatusAtNextStartup(pluginId, nextStatus) {
 		return this.sendRequest({
 			id: createID(),
 			type: 'request',
 			request: 'setPluginStatusAtNextStartup',
-			pluginFeatureId,
+			pluginId,
 			nextStatus
 		});
 	}
@@ -236,6 +242,8 @@ module.exports = class BaseMosquittoProxyClient {
 		} catch (error) {
 			if (error?.response?.status === 404) {
 				throw new APINotFoundError();
+			} else if (error?.response?.status === 400) {
+				throw new APIError('400', error.response.data || 'Invalid request');
 			} else {
 				throw new NotAuthorizedError();
 			}
@@ -297,6 +305,8 @@ module.exports = class BaseMosquittoProxyClient {
 		} catch (error) {
 			if (error?.response?.status === 404) {
 				throw new APINotFoundError();
+			} else if (error?.response?.status === 400) {
+				throw new APIError('400', error.response.data || 'Invalid request');
 			} else {
 				throw new NotAuthorizedError();
 			}
@@ -418,9 +428,9 @@ module.exports = class BaseMosquittoProxyClient {
 
 	async checkTLSEnabled() {
 		try {
-			const url = `${this._httpEndpointURL}/api/tls/ping`;
-			const response = await axios.get(url);
-			return response.data?.pong;
+			const url = `${this._httpEndpointURL}/api/user-management/groups/${groupname}`;
+			const response = await axios.get(url, this._headers);
+			return response.data;
 		} catch (error) {
 			if (error?.response?.status === 404) {
 				throw new APINotFoundError();
@@ -430,6 +440,117 @@ module.exports = class BaseMosquittoProxyClient {
 		}
 	}
 
+
+	async listUserGroupsOfUser(username) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/groups/user/${username}`;
+			const response = await axios.get(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
+	async listUserGroups() {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/groups`;
+			const response = await axios.get(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
+	async createUserGroup(name, role, description='', users=[], connections=[]) {
+		try {
+			const group = {
+				name,
+				description,
+				role,
+				users,
+				connections,
+			}
+			const url = `${this._httpEndpointURL}/api/user-management/groups`;
+			const response = await axios.post(url, group, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
+	async deleteUserGroup(groupname) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/groups/${groupname}`;
+			const response = await axios.delete(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
+	async updateUserGroup(group) {
+		try {
+			const url = `${this._httpEndpointURL}/api/user-management/groups/${group.name}`;
+			const response = await axios.put(url, group, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
+	}
+
+
+	/**
+	 * ******************************************************************************************
+	 * Methods for TLS plugin
+	 * ******************************************************************************************
+	 */
+
+
+	async checkTLSEnabled() {
+		try {
+			const url = `${this._httpEndpointURL}/api/tls/ping`;
+			const response = await axios.get(url);
+			return response.data?.pong;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
+			}
+		}
+	}
+
+
+
+	/**
+	 * ******************************************************************************************
+	 * Methods for connections
+	 * ******************************************************************************************
+	 */
 
 
 	async getConnections() {
@@ -441,7 +562,80 @@ module.exports = class BaseMosquittoProxyClient {
 			if (error?.response?.status === 404) {
 				throw new APINotFoundError();
 			} else {
-				throw new NotAuthorizedError();
+				throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
+			}
+		}
+	}
+
+
+
+	/**
+	 * ******************************************************************************************
+	 * Methods for application token management
+	 * ******************************************************************************************
+	 */
+
+
+	 async listApplicationTokens() {
+		try {
+			const url = `${this._httpEndpointURL}/api/tokens`;
+			const response = await axios.get(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
+			}
+		}
+	}
+
+
+	async getApplicationToken(tokenHash) {
+		try {
+			const url = `${this._httpEndpointURL}/api/tokens/${tokenHash}`;
+			const response = await axios.get(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
+			}
+		}
+	}
+
+
+	async createApplicationToken(name, role, validUntil) {
+		try {
+			const tokenPayload = {
+				name,
+				role,
+				validUntil,
+			};
+			const url = `${this._httpEndpointURL}/api/tokens`;
+			const response = await axios.post(url, tokenPayload, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
+			}
+		}
+	}
+
+
+	async deleteApplicationToken(tokenHash) {
+		try {
+			const url = `${this._httpEndpointURL}/api/tokens/${tokenHash}`;
+			const response = await axios.delete(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
 			}
 		}
 	}
