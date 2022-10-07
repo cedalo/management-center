@@ -1,7 +1,7 @@
 const path = require('path');
 
 const PLUGIN_DIR = process.env.CEDALO_MC_PLUGIN_DIR;
-const LOGIN_PLUGIN_FEATURE_IDS = ['saml-sso', 'security'];
+const LOGIN_PLUGIN_FEATURE_IDS = ['saml-sso'];
 const OS_PLUGINS_IDS = ['cedalo_login', 'cedalo_user_profile', 'cedalo_connect_disconnect'];
 
 
