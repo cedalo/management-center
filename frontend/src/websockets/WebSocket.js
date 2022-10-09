@@ -129,16 +129,21 @@ const init = async (client, dispatch, connectionConfiguration) => {
 
 	try {
 		const tokens = await client.listApplicationTokens();
-		dispatch(updateApplicationTokens(tokens));
-		dispatch(updateFeatures({
-			feature: 'applicationtokens',
-			status: 'ok'
-		}));
+		
+		if (!Array.isArray(tokens)) {
+			dispatch(updateFeatures({
+				feature: 'applicationtokens',
+				status: 'failed',
+				error: 'Not found'
+			}));
+		} else {
+			dispatch(updateApplicationTokens(tokens));
+			dispatch(updateFeatures({
+				feature: 'applicationtokens',
+				status: 'ok'
+			}));
+		}
 	} catch (error) {
-		// dispatch(updateFeatures({
-		// 	feature: 'tls',
-		// 	status: 'ok'
-		// }));
 		dispatch(updateFeatures({
 			feature: 'applicationtokens',
 			status: 'failed',

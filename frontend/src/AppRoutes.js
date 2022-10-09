@@ -50,6 +50,8 @@ import TestEdit from './components/TestEdit';
 import TestCollections from './components/TestCollections';
 import TestCollectionDetail from './components/TestCollectionDetail';
 import ApplicationTokens from './components/ApplicationTokens';
+import { atLeastAdmin, atLeastEditor, atLeastViewer } from './utils/accessUtils/access';
+
 
 const useStyles = makeStyles((theme) => ({
 	
@@ -57,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
 
 function AppRoutes(props) {
 
+	const { selectedConnectionToEdit: connection } = props;
 	const { userProfile, userManagementFeature } = props;
 	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/theme`);
 	const [responseConfig, loadingConfig, hasErrorConfig] = useFetch(`${process.env.PUBLIC_URL}/api/config`);
@@ -112,14 +115,14 @@ function AppRoutes(props) {
 				<Route path="/terminal">
 					<Terminal />
 				</Route>
-				{userProfile?.isAdmin && <Route
+				{atLeastAdmin(userProfile) && <Route
 					path="/streams/detail/:streamId"
 					component={StreamDetail}
 				/>}
-				{userProfile?.isAdmin && <Route path="/streams/new">
+				{atLeastAdmin(userProfile) && <Route path="/streams/new">
 					<StreamNew />
 				</Route>}
-				{userProfile?.isAdmin && <Route path="/streams">
+				{atLeastAdmin(userProfile) && <Route path="/streams">
 					<Streams />
 				</Route>}
 				<Route path="/system/status">
@@ -131,16 +134,16 @@ function AppRoutes(props) {
 				<Route path="/system">
 					<System />
 				</Route>
-				{userProfile?.isAdmin && <Route path="/config/connections/new">
+				{atLeastAdmin(userProfile) && <Route path="/config/connections/new">
 					<ConnectionNew />
 				</Route>}
-				{userProfile?.isAdmin && <Route path="/config/connections/detail/:connectionId">
+				{atLeastAdmin(userProfile, connection?.name) && <Route path="/config/connections/detail/:connectionId">
 					<ConnectionDetail />
 				</Route>}
 				{ !hideConnections ? <Route path="/config/connections">
 					<Connections />
 				</Route> : null }
-				{userProfile?.isAdmin && <Route path="/config/settings">
+				{atLeastAdmin(userProfile) && <Route path="/config/settings">
 					<Settings />
 				</Route>}
 				<Route path="/config">
@@ -155,17 +158,17 @@ function AppRoutes(props) {
 				/>
 	
 
-				{userProfile?.isAdmin && <Route path="/admin/user-groups/new">
+				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups/new">
 					<UserGroupNew />
 				</Route>}
-				{userProfile?.isAdmin && <Route path="/admin/user-groups/detail/:groupId"
+				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups/detail/:groupId"
 						component={UserGroupDetail}
 				/>}
-				{userProfile?.isAdmin && <Route path="/admin/user-groups">
+				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups">
 					<SortableTablePage Component={UserGroups} />
 				</Route>}
 
-				{userProfile?.isAdmin && <Route path="/admin/tokens">
+				{atLeastAdmin(userProfile) && <Route path="/admin/tokens">
 					<ApplicationTokens />
 				</Route>}
 
@@ -225,7 +228,8 @@ function AppRoutes(props) {
 const mapStateToProps = (state) => {
 	return {
 		userProfile: state.userProfile?.userProfile,
-		userManagementFeature: state.systemStatus?.features?.usermanagement
+		userManagementFeature: state.systemStatus?.features?.usermanagement,
+		selectedConnectionToEdit: state.brokerConnections?.selectedConnectionToEdit
 	};
 };
 

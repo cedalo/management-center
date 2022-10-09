@@ -45,7 +45,11 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import { updateBrokerConnected } from '../../../actions/actions';
 
+import { handleConnectionChange } from '../../../utils/connectionUtils/connections';
+
+import { atLeastAdmin } from '../../../utils/accessUtils/access';
 // import {
 // 	colors,
 //   } from '@material-ui/core';
@@ -94,7 +98,7 @@ const CustomRow = (props) => {
 		mouseY: null,
 	};
 
-	const { brokerConnection, handleBrokerConnectionConnectDisconnect, onDeleteConnection } = props;
+	const { brokerConnection, handleBrokerConnectionConnectDisconnect, onDeleteConnection, userProfile } = props;
 	const [open, setOpen] = React.useState(false);
 
 	const [cursorPosInfo, setCursorPosInfo] = React.useState(initialCursorPosInfo);
@@ -164,11 +168,12 @@ const CustomRow = (props) => {
 			<TableCell align="right">
 				<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}>
 					<Switch
+						disabled={!atLeastAdmin(userProfile, brokerConnection.name)}
 						checked={brokerConnection.status?.connected}
 						name="connectionConnected"
 						onClick={(event) => {
 							event.stopPropagation();
-							handleBrokerConnectionConnectDisconnect(brokerConnection.id, event.target.checked);
+							handleBrokerConnectionConnectDisconnect(brokerConnection.id, brokerConnection.name, event.target.checked);
 						}}
 						inputProps={{ 'aria-label': 'Connection connected' }}
 					/>
@@ -240,7 +245,7 @@ const CustomRow = (props) => {
 
 
 
-const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
+const Connections = ({ brokerConnections, onSort, sortBy, sortDirection, connected, userProfile}) => {
 	const classes = useStyles();
 	const history = useHistory();
 	const dispatch = useDispatch();
@@ -263,6 +268,9 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 
 
 	const onSelectConnection = async (connection) => {
+		if (!atLeastAdmin(userProfile, connection.name)) {
+			return;
+		}
 		dispatch(updateSelectedConnection(connection));
 		history.push(`/config/connections/detail/${connection.id}`);
 	};
@@ -275,9 +283,15 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 		dispatch(updateBrokerConfigurations(brokerConfigurations));
 	}
 
-	const onConnectServerToBroker = async (id) => {
+	const onConnectServerToBroker = async (id, name) => {
 		try {
 			await brokerClient.connectServerToBroker(id);
+			if (!connected) {
+				handleConnectionChange(dispatch, brokerClient, name, name).catch((error) => console.error('Error while pulling information from the broker on reconnect: ' + error));
+				// await brokerClient.connectToBroker(name);
+				// dispatch(updateBrokerConnected(true, name));
+			}
+
 			enqueueSnackbar(`Connection "${id}" successfully established`, {
 				variant: 'success'
 			});
@@ -290,11 +304,11 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 		await loadConnections();
 	}
 
-	const onDisconnectServerFromBroker = async (id) => {
+	const onDisconnectServerFromBroker = async (id, name) => {
 		try {
 
 			let connections = await brokerClient.getBrokerConnections();
-			const connected = connections.filter(connection => connection?.status?.connected);
+			// const connected = connections.filter(connection => connection?.status?.connected);
 			// if (connected?.length === 1) {
 			// 	enqueueSnackbar(`Error disconnecting broker. Reason: at least one broker needs to be connected.`, {
 			// 		variant: 'error'
@@ -320,6 +334,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 			});
 			connections = await brokerClient.getBrokerConnections();
 			dispatch(updateBrokerConnections(connections));
+			handleConnectionChange(dispatch, brokerClient, name, name).catch((error) => console.error('Error while pulling information from the broker on disconnect: ' + error));
 		} catch (error) {
 			// setPremiumFeatureDialogOpen(true);
 			enqueueSnackbar(`Error disconnecting broker. Reason: ${error.message ? error.message : error}`, {
@@ -332,11 +347,11 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 		await loadConnections();
 	}
 
-	const handleBrokerConnectionConnectDisconnect = async (id, connect) => {
+	const handleBrokerConnectionConnectDisconnect = async (id, name, connect) => {
 		if (connect) {
-			await onConnectServerToBroker(id);
+			await onConnectServerToBroker(id, name);
 		} else {
-			await onDisconnectServerFromBroker(id);
+			await onDisconnectServerFromBroker(id, name);
 		}
 	};
 
@@ -436,6 +451,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 													brokerConnection={brokerConnection}
 													handleBrokerConnectionConnectDisconnect={handleBrokerConnectionConnectDisconnect}
 													onDeleteConnection={onDeleteConnection}
+													userProfile={userProfile}
 												/>
 											))}
 								</TableBody>
@@ -490,7 +506,9 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection }) => {
 
 const mapStateToProps = (state) => {
 	return {
-		brokerConnections: state.brokerConnections?.brokerConnections
+		brokerConnections: state.brokerConnections?.brokerConnections,
+		connected: state.brokerConnections.connected,
+		userProfile: state.userProfile?.userProfile,
 	};
 };
 

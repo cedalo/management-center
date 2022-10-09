@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
-const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus, defaultClient, currentConnection, currentConnectionName }) => {
+const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus, defaultClient, currentConnection, currentConnectionName, connected }) => {
 	const classes = useStyles();
 	const confirm = useConfirm();
 	const { enqueueSnackbar } = useSnackbar();
@@ -122,7 +122,14 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 				</Typography>
 			</Breadcrumbs>
 			<br />
-			{systemStatus?.$SYS ? <Container maxWidth={false}>
+			{!connected ? <>
+					<Alert severity="warning">
+						<AlertTitle>System status information not accessible</AlertTitle>
+						The selected broker connection is not active
+					</Alert>
+				</> : <></>
+			}
+			{systemStatus?.$SYS && connected ? <Container maxWidth={false}>
 				<Grid container spacing={3}>
 					<Grid item xs={10}>
 						<Typography variant="h5" component="div" gutterBottom>
@@ -317,11 +324,11 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 
 					</Grid>
 				</Grid>
-			</Container> : <Alert severity="warning">
+			</Container> : (connected ? <Alert severity="warning">
 				<AlertTitle>System status information not accessible</AlertTitle>
 				We couldn't retrieve the system status information.
 				Please make sure that the user "{defaultClient?.username}" has the rights to read the "$SYS" topic on the selected broker.
-			</Alert>
+			</Alert> : <></>)
 			}
 			{systemStatus?.$SYS && <div style={{
 				fontSize: '0.9em',
@@ -344,6 +351,7 @@ const mapStateToProps = (state) => {
 		defaultClient: state.brokerConnections?.defaultClient,
 		currentConnection: state.brokerConnections.currentConnection,
 		currentConnectionName: state.brokerConnections.currentConnectionName,
+		connected: state.brokerConnections?.connected,
 	};
 };
 

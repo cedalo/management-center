@@ -273,7 +273,7 @@ const init = async (licenseContainer) => {
 
 	config.connections = connections;
 
-	const handleConnectServerToBroker = async (connection) => {
+	const handleConnectServerToBroker = async (connection, user) => {
 
 		const brokerClient = new NodeMosquittoClient({
 			/* logger: console */
@@ -321,7 +321,7 @@ const init = async (licenseContainer) => {
 						syscall: 'on'
 					}
 				};
-				sendConnectionsUpdate(brokerClient);
+				sendConnectionsUpdate(brokerClient, user);
 			});
 			// TODO: this listener is not applied
 			brokerClient.on('connect', () => {
@@ -330,7 +330,7 @@ const init = async (licenseContainer) => {
 					connected: true,
 					timestamp: Date.now()
 				};
-				sendConnectionsUpdate(brokerClient);
+				sendConnectionsUpdate(brokerClient, user);
 			});
 		} catch (error) {
 			//  //!! disconnect broker client
@@ -341,7 +341,7 @@ const init = async (licenseContainer) => {
 				error: error
 			};
 
-			sendConnectionsUpdate(brokerClient);
+			sendConnectionsUpdate(brokerClient, user);
 		} finally {
 			stopFunctions.push(async () => await brokerClient.disconnect());
 		}
@@ -435,11 +435,11 @@ const init = async (licenseContainer) => {
 	console.log(`Started Mosquitto proxy at http://localhost:${CEDALO_MC_PROXY_PORT}`);
 
 	// TODO: move somewhere else
-	const userCanAccessAPI = (user, api, broker) => {
-		if (api === 'stream-processing' && !context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, broker.name)) {
+	const userCanAccessAPI = (user, api, connection) => {
+		if (api === 'stream-processing' && !context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, connection.name)) {
 			return false;
 		}
-		if (api === 'dynamic-security' && !context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastEditor, broker.name)) {
+		if (api === 'dynamic-security' && !context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastEditor, connection.name)) {
 			return false;
 		}
 		return true;
@@ -448,7 +448,8 @@ const init = async (licenseContainer) => {
 	const handleCommandMessage = async (message, client, user = {}) => {
 		const { api, command } = message;
 		const broker = context.brokerManager.getBroker(client);
-		if (!userCanAccessAPI(user, api, broker)) {
+		const connection = context.brokerManager.getBrokerConnectionByClient(client);
+		if (!userCanAccessAPI(user, api, connection)) {
 			throw new NotAuthorizedError();
 		}
 		if (broker) {
@@ -478,6 +479,8 @@ const init = async (licenseContainer) => {
 			} else {
 				throw new Error('Broker not connected');
 			}
+		} else {
+			throw new Error('Broker not found/not connected');
 		}
 	};
 
@@ -540,12 +543,17 @@ const init = async (licenseContainer) => {
 					const connections = configManager.connections;
 					return connections;
 				} else {
-					const connections = configManager.connections.map(connection => {
-						const connectionCopy = Object.assign({}, connection);
-						delete connectionCopy.credentials;
-						return connectionCopy;
+					const connections = configManager.connections;
+					const filteredConnections = context.security.acl.filterAllowedConnections(connections, user.connections);
+					const result = filteredConnections.map(connection => {
+						if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, connection.name)) {
+							return connection;
+						} else {
+							const connectionCopy = Object.assign({}, connection);
+							delete connectionCopy.credentials;
+							return connectionCopy;
+						}
 					});
-					const result = context.security.acl.filterAllowedConnections(connections, user.connections);
 					return result;
 				}
 			}
@@ -753,12 +761,19 @@ const init = async (licenseContainer) => {
 		}
 	};
 
-	const sendConnectionsUpdate = (brokerClient) => {
+	const sendConnectionsUpdate = (brokerClient, user) => {
+		const connections = context.brokerManager.getBrokerConnections();
+		let payload;
+
+		if (user) {
+			payload = context.security.acl.filterAllowedConnections(connections, user.connections);
+		}
+
 		const messageObject = {
 			type: 'event',
 			event: {
 				type: 'connections',
-				payload: context.brokerManager.getBrokerConnections()
+				payload
 			}
 		};
 		notifyWebSocketClients(messageObject, brokerClient);

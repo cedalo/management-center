@@ -30,6 +30,7 @@ import StreamsheetsIcon from '@material-ui/icons/GridOn';
 import StreamsIcon from '@material-ui/icons/Timeline';
 import SecurityIcon from '@material-ui/icons/Security';
 import UserGroupsIcon from '@material-ui/icons/PeopleOutline';
+import { atLeastAdmin, atLeastEditor, atLeastViewer } from '../utils/accessUtils/access';
 
 const drawerWidth = 240;
 
@@ -133,41 +134,6 @@ const useStyles = makeStyles((theme) => ({
 		}
 	},
 }));
-
-
-
-const isConnectionAllowed = (userProfile, currentConnectionName, permissionFunction) => {
-	if (!userProfile || !currentConnectionName) return undefined;
-
-	for (const connection of userProfile.connections) {
-		if (connection.name === currentConnectionName) {
-			return permissionFunction(connection);
-		}
-	}
-
-	return undefined;
-};
-
-const atLeastAdmin = (userProfile, currentConnectionName) => {
-	const adminOrHigher = (x) => x?.isAdmin;
-	const connectionAllowed = isConnectionAllowed(userProfile, currentConnectionName, adminOrHigher);
-
-	return  connectionAllowed === undefined ? adminOrHigher(userProfile) : connectionAllowed;
-};
-
-const atLeastEditor = (userProfile, currentConnectionName) => {
-	const editorOrHigher = (x) => x?.isAdmin || x?.isEditor;
-	const connectionAllowed = isConnectionAllowed(userProfile, currentConnectionName, editorOrHigher);
-
-	return connectionAllowed === undefined ? editorOrHigher(userProfile) : connectionAllowed;
-};
-
-const atLeastViewer = (userProfile, currentConnectionName) => {
-	const viewerOrHigher = (x) => x?.isAdmin || x?.isEditor || x?.isViewer;
-	const connectionAllowed = isConnectionAllowed(userProfile, currentConnectionName, viewerOrHigher);
-
-	return  connectionAllowed === undefined ? viewerOrHigher(userProfile) : connectionAllowed;
-};
 
 
 const CustomDrawer = ({ userProfile = {}, userManagementFeature, dynamicSecurityFeature, hideConnections, open, handleDrawerOpen, handleDrawerClose, currentConnectionName, connected}) => {
@@ -288,12 +254,12 @@ icon={<SettingsIcon />}
 					icon={<StreamsheetsIcon fontSize="small" />}
 				/>
 
-				{atLeastAdmin(userProfile) && <ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon />} />}
-				{atLeastAdmin(userProfile) && <ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon />} />}
+				{atLeastAdmin(userProfile, currentConnectionName) && <ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon />} />}
+				{atLeastAdmin(userProfile, currentConnectionName) && <ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon />} />}
 			</List>
 			<Divider />
 			<List>
-				{(atLeastAdmin(userProfile) && open) ? <ListSubheader className={classes.menuSubHeader}>Admin</ListSubheader> : null}
+				{(atLeastAdmin(userProfile, currentConnectionName) && open) ? <ListSubheader className={classes.menuSubHeader}>Admin</ListSubheader> : null}
 
 				{atLeastAdmin(userProfile) && <ListItemLink
 					classes={classes}
@@ -302,7 +268,7 @@ icon={<SettingsIcon />}
 					icon={<UserGroupsIcon fontSize="small" />}
 				/>}
 
-				{(atLeastAdmin(userProfile) && !hideConnections) ? <ListItemLink
+				{(atLeastAdmin(userProfile, currentConnectionName) && !hideConnections) ? <ListItemLink
 					classes={classes}
 					to="/config/connections"
 					primary="Connections"
@@ -321,7 +287,7 @@ icon={<SettingsIcon />}
 					primary="User Management"
 					icon={<UsersIcon fontSize="small" />}
 				/> : null}
-				{userProfile?.isAdmin ? <ListItemLink
+				{atLeastAdmin(userProfile) ? <ListItemLink
 					classes={classes}
 					to="/admin/tokens"
 					primary="App Tokens"
@@ -333,7 +299,7 @@ icon={<SettingsIcon />}
 					primary="Cluster Management"
 					icon={<ClusterIcon fontSize="small" />}
 				/> : null} */}
-				{<ListItemLink
+				{atLeastAdmin(userProfile) && <ListItemLink
 					classes={classes}
 					to="/admin/clusters"
 					primary="Cluster Management"

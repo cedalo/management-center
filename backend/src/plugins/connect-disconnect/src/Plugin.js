@@ -28,7 +28,7 @@ module.exports = class Plugin extends BasePlugin {
 		if (this._context.security.acl.isConnectionAuthorized(user, this._context.security.acl.atLeastAdmin, null, id)) {
 			const connection = this._context.configManager.getConnection(id);
 			try {
-				await this._context.actions.handleConnectServerToBroker(connection);
+				await this._context.actions.handleConnectServerToBroker(connection, user);
 			} catch (error) {
 				throw error;
 			}
