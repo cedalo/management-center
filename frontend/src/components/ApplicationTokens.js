@@ -122,15 +122,15 @@ const stringToDate = (dateString) => { // ISO 8601 format date string
 };
 
 
-const formatDateToHumanReadable = (date) => {
+const formatDateToISO8601String = (date) => {
 	return getDateString(date, ' ') + ':' + (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
 };
 
 
-const getDateString = (date) => { // convert to ISO 8601 format date string without seconds portion
+const getDateString = (date, separator='T') => { // convert to ISO 8601 format date string without seconds portion
 	return date.getFullYear() + '-'
 			+ ((date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)) + '-'
-			+ (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + 'T'
+			+ (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + separator
 			+ (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':'
 			+ (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes());
 };
@@ -205,7 +205,7 @@ const createNewTokenDialog = (dialogOpen, handleDialogClose, client, userRoles, 
 		setLoading(true);
 		let createdToken;
 		try {
-			createdToken = await client.createApplicationToken(tokenName, role, validUntil);
+			createdToken = await client.createApplicationToken(tokenName, role, formatDateToISO8601String(stringToDate(validUntil)));
 		} catch(error) {
 			enqueueSnackbar(`Couldn't create a token`, {
 				variant: 'error'
@@ -382,7 +382,7 @@ const createNewTokenDialog = (dialogOpen, handleDialogClose, client, userRoles, 
 									<TextField
 											disabled
 											fullWidth
-											defaultValue={createdToken.validUntil}
+											defaultValue={getDateString(new Date(createdToken.validUntil))}
 											id="token-validuntil-readonly"
 											label="Valid Until"
 											variant="filled"
@@ -396,7 +396,7 @@ const createNewTokenDialog = (dialogOpen, handleDialogClose, client, userRoles, 
 									<TextField
 											disabled
 											fullWidth
-											defaultValue={createdToken.issueDate}
+											defaultValue={getDateString(new Date(createdToken.issueDate))}
 											id="token-issuedate-readonly"
 											label="Issue Date"
 											variant="filled"
@@ -496,10 +496,10 @@ const createUserTable = (tokens, classes, props, onDeleteToken) => {
 						<colgroup>
 							<col key={1} style={{width:'15.5%'}}/>
 							<col key={2} style={{width:'10%'}}/>
-							<col key={3} style={{width:'12%'}}/>
-							<col key={4} style={{width:'18%'}}/>
-							<col key={5} style={{width:'18%'}}/>
-							<col key={6} style={{width:'18%'}}/>
+							<col key={3} style={{width:'15%'}}/>
+							<col key={4} style={{width:'17%'}}/>
+							<col key={5} style={{width:'17%'}}/>
+							<col key={6} style={{width:'17%'}}/>
 							<col key={7} style={{width:'9.5%'}}/>
 						</colgroup>
 						<TableHead>
@@ -549,7 +549,7 @@ const createUserTable = (tokens, classes, props, onDeleteToken) => {
 											{(token.requestedBy.length > 18) ?
 												<Tooltip title={token.requestedBy}>
 													<div>
-														{token.requestedBy.substring(0, 20) + '...'}
+														{token.requestedBy.substring(0, 18) + '...'}
 													</div>
 												</Tooltip> :
 												<>
@@ -557,9 +557,9 @@ const createUserTable = (tokens, classes, props, onDeleteToken) => {
 												</>
 											}
                                         </TableCell>
-                                        <TableCell>{token.issueDate ? formatDateToHumanReadable(stringToDate(token.issueDate)) : ''}</TableCell>
-                                        <TableCell>{token.validUntil ? formatDateToHumanReadable(stringToDate(token.validUntil)) : ''}</TableCell>
-                                        <TableCell>{token.lastUsed ? formatDateToHumanReadable(stringToDate(token.lastUsed)) : ''}</TableCell>
+                                        <TableCell>{token.issueDate ? getDateString(new Date(token.issueDate)) : ''}</TableCell>
+                                        <TableCell>{token.validUntil ? getDateString(new Date(token.validUntil)) : ''}</TableCell>
+                                        <TableCell>{token.lastUsed ? getDateString(new Date(token.lastUsed)) : ''}</TableCell>
 										<TableCell className={classes.badges}>
                                             <Tooltip title={token.hash}>
                                                 <TextField
@@ -592,7 +592,7 @@ const createUserTable = (tokens, classes, props, onDeleteToken) => {
 										
 
 										<TableCell align="center">
-										{token.validUntil && (stringToDate(token.validUntil)) > (new Date()) ?
+										{token.validUntil && (new Date(token.validUntil)) > (new Date()) ?
 											<Tooltip title={"Token is valid"}>
 											 	<EnabledIcon fontSize="small" style={{ color: green[500] }} />
 										 	</Tooltip>
