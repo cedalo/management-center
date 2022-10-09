@@ -177,6 +177,9 @@ const ConnectionDetailComponent = (props) => {
 		connection.id = 'default';
 		editModeEnabledByDefault = true;
 	}
+	if (!connection.credentials) {
+		connection.credentials = {};
+	}
 
 	const classes = useStyles();
 	const [value, setValue] = React.useState(0);
@@ -487,7 +490,7 @@ const ConnectionDetailComponent = (props) => {
 											setUpdatedConnection({
 												...updatedConnection,
 												credentials: {
-													username: event.target.value,
+													username: event.target.value || undefined,
 													password: updatedConnection.credentials.password,
 												}
 											});
@@ -514,7 +517,7 @@ const ConnectionDetailComponent = (props) => {
 												...updatedConnection,
 												credentials: {
 													username: updatedConnection.credentials.username,
-													password: event.target.value
+													password: event.target.value || undefined,
 												}
 											});
 											setConnected(false);
@@ -562,9 +565,6 @@ const ConnectionDetailComponent = (props) => {
 															disabled={!editMode || !tlsFeature?.supported}
 															checked={updatedConnection[verifyServerCertificateFieldName]}
 															onChange={(event) => {
-																console.log('connection:', connection);
-																console.log('updatedConnection:', updatedConnection);
-
 																if (editMode) {
 																	setUpdatedConnection({
 																		...updatedConnection,
