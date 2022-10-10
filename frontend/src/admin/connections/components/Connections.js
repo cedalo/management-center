@@ -245,7 +245,7 @@ const CustomRow = (props) => {
 
 
 
-const Connections = ({ brokerConnections, onSort, sortBy, sortDirection, connected, userProfile}) => {
+const Connections = ({ brokerConnections, onSort, sortBy, sortDirection, connected, userProfile, currentConnectionName}) => {
 	const classes = useStyles();
 	const history = useHistory();
 	const dispatch = useDispatch();
@@ -334,7 +334,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection, connect
 			});
 			connections = await brokerClient.getBrokerConnections();
 			dispatch(updateBrokerConnections(connections));
-			handleConnectionChange(dispatch, brokerClient, name, name).catch((error) => console.error('Error while pulling information from the broker on disconnect: ' + error));
+			handleConnectionChange(dispatch, brokerClient, currentConnectionName, name).catch((error) => console.error('Error while pulling information from the broker on disconnect: ' + error));
 		} catch (error) {
 			// setPremiumFeatureDialogOpen(true);
 			enqueueSnackbar(`Error disconnecting broker. Reason: ${error.message ? error.message : error}`, {
@@ -509,6 +509,7 @@ const mapStateToProps = (state) => {
 		brokerConnections: state.brokerConnections?.brokerConnections,
 		connected: state.brokerConnections.connected,
 		userProfile: state.userProfile?.userProfile,
+		currentConnectionName: state.brokerConnections.currentConnectionName,
 	};
 };
 
