@@ -288,7 +288,7 @@ const UserGroups = (props) => {
 					<Alert severity="info" style={{marginBottom: '15px'}}>
 						<AlertTitle>User Groups Feature</AlertTitle>
 						You can create user groups for specific connections. Only those connections that are in the group will be accessible to the user. The role specified in the group will override the user's role for the connections assigned to said group.
-						User can be added to more than one group. If user was added to different groups with overlaping connections, then they will get the highest role out of the available groups for those overlapping connections.
+						User can be added to more than one group.
 					</Alert>
 					<Hidden xsDown implementation="css">
 						<TableContainer component={Paper} className={classes.tableContainer}>
