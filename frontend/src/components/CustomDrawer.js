@@ -184,12 +184,12 @@ const CustomDrawer = ({ userProfile = {}, userManagementFeature, dynamicSecurity
 					primary="Topic Tree"
 					icon={<TopicTreeIcon fontSize="small" />}
 				/>
-				{/* {<ListItemLink
+				{<ListItemLink
 					classes={classes}
 					to="/admin/inspect/clients"
 					primary="Clients"
 					icon={<InspectClientsIcon fontSize="small" />}
-				/>} */}
+				/>}
 			</List>
 			<Divider />
 			{atLeastEditor(userProfile, currentConnectionName) && <><List>
