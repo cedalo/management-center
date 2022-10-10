@@ -261,12 +261,6 @@ icon={<SettingsIcon />}
 			<List>
 				{(atLeastAdmin(userProfile, currentConnectionName) && open) ? <ListSubheader className={classes.menuSubHeader}>Admin</ListSubheader> : null}
 
-				{atLeastAdmin(userProfile) && <ListItemLink
-					classes={classes}
-					to="/admin/user-groups"
-					primary="User Groups"
-					icon={<UserGroupsIcon fontSize="small" />}
-				/>}
 
 				{(atLeastAdmin(userProfile, currentConnectionName) && !hideConnections) ? <ListItemLink
 					classes={classes}
@@ -275,18 +269,19 @@ icon={<SettingsIcon />}
 					icon={<ConnectionsIcon fontSize="small" />}
 				/> : null}
 				{/* <ListItemLink classes={classes} to="/config/settings" primary="Settings" icon={<SettingsIcon />} /> */}
-				{atLeastAdmin(userProfile) && <ListItemLink
-					classes={classes}
-					to="/config/settings"
-					primary="Settings"
-					icon={<SettingsIcon fontSize="small" />}
-				/>}
+
 				{atLeastAdmin(userProfile) && userManagementAccess(userManagementFeature) ? <ListItemLink
 					classes={classes}
 					to="/admin/users"
 					primary="User Management"
 					icon={<UsersIcon fontSize="small" />}
 				/> : null}
+				{atLeastAdmin(userProfile) && <ListItemLink
+					classes={classes}
+					to="/admin/user-groups"
+					primary="User Groups"
+					icon={<UserGroupsIcon fontSize="small" />}
+				/>}
 				{atLeastAdmin(userProfile) ? <ListItemLink
 					classes={classes}
 					to="/admin/tokens"
@@ -299,11 +294,19 @@ icon={<SettingsIcon />}
 					primary="Cluster Management"
 					icon={<ClusterIcon fontSize="small" />}
 				/> : null} */}
+
 				{atLeastAdmin(userProfile) && <ListItemLink
 					classes={classes}
 					to="/admin/clusters"
 					primary="Cluster Management"
 					icon={<ClusterIcon fontSize="small" />}
+				/>}
+
+				{atLeastAdmin(userProfile) && <ListItemLink
+					classes={classes}
+					to="/config/settings"
+					primary="Settings"
+					icon={<SettingsIcon fontSize="small" />}
 				/>}
 			</List>
 		</div>
