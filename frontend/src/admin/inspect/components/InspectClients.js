@@ -81,6 +81,8 @@ const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelect
 	if (!inspectFeature?.error && inspectFeature?.supported !== false && clients && clients.length > 0) {
 		return <div>
 			<Hidden xsDown implementation="css">
+				<Typography>Currently connected clients</Typography>
+				<div style={{marginBottom: '15px'}}></div>
 				<TableContainer component={Paper} className={classes.tableContainer}>
 					<Table size="medium">
 						<TableHead>
