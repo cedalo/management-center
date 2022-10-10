@@ -28,7 +28,6 @@ import {
 	updateBrokerLicenseInformation,
 	updateTests,
 	updateTestCollections,
-	updateApplicationTokens,
 	updateLoading
 } from '../actions/actions';
 
@@ -121,31 +120,6 @@ const init = async (client, dispatch, connectionConfiguration) => {
 	} catch (error) {
 		dispatch(updateFeatures({
 			feature: 'clustermanagement',
-			status: 'failed',
-			error
-		}));
-	}
-
-
-	try {
-		const tokens = await client.listApplicationTokens();
-		
-		if (!Array.isArray(tokens)) {
-			dispatch(updateFeatures({
-				feature: 'applicationtokens',
-				status: 'failed',
-				error: 'Not found'
-			}));
-		} else {
-			dispatch(updateApplicationTokens(tokens));
-			dispatch(updateFeatures({
-				feature: 'applicationtokens',
-				status: 'ok'
-			}));
-		}
-	} catch (error) {
-		dispatch(updateFeatures({
-			feature: 'applicationtokens',
 			status: 'failed',
 			error
 		}));

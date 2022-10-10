@@ -66,7 +66,7 @@ module.exports = class PluginManager {
 		// load user management as a first plugin since we redefine isAdmin and alike functions there
 		// also load application-tokens first as it redefines isLoggedIn function
 		// saml-sso redefines the whole login
-		const PLUGIN_IDS_OF_HIGHEST_PRIORITY = ['saml_sso', ...OS_PLUGINS_IDS, 'application_tokens', 'user_management'];
+		const PLUGIN_IDS_OF_HIGHEST_PRIORITY = ['saml_sso', ...OS_PLUGINS_IDS, /*'application_tokens',*/ 'user_management'];
 
 		for (const pluginId of PLUGIN_IDS_OF_HIGHEST_PRIORITY.reverse()) {
 			const pluginIndex = plugins.findIndex((el) => {
@@ -91,7 +91,7 @@ module.exports = class PluginManager {
 
 					const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
 					const plugin = new Plugin({enableAtNextStartup, context});
-					if (plugin.meta.featureId === 'saml-sso' || plugin.meta.featureId === 'application-tokens' || (
+					if (plugin.meta.featureId === 'saml-sso' || (
 						licenseContainer.license.features &&
 						licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
 					)
