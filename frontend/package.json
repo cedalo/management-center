@@ -37,19 +37,19 @@
 		"react-joyride": "^2.4.0",
 		"react-redux": "^7.2.1",
 		"react-router-dom": "^5.2.0",
-		"react-scripts": "^4.0.0",
+		"react-scripts": "^5.0.1",
 		"react-select": "^3.1.0",
 		"redux": "^4.2.0",
 		"sweetalert2": "^11.4.14",
 		"sweetalert2-react-content": "^5.0.0",
-		"terminal-in-react": "^4.3.1"
+		"terminal-in-react": "^3.5.2"
 	},
 	"devDependencies": {
 		"chart.js": "^2.9.3",
 		"clsx": "latest",
 		"cross-env": "^7.0.3",
 		"form-data": "^4.0.0",
-		"jest": "24",
+		"jest": "^29.1.2",
 		"run-script-os": "^1.1.6"
 	},
 	"browserslist": {
