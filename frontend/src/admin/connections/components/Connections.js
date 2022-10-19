@@ -135,7 +135,7 @@ const CustomRow = (props) => {
 		handleClose();
 	}
 
-	const externalURLExists = (brokerConnection.externalUrl !== brokerConnection.url);
+	const externalURLExists = (brokerConnection.externalUrl !== brokerConnection.url && brokerConnection.externalUrl);
 	const makeCollapsible = externalURLExists || brokerConnection.ca || brokerConnection.cert || brokerConnection.key;
 	const numberOfAdditionalFields = !!externalURLExists + !!brokerConnection.ca + !!brokerConnection.cert + !!brokerConnection.key;
 	const columnSize = (numberOfAdditionalFields === 1) ? 12 : 6;
