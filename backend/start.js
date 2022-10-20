@@ -945,6 +945,8 @@ const init = async (licenseContainer) => {
 		server = http.createServer(app);
 		context.server = server;
 		protocol = 'http';
+	} else {
+		server = context.server;
 	}
 
 	// Swagger
