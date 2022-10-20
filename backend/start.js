@@ -33,6 +33,8 @@ const version = require('./src/utils/version');
 const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
+const CEDALO_MC_PLUGIN_HTTPS_PORT = process.env.CEDALO_MC_PLUGIN_HTTPS_PORT;
+const CEDALO_MC_PLUGIN_HTTPS_HOST = process.env.CEDALO_MC_PLUGIN_HTTPS_HOST;
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
 const CEDALO_MC_ENABLE_FULL_LOG = !!process.env.CEDALO_MC_ENABLE_FULL_LOG;
 
@@ -248,11 +250,14 @@ const init = async (licenseContainer) => {
 	app.use(contentTypeParser);
 	app.use(noCache);
 
-	const server = http.createServer(app);
-
 	// TODO: add error handling
 	const config = loadConfig();
 	addStreamsheetsConfig(config);
+
+	let server;
+	const host = CEDALO_MC_PLUGIN_HTTPS_HOST || CEDALO_MC_PROXY_HOST;
+	const port = CEDALO_MC_PLUGIN_HTTPS_PORT || CEDALO_MC_PROXY_PORT;
+	let protocol = config.plugins.find(plugin => plugin.name === 'https') ? 'https' : 'http';
 
 	const wss = new WebSocket.Server({
 		//   port: CEDALO_MC_PROXY_PORT,
@@ -433,7 +438,8 @@ const init = async (licenseContainer) => {
 		}
 	}
 
-	console.log(`Started Mosquitto proxy at http://localhost:${CEDALO_MC_PROXY_PORT}`);
+	console.log(`Starting Mosquitto proxy server at ${protocol}://${host}:${port}`);
+	
 
 	// TODO: move somewhere else
 	const userCanAccessAPI = (user, api, connection) => {
@@ -914,6 +920,7 @@ const init = async (licenseContainer) => {
 		},
 		configManager,
 		app: app,
+		server: null,
 		router: router,
 		config,
 		globalSystem,
@@ -933,6 +940,12 @@ const init = async (licenseContainer) => {
 
 	const pluginManager = new PluginManager();
 	pluginManager.init(config.plugins, context, swaggerDocument);
+
+	if (!context.server) {
+		server = http.createServer(app);
+		context.server = server;
+		protocol = 'http';
+	}
 
 	// Swagger
 	const theme = config.themes?.find((theme) => theme.id === 'custom');
@@ -1031,10 +1044,10 @@ const init = async (licenseContainer) => {
 	router.use(express.static(path.join(__dirname, 'public')));
 
 	server.listen({
-		host: CEDALO_MC_PROXY_HOST,
-		port: CEDALO_MC_PROXY_PORT
+		host,
+		port
 	}, () => {
-		console.log(`Mosquitto proxy server started on port ${server.address().port}`);
+		console.log(`Started Mosquitto proxy server at ${protocol}://${host}:${server.address().port}`);
 		controlElements.serverStarted = true;
 	});
 	server.on('upgrade', (request, socket, head) => {
