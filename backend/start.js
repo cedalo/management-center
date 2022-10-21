@@ -33,8 +33,6 @@ const version = require('./src/utils/version');
 const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
-const CEDALO_MC_PLUGIN_HTTPS_PORT = process.env.CEDALO_MC_PLUGIN_HTTPS_PORT;
-const CEDALO_MC_PLUGIN_HTTPS_HOST = process.env.CEDALO_MC_PLUGIN_HTTPS_HOST;
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
 const CEDALO_MC_ENABLE_FULL_LOG = !!process.env.CEDALO_MC_ENABLE_FULL_LOG;
 
@@ -178,13 +176,22 @@ const addStreamsheetsConfig = (config) => {
 
 const stopFunctions = [];
 
+const eventify = function(arr, callback) {
+    arr.push = function(e) {
+        Array.prototype.push.call(arr, e);
+        callback(arr, e);
+    };
+};
+
 
 const controlElements = {
 	serverStarted: false,
+	stopSignalSent: false,
 	stop: null,
 	logger: console
 };
 const stop = async () => {
+	controlElements.stopSignalSent = true;
 	for (const stopFunction of stopFunctions) {
 		await stopFunction();
 	}
@@ -192,6 +199,11 @@ const stop = async () => {
 };
 controlElements.stop = stop;
 
+eventify(stopFunctions, async function(updatedArr, element) { // add callback to stopFunctions array, will be called on every push
+	if (controlElements.stopSignalSent) {
+		await element();
+	}
+});
 
 const createOptions = (connection) => {
 	// remove unwanted parameters
@@ -255,8 +267,8 @@ const init = async (licenseContainer) => {
 	addStreamsheetsConfig(config);
 
 	let server;
-	const host = CEDALO_MC_PLUGIN_HTTPS_HOST || CEDALO_MC_PROXY_HOST;
-	const port = CEDALO_MC_PLUGIN_HTTPS_PORT || CEDALO_MC_PROXY_PORT;
+	const host = CEDALO_MC_PROXY_HOST;
+	const port = CEDALO_MC_PROXY_PORT;
 	let protocol = config.plugins.find(plugin => plugin.name === 'https') ? 'https' : 'http';
 
 	const wss = new WebSocket.Server({
@@ -349,7 +361,10 @@ const init = async (licenseContainer) => {
 
 			sendConnectionsUpdate(brokerClient, user);
 		} finally {
-			stopFunctions.push(async () => await brokerClient.disconnect());
+			stopFunctions.push(async () => {
+				await brokerClient.disconnect()
+				console.log(`Disconnected from '${connection.name}' at ${connection.url}`);
+			});
 		}
 
 		if (!connectionConfiguration.status.error) {
@@ -427,17 +442,19 @@ const init = async (licenseContainer) => {
 		configManager.updateConnection(connection.id, connection);
 	}
 
-	for (let i = 0; i < connections.length; i++) {
-		if (i < maxBrokerConnections) {
-			const connection = connections[i];
-			const wasConnected = connection.status && connection.status.connected;
-			const hadError = connection.status && connection.status.error;
-			if (wasConnected || hadError || connection.status === undefined) { // Note that we don't connect in case broker was manually disconnected. We connect only in the three cases descirbed in if
-				handleConnectServerToBroker(connections[i]);
+
+	const connectServerToAllBrokers = () => {
+		for (let i = 0; i < connections.length; i++) {
+			if (i < maxBrokerConnections) {
+				const connection = connections[i];
+				const wasConnected = connection.status && connection.status.connected;
+				const hadError = connection.status && connection.status.error;
+				if (wasConnected || hadError || connection.status === undefined) { // Note that we don't connect in case broker was manually disconnected. We connect only in the three cases descirbed in if
+					handleConnectServerToBroker(connections[i]);
+				}
 			}
 		}
 	}
-
 	console.log(`Starting Mosquitto proxy server at ${protocol}://${host}:${port}`);
 	
 
@@ -907,6 +924,7 @@ const init = async (licenseContainer) => {
 		});
 	});
 
+
 	const router = express.Router();
 	app.use(CEDALO_MC_PROXY_BASE_PATH, router);
 
@@ -941,11 +959,14 @@ const init = async (licenseContainer) => {
 	const pluginManager = new PluginManager();
 	pluginManager.init(config.plugins, context, swaggerDocument);
 
-	if (!context.server) {
+	if (context.server instanceof Error) { // https plugin tried to be loaded but failed
+		console.error('HTTPS not properly configured. Exiting...');
+		throw new Error('Exit');
+	} else if (!context.server) { // https plugin not enabled, switch to http server
 		server = http.createServer(app);
 		context.server = server;
 		protocol = 'http';
-	} else {
+	} else { // https plugin was successfully enabled
 		server = context.server;
 	}
 
@@ -957,6 +978,10 @@ const init = async (licenseContainer) => {
 			customCss: `.topbar-wrapper img { height: 30px; content: url(${theme.light.logo.path})}`
 		};
 	}
+
+	connectServerToAllBrokers();
+
+
 	router.use('/api/docs', context.security.isLoggedIn, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 	router.get('/api/version', context.security.isLoggedIn, (request, response) => {
@@ -1127,7 +1152,19 @@ const licenseContainer = {};
 		}
 		licenseContainer.license = license;
 		licenseContainer.isValid = license.isValid;
-		await init(licenseContainer);
+		try {
+			await init(licenseContainer);
+		} catch(error) {
+			console.log('Error encountered');
+			console.log('Attempting graceful shutdown');
+			await controlElements.stop();
+
+			if (error.message === 'Exit') {
+			} else {
+				console.error(error);
+				console.trace();
+			}
+		}
 	});
 })();
 
