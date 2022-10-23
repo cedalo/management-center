@@ -13,6 +13,9 @@ module.exports = {
         isConnectionCreator(request, response, next) {
             return next();
         },
+        isMonitoringViewer(request, response, next) {
+            return next();
+        },
         noRestrictedRoles(request, response, next) {
             return next();
         },
@@ -27,6 +30,12 @@ module.exports = {
         return true;
     },
     isConnectionCreator(user) {
+        return true;
+    },
+    isMonitoringViewer(user) {
+        return true;
+    },
+    allowConditions() {
         return true;
     },
     noRestrictedRoles(user) {
@@ -45,6 +54,9 @@ module.exports = {
         return true;
     },
     atLeastConnectionCreator(user) {
+        return true;
+    },
+    atLeastMonitoringViewer(user) {
         return true;
     },
     isConnectionAuthorized(user) {
