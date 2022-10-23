@@ -252,10 +252,18 @@ const UserGroups = (props) => {
 				</Typography>
 			</Breadcrumbs>
 			{/* TODO: Quick hack to detect whether feature is supported */}
-			{dynamicsecurityFeature?.supported === false ? <><br/><Alert severity="warning">
-				<AlertTitle>Feature not available</AlertTitle>
-				Make sure that the broker connected has the dynamic security enabled.
-			</Alert></> : null}
+			{dynamicsecurityFeature?.supported === false ? <><br/>
+				<Alert severity="warning">
+					<AlertTitle>Feature not available</AlertTitle>
+					Make sure that the broker connected has the dynamic security enabled.
+				</Alert>
+			</> : <><br/>
+				<Alert severity="info" style={{marginBottom: '15px'}}>
+					<AlertTitle>User Groups Feature</AlertTitle>
+					You can create user groups for specific connections. Only those connections that are in the group will be accessible to the user. The role specified in the group will override the user's role for the connections assigned to said group.
+					User can be added to more than one group.
+				</Alert>
+			</>}
 			<br />
 			{dynamicsecurityFeature?.supported !== false && <><Button
 				variant="outlined"
@@ -285,11 +293,6 @@ const UserGroups = (props) => {
 			</>}
 			{dynamicsecurityFeature?.supported !== false && Object.keys(userGroups).length > 0 ? (
 				<div>
-					<Alert severity="info" style={{marginBottom: '15px'}}>
-						<AlertTitle>User Groups Feature</AlertTitle>
-						You can create user groups for specific connections. Only those connections that are in the group will be accessible to the user. The role specified in the group will override the user's role for the connections assigned to said group.
-						User can be added to more than one group.
-					</Alert>
 					<Hidden xsDown implementation="css">
 						<TableContainer component={Paper} className={classes.tableContainer}>
 							<Table>
