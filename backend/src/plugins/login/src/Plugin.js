@@ -70,10 +70,14 @@ module.exports = class Plugin extends BasePlugin {
 		router.get('/login', (request, response) => {
 			response.sendFile(path.join(__dirname, '..', 'component', 'login.html'));
 		});
-	
+
 		router.get('/logout', (request, response) => {
-			request.logout();
-			response.redirect('/login');
+			request.logout(function(error) {
+				if (error) {
+					return next(error);
+				}
+				response.redirect('/login');
+			});
 		});
 	
 		router.post('/auth', passport.authenticate('local', {
