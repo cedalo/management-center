@@ -570,6 +570,79 @@ module.exports = class BaseMosquittoProxyClient {
 
 
 	/**
+	 * ******************************************************************************************
+	 * Methods for application token management
+	 * ******************************************************************************************
+	 */
+
+
+	 async listApplicationTokens() {
+		try {
+			const url = `${this._httpEndpointURL}/api/tokens`;
+			const response = await axios.get(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
+			}
+		}
+	}
+
+
+	async getApplicationToken(tokenHash) {
+		try {
+			const url = `${this._httpEndpointURL}/api/tokens/${tokenHash}`;
+			const response = await axios.get(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
+			}
+		}
+	}
+
+
+	async createApplicationToken(name, role, validUntil) {
+		try {
+			const tokenPayload = {
+				name,
+				role,
+				validUntil,
+			};
+			const url = `${this._httpEndpointURL}/api/tokens`;
+			const response = await axios.post(url, tokenPayload, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
+			}
+		}
+	}
+
+
+	async deleteApplicationToken(tokenHash) {
+		try {
+			const url = `${this._httpEndpointURL}/api/tokens/${tokenHash}`;
+			const response = await axios.delete(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
+			}
+		}
+	}
+
+
+
+	/**
 	* ******************************************************************************************
 	* Methods for topic tree management
 	* ******************************************************************************************

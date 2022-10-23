@@ -49,6 +49,7 @@ import DefaultACLAccess from './components/DefaultACLAccess';
 import TestEdit from './components/TestEdit';
 import TestCollections from './components/TestCollections';
 import TestCollectionDetail from './components/TestCollectionDetail';
+import ApplicationTokens from './components/ApplicationTokens';
 import { atLeastAdmin, atLeastEditor, atLeastViewer } from './utils/accessUtils/access';
 
 
@@ -165,6 +166,10 @@ function AppRoutes(props) {
 				/>}
 				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups">
 					<SortableTablePage Component={UserGroups} />
+				</Route>}
+
+				{atLeastAdmin(userProfile) && <Route path="/admin/tokens">
+					<ApplicationTokens />
 				</Route>}
 
 				<Route path="/admin/users/new">
