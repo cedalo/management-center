@@ -282,6 +282,12 @@ icon={<SettingsIcon />}
 					primary="User Groups"
 					icon={<UserGroupsIcon fontSize="small" />}
 				/>}
+				{atLeastAdmin(userProfile) ? <ListItemLink
+					classes={classes}
+					to="/admin/tokens"
+					primary="App Tokens"
+					icon={<SecurityIcon fontSize="small" />}
+				/> : null}
 				{/* {clusterManagementAccess(clusterManagementFeature) ? <ListItemLink
 					classes={classes}
 					to="/admin/cluster"
