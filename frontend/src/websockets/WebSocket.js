@@ -137,6 +137,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 				error: 'Not found'
 			}));
 		} else {
+			console.log('app tokens are disabled')
 			dispatch(updateApplicationTokens(tokens));
 			dispatch(updateFeatures({
 				feature: 'applicationtokens',
@@ -144,6 +145,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			}));
 		}
 	} catch (error) {
+		console.log('app tokens failed with error:', error);
 		dispatch(updateFeatures({
 			feature: 'applicationtokens',
 			status: 'failed',
@@ -368,6 +370,10 @@ export default ({ children }) => {
 		
 		dispatch(updateLoading(true));
 		init(client, dispatch, { socketEndpointURL: WS_BASE.url, httpEndpointURL: WS_BASE.urlHTTP })
+		.catch(error => {
+			console.error('Error during initialization:', error);
+			dispatch(updateLoading(false));
+		});
 
 		ws = {
 			client: client,
