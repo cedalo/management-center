@@ -6,7 +6,7 @@ module.exports = {
   // "swagger": "2.0",
   "info": {
     "title": "Management Center REST API",
-    "description": "API description for the Management Center. Set the Accept header to \"application/json;version=<version_number>\" to access a ceorrect version of the api",
+    "description": "API description for the Management Center. Set the Accept header to \"application/json;version=<version_number>\" to access a correct version of the api",
     "version": "2.0.0"
   },
   "host": `${CEDALO_MC_PROXY_HOST}:${CEDALO_MC_PROXY_PORT}`,
