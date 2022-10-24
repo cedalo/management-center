@@ -42,7 +42,7 @@
 		"redux": "^4.2.0",
 		"sweetalert2": "^11.4.14",
 		"sweetalert2-react-content": "^5.0.0",
-		"terminal-in-react": "^3.5.2"
+		"terminal-in-react": "^4.3.1"
 	},
 	"devDependencies": {
 		"chart.js": "^2.9.3",
