@@ -29,6 +29,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
 import SaveCancelButtons from './SaveCancelButtons';
+import IconButton from '@material-ui/core/IconButton';
+
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
+
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -69,6 +74,10 @@ const ClientNew = (props) => {
 	const [clientID, setClientID] = useState('');
 	const [textname, setTextname] = useState('');
 	const [textdescription, setTextdescription] = useState('');
+	const [showPassword, setShowPassword] = React.useState(false);
+
+	const handleClickShowPassword = () => setShowPassword(!showPassword);
+	const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
 	const usernameExists = props?.clients?.clients?.find((searchClient) => {
 		return searchClient.username === username;
@@ -167,14 +176,25 @@ const ClientNew = (props) => {
 										defaultValue=""
 										variant="outlined"
 										fullWidth
-										type="password"
+										type={showPassword ? "text" : "password"}
 										className={classes.textField}
 										InputProps={{
 											startAdornment: (
 												<InputAdornment position="start">
 													<PasswordIcon />
 												</InputAdornment>
-											)
+											),
+											endAdornment: (
+												<InputAdornment position="end">
+												  <IconButton
+														aria-label="toggle password visibility"
+														onClick={handleClickShowPassword}
+														onMouseDown={handleMouseDownPassword}
+												  >
+													  {showPassword ? <Visibility /> : <VisibilityOff />}
+												  </IconButton>
+												</InputAdornment>
+											  )
 										}}
 									/>
 								</Grid>
