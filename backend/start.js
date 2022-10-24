@@ -729,10 +729,10 @@ const init = async (licenseContainer) => {
 			console.log(message);
 		}
 
-		if (!context.security.acl.noRestrictedRoles(user)) {
+		if (!context.security.acl.noRestrictedRoles(user) && message.type === 'command') {
 			const responseMessage = {
 				type: 'response',
-				command: message.command.command,
+				command: message?.command?.command || ('response to ' + message.type),
 				requestId: message.id,
 				error: (new NotAuthorizedError()).message
 			};
