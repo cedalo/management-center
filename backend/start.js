@@ -563,23 +563,18 @@ const init = async (licenseContainer) => {
 			}
 			case 'getBrokerConnections': {
 				// const connections = context.brokerManager.getBrokerConnections();
-				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
-					const connections = configManager.connections;
-					return connections;
-				} else {
-					const connections = configManager.connections;
-					const filteredConnections = context.security.acl.filterAllowedConnections(connections, user.connections);
-					const result = filteredConnections.map(connection => {
+				const connections = configManager.connections;
+				const filteredConnections = context.security.acl.filterAllowedConnections(connections, user.connections);
+				const result = filteredConnections.map(connection => {
 						if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, connection.name)) {
-							return connection;
+								return connection;
 						} else {
-							const connectionCopy = Object.assign({}, connection);
-							delete connectionCopy.credentials;
-							return connectionCopy;
+								const connectionCopy = Object.assign({}, connection);
+								delete connectionCopy.credentials;
+								return connectionCopy;
 						}
-					});
-					return result;
-				}
+				});
+				return result;
 			}
 			case 'getBrokerConfigurations': {
 				let configToReturn;
