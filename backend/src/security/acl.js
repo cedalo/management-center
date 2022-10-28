@@ -10,7 +10,7 @@ module.exports = {
         isViewer(request, response, next) {
             return next();
         },
-        isConnectionCreator(request, response, next) {
+        isConnectionManager(request, response, next) {
             return next();
         },
         isMonitoringViewer(request, response, next) {
@@ -29,7 +29,7 @@ module.exports = {
     isViewer(user) {
         return true;
     },
-    isConnectionCreator(user) {
+    isConnectionManager(user) {
         return true;
     },
     isMonitoringViewer(user) {
@@ -53,7 +53,7 @@ module.exports = {
     atLeastViewer(user) {
         return true;
     },
-    atLeastConnectionCreator(user) {
+    atLeastConnectionManager(user) {
         return true;
     },
     atLeastMonitoringViewer(user) {
