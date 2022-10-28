@@ -269,6 +269,10 @@ const ConnectionNewComponent = ({ connections, tlsFeature, handleCloseDialog }) 
 			enqueueSnackbar(`Error creating connection "${connection.name}". Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
+		} finally {
+			if (handleCloseDialog) {
+		        handleCloseDialog();
+		    }
 		}
 	};
 
