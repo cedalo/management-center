@@ -67,8 +67,7 @@ const StyledTableRow = withStyles((theme) => ({
 	root: {
 		'&:nth-of-type(odd)': {
 			backgroundColor: theme.palette.tables?.odd
-		},
-		cursor: 'pointer'
+		}
 	}
 }))(TableRow);
 
@@ -84,7 +83,10 @@ const useStyles = makeStyles((theme) => ({
 		textAlign: 'center'
 	},
 	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+	breadcrumbLink: theme.palette.breadcrumbLink,
+	cursorPointer: {
+		cursor: 'pointer'
+	}
 }));
 
 
@@ -147,6 +149,7 @@ const CustomRow = (props) => {
 			onClick={props.onClick}
 			key={brokerConnection.name}
 			onContextMenu={handleClick}
+			className={atLeastAdmin(userProfile, brokerConnection.name) ? props.classes.cursorPointer : ''}
 		>
 			<TableCell>
 				<IconButton aria-label="expand row" size="small"
@@ -452,6 +455,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection, connect
 													handleBrokerConnectionConnectDisconnect={handleBrokerConnectionConnectDisconnect}
 													onDeleteConnection={onDeleteConnection}
 													userProfile={userProfile}
+													classes={classes}
 												/>
 											))}
 								</TableBody>
