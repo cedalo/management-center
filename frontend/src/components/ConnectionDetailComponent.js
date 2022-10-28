@@ -24,7 +24,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
 import { updateBrokerConfigurations, updateBrokerConnections } from '../actions/actions';
-
+import { Buffer } from 'buffer';
 
 import CloudDownload from '@material-ui/icons/CloudDownload';
 import CloudUpload from '@material-ui/icons/CloudUpload';
