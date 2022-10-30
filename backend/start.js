@@ -977,7 +977,8 @@ const init = async (licenseContainer) => {
 	connectServerToAllBrokers();
 
 
-	router.use('/api/docs', context.security.isLoggedIn, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+	router.use('/api/docs', swaggerUi.serve);
+	router.get('/api/docs', context.security.isLoggedIn, swaggerUi.setup(swaggerDocument));
 
 	router.get('/api/version', context.security.isLoggedIn, (request, response) => {
 		response.json(version);
