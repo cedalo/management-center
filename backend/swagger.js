@@ -9,12 +9,11 @@ module.exports = {
     "description": "API description for the Management Center. Set the Accept header to \"application/json;version=<version_number>\" to access a correct version of the api",
     "version": "2.0.0"
   },
-  "host": `${CEDALO_MC_PROXY_HOST}:${CEDALO_MC_PROXY_PORT}`,
-  "basePath": "/",
-  "schemes": [
-    "http",
-    "https"
+  "servers": [
+    {"url": `http://${CEDALO_MC_PROXY_HOST}:${CEDALO_MC_PROXY_PORT}`},
+    {"url": `https://${CEDALO_MC_PROXY_HOST}:${CEDALO_MC_PROXY_PORT}`},
   ],
+  "basePath": "/",
   "paths": {
   },
   "components": {
