@@ -978,7 +978,7 @@ const init = async (licenseContainer) => {
 
 
 	router.use('/api/docs', swaggerUi.serve);
-	router.get('/api/docs', context.security.isLoggedIn, swaggerUi.setup(swaggerDocument));
+	router.get('/api/docs', swaggerUi.setup(swaggerDocument));
 
 	router.get('/api/version', context.security.isLoggedIn, (request, response) => {
 		response.json(version);
