@@ -9915,7 +9915,7 @@ svgo@^2.7.0:
     picocolors "^1.0.0"
     stable "^0.1.8"
 
-swagger-ui-express@^3.0.8:
+swagger-ui-express@^3.0.10:
   version "3.0.10"
   resolved "https://registry.yarnpkg.com/swagger-ui-express/-/swagger-ui-express-3.0.10.tgz#c72b32107a57a47913f3b46003e8fd62a7378ea2"
   integrity sha512-vP0sHXTm8w0kwpy4z9tBe1sTOyIc807PvkBNrfBPMieeRrl3NbjUnz7KgOygkzmz4QBhd4fo3efFKcwR42vcjQ==
