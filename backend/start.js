@@ -1045,11 +1045,15 @@ const init = async (licenseContainer) => {
 
 	router.get('/api/plugins', context.security.isLoggedIn, context.security.acl.middleware.isAdmin, (request, response) => {
 		response.json(
-			pluginManager.plugins.map((plugin) => ({
-				...plugin.meta,
-				...plugin.options,
-				status: plugin.status
-			}))
+			pluginManager.plugins.map((plugin) => {
+				const removeProp = 'context';
+				const {[removeProp]: removedPropFromOptions, ...restOptions} = plugin.options;
+				return {
+					...plugin.meta,
+					...restOptions,
+					status: plugin.status
+				}
+			})
 		);
 	});
 
