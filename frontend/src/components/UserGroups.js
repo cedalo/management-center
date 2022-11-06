@@ -72,8 +72,12 @@ const GROUP_TABLE_COLUMNS = [
 
 
 const loadUserGroups = async (client, dispatch) => {
-	const userGroups = await client.listUserGroups();
-	dispatch(updateUserGroups(userGroups));
+	try {
+		const userGroups = await client.listUserGroups();
+		dispatch(updateUserGroups(userGroups));
+	} catch(error) {
+		console.error('User groups:', error.message);
+	}
 };
 
 
@@ -87,7 +91,7 @@ const UserGroups = (props) => {
 	const { enqueueSnackbar } = useSnackbar();
 	const { client } = context;
 
-    const { dynamicsecurityFeature, userGroups={}, users=[], connections=[], onSort, sortBy, sortDirection, disableSort, doSort } = props;
+    const { userManagementFeature, userGroups={}, users=[], connections=[], onSort, sortBy, sortDirection, disableSort, doSort } = props;
 
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -252,10 +256,10 @@ const UserGroups = (props) => {
 				</Typography>
 			</Breadcrumbs>
 			{/* TODO: Quick hack to detect whether feature is supported */}
-			{dynamicsecurityFeature?.supported === false ? <><br/>
+			{userManagementFeature?.supported === false ? <><br/>
 				<Alert severity="warning">
 					<AlertTitle>Feature not available</AlertTitle>
-					Make sure that the broker connected has the dynamic security enabled.
+					Make sure that the feature is enabled in the license.
 				</Alert>
 			</> : <><br/>
 				<Alert severity="info" style={{marginBottom: '15px'}}>
@@ -265,7 +269,7 @@ const UserGroups = (props) => {
 				</Alert>
 			</>}
 			<br />
-			{dynamicsecurityFeature?.supported !== false && <><Button
+			{userManagementFeature?.supported !== false && <><Button
 				variant="outlined"
 				color="default"
 				size="small"
@@ -291,182 +295,188 @@ const UserGroups = (props) => {
 			<br />
 			<br />
 			</>}
-			{dynamicsecurityFeature?.supported !== false && Object.keys(userGroups).length > 0 ? (
-				<div>
-					<Hidden xsDown implementation="css">
-						<TableContainer component={Paper} className={classes.tableContainer}>
-							<Table>
-								<TableHead>
-									<TableRow>
-										{GROUP_TABLE_COLUMNS.map((column) => (
-											<TableCell
-												key={column.id}
-												sortDirection={sortBy === column.id ? sortDirection : false}
-											>
-												{column.sortable ? <TableSortLabel
-													active={sortBy === column.id}
-													direction={sortDirection}
-													onClick={() => onSort(column.id)}
+			{
+				userManagementFeature?.supported === false ? (
+					<></>
+				) : (
+					Object.keys(userGroups).length > 0 ? (
+						<div>
+							<Hidden xsDown implementation="css">
+								<TableContainer component={Paper} className={classes.tableContainer}>
+									<Table>
+										<TableHead>
+											<TableRow>
+												{GROUP_TABLE_COLUMNS.map((column) => (
+													<TableCell
+														key={column.id}
+														sortDirection={sortBy === column.id ? sortDirection : false}
+													>
+														{column.sortable ? <TableSortLabel
+															active={sortBy === column.id}
+															direction={sortDirection}
+															onClick={() => onSort(column.id)}
+														>
+															{column.key}
+														</TableSortLabel> : 
+														<>
+															{column.key}
+														</>}
+													</TableCell>
+												))}
+												<TableCell />
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{userGroupsEntriesPaginated &&
+												userGroupsEntriesPaginated.map((item) => {
+													const group = item[1];
+		
+													return <TableRow
+														hover
+														key={group.name}
+														onClick={(event) => {
+															if (event.target.nodeName?.toLowerCase() === 'td') {
+																onSelectGroup(group.name);
+															}
+														}}
+														style={{ cursor: 'pointer' }}
+													>
+														<TableCell>{group.name}</TableCell>
+														<TableCell>{group.role}</TableCell>
+														<TableCell>{group.description}</TableCell>
+														<TableCell className={classes.badges}>
+															<AutoSuggest
+																suggestions={userSuggestions}
+																values={group.users.map((username) => ({
+																	label: username,
+																	value: username
+																}))}
+																handleChange={(value) => {
+																	onUpdateGroupUsers(group, value);
+																}}
+															/>
+														</TableCell>
+														<TableCell className={classes.badges}>
+															<AutoSuggest
+																suggestions={connectionSuggestions}
+																values={group.connections
+																		.filter((brokerid) => !!connectionsMap.get(brokerid))
+																		.map((brokerid) => ({
+																	label: connectionsMap.get(brokerid).name,
+																	value: connectionsMap.get(brokerid).id
+																}))}
+																handleChange={(value) => {
+																	onUpdateGroupConnections(group, value);
+																}}
+															/>
+														</TableCell>
+														<TableCell align="right">
+															{/* <IconButton
+								  size="small"
+								  onClick={(event) => {
+									event.stopPropagation();
+									onSelectGroup(group.groupname);
+								  }}
+								>
+								  <EditIcon fontSize="small" />
+								</IconButton> */}
+		
+															<Tooltip title="Delete group">
+																<IconButton
+																	size="small"
+																	onClick={(event) => {
+																		event.stopPropagation();
+																		onDeleteGroup(group.name);
+																	}}
+																>
+																	<DeleteIcon fontSize="small" />
+																</IconButton>
+															</Tooltip>
+														</TableCell>
+													</TableRow>
+												})}
+										</TableBody>
+										<TableFooter>
+											<TableRow>
+												<TablePagination
+													rowsPerPageOptions={[5, 10, 25]}
+													colSpan={8}
+													count={userGroupsEntries.length}
+													rowsPerPage={rowsPerPage}
+													page={page}
+													onPageChange={handleChangePage}
+													onRowsPerPageChange={handleChangeRowsPerPage}
+												/>
+											</TableRow>
+										</TableFooter>
+									</Table>
+								</TableContainer>
+							</Hidden>
+							<Hidden smUp implementation="css">
+								<Paper>
+									<List className={classes.root}>
+										{Object.entries(userGroups).map((el) => {
+											const group = el[1];
+											return <React.Fragment key={group.name}>
+												<ListItem
+													alignItems="flex-start"
+													onClick={(event) => onSelectGroup(group.name)}
+													
 												>
-													{column.key}
-												</TableSortLabel> : 
-												<>
-													{column.key}
-												</>}
-											</TableCell>
-										))}
-										<TableCell />
-									</TableRow>
-								</TableHead>
-								<TableBody>
-									{userGroupsEntriesPaginated &&
-										userGroupsEntriesPaginated.map((item) => {
-                                            const group = item[1];
-
-											return <TableRow
-												hover
-												key={group.name}
-												onClick={(event) => {
-													if (event.target.nodeName?.toLowerCase() === 'td') {
-														onSelectGroup(group.name);
-													}
-												}}
-												style={{ cursor: 'pointer' }}
-											>
-												<TableCell>{group.name}</TableCell>
-												<TableCell>{group.role}</TableCell>
-												<TableCell>{group.description}</TableCell>
-												<TableCell className={classes.badges}>
-													<AutoSuggest
-														suggestions={userSuggestions}
-														values={group.users.map((username) => ({
-															label: username,
-															value: username
-														}))}
-														handleChange={(value) => {
-															onUpdateGroupUsers(group, value);
-														}}
+													<ListItemText
+														primary={<span>{group.name}</span>}
+														secondary={
+															<React.Fragment>
+																<Typography
+																	component="span"
+																	variant="body2"
+																	className={classes.inline}
+																	color="textPrimary"
+																>
+																	{group.role}
+																</Typography>
+																<span> — {group.description} </span>
+															</React.Fragment>
+														}
 													/>
-												</TableCell>
-												<TableCell className={classes.badges}>
-													<AutoSuggest
-														suggestions={connectionSuggestions}
-														values={group.connections
-																.filter((brokerid) => !!connectionsMap.get(brokerid))
-																.map((brokerid) => ({
-															label: connectionsMap.get(brokerid).name,
-															value: connectionsMap.get(brokerid).id
-														}))}
-														handleChange={(value) => {
-															onUpdateGroupConnections(group, value);
-														}}
-													/>
-												</TableCell>
-												<TableCell align="right">
-													{/* <IconButton
-						  size="small"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            onSelectGroup(group.groupname);
-                          }}
-                        >
-                          <EditIcon fontSize="small" />
-                        </IconButton> */}
-
-													<Tooltip title="Delete group">
+													<ListItemSecondaryAction>
 														<IconButton
+															edge="end"
+															size="small"
+															onClick={(event) => {
+																event.stopPropagation();
+																onSelectGroup(group.name);
+															}}
+															aria-label="edit"
+														>
+															<EditIcon fontSize="small" />
+														</IconButton>
+		
+														<IconButton
+															edge="end"
 															size="small"
 															onClick={(event) => {
 																event.stopPropagation();
 																onDeleteGroup(group.name);
 															}}
+															aria-label="delete"
 														>
 															<DeleteIcon fontSize="small" />
 														</IconButton>
-													</Tooltip>
-												</TableCell>
-											</TableRow>
-                                        })}
-								</TableBody>
-								<TableFooter>
-									<TableRow>
-										<TablePagination
-											rowsPerPageOptions={[5, 10, 25]}
-											colSpan={8}
-											count={userGroupsEntries.length}
-											rowsPerPage={rowsPerPage}
-											page={page}
-											onPageChange={handleChangePage}
-											onRowsPerPageChange={handleChangeRowsPerPage}
-										/>
-									</TableRow>
-								</TableFooter>
-							</Table>
-						</TableContainer>
-					</Hidden>
-					<Hidden smUp implementation="css">
-						<Paper>
-							<List className={classes.root}>
-								{Object.entries(userGroups).map((el) => {
-									const group = el[1];
-									return <React.Fragment key={group.name}>
-										<ListItem
-											alignItems="flex-start"
-											onClick={(event) => onSelectGroup(group.name)}
-											
-										>
-											<ListItemText
-												primary={<span>{group.name}</span>}
-												secondary={
-													<React.Fragment>
-														<Typography
-															component="span"
-															variant="body2"
-															className={classes.inline}
-															color="textPrimary"
-														>
-															{group.role}
-														</Typography>
-														<span> — {group.description} </span>
-													</React.Fragment>
-												}
-											/>
-											<ListItemSecondaryAction>
-												<IconButton
-													edge="end"
-													size="small"
-													onClick={(event) => {
-														event.stopPropagation();
-														onSelectGroup(group.name);
-													}}
-													aria-label="edit"
-												>
-													<EditIcon fontSize="small" />
-												</IconButton>
-
-												<IconButton
-													edge="end"
-													size="small"
-													onClick={(event) => {
-														event.stopPropagation();
-														onDeleteGroup(group.name);
-													}}
-													aria-label="delete"
-												>
-													<DeleteIcon fontSize="small" />
-												</IconButton>
-											</ListItemSecondaryAction>
-										</ListItem>
-										<Divider />
-									</React.Fragment>
-								})}
-							</List>
-						</Paper>
-					</Hidden>
-				</div>
-			) : (
-				<div>No groups found</div>
-			)}
+													</ListItemSecondaryAction>
+												</ListItem>
+												<Divider />
+											</React.Fragment>
+										})}
+									</List>
+								</Paper>
+							</Hidden>
+						</div>
+					) : (
+						<div>No groups found</div>
+					)
+				)
+			}
 			{/* <Fab
 				color="primary"
 				aria-label="add"
@@ -500,7 +510,7 @@ const mapStateToProps = (state) => {
 		users: state.users && state.users.users,
 		connections: state.brokerConnections && state.brokerConnections.brokerConnections,
 		userGroups: state.userGroups && state.userGroups.userGroups,
-		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity
+		userManagementFeature: state.systemStatus?.features?.usermanagement
 	};
 };
 
