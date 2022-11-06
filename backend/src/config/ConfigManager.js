@@ -72,7 +72,8 @@ module.exports = class ConfigManager {
 			throw new Error('Pluin is of invalid type/empty/not provided');
 		}
 
-		const pluginName = pluginId.replace('_', '-');
+		let pluginName = pluginId.replace('cedalo_', '');
+		pluginName = pluginName.replace(/_/g, '-');
 
 		const result = db.get('plugins')
 					.find({ name: pluginName })
