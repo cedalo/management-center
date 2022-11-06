@@ -39,8 +39,14 @@ module.exports = class Plugin extends BasePlugin {
 				}
 				const valid = (username === USERNAME && password === PASSWORD) || context.security?.usersManager?.checkUser(username, password);
 				if (valid) {
-					const user = context.security.usersManager.getUser(username);
-					return done(null, user);
+					let user = false;
+					let message = undefined;
+					if (context.security.usersManagerEnabled) {
+						user = context.security.usersManager.getUser(username);
+					} else {
+						message = {message: 'UserManagement disabled'};
+					}
+					return done(null, user, message);
 				} else {
 					return done(null, false, { message: 'Invalid credentials' });
 				}
