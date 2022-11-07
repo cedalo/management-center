@@ -246,6 +246,7 @@ const init = async (licenseContainer) => {
 	const globalSystem = {};
 	const globalTopicTree = {};
 	const app = express();
+	app.set('view engine', 'ejs');
 
 	const sessionParser = session({ secret: process.env.CEDALO_MC_SESSION_SECRET || "secret",
 									cookie: (process.env.CEDALO_MC_SESSION_MAXAGE ?

@@ -12,6 +12,7 @@
 		"axios": "^0.27.2",
 		"content-type-parser": "^1.0.2",
 		"cors": "^2.8.5",
+		"ejs": "^3.1.8",
 		"express": "^4.18.1",
 		"express-session": "^1.17.3",
 		"jsonwebtoken": "^8.5.1",
