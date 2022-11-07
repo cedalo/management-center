@@ -755,7 +755,13 @@ const ApplicationTokens = (props) => {
 				{applicationTokensFeature.error.message || applicationTokensFeature.error}
 			</Alert></> : null}
 			<br />
-			{!applicationTokensFeature?.error && applicationTokensFeature?.supported !== false && <><Button
+			{!applicationTokensFeature?.error && applicationTokensFeature?.supported !== false && <>
+			<Alert severity="info" style={{marginBottom: '15px'}}>
+				<AlertTitle>Application Tokens Feature</AlertTitle>
+				Application tokens are mainly used in order to give other applications or scripts access to the MMC's functionality and REST APIs.
+				After creating an application token put it inside the "Authorization" header as "Bearer *token*" or use it as a url query parameter ("https://url.com?token=*token*") when making a request to the MMC
+			</Alert>
+			<Button
 				variant="outlined"
 				color="default"
 				size="small"
