@@ -247,6 +247,7 @@ const init = async (licenseContainer) => {
 	const globalTopicTree = {};
 	const app = express();
 	app.set('view engine', 'ejs');
+	app.set('views', path.join(__dirname, 'views'));
 
 	const sessionParser = session({ secret: process.env.CEDALO_MC_SESSION_SECRET || "secret",
 									cookie: (process.env.CEDALO_MC_SESSION_MAXAGE ?
@@ -1058,18 +1059,30 @@ const init = async (licenseContainer) => {
 		);
 	});
 
-	router.get('/*', context.security.isLoggedIn, (request, response) => {
-		let filePath = path.join(__dirname, 'public', request.path);
+	router.get('/*', 
+		(request, response, next) => {
+			if (request.path.includes('.png')) {
+				next();
+			} else {
+				context.security.isLoggedIn(request, response, next);
+			}
+		},
+		(request, response) => {
+		let publicFilePath = path.join(__dirname, 'public', request.path);
+		let mediaFilePath = path.join(__dirname, 'media', request.path);
 		// TODO: handle better
-		filePath = filePath.replace(CEDALO_MC_PROXY_BASE_PATH, '');
-		if (fs.existsSync(filePath)) {
-			response.sendFile(filePath);
+		publicFilePath = publicFilePath.replace(CEDALO_MC_PROXY_BASE_PATH, '');
+		mediaFilePath = mediaFilePath.replace(CEDALO_MC_PROXY_BASE_PATH, '');
+		if (fs.existsSync(publicFilePath)) {
+			response.sendFile(publicFilePath);
+		} else if (fs.existsSync(mediaFilePath)) {
+			response.sendFile(mediaFilePath);
 		} else {
 			response.sendFile(path.join(__dirname, 'public', 'index.html'));
 		}
 	});
-
 	router.use(express.static(path.join(__dirname, 'public')));
+
 
 	server.listen({
 		host,
