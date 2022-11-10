@@ -38,6 +38,11 @@ import { WebSocketContext } from '../../../websockets/WebSocket';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
 
+import { green, red } from '@material-ui/core/colors';
+import DisabledIcon from '@material-ui/icons/Cancel';
+import EnabledIcon from '@material-ui/icons/CheckCircle';
+
+
 const StyledTableRow = withStyles((theme) => ({
 	root: {
 		'&:nth-of-type(odd)': {
@@ -73,7 +78,29 @@ const CLIENTS_TABLE_COLUMNS = [
 	{ id: 'protocol', key: 'Protocol' },
 	{ id: 'protocol_version', key: 'Protocol Version' },
 	{ id: 'address', key: 'Address' },
+	{ id: 'status', key: 'Status' },
+	{ id: 'last_connected', key: 'Last Connect Time' },
+	{ id: 'last_disconnected', key: 'Last Disconnect Time' },
 ];
+
+
+const unixTimestampToDate = (unixTimestamp) => {
+	if (!unixTimestamp) return unixTimestamp;
+	unixTimestamp = parseInt((unixTimestamp + '').slice(0, 10));
+	const date = new Date(unixTimestamp * 1000);
+	return date;
+};
+
+const dateToString = (date, separator=' ') => {
+	if (!date) return date;
+	return date.getFullYear() + '-'
+			+ ((date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)) + '-'
+			+ (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + separator
+			+ (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':'
+			+ (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':'
+			+ (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
+};
+
 
 const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelectClient) => {
 	const { inspectFeature, onSort, sortBy, sortDirection } = props;
@@ -81,6 +108,8 @@ const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelect
 	if (!inspectFeature?.error && inspectFeature?.supported !== false && clients && clients.length > 0) {
 		return <div>
 			<Hidden xsDown implementation="css">
+				<Typography>Currently connected clients</Typography>
+				<div style={{marginBottom: '15px'}}></div>
 				<TableContainer component={Paper} className={classes.tableContainer}>
 					<Table size="medium">
 						<TableHead>
@@ -112,6 +141,19 @@ const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelect
 										<TableCell>{client.protocol}</TableCell>
 										<TableCell>{client.protocol_version}</TableCell>
 										<TableCell>{client.address}</TableCell>
+										<TableCell align="center">
+											{client.connected ?
+												<Tooltip title={"Client connected"}>
+													<EnabledIcon fontSize="small" style={{ color: green[500] }} />
+												</Tooltip>
+												:
+												<Tooltip title={"Client disconnected"}>
+													<DisabledIcon fontSize="small" style={{ color: red[500] }} />
+												</Tooltip>
+											}
+										</TableCell>
+										<TableCell>{dateToString(unixTimestampToDate(client.lastConnect))}</TableCell>
+										<TableCell>{dateToString(unixTimestampToDate(client.lastDisconnect))}</TableCell>
 										<TableCell></TableCell>
 									</StyledTableRow>
 								))}
@@ -198,6 +240,8 @@ const Clients = (props) => {
 		dispatch(updateInspectClient(client));
 		history.push(`/admin/inspect/clients/detail/${username}`);
 	};
+
+	console.log('clients:', clients);
 
 	return (
 		<div>

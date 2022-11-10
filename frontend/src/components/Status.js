@@ -31,6 +31,8 @@ import { useConfirm } from 'material-ui-confirm';
 import Chart from './Chart';
 import LicenseTable from './LicenseTable';
 import { WebSocketContext } from '../websockets/WebSocket';
+import { useHistory } from 'react-router-dom';
+
 
 const formatAsNumber = (metric) => new Intl.NumberFormat().format(metric);
 
@@ -45,16 +47,23 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
+
 const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus, defaultClient, currentConnection, currentConnectionName, connected }) => {
 	const classes = useStyles();
 	const confirm = useConfirm();
 	const { enqueueSnackbar } = useSnackbar();
+	const history = useHistory(); 
 	const context = useContext(WebSocketContext);
 	const { client: brokerClient } = context;
 	const totalMessages = parseInt(systemStatus?.$SYS?.broker?.messages?.sent);
 	const publishMessages = (parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent) / totalMessages) * 100;
 	const otherMessages =
 		((totalMessages - parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent)) / totalMessages) * 100;
+
+	const handleClientsClick = () => {
+		history.push('/admin/inspect/clients');
+	};
+
 
 	const onRestart = async (brokerConnectionName, serviceName) => {
 		await confirm({
@@ -151,7 +160,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 							Restart
 						</Button>
 					</Grid>}
-					<Grid item lg={3} sm={6} xl={3} xs={12}>
+					<Grid item lg={3} sm={6} xl={3} xs={12} onClick={handleClientsClick} style={{cursor: "pointer"}}>
 						<Info
 							label="Clients total"
 							value={systemStatus?.$SYS?.broker?.clients?.total}
