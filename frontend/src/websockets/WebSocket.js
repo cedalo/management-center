@@ -57,6 +57,8 @@ export { WebSocketContext };
 const ERROR_MESSAGE = "BaseMosquittoProxyClient: Timeout";
 
 
+let client;
+let ws;
 
 
 const init = async (client, dispatch, connectionConfiguration) => {
@@ -309,9 +311,6 @@ const init = async (client, dispatch, connectionConfiguration) => {
 }
 
 export default ({ children }) => {
-	let client;
-	let ws;
-
 	const dispatch = useDispatch();
 
 	const sendMessage = (roomId, message) => {
