@@ -49,7 +49,7 @@ const getCircularReplacer = () => {
             return `[Circular of ${seen.get(property)}]`;
         } else {
             seen.set(property, key);
-            return property;
+            return property; // ensured it's an object
         }
     }
 }
@@ -61,8 +61,12 @@ const iterateObject = (key, object, processor) => {
 
     object = processor(key, object);
 
+    if (typeof object !== 'object') {
+        return object;
+    }
+
     for (const key in object) {
-        if (!object.hasOwnProperty(key)) {
+        if (!Object.prototype.hasOwnProperty.call(object, key)) {
             continue;
         }
         object[key] = iterateObject(key, object[key], processor);
