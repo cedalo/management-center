@@ -1,5 +1,7 @@
 export const isConnectionAllowed = (userProfile, currentConnectionName, permissionFunction) => {
 	if (!userProfile || !currentConnectionName) return undefined;
+	if (typeof userProfile === 'object' && Object.keys(userProfile).length === 0) return undefined;
+	if (typeof currentConnectionName === 'object' && Object.keys(currentConnectionName).length === 0) return undefined;
 
 	for (const connection of userProfile.connections) {
 		if (connection.name === currentConnectionName) {
