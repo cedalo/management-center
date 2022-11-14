@@ -371,6 +371,7 @@ export default ({ children }) => {
 		init(client, dispatch, { socketEndpointURL: WS_BASE.url, httpEndpointURL: WS_BASE.urlHTTP })
 		.catch(error => {
 			console.error('Error during initialization:', error);
+			alert(`An unexpected error while communicating with the backend occured: ${(error && error.message) || 'Unknown error'}`);
 			dispatch(updateLoading(false));
 		});
 
