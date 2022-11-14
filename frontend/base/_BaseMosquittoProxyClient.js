@@ -396,36 +396,6 @@ module.exports = class BaseMosquittoProxyClient {
 	}
 
 
-	async deleteUserGroup(groupname) {
-		try {
-			const url = `${this._httpEndpointURL}/api/user-management/groups/${groupname}`;
-			const response = await axios.delete(url, this._headers);
-			return response.data;
-		} catch (error) {
-			if (error?.response?.status === 404) {
-				throw new APINotFoundError();
-			} else {
-				throw new NotAuthorizedError();
-			}
-		}
-	}
-
-
-	async updateUserGroup(group) {
-		try {
-			const url = `${this._httpEndpointURL}/api/user-management/groups/${group.name}`;
-			const response = await axios.put(url, group, this._headers);
-			return response.data;
-		} catch (error) {
-			if (error?.response?.status === 404) {
-				throw new APINotFoundError();
-			} else {
-				throw new NotAuthorizedError();
-			}
-		}
-	}
-
-
 	async checkTLSEnabled() {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/groups/${groupname}`;
@@ -501,6 +471,8 @@ module.exports = class BaseMosquittoProxyClient {
 		} catch (error) {
 			if (error?.response?.status === 404) {
 				throw new APINotFoundError();
+			} else if (error?.response?.status === 409) {
+				throw new Error(error?.response?.data || 'Conflict');
 			} else {
 				throw new NotAuthorizedError();
 			}
@@ -516,6 +488,8 @@ module.exports = class BaseMosquittoProxyClient {
 		} catch (error) {
 			if (error?.response?.status === 404) {
 				throw new APINotFoundError();
+			} else if (error?.response?.status === 409) {
+				throw new Error(error?.response?.data || 'Conflict');
 			} else {
 				throw new NotAuthorizedError();
 			}

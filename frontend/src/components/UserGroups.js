@@ -160,8 +160,14 @@ const UserGroups = (props) => {
             users: [...users.map(el => el.value)]
         };
 
-		const groups = await client.updateUserGroup(updatedGroup);
-		dispatch(updateUserGroups(groups));
+		try {
+			const groups = await client.updateUserGroup(updatedGroup);
+			dispatch(updateUserGroups(groups));
+		} catch(error) {
+			enqueueSnackbar(`Error updating "${group.name}": ${error}`, {
+				variant: 'error'
+			});
+		}
 	};
 
 	const onUpdateGroupConnections = async (group, connections=[]) => {
@@ -174,8 +180,14 @@ const UserGroups = (props) => {
             connections: [...connections.map(el => el.value)]
         };
 
-        const groups = await client.updateUserGroup(updatedGroup);
-		dispatch(updateUserGroups(groups));
+		try {
+			const groups = await client.updateUserGroup(updatedGroup);
+			dispatch(updateUserGroups(groups));
+		} catch(error) {
+			enqueueSnackbar(`Error updating "${group.name}": ${error}`, {
+				variant: 'error'
+			});
+		}
 	};
 
 
@@ -201,13 +213,20 @@ const UserGroups = (props) => {
 				variant: 'contained'
 			}
 		});
-		const groups = await client.deleteUserGroup(groupname);
-		enqueueSnackbar(`Group "${groupname}" successfully deleted`, {
-			variant: 'success'
-		});
 
-		// disableSort();
-		dispatch(updateUserGroups(groups));
+		let groups;
+		try {
+			groups = await client.deleteUserGroup(groupname);
+			enqueueSnackbar(`Group "${groupname}" successfully deleted`, {
+				variant: 'success'
+			});
+			// disableSort();
+			dispatch(updateUserGroups(groups));
+		} catch(error) {
+			enqueueSnackbar(`Error deleting "${groupname}": ${error}`, {
+				variant: 'error'
+			});
+		}
 	};
 
 

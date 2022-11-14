@@ -140,6 +140,7 @@ const UserProfile = (props) => {
 		setEditMode(false);
 	};
 
+
 	return userProfile ? (<div>
 		<Breadcrumbs aria-label="breadcrumb">
 			<RouterLink className={classes.breadcrumbLink} to="/home">
@@ -332,12 +333,12 @@ const UserProfile = (props) => {
 									{userProfile.groups && userProfile.groups.length ? (
 											<List style={{marginTop: "0px"}} dense>
 												{userProfile.groups.map((group) => {
-														return <><ListItem>
+														return <><ListItem key={group.name}>
 															<ListItemIcon>
 																<Adjust />
 															</ListItemIcon>
 															<ListItemText
-																primary={group}
+																primary={group.name}
 																// secondary="Secondary text"
 															/>
 														</ListItem>
