@@ -12,7 +12,7 @@ import Info from './Info';
 import MessageIcon from '@material-ui/icons/Email';
 import moment from 'moment';
 import Paper from '@material-ui/core/Paper';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import SubscriptionIcon from '@material-ui/icons/PhonelinkRing';
 import Table from '@material-ui/core/Table';
@@ -31,7 +31,6 @@ import { useConfirm } from 'material-ui-confirm';
 import Chart from './Chart';
 import LicenseTable from './LicenseTable';
 import { WebSocketContext } from '../websockets/WebSocket';
-import { useHistory } from 'react-router-dom';
 
 
 const formatAsNumber = (metric) => new Intl.NumberFormat().format(metric);
@@ -47,12 +46,10 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
-
 const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus, defaultClient, currentConnection, currentConnectionName, connected }) => {
 	const classes = useStyles();
 	const confirm = useConfirm();
 	const { enqueueSnackbar } = useSnackbar();
-	const history = useHistory(); 
 	const context = useContext(WebSocketContext);
 	const { client: brokerClient } = context;
 	const totalMessages = parseInt(systemStatus?.$SYS?.broker?.messages?.sent);
@@ -60,10 +57,18 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 	const otherMessages =
 		((totalMessages - parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent)) / totalMessages) * 100;
 
-	const handleClientsClick = () => {
-		history.push('/admin/inspect/clients');
-	};
+	const timerRef = React.useRef();
+	const [waitingForSysTopic, setWaitingForSysTopic] = React.useState(true);
 
+	useEffect(() => {
+		timerRef.current = window.setTimeout(() => {
+			setWaitingForSysTopic(false);
+		}, 16000);
+
+		return () => {
+			clearTimeout(timerRef.current);
+		}
+	}, [])
 
 	const onRestart = async (brokerConnectionName, serviceName) => {
 		await confirm({
@@ -160,7 +165,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 							Restart
 						</Button>
 					</Grid>}
-					<Grid item lg={3} sm={6} xl={3} xs={12} onClick={handleClientsClick} style={{cursor: "pointer"}}>
+					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
 							label="Clients total"
 							value={systemStatus?.$SYS?.broker?.clients?.total}
@@ -333,11 +338,19 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 
 					</Grid>
 				</Grid>
-			</Container> : (connected ? <Alert severity="warning">
-				<AlertTitle>System status information not accessible</AlertTitle>
-				We couldn't retrieve the system status information.
-				Please make sure that the user "{defaultClient?.username}" has the rights to read the "$SYS" topic on the selected broker.
-			</Alert> : <></>)
+			</Container> : (connected ? (
+				(waitingForSysTopic ?
+					<Alert severity="info">
+						<AlertTitle>Loading system status information</AlertTitle>
+						<CircularProgress color="secondary" size="1.5rem" />
+					</Alert> :
+					<Alert severity="warning">
+						<AlertTitle>System status information could not be fetched</AlertTitle>
+						We couldn't retrieve the system status information in the given time window.
+						Please make sure that the user "{defaultClient?.username}" has the rights to read the "$SYS" topic on the selected broker.
+						In rare cases, you may wait a bit longer until system information is finally sent
+					</Alert>)
+			) : <></>)
 			}
 			{systemStatus?.$SYS && <div style={{
 				fontSize: '0.9em',
