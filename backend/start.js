@@ -1083,6 +1083,15 @@ const init = async (licenseContainer) => {
 	});
 	router.use(express.static(path.join(__dirname, 'public')));
 
+	router.use((error, request, response, next) => {
+		if (error) {
+			console.error(error.stack)
+			response.status(500).send('Something went wrong!')
+		} else {
+			next();
+		}
+	});
+
 
 	server.listen({
 		host,
