@@ -209,7 +209,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 					</Grid>
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
-							label="Total received"
+							label="Total messages received"
 							value={formatAsNumber(systemStatus?.$SYS?.broker?.messages?.received)}
 							icon={<MessageIcon />}
 						/>
