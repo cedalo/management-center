@@ -118,7 +118,7 @@ const USER_TABLE_COLUMNS = [
 
 
 const stringToDate = (dateString) => { // ISO 8601 format date string
-	return new Date(new Date(dateString).getTime() + (new Date().getTimezoneOffset() * 60 * 1000)); 
+	return new Date(new Date(dateString).getTime());// + (new Date().getTimezoneOffset() * 60 * 1000)); 
 };
 
 
