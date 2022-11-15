@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
+
 const Plugins = (props) => {
 	const classes = useStyles();
 	const context = useContext(WebSocketContext);
@@ -52,6 +53,11 @@ const Plugins = (props) => {
 	const { enqueueSnackbar } = useSnackbar();
 	const { client } = context;
 	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/plugins`);
+
+
+	const isLicenseCheckFailed = (plugin) => {
+		return plugin?.status?.message?.startsWith('License does not allow');
+	};
 
 
 	const [page, setPage] = React.useState(0);
@@ -196,14 +202,16 @@ const Plugins = (props) => {
 										{isEnableNextStartupLoading[plugin.id] ?
 											<CircularProgress color="primary" style={{width: "25px", height: "auto"}}/>
 												:
-											<Checkbox
-												checked={plugin.enableAtNextStartup || plugin.type === 'os'}
-												disabled={plugin.type === 'os'}
-												onChange={(event) => {
-													handlePluginNextStartupStatusChange(plugin.id, event.target.checked);
-												}}
-												inputProps={{ 'aria-label': 'Enable plugin at next startup'}}
-											/>
+											<Tooltip title={plugin.type !== 'os' ? 'Whether to attempt enabling this plugin on the next MMC startup' : 'Base plugins cannot be disabled'}>
+												<Checkbox
+													checked={plugin.enableAtNextStartup || plugin.type === 'os'}
+													disabled={plugin.type === 'os' || isLicenseCheckFailed(plugin)}
+													onChange={(event) => {
+														handlePluginNextStartupStatusChange(plugin.id, event.target.checked);
+													}}
+													inputProps={{ 'aria-label': 'Enable plugin at next startup'}}
+												/>
+											</Tooltip>
 										}
 										{/* <Checkbox
 											checked={plugin.enableAtNextStartup}
