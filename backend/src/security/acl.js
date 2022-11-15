@@ -19,6 +19,11 @@ module.exports = {
         noRestrictedRoles(request, response, next) {
             return next();
         },
+        allowConditions() {
+            return (request, response, next) => {
+                return next();
+            }
+        }
     },
     isAdmin(user) {
         return true;
@@ -33,9 +38,6 @@ module.exports = {
         return true;
     },
     isMonitoringViewer(user) {
-        return true;
-    },
-    allowConditions() {
         return true;
     },
     noRestrictedRoles(user) {
