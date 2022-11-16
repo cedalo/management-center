@@ -91,10 +91,8 @@ module.exports = class PluginManager {
 
 					const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
 					const plugin = new Plugin({enableAtNextStartup, context});
-					if (plugin.meta.featureId === 'saml-sso' || plugin.meta.featureId === 'application-tokens' || (
-						licenseContainer.license.features &&
+					if (licenseContainer.license.features &&
 						licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
-					)
 					) {
 						if (!enableAtNextStartup) {
 							console.log(`Plugin not loaded: Plugin set to be disabled at current startup: "${pluginConfiguration.name}"`)
