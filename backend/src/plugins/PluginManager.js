@@ -66,7 +66,7 @@ module.exports = class PluginManager {
 		// load user management as a first plugin since we redefine isAdmin and alike functions there
 		// also load application-tokens first as it redefines isLoggedIn function
 		// saml-sso redefines the whole login
-		const PLUGIN_IDS_OF_HIGHEST_PRIORITY = ['saml_sso', ...OS_PLUGINS_IDS, 'application_tokens', 'user_management'];
+		const PLUGIN_IDS_OF_HIGHEST_PRIORITY = ['security', 'saml_sso', ...OS_PLUGINS_IDS, 'application_tokens', 'user_management'];
 
 		for (const pluginId of PLUGIN_IDS_OF_HIGHEST_PRIORITY.reverse()) {
 			const pluginIndex = plugins.findIndex((el) => {
@@ -117,11 +117,11 @@ module.exports = class PluginManager {
 			console.error('Ignore loading plugins: no premium license provided or license not valid');
 		}
 
-		this._plugins.forEach(plugin => {
-			if (plugin.preInit) {
-				plugin.preInit(context);
-			}
-		});
+		// this._plugins.forEach(plugin => {
+		// 	if (plugin.preInit) {
+		// 		plugin.preInit(context);
+		// 	}
+		// });
 
 		this._loadOSPlugins(context);
 
