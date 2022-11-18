@@ -366,7 +366,7 @@ const UserGroups = (props) => {
 														<TableCell className={classes.badges}>
 															<AutoSuggest
 																suggestions={userSuggestions}
-																values={group.users.map((username) => ({
+																values={group?.users?.map((username) => ({
 																	label: username,
 																	value: username
 																}))}
@@ -378,7 +378,7 @@ const UserGroups = (props) => {
 														<TableCell className={classes.badges}>
 															<AutoSuggest
 																suggestions={connectionSuggestions}
-																values={group.connections
+																values={group?.connections
 																		.filter((brokerid) => !!connectionsMap.get(brokerid))
 																		.map((brokerid) => ({
 																	label: connectionsMap.get(brokerid).name,
