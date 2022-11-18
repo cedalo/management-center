@@ -638,6 +638,7 @@ const init = async (licenseContainer) => {
 					});
           
           			const filteredConnection = configManager.filterConnectionObject(connection);
+					filteredConnection.reconnectPeriod = 0; // add reconnectPeriod to MQTTjsClient so that it does not try to constantly reconnect on unsuccessful connection
 
 					// try {
 					await testClient.connect({
