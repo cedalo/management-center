@@ -23,7 +23,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { colors } from '@material-ui/core';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { useSnackbar } from 'notistack';
@@ -31,6 +31,8 @@ import { useConfirm } from 'material-ui-confirm';
 import Chart from './Chart';
 import LicenseTable from './LicenseTable';
 import { WebSocketContext } from '../websockets/WebSocket';
+
+import Delayed from '../utils/Delayed';
 
 
 const formatAsNumber = (metric) => new Intl.NumberFormat().format(metric);
@@ -55,20 +57,34 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 	const totalMessages = parseInt(systemStatus?.$SYS?.broker?.messages?.sent);
 	const publishMessages = (parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent) / totalMessages) * 100;
 	const otherMessages =
-		((totalMessages - parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent)) / totalMessages) * 100;
-
+	((totalMessages - parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent)) / totalMessages) * 100;
+	
 	const timerRef = React.useRef();
 	const [waitingForSysTopic, setWaitingForSysTopic] = React.useState(true);
+	
+	const cleanRef = () => {
+		if (timerRef.current) {
+			clearTimeout(timerRef.current);
+			timerRef.current = null;
+		}
+	};
 
 	useEffect(() => {
+		// timerRef.current = window.setTimeout(() => {
+		// 	setWaitingForSysTopic(false);
+		// }, 16000);
+		
+		return () => {
+			cleanRef();
+		}
+	}, []);
+
+	if (connected && !systemStatus?.$SYS) {
+		cleanRef();
 		timerRef.current = window.setTimeout(() => {
 			setWaitingForSysTopic(false);
 		}, 16000);
-
-		return () => {
-			clearTimeout(timerRef.current);
-		}
-	}, [])
+	}
 
 	const onRestart = async (brokerConnectionName, serviceName) => {
 		await confirm({
@@ -137,10 +153,12 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 			</Breadcrumbs>
 			<br />
 			{!connected ? <>
-					<Alert severity="warning">
-						<AlertTitle>System status information not accessible</AlertTitle>
-						The selected broker connection is not active
-					</Alert>
+					<Delayed waitBeforeShow={1000}>
+						<Alert severity="warning">
+							<AlertTitle>System status information not accessible</AlertTitle>
+							The selected broker connection is not active
+						</Alert>
+					</Delayed> 
 				</> : <></>
 			}
 			{systemStatus?.$SYS && connected ? <Container maxWidth={false}>
@@ -338,7 +356,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 
 					</Grid>
 				</Grid>
-			</Container> : (connected ? (
+				</Container> : (connected ? (
 				(waitingForSysTopic ?
 					<Alert severity="info">
 						<AlertTitle>Loading system status information</AlertTitle>
