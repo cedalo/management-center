@@ -39,6 +39,8 @@ import VisibilityOff from "@material-ui/icons/VisibilityOff";
 
 import { Alert, AlertTitle } from '@material-ui/lab';
 
+import { handleConnectionChange } from '../utils/connectionUtils/connections';
+
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -171,7 +173,7 @@ const ConnectionDetailComponent = (props) => {
 	const clientPrivateKeyFileFieldName 	= makeFileField(clientPrivateKeyFieldName);
 
 	const [connected, setConnected] = React.useState(false);
-	const { selectedConnectionToEdit: connection = {}, tlsFeature } = props;
+	const { selectedConnectionToEdit: connection = {}, tlsFeature, currentConnectionName, alreadyConnected } = props;
 	let editModeEnabledByDefault = false;
 	if (!connection.id) {
 		connection.id = 'default';
@@ -276,6 +278,11 @@ const ConnectionDetailComponent = (props) => {
 					// await doConnect(connection);
 					await doConnect(updatedConnection);
 					await brokerClient.connectServerToBroker(connection.id);
+					if (!alreadyConnected) {
+						handleConnectionChange(dispatch, brokerClient, currentConnectionName, currentConnectionName).catch((error) => console.error('Error while pulling information from the broker on reconnect: ' + error));
+						// await brokerClient.connectToBroker(name);
+						// dispatch(updateBrokerConnected(true, name));
+					}
 					await loadConnections();
 					history.push(`/config/connections`);
 				} catch (error) {
@@ -841,6 +848,8 @@ const mapStateToProps = (state) => {
 	return {
 		selectedConnectionToEdit: state.brokerConnections?.selectedConnectionToEdit,
 		tlsFeature: state.systemStatus?.features?.tls,
+		alreadyConnected: state.brokerConnections.connected,
+		currentConnectionName: state.brokerConnections.currentConnectionName,
 	};
 };
 
