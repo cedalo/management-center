@@ -290,7 +290,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection, connect
 		try {
 			await brokerClient.connectServerToBroker(id);
 			if (!connected) {
-				handleConnectionChange(dispatch, brokerClient, name, name).catch((error) => console.error('Error while pulling information from the broker on reconnect: ' + error));
+				handleConnectionChange(dispatch, brokerClient, name, currentConnectionName).catch((error) => console.error('Error while pulling information from the broker on reconnect: ' + error));
 				// await brokerClient.connectToBroker(name);
 				// dispatch(updateBrokerConnected(true, name));
 			}
