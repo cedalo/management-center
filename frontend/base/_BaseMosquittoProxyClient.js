@@ -8,7 +8,7 @@ const createError = (code, message) => ({
 });
 
 const API_LICENSE = 'cedalo/license';
-const API_INSPECT = 'inspect';
+const API_INSPECT = 'cedalo/inspect';
 const API_DYNAMIC_SECURITY = 'dynamic-security';
 const API_STREAMS_PROCESSING = 'stream-processing';
 const API_HIGH_AVAILABILITY = 'cedalo/ha';
