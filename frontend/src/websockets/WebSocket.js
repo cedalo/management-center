@@ -370,8 +370,12 @@ export default ({ children }) => {
 		dispatch(updateLoading(true));
 		init(client, dispatch, { socketEndpointURL: WS_BASE.url, httpEndpointURL: WS_BASE.urlHTTP })
 		.catch(error => {
-			console.error('Error during initialization:', error);
-			alert(`An unexpected error while communicating with the backend occured: ${(error && error.message) || 'Unknown error'}`);
+			if (!`${error}`.startsWith('You don\'t have enough user rights')) { // is thrown in case readonly roles
+				console.error('Error during initialization:', error);
+				alert(`An unexpected error while communicating with the backend occured: ${error}`);
+			} else {
+				console.error(error);
+			}
 			dispatch(updateLoading(false));
 		});
 
