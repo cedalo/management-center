@@ -697,12 +697,20 @@ const init = async (licenseContainer) => {
 				}
 			}
 			case 'deleteConnection': {
-				const { id } = message;
-				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, null, id)) {
-					configManager.deleteConnection(id);
-					return configManager.connections;
-				} else {
-					throw new NotAuthorizedError();
+				try {
+					const { id } = message;
+					console.log('deleting connection==============:', id)
+					if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, null, id)) {
+						console.log('before deleteConnection:');
+						configManager.deleteConnection(id);
+						console.log('after deleteConnection:');
+						return configManager.connections;
+					} else {
+						throw new NotAuthorizedError();
+					}
+				} catch(error) {
+					console.log('error when deleting:', error);
+					throw error;	
 				}
 			}
 			default: {
