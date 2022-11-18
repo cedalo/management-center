@@ -1,6 +1,6 @@
 {
 	"name": "@cedalo/management-center-backend",
-	"version": "2.5.4-rc2",
+	"version": "2.5.4-rc3",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
