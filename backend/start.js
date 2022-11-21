@@ -702,7 +702,7 @@ const init = async (licenseContainer) => {
 					console.log('deleting connection==============:', id)
 					if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, null, id)) {
 						console.log('before deleteConnection:');
-						configManager.deleteConnection(id);
+						configManager.deleteConnection(id, user);
 						console.log('after deleteConnection:');
 						return configManager.connections;
 					} else {
