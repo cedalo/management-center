@@ -762,6 +762,7 @@ const init = async (licenseContainer) => {
 					};
 					client.send(JSON.stringify(responseMessage));
 				} catch (error) {
+					// console.error(error); // TODO: uncomment
 					const responseMessage = {
 						type: 'response',
 						command: message.command.command,
@@ -782,6 +783,7 @@ const init = async (licenseContainer) => {
 					};
 					client.send(JSON.stringify(responseMessage));
 				} catch (error) {
+					// console.error(error); // TODO: uncomment
 					const responseMessage = {
 						type: 'response',
 						requestId: message.id,
