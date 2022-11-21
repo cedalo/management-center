@@ -371,18 +371,12 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection, connect
 					variant: 'contained'
 				}
 			});
-			console.log('before deleting connection------------------------------------------------')
 			await brokerClient.deleteConnection(id);
-			console.log('after deleting connection------------------------------------------------')
 			enqueueSnackbar(`Connection "${id}" successfully deleted`, {
 				variant: 'success'
 			});
-			console.log('before getBrokerConnections------------------------------------------------')
 			const connections = await brokerClient.getBrokerConnections();
-			console.log('after getBrokerConnections------------------------------------------------')
-			console.log('before updateBrokerConnections------------------------------------------------')
 			dispatch(updateBrokerConnections(connections));
-			console.log('after updateBrokerConnections------------------------------------------------')
 		} catch (error) {
 			// setPremiumFeatureDialogOpen(true);
 			enqueueSnackbar(`Error deleting connection. Reason: ${error.message ? error.message : error}`, {
