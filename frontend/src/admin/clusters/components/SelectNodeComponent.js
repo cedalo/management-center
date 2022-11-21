@@ -15,6 +15,8 @@ import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import { connect } from 'react-redux';
 import ConnectionNewComponent from '../../../components/ConnectionNewComponent';
+import { trimString } from '../../../utils/utils';
+
 
 const useStyles = makeStyles((theme) => ({
 	form: {
@@ -86,7 +88,7 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 					required={true}
 					id="private-ip-address"
 					label="Private IP address"
-					onChange={(event) => defaultNode.address = event.target.value}
+					onChange={(event) => defaultNode.address = trimString(event.target.value)}
 					defaultValue={defaultNode.address}
 					variant="outlined"
 					fullWidth
