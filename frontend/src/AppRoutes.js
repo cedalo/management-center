@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
 function AppRoutes(props) {
 
 	const { selectedConnectionToEdit: connection } = props;
-	const { userProfile, userManagementFeature } = props;
+	const { userProfile, userManagementFeature, currentConnectionName } = props;
 	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/theme`);
 	const [responseConfig, loadingConfig, hasErrorConfig] = useFetch(`${process.env.PUBLIC_URL}/api/config`);
 
@@ -115,14 +115,14 @@ function AppRoutes(props) {
 				<Route path="/terminal">
 					<Terminal />
 				</Route>
-				{atLeastAdmin(userProfile) && <Route
+				{atLeastAdmin(userProfile, currentConnectionName) && <Route
 					path="/streams/detail/:streamId"
 					component={StreamDetail}
 				/>}
-				{atLeastAdmin(userProfile) && <Route path="/streams/new">
+				{atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams/new">
 					<StreamNew />
 				</Route>}
-				{atLeastAdmin(userProfile) && <Route path="/streams">
+				{atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams">
 					<Streams />
 				</Route>}
 				<Route path="/system/status">
@@ -194,9 +194,9 @@ function AppRoutes(props) {
 				<Route path="/tools/streamsheets">
 					<Streamsheets />
 				</Route>
-				<Route path="/streams">
+				{/* <Route path="/streams">
 					<Streams />
-				</Route>
+				</Route> */}
 				<Route path="/home">
 					<Home />
 				</Route>
@@ -229,7 +229,8 @@ const mapStateToProps = (state) => {
 	return {
 		userProfile: state.userProfile?.userProfile,
 		userManagementFeature: state.systemStatus?.features?.usermanagement,
-		selectedConnectionToEdit: state.brokerConnections?.selectedConnectionToEdit
+		selectedConnectionToEdit: state.brokerConnections?.selectedConnectionToEdit,
+		currentConnectionName: state.brokerConnections.currentConnectionName,
 	};
 };
 
