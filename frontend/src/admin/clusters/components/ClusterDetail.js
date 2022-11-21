@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
 
 const getNodeIcon = (node) => {
 	if (node?.error) {
-		return <Tooltip title={node.error.message} aria-label="Leader">
+		return <Tooltip title={node.error.message} aria-label="FailedNode">
 			<ErrorIcon style={{ color: red[500] }} />
 		</Tooltip> 
 	} else {
