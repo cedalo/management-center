@@ -369,6 +369,8 @@ const init = async (licenseContainer) => {
 			});
 		}
 
+		let error;
+
 		if (!connectionConfiguration.status.error) {
 			brokerClient.subscribe('$SYS/#', (error) => {
 				console.log(`Subscribed to system topics for '${connection.name}'`);
@@ -406,6 +408,8 @@ const init = async (licenseContainer) => {
 					// Nothing to do
 				}
 			});
+		} else {
+			error = connectionConfiguration.status.error;
 		}
 
 		// const proxyClient = new NodeMosquittoProxyClient({
@@ -425,6 +429,7 @@ const init = async (licenseContainer) => {
 		// } catch (error) {
 		// 	console.error(error);
 		// }
+		return error;
 	}
 
 	const handleDisconnectServerFromBroker = async (connection) => {
