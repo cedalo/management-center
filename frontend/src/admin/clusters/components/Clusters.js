@@ -278,10 +278,16 @@ const Clusters = (props) => {
 				variant: 'contained'
 			}
 		});
-		await brokerClient.deleteCluster(clustername);
-		enqueueSnackbar(`Cluster "${clustername}" successfully deleted`, {
-			variant: 'success'
-		});
+		try {
+			await brokerClient.deleteCluster(clustername);
+			enqueueSnackbar(`Cluster "${clustername}" successfully deleted`, {
+				variant: 'success'
+			});
+		} catch (error) {
+			enqueueSnackbar(`Error deleting cluster ${clustername}. Reason: ${error.message || error}`, {
+				variant: 'error'
+			});
+		}
 		const clusters = await brokerClient.listClusters();
 		dispatch(updateClusters(clusters));
 	};
