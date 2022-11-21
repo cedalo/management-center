@@ -104,29 +104,6 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			error
 		}));
 	}
-	
-	try {
-		const testCollections = await client.listTestCollections();
-		dispatch(updateTestCollections(testCollections));
-	} catch (error) {
-		// TODO: handle error
-		console.log('Test collections:', error);
-	}
-
-	try {
-		const clusters = await client.listClusters();
-		dispatch(updateClusters(clusters));
-		dispatch(updateFeatures({
-			feature: 'clustermanagement',
-			status: 'ok'
-		}));
-	} catch (error) {
-		dispatch(updateFeatures({
-			feature: 'clustermanagement',
-			status: 'failed',
-			error
-		}));
-	}
 
 
 	try {
@@ -139,7 +116,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 				error: 'Not found'
 			}));
 		} else {
-			console.log('app tokens are disabled')
+			console.log('App tokens are disabled')
 			dispatch(updateApplicationTokens(tokens));
 			dispatch(updateFeatures({
 				feature: 'applicationtokens',
@@ -147,7 +124,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			}));
 		}
 	} catch (error) {
-		console.log('app tokens failed with error:', error);
+		console.log('App tokens failed with error:', error);
 		dispatch(updateFeatures({
 			feature: 'applicationtokens',
 			status: 'failed',
@@ -172,6 +149,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			}));
 		}
 	} catch(error) {
+		console.log('Topic tree failed with error:', error);
 		dispatch(updateFeatures({
 			feature: 'topictreerest',
 			status: 'failed',
@@ -203,6 +181,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 	}
 
 
+	let brokerConnected = false;
 	const brokerConnections = await client.getBrokerConnections();
 	dispatch(updateBrokerConnections(brokerConnections));
 
@@ -213,6 +192,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			const connectionName = connection.name;
 			await client.connectToBroker(connectionName);
 			dispatch(updateBrokerConnected(true, connectionName));
+			brokerConnected = true;
 			break;
 		}
 	}
@@ -225,90 +205,116 @@ const init = async (client, dispatch, connectionConfiguration) => {
 
 	dispatch(updateLoading(false));
 
-	try {
-		console.log('Loading dynamic security');
+	if (brokerConnected) {
+		try {
+			const testCollections = await client.listTestCollections();
+			dispatch(updateTestCollections(testCollections));
+		} catch (error) {
+			// TODO: handle error
+			console.log('Test collections:', error);
+		}
+	
+		try {
+			const clusters = await client.listClusters();
+			dispatch(updateClusters(clusters));
+			dispatch(updateFeatures({
+				feature: 'clustermanagement',
+				status: 'ok'
+			}));
+		} catch (error) {
+			dispatch(updateFeatures({
+				feature: 'clustermanagement',
+				status: 'failed',
+				error
+			}));
+		}
 
-		const clients = await client.listClients(true, 10, 0);
-		dispatch(updateClients(clients));
-		const clientsAll = await client.listClients(false);
-		dispatch(updateClientsAll(clientsAll));
-		const groups = await client.listGroups(true, 10, 0);
-		dispatch(updateGroups(groups));
-		const groupsAll = await client.listGroups(false);
-		dispatch(updateGroupsAll(groupsAll));
-		const anonymousGroup = await client.getAnonymousGroup();
-		dispatch(updateAnonymousGroup(anonymousGroup));
-		const roles = await client.listRoles(true, 10, 0);
-		dispatch(updateRoles(roles));
-		const rolesAll = await client.listRoles(false);
-		dispatch(updateRolesAll(rolesAll));
+		try {
+			console.log('Loading dynamic security');
+
+			const clients = await client.listClients(true, 10, 0);
+			dispatch(updateClients(clients));
+			const clientsAll = await client.listClients(false);
+			dispatch(updateClientsAll(clientsAll));
+			const groups = await client.listGroups(true, 10, 0);
+			dispatch(updateGroups(groups));
+			const groupsAll = await client.listGroups(false);
+			dispatch(updateGroupsAll(groupsAll));
+			const anonymousGroup = await client.getAnonymousGroup();
+			dispatch(updateAnonymousGroup(anonymousGroup));
+			const roles = await client.listRoles(true, 10, 0);
+			dispatch(updateRoles(roles));
+			const rolesAll = await client.listRoles(false);
+			dispatch(updateRolesAll(rolesAll));
 
 
-		const defaultACLAccess = await client.getDefaultACLAccess();
-		dispatch(updateDefaultACLAccess(defaultACLAccess));
-		dispatch(updateFeatures({
-			feature: 'dynamicsecurity',
-			status: 'ok'
-		}));
-	} catch(error) {
-		console.error('Error loading dynamic security');
-		console.error(error);
-		// TODO: change when Mosquitto provides feature endpoint
-		// there was an error loading some dynamic security part
-		// --> we assume that feature has not been loaded
-		dispatch(updateFeatures({
-			feature: 'dynamicsecurity',
-			status: error
-		}));
-	}
-	try {
-		console.log('Loading license information');
-		const licenseInformation = await client.getLicenseInformation()
-		dispatch(updateBrokerLicenseInformation(licenseInformation));
-	} catch (error) {
-		console.error('Error loading license information');
-		console.error(error);
-		dispatch(updateBrokerLicenseInformation({}));
-	}
-	try {
-		console.log('Loading inspection');
-		const inspectClients = await client.inspectListClients();
-		dispatch(updateInspectClients(inspectClients));
-		dispatch(updateFeatures({
-			feature: 'inspect',
-			status: 'ok'
-		}));
-	} catch (error) {
-		console.error('Error loading inspection');
-		console.error(error);
-		// TODO: change when Mosquitto provides feature endpoint
-		// there was an error loading the inspect feature
-		// --> we assume that feature has not been loaded
-		dispatch(updateFeatures({
-			feature: 'inspect',
-			status: error
-		}));
-	}
-	try {
-		console.log('Loading streams');
-		const streams = await client.listStreams();
-		dispatch(updateStreams(streams));
-		dispatch(updateFeatures({
-			feature: 'streamprocessing',
-			status: 'ok'
-		}));
-	} catch (error) {
-		console.error('Error loading streams');
-		console.error(error);
-		// TODO: change when Mosquitto provides feature endpoint
-		// there was an error loading the stream feature
-		// --> we assume that feature has not been loaded
-		dispatch(updateFeatures({
-			feature: 'streamprocessing',
-			status: error
-		}));
+			const defaultACLAccess = await client.getDefaultACLAccess();
+			dispatch(updateDefaultACLAccess(defaultACLAccess));
+			dispatch(updateFeatures({
+				feature: 'dynamicsecurity',
+				status: 'ok'
+			}));
+		} catch(error) {
+			console.error('Error loading dynamic security');
+			console.error(error);
+			// TODO: change when Mosquitto provides feature endpoint
+			// there was an error loading some dynamic security part
+			// --> we assume that feature has not been loaded
+			dispatch(updateFeatures({
+				feature: 'dynamicsecurity',
+				status: error
+			}));
+		}
+		try {
+			console.log('Loading license information');
+			const licenseInformation = await client.getLicenseInformation()
+			dispatch(updateBrokerLicenseInformation(licenseInformation));
+		} catch (error) {
+			console.error('Error loading license information');
+			console.error(error);
+			dispatch(updateBrokerLicenseInformation({}));
+		}
+		try {
+			console.log('Loading inspection');
+			const inspectClients = await client.inspectListClients();
+			dispatch(updateInspectClients(inspectClients));
+			dispatch(updateFeatures({
+				feature: 'inspect',
+				status: 'ok'
+			}));
+		} catch (error) {
+			console.error('Error loading inspection');
+			console.error(error);
+			// TODO: change when Mosquitto provides feature endpoint
+			// there was an error loading the inspect feature
+			// --> we assume that feature has not been loaded
+			dispatch(updateFeatures({
+				feature: 'inspect',
+				status: error
+			}));
+		}
+		try {
+			console.log('Loading streams');
+			const streams = await client.listStreams();
+			dispatch(updateStreams(streams));
+			dispatch(updateFeatures({
+				feature: 'streamprocessing',
+				status: 'ok'
+			}));
+		} catch (error) {
+			console.error('Error loading streams');
+			console.error(error);
+			// TODO: change when Mosquitto provides feature endpoint
+			// there was an error loading the stream feature
+			// --> we assume that feature has not been loaded
+			dispatch(updateFeatures({
+				feature: 'streamprocessing',
+				status: error
+			}));
+		}
 	}
 }
+
 
 export default ({ children }) => {
 	const dispatch = useDispatch();
@@ -383,7 +389,7 @@ export default ({ children }) => {
 			client: client,
 			sendMessage
 		};
-	}
+	} 
 
 	return <WebSocketContext.Provider value={ws}>{children}</WebSocketContext.Provider>;
 };
