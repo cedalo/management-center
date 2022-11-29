@@ -473,7 +473,7 @@ const ConnectionDetailComponent = (props) => {
 									id="external-url"
 									label="External URL"
 									value={externalUrl}
-									helperText="This field is mainly used for docker based environemnts. Not editable"
+									helperText="This field is mainly used for docker based environments. Not editable"
 									defaultValue=""
 									variant="outlined"
 									fullWidth
