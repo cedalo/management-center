@@ -69,7 +69,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				if (!wasConnected) {
 					this.logger.error(`${url} closed before connect`);
 					brokerClient.end();
-					reject(new Error('Could not connect. Connection closed'));
+					reject(new Error(`Could not connect to ${url}. Connection closed`));
 				}
 			});
 		});
