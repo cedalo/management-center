@@ -7,13 +7,15 @@ const FileSync = require('lowdb/adapters/FileSync');
 const adapter = new FileSync(path.join(process.env.CEDALO_MC_DIRECTORY_SETTINGS || __dirname, 'db.json'));
 const db = low(adapter);
 
+
 const initId = () => {
 	const id = 	uuidv4();
 	return {
 		id,
 		created: Date.now()
 	} 
-}
+};
+
 
 const loadInstallation = () => {
 	db.defaults({
@@ -21,23 +23,7 @@ const loadInstallation = () => {
 	}).write();
 	const installation = db.get('install').value();
 	return installation;
-}
-
-
-const reverseMap = (map) => {
-	const reversedMap = new Map();
-
-	for (const [key, value] of map) {
-		reversedMap.set(value, key);
-	}
-
-	return reversedMap;
 };
-
-
-
-
-
 
 
 const getCircularReplacer = () => {
@@ -52,7 +38,8 @@ const getCircularReplacer = () => {
             return property; // ensured it's an object
         }
     }
-}
+};
+
 
 const iterateObject = (key, object, processor) => {
     if (typeof object !== 'object' || object === null) {
@@ -73,7 +60,7 @@ const iterateObject = (key, object, processor) => {
     }
 
     return object;
-}
+};
 
 
 const removeCircular = (object) => {
@@ -82,13 +69,16 @@ const removeCircular = (object) => {
     object = iterateObject('root', object, circularReplacer);
 
     return object;
-}
+};
 
 
+const stringToBool = (string) => {
+    return (string === 'true');
+};
 
 
 module.exports = {
 	loadInstallation,
-	reverseMap,
 	removeCircular,
+    stringToBool,
 };
