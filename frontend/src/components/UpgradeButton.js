@@ -2,7 +2,7 @@ import Button from '@material-ui/core/Button';
 import { indigo } from '@material-ui/core/colors';
 import { withStyles } from '@material-ui/core/styles';
 import UpgradeIcon from '@material-ui/icons/NewReleases';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 
@@ -17,11 +17,14 @@ const ColorButton = withStyles((theme) => ({
 }))(Button);
 
 const UpgradeButton = ({ license }) => {
-    console.log('license:', license);
-
     const [isTrial, setIsTrial] = useState(license?.plan === 'trial');
-    const pricingPageAddress = 'https://cedalo.com/mqtt-broker-pro-mosquitto/pricing/?product=mosquitto&premises=hosted&billing=annually&currency=eur&sHA=no_ha&mHA=no_ha&lHA=no_ha&xlHA=no_ha';
 
+    useEffect(() => {
+      setIsTrial(license?.plan === 'trial');
+    }, [license]);
+
+    const pricingPageAddress = 'https://cedalo.com/mqtt-broker-pro-mosquitto/pricing/?product=mosquitto&premises=hosted&billing=annually&currency=eur&sHA=no_ha&mHA=no_ha&lHA=no_ha&xlHA=no_ha';
+    
 	return (isTrial) ? (
 		<>
             <ColorButton 
