@@ -378,6 +378,11 @@ export default ({ children }) => {
 		.catch(error => {
 			if (!`${error}`.startsWith('You don\'t have enough user rights')) { // is thrown in case readonly roles
 				console.error('Error during initialization:', error);
+				try {
+					error = JSON.stringify(error);
+				} catch(exception) {
+					console.error('Could not display error in UI', exception);
+				}
 				alert(`An unexpected error while communicating with the backend occured: ${error}`);
 			} else {
 				console.error(error);
