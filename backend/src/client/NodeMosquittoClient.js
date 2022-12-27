@@ -83,7 +83,11 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		this._client.on(event, callback);
 	}
 
-	subscribe(topic) {
-		this._client.subscribe(topic);
+	subscribe(topic, callback) {
+		this._client.subscribe(topic, callback);
+	}
+
+	unsubscribe(topic, callback) {
+		this._client.unsubscribe(topic, callback);
 	}
 };

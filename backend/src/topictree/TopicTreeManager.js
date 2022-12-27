@@ -9,6 +9,7 @@ module.exports = class TopicTreeManager {
             _name: connection.name
         };
         this._settingsManager = settingsManager;
+        this._settingsManager.setCallback(this.topicTreeEnableDisableCallback.bind(this));
         this._listeners = [];
     }
 
@@ -16,8 +17,23 @@ module.exports = class TopicTreeManager {
         return this._topicTree;
     }
 
+    topicTreeEnableDisableCallback(oldSettings, newSettings) {
+        if (oldSettings.topicTreeEnabled && !newSettings.topicTreeEnabled) {
+            this.stop();
+		} else if (!oldSettings.topicTreeEnabled && newSettings.topicTreeEnabled) {
+            this._brokerClient.subscribe('#', (error) => {
+                console.log(`Subscribed to all topics for '${this._topicTree._name}'`);
+                if (error) {
+                  console.error(error);
+                }
+            });
+    
+        }
+    }
+
     start() {
-        let lastUpdatedTopicTree = Date.now();
+        let lastUpdatedTopicTree = Date.now();    
+        
         this._brokerClient.on('message', (topic, message, packet) => {
             if (this._settingsManager.settings.topicTreeEnabled) {
                 // in any case update the topic tree
@@ -43,7 +59,12 @@ module.exports = class TopicTreeManager {
     }
 
     stop() {
-
+        this._brokerClient.unsubscribe('#', (error) => {
+            console.log(`Unsubscribed from all topics for '${this._topicTree._name}'`);
+            if (error) {
+              console.error(error);
+            }
+        });
     }
 
     _updateTopicTree(topic, message, packet) {

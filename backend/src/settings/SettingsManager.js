@@ -6,13 +6,18 @@ const adapter = new FileSync(path.join(process.env.CEDALO_MC_DIRECTORY_SETTINGS 
 const db = low(adapter);
 
 module.exports = class SettingsManager {
-	constructor() {
+	constructor(callback=() => {}) {
+		this.callback = callback
 		db.defaults({
 			settings: {
 				allowTrackingUsageData: false,
 				topicTreeEnabled: false
 			}
 		}).write();
+	}
+
+	setCallback(callback) {
+		this.callback = callback;
 	}
 
 	get settings() {
@@ -24,6 +29,10 @@ module.exports = class SettingsManager {
 	}
 
 	updateSettings(settings) {
+		const oldSettings = this.settings;
+
 		this.settings = settings;
+
+		this.callback(oldSettings, this.settings);
 	}
 };
