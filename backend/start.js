@@ -273,7 +273,7 @@ const init = async (licenseContainer) => {
 	let server;
 	const host = CEDALO_MC_PROXY_HOST;
 	const port = CEDALO_MC_PROXY_PORT;
-	let protocol = config.plugins.find(plugin => plugin.name === 'https') ? 'https' : 'http';
+	let protocol = config.plugins?.find(plugin => plugin.name === 'https') ? 'https' : 'http';
 
 	const wss = new WebSocket.Server({
 		//   port: CEDALO_MC_PROXY_PORT,
