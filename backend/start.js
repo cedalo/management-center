@@ -381,7 +381,7 @@ const init = async (licenseContainer) => {
 				}
 			});
 			brokerClient.subscribe('$CONTROL/dynamic-security/v1/#', (error) => {
-				console.log(`Subscribed to all topics for '${connection.name}'`);
+				console.log(`Subscribed to dynamic-security topics for '${connection.name}'`);
 				if (error) {
 					console.error(error);
 				}
