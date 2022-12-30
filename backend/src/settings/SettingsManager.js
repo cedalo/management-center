@@ -1,8 +1,9 @@
 const path = require('path');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
+const { getBaseDirectory } = require('../utils/utils');
 
-const adapter = new FileSync(path.join(process.env.CEDALO_MC_DIRECTORY_SETTINGS || __dirname, 'settings.json'));
+const adapter = new FileSync(path.join(process.env.CEDALO_MC_DIRECTORY_SETTINGS || getBaseDirectory(__dirname), 'settings.json'));
 const db = low(adapter);
 
 module.exports = class SettingsManager {

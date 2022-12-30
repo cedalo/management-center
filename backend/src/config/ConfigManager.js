@@ -4,13 +4,13 @@ const FileSync = require('lowdb/adapters/FileSync');
 const { removeCircular, stringToBool } = require('../utils/utils');
 const { isObject } = require('util');
 const { URL } = require('url');
-
+const { getBaseDirectory } = require('../utils/utils');
 
 const CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING = process.env.CEDALO_CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING;
 const CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING = process.env.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING;
 const CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING = process.env.CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING;
 const CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING = process.env.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING;
-const configFile = process.env.CEDALO_MC_PROXY_CONFIG || path.join(process.env.CEDALO_MC_PROXY_CONFIG_DIR || __dirname, 'config.json');
+const configFile = process.env.CEDALO_MC_PROXY_CONFIG || path.join(process.env.CEDALO_MC_PROXY_CONFIG_DIR || getBaseDirectory(__dirname), 'config.json');
 
 const adapter = new FileSync(configFile);
 const db = low(adapter);

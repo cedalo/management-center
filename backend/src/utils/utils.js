@@ -4,7 +4,24 @@ const { v4: uuidv4 } = require('uuid');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 
-const adapter = new FileSync(path.join(process.env.CEDALO_MC_DIRECTORY_SETTINGS || __dirname, 'db.json'));
+
+const getBaseDirectory = (dirname) => {
+	// if (process.env.CEDALO_MC_SINGLE_BACKUP_DIRECTORY) {
+	// 	return process.env.CEDALO_MC_SINGLE_BACKUP_DIRECTORY;
+	// }
+	
+	// if (dirname.includes('snapshot')) { // for packaged executables
+	// 	if (process.env.CEDALO_MC_DIRECTORY_SETTINGS) {
+	// 		return process.env.CEDALO_MC_DIRECTORY_SETTINGS; // will be trying to save everything in this directory in case of packaged executables
+	// 	} else {
+	// 		return process.cwd();
+	// 	}
+	// }
+	return dirname;
+};
+
+
+const adapter = new FileSync(path.join(process.env.CEDALO_MC_DIRECTORY_SETTINGS || getBaseDirectory(__dirname), 'db.json'));
 const db = low(adapter);
 
 
@@ -77,8 +94,10 @@ const stringToBool = (string) => {
 };
 
 
+
 module.exports = {
 	loadInstallation,
 	removeCircular,
     stringToBool,
+    getBaseDirectory
 };
