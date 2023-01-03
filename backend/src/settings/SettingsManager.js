@@ -6,18 +6,23 @@ const adapter = new FileSync(path.join(process.env.CEDALO_MC_DIRECTORY_SETTINGS 
 const db = low(adapter);
 
 module.exports = class SettingsManager {
-	constructor(callback=() => {}) {
-		this.callback = callback
+	constructor() {
+		const defaultSettings = {
+			allowTrackingUsageData: false,
+			topicTreeEnabled: false
+		};
+		this.callbacks = [];
 		db.defaults({
-			settings: {
-				allowTrackingUsageData: false,
-				topicTreeEnabled: false
-			}
+			settings: defaultSettings
 		}).write();
+
+		if (this.settings.topicTreeEnabled) {
+			this.callToCallbacks(defaultSettings, this.settings);
+		}
 	}
 
-	setCallback(callback) {
-		this.callback = callback;
+	setCallback(brokerName, callback) {
+		this.callbacks.push({brokerName, callback});
 	}
 
 	get settings() {
@@ -28,11 +33,16 @@ module.exports = class SettingsManager {
 		db.update('settings', (oldSettings) => settings).write();
 	}
 
-	updateSettings(settings) {
+	callToCallbacks(oldSettings, newSettings) {
+		this.callbacks.forEach(el => el.callback(oldSettings, newSettings));
+	}
+
+	updateSettings(settings, brokerName) {
 		const oldSettings = this.settings;
 
 		this.settings = settings;
 
-		this.callback(oldSettings, this.settings);
+		this.callToCallbacks(oldSettings, this.settings);
 	}
 };
+// topicTreeEnabled
