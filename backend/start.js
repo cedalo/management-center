@@ -397,9 +397,11 @@ const init = async (licenseContainer) => {
 					topic.startsWith('$CONTROL/dynamic-security/v1/response')
 				) {
 					// TODO: this is already handle by the Mosquitto client
-					console.log('topic');
-					console.log(topic);
-					console.log(message.toString());
+					if (CEDALO_MC_ENABLE_FULL_LOG) {
+						console.log('topic');
+						console.log(topic);
+						console.log(message.toString());
+					}
 				} else if (topic.startsWith('$CONTROL')) {
 					// Nothing to do
 				}
@@ -481,7 +483,7 @@ const init = async (licenseContainer) => {
 		}
 		if (broker) {
 			const result = await broker.sendCommandMessage(api, command);
-			console.log(JSON.stringify(result));
+			// console.log(JSON.stringify(result));
 			const response = {
 				// TODO: remove users and groups properties when Mosquitto supports that API
 				// data: result.data || result.users || result.groups,
@@ -606,12 +608,14 @@ const init = async (licenseContainer) => {
 			}
 			case 'updateSettings': {
 				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
-					const { settings } = message;
+					const { settings, brokerName, callbackPayload } = message;
 					settingsManager.updateSettings(
 						{
 							...settingsManager.settings,
 							...settings
-						}
+						},
+						brokerName,
+						callbackPayload,
 					);
 					if (settingsManager.settings.allowTrackingUsageData) {
 						const data = Object.values(globalSystem);
@@ -700,17 +704,13 @@ const init = async (licenseContainer) => {
 			case 'deleteConnection': {
 				try {
 					const { id } = message;
-					console.log('deleting connection==============:', id)
 					if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, null, id)) {
-						console.log('before deleteConnection:');
 						configManager.deleteConnection(id, user);
-						console.log('after deleteConnection:');
 						return configManager.connections;
 					} else {
 						throw new NotAuthorizedError();
 					}
 				} catch(error) {
-					console.log('error when deleting:', error);
 					throw error;	
 				}
 			}
