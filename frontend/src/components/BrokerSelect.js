@@ -91,7 +91,7 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 		const connectionID = event.target.value;
 		const { client } = context;
 
-		handleConnectionChange(dispatch, client, connectionID, connection, setConnection);
+		handleConnectionChange(dispatch, client, connectionID, connection, setConnection, connected);
 	};
 
 	return brokerConnections ? (

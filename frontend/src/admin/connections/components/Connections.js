@@ -326,7 +326,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection, connect
 		try {
 			await brokerClient.connectServerToBroker(id);
 			if (!connected) {
-				handleConnectionChange(dispatch, brokerClient, name, currentConnectionName).catch((error) => console.error('Error while pulling information from the broker on reconnect: ' + error));
+				handleConnectionChange(dispatch, brokerClient, name, currentConnectionName, connected).catch((error) => console.error('Error while pulling information from the broker on reconnect: ' + error));
 				// await brokerClient.connectToBroker(name);
 				// dispatch(updateBrokerConnected(true, name));
 			}
@@ -373,7 +373,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection, connect
 			});
 			connections = await brokerClient.getBrokerConnections();
 			dispatch(updateBrokerConnections(connections));
-			handleConnectionChange(dispatch, brokerClient, currentConnectionName, name).catch((error) => console.error('Error while pulling information from the broker on disconnect: ' + error));
+			handleConnectionChange(dispatch, brokerClient, currentConnectionName, name, connected).catch((error) => console.error('Error while pulling information from the broker on disconnect: ' + error));
 		} catch (error) {
 			// setPremiumFeatureDialogOpen(true);
 			enqueueSnackbar(`Error disconnecting broker. Reason: ${error.message ? error.message : error}`, {
@@ -549,7 +549,7 @@ const mapStateToProps = (state) => {
 		brokerConnections: state.brokerConnections?.brokerConnections,
 		connected: state.brokerConnections.connected,
 		userProfile: state.userProfile?.userProfile,
-		currentConnectionName: state.brokerConnections.currentConnectionName,
+		currentConnectionName: state.brokerConnections?.currentConnectionName,
 	};
 };
 
