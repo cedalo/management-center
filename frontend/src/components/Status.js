@@ -389,8 +389,8 @@ const mapStateToProps = (state) => {
 		lastUpdated: state.systemStatus.lastUpdated,
 		systemStatus: state.systemStatus.systemStatus,
 		defaultClient: state.brokerConnections?.defaultClient,
-		currentConnection: state.brokerConnections.currentConnection,
-		currentConnectionName: state.brokerConnections.currentConnectionName,
+		currentConnection: state.brokerConnections?.currentConnection,
+		currentConnectionName: state.brokerConnections?.currentConnectionName,
 		connected: state.brokerConnections?.connected,
 	};
 };

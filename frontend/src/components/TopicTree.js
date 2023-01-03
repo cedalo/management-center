@@ -503,7 +503,7 @@ const mapStateToProps = (state) => {
 		settings: state.settings?.settings,
 		lastUpdated: state.topicTree.lastUpdated,
 		topicTree: state.topicTree,
-		currentConnectionName: state.brokerConnections.currentConnectionName,
+		currentConnectionName: state.brokerConnections?.currentConnectionName,
 		topicTreeRestFeature: state.systemStatus?.features?.topictreerest,
 	};
 };

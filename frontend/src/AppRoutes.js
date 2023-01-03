@@ -230,7 +230,7 @@ const mapStateToProps = (state) => {
 		userProfile: state.userProfile?.userProfile,
 		userManagementFeature: state.systemStatus?.features?.usermanagement,
 		selectedConnectionToEdit: state.brokerConnections?.selectedConnectionToEdit,
-		currentConnectionName: state.brokerConnections.currentConnectionName,
+		currentConnectionName: state.brokerConnections?.currentConnectionName,
 	};
 };
 

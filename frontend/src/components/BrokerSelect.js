@@ -142,7 +142,7 @@ const mapStateToProps = (state) => {
 	return {
 		brokerConnections: state.brokerConnections.brokerConnections,
 		connected: state.brokerConnections.connected,
-		currentConnectionName: state.brokerConnections.currentConnectionName,
+		currentConnectionName: state.brokerConnections?.currentConnectionName,
 		userProfile: state.userProfile?.userProfile,
 	};
 };
