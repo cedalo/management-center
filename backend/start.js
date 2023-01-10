@@ -608,14 +608,13 @@ const init = async (licenseContainer) => {
 			}
 			case 'updateSettings': {
 				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
-					const { settings, brokerName, callbackPayload } = message;
+					const { settings, brokerName } = message;
 					settingsManager.updateSettings(
 						{
 							...settingsManager.settings,
 							...settings
 						},
-						brokerName,
-						callbackPayload,
+						brokerName
 					);
 					if (settingsManager.settings.allowTrackingUsageData) {
 						const data = Object.values(globalSystem);

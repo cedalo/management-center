@@ -38,7 +38,7 @@ module.exports = class SettingsManager {
 		this.callbacks.forEach(el => el.callback(oldSettings, newSettings));
 	}
 
-	updateSettings(settings, brokerName) {
+	updateSettings(settings) {
 		const oldSettings = this.settings;
 
 		this.settings = settings;
