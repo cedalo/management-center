@@ -1,7 +1,7 @@
 const path = require('path');
 
 const PLUGIN_DIR = process.env.CEDALO_MC_PLUGIN_DIR;
-const LOGIN_PLUGIN_FEATURE_IDS = ['saml-sso'];
+const CUSTOM_LOGIN_PLUGIN_FEATURE_IDS = ['saml-sso'];
 const OS_PLUGINS_IDS = ['cedalo_login', 'cedalo_user_profile', 'cedalo_connect_disconnect'];
 
 
@@ -13,7 +13,7 @@ module.exports = class PluginManager {
 	_enabledCustomLoginPlugin() {
 		for (const plugin of this._plugins) {
 			if (plugin._status.type !== 'error') {
-				if (LOGIN_PLUGIN_FEATURE_IDS.includes(plugin.meta.featureId)) {
+				if (CUSTOM_LOGIN_PLUGIN_FEATURE_IDS.includes(plugin.meta.featureId)) {
 					return true;
 				}
 			}
