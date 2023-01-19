@@ -50,7 +50,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				wasConnected = true;
 				this.logger.log(`Connected to ${url}`);
 				brokerClient.subscribe('$CONTROL/#', (error) => {
-					this.logger.log(`Subscribed to control topics `);
+					console.log(`Subscribed to control topics for ${url}`);
 					if (error) {
 						this.logger.error(error);
 						reject(error);
