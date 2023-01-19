@@ -235,7 +235,7 @@ const init = async (licenseContainer) => {
 	const usageTracker = new UsageTracker({ license: licenseContainer, version, installation });
 	const installationManager = new InstallationManager({ license: licenseContainer, version, installation });
 	await installationManager.verifyLicense();
-	const settingsManager = new SettingsManager();
+	const settingsManager = new SettingsManager(context);
 	const maxBrokerConnections = licenseContainer?.license?.maxBrokerConnections ? parseInt(licenseContainer.license.maxBrokerConnections) : 1;
 	const configManager = new ConfigManager(maxBrokerConnections);
 
@@ -300,7 +300,7 @@ const init = async (licenseContainer) => {
 		const brokerClient = new NodeMosquittoClient({
 			/* logger: console */
 		});
-		const topicTreeManager = new TopicTreeManager(brokerClient, connection, settingsManager);
+		const topicTreeManager = new TopicTreeManager(brokerClient, connection, settingsManager, context);
 		topicTreeManager.addListener((topicTree, brokerClient, connection) => {
 			sendTopicTreeUpdate(topicTree, brokerClient, connection);
 		});
