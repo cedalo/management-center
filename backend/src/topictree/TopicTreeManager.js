@@ -2,14 +2,15 @@ const CEDALO_MC_TOPIC_TREE_UPDATE_INTERVAL = process.env.CEDALO_MC_TOPIC_TREE_UP
 
 module.exports = class TopicTreeManager {
 
-    constructor(brokerClient, connection, settingsManager) {
+    constructor(brokerClient, connection, settingsManager, context) {
+        this._context = context;
         this._brokerClient = brokerClient;
         this._connection = connection;
         this._topicTree = {
             _name: connection.name
         };
         this._settingsManager = settingsManager;
-        this._settingsManager.setCallback(connection.name, this.topicTreeEnableDisableCallback.bind(this));
+        this._context.eventEmitter?.on('settings-update', this.topicTreeEnableDisableCallback.bind(this));
         this._listeners = [];
     }
 
