@@ -794,7 +794,7 @@ const init = async (licenseContainer) => {
 
 	const sendConnectionsUpdate = (brokerClient, user) => {
 		const connections = context.brokerManager.getBrokerConnections();
-		let payload;
+		let payload = connections;
 
 		if (user) {
 			payload = context.security.acl.filterAllowedConnections(connections, user.connections);
