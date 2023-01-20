@@ -262,7 +262,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 										<TableCell component="th" scope="row">
 											URL
 										</TableCell>
-										<TableCell align="right">{currentConnection?.url}</TableCell>
+										<TableCell align="right">{currentConnection?.externalEncryptedUrl || currentConnection?.externalUnencryptedUrl || currentConnection?.internalUrl || currentConnection?.url}</TableCell>
 									</TableRow>
 								</TableBody>
 							</Table>
