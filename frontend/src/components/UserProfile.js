@@ -35,8 +35,6 @@ import Alert from '@material-ui/lab/Alert';
    
 // import AutoSuggest from './AutoSuggest';
 
-const ROOT_USERNAME = 'cedalo';
-
 
 const userShape = PropTypes.shape({
 	username: PropTypes.string,
@@ -77,6 +75,7 @@ const UserProfile = (props) => {
 	const { enqueueSnackbar } = useSnackbar();
 
 	const { userProfile } = props;
+	const { backendParameters } = props;
 	const [password, setPassword] = useState('');
 	const [passwordConfirm, setPasswordConfirm] = useState('');
 	const [updatedUser, setUpdatedUser] = React.useState({
@@ -89,6 +88,8 @@ const UserProfile = (props) => {
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
 	const { client: brokerClient } = context;
+
+	const ROOT_USERNAME = backendParameters.rootUsername;
 
 	const validate = () => {
 		if (editMode) {
@@ -370,6 +371,7 @@ UserProfile.propTypes = {
 const mapStateToProps = (state) => {
 	return {
 		userProfile: state.userProfile?.userProfile,
+		backendParameters: state.backendParameters?.backendParameters,
 	};
 };
 
