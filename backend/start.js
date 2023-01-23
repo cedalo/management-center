@@ -34,7 +34,9 @@ const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
-const CEDALO_MC_ENABLE_FULL_LOG = !!process.env.CEDALO_MC_ENABLE_FULL_LOG;
+const CEDALO_MC_ENABLE_FULL_LOG = !!(((process.env.CEDALO_MC_ENABLE_FULL_LOG && process.env.CEDALO_MC_ENABLE_FULL_LOG.toLowerCase()) === 'false') ? false : process.env.CEDALO_MC_ENABLE_FULL_LOG);
+const CEDALO_MC_SHOW_FEEDBACK_FORM = !!(((process.env.CEDALO_MC_SHOW_FEEDBACK_FORM && process.env.CEDALO_MC_SHOW_FEEDBACK_FORM.toLowerCase()) === 'false') ? false : process.env.CEDALO_MC_SHOW_FEEDBACK_FORM);
+const CEDALO_MC_USERNAME = process.env.CEDALO_MC_USERNAME;
 
 const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
@@ -269,6 +271,10 @@ const init = async (licenseContainer) => {
 	// TODO: add error handling
 	const config = loadConfig();
 	addStreamsheetsConfig(config);
+	config.parameters = {
+		showFeedbackForm: CEDALO_MC_SHOW_FEEDBACK_FORM,
+		rootUsername: CEDALO_MC_USERNAME
+	};
 
 	let server;
 	const host = CEDALO_MC_PROXY_HOST;
@@ -1012,6 +1018,10 @@ const init = async (licenseContainer) => {
 
 	router.get('/api/settings', context.security.isLoggedIn, (request, response) => {
 		response.json(settingsManager.settings);
+	});
+
+	router.get('/api/backend-parameters', context.security.isLoggedIn, (request, response) => {
+		response.json(config.parameters);
 	});
 
 	if (!CEDALO_MC_OFFLINE) {

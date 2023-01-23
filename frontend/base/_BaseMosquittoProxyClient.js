@@ -188,6 +188,22 @@ module.exports = class BaseMosquittoProxyClient {
 		});
 	}
 
+
+	async getBackendParameters() {
+		try {
+			const url = `${this._httpEndpointURL}/api/backend-parameters`;
+			const response = await axios.get(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
+			}
+		}
+	}
+
+
 	/**
 	 * ******************************************************************************************
 	 * Methods for user management

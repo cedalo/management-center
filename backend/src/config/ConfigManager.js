@@ -82,6 +82,15 @@ module.exports = class ConfigManager {
 		db.update('plugins', (oldPlugins) => plugins).write();
 	}
 
+	get parameters() {
+		let parameters = db.get('parameters').value();
+		return parameters;
+	}
+
+	set parameters(parameters) {
+		db.update('parameters', (oldParameters) => parameters).write();
+	}
+
 	updatePluginFromConfiguration(pluginId, plugin) {
 		if (!isObject(plugin)) {
 			throw new Error('Pluin is of invalid type/empty/not provided');

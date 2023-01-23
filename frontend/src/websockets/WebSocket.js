@@ -29,7 +29,8 @@ import {
 	updateTests,
 	updateTestCollections,
 	updateApplicationTokens,
-	updateLoading
+	updateLoading,
+	updateBackendParameters
 } from '../actions/actions';
 
 import {
@@ -73,6 +74,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 	dispatch(updateRolesAll([]));
 	dispatch(updateStreams([]));
 	dispatch(updateSystemStatus({}));
+	dispatch(updateBackendParameters({}));
 
 
 	// TODO: merge with code from BrokerSelect
@@ -103,6 +105,14 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			status: 'failed',
 			error
 		}));
+	}
+
+
+	try {
+		const backendParameters = await client.getBackendParameters();
+		dispatch(updateBackendParameters(backendParameters));
+	} catch (error) {
+		console.error('backendParameters could not be fetched. Reason:', error);
 	}
 
 
