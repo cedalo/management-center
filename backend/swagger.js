@@ -19,7 +19,7 @@ module.exports = {
   "components": {
     "schemas": {
     },
-    "errors": {
+    "statuses": {
     }
   }
 }
