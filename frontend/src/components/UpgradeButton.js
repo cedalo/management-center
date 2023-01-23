@@ -28,7 +28,7 @@ const UpgradeButton = ({ license }) => {
 	return (isTrial) ? (
 		<>
             <ColorButton 
-                    style={{marginTop: '15px'}}
+                    style={{marginTop: '15px', marginLeft: '8px'}}
                     variant="contained"
                     startIcon={<UpgradeIcon style={{color: 'red'}}  />}
                     size="small"
@@ -39,7 +39,7 @@ const UpgradeButton = ({ license }) => {
             </ColorButton>
 		</>)
         :
-        <></>;
+    <></>;
 };
 
 const mapStateToProps = (state) => {
