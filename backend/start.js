@@ -26,7 +26,15 @@ const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
 const swaggerDocument = require('./swagger.js');
 const Logger = require('./src/utils/Logger');
 const contentTypeParser = require('./src/middleware/ContentTypeParser');
-const actions = require('./src/actions/actions');
+const {
+	unloadPluginAction,
+	loadPluginAction,
+	setPluginStatusAtNextStartupAction,
+	testConnectionAction,
+	createConnectionAction,
+	modifyConnectionAction,
+	deleteConnectionAction
+} = require('./src/actions/actions');
 
 console = new Logger(console, false);
 
@@ -572,35 +580,23 @@ const init = async (licenseContainer) => {
 
 	// TODO: extract in separate WebSocket API class
 	const handleRequestMessage = async (message, client, user = {}) => {
-		const { request } = message;
+		const { request, ...data } = message;
 		switch (request) {
-			case 'unloadPlugin': {
-				const { pluginId } = message;
-				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
-					const response = pluginManager.unloadPlugin(pluginId);
-					return response;
-				} else {
-					throw new NotAuthorizedError();
-				}
-			}
-			case 'loadPlugin': {
-				const { pluginId } = message;
-				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
-					const response = pluginManager.loadPlugin(pluginId);
-					return response;
-				} else {
-					throw new NotAuthorizedError();
-				}
-			}
-			case 'setPluginStatusAtNextStartup': {
-				const { pluginId, nextStatus } = message;
-				if (context.security.acl.isAdmin(user)) {
-					const response = pluginManager.setPluginStatusAtNextStartup(pluginId, !!nextStatus);
-					return response;
-				} else {
-					throw new NotAuthorizedError();
-				}
-			}
+			case 'unloadPlugin':
+				return context.runAction(user, 'plugin/unload', data);
+			case 'loadPlugin':
+				return context.runAction(user, 'plugin/load', data);
+			case 'setPluginStatusAtNextStartup':
+				return context.runAction(user, 'plugin/setStatusNextStartup', data);
+			case 'testConnection':
+				return context.runAction(user, 'connection/test', data);
+			case 'createConnection':
+				return context.runAction(user, 'connection/create', data);
+			case 'modifyConnection':
+				return context.runAction(user, 'connection/modify', data);
+			case 'deleteConnection':
+				return context.runAction(user, 'connection/delete', data);
+
 			case 'connectToBroker': {
 				const { brokerName } = message;
 				if (context.security.acl.isConnectionAuthorized(user, null, brokerName)) {
@@ -679,108 +675,6 @@ const init = async (licenseContainer) => {
 					return settingsManager.settings;
 				} else {
 					throw new NotAuthorizedError();
-				}
-			}
-			case 'testConnection': {
-				if (context.security.acl.noRestrictedRoles(user)) {
-					const { connection } = message;
-					const testClient = new NodeMosquittoClient({
-						/* logger: console */
-					});
-
-					const filteredConnection = configManager.filterConnectionObject(connection);
-					filteredConnection.reconnectPeriod = 0; // add reconnectPeriod to MQTTjsClient so that it does not try to constantly reconnect on unsuccessful connection
-
-					// try {
-					await testClient.connect({
-						mqttEndpointURL: filteredConnection.url,
-						options: createOptions(filteredConnection)
-					});
-					await testClient.disconnect();
-					// } catch(error) {
-					// 	console.error(error);
-
-					// 	connection.status = {
-					// 		connected: false,
-					// 		timestamp: Date.now(),
-					// 		error: error
-					// 	};
-					// 	configManager.updateConnection(connection.id, connection);
-					// 	sendConnectionsUpdate(testClient);
-
-					// 	throw error;
-					// }
-
-					return {
-						connected: true
-					};
-				} else {
-					throw new NotAuthorizedError();
-				}
-			}
-			case 'createConnection': {
-				const { connection } = message;
-				if (
-					context.security.acl.isConnectionAuthorized(
-						user,
-						context.security.acl.atLeastAdmin,
-						null,
-						null,
-						'createConnection'
-					)
-				) {
-					try {
-						if (configManager.connections.length < context.licenseContainer.license.maxBrokerConnections) {
-							configManager.createConnection(connection);
-						} else {
-							throw new Error('Maximum number of connections reached.');
-						}
-					} catch (error) {
-						// TODO: handle error because Management Center crashes
-						console.error(error);
-						throw error;
-					}
-					return configManager.connections;
-				} else {
-					throw new NotAuthorizedError();
-				}
-			}
-			case 'modifyConnection': {
-				const { oldConnectionId, connection } = message;
-				if (
-					context.security.acl.isConnectionAuthorized(
-						user,
-						context.security.acl.atLeastAdmin,
-						null,
-						oldConnectionId
-					)
-				) {
-					configManager.updateConnection(oldConnectionId, connection);
-
-					return configManager.connections;
-				} else {
-					throw new NotAuthorizedError();
-				}
-			}
-			case 'deleteConnection': {
-				try {
-					const { id } = message;
-					if (
-						context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, null, id)
-					) {
-						const connection = configManager.getConnection(id);
-						if (connection.cluster) {
-							throw new Error(
-								`Could not delete "${id}" because it's part of the cluster "${connection.cluster}". Delete cluster first`
-							);
-						}
-						configManager.deleteConnection(id);
-						return configManager.connections;
-					} else {
-						throw new NotAuthorizedError();
-					}
-				} catch (error) {
-					throw error;
 				}
 			}
 			default: {
@@ -1017,6 +911,7 @@ const init = async (licenseContainer) => {
 			}
 		},
 		configManager,
+		pluginManager: new PluginManager(),
 		app: app,
 		server: null,
 		router: router,
@@ -1024,6 +919,18 @@ const init = async (licenseContainer) => {
 		globalSystem,
 		globalTopicTree,
 		licenseContainer,
+		registerAction: ({ type, fn, filter = (x) => x }) => {
+			context.actions[type] = { fn, filter };
+		},
+		runAction: (user, type, data) => {
+			const action = context.actions[type];
+			if (!action) {
+				throw new Error(`Unknown action: "${type}"`);
+			}
+
+			context.actionEmitter.emit(type, { type, user, data: action.filter(data) });
+			return action.fn({ ...context, user }, data);
+		},
 		broadcastWebSocketMessage,
 		sendTopicTreeUpdate,
 		sendSystemStatusUpdate,
@@ -1053,6 +960,15 @@ const init = async (licenseContainer) => {
 	context.config.parameters.ssoUsed = !!pluginManager.plugins.find(
 		(plugin) => plugin._meta.id.includes('_sso') && plugin._status.type === 'loaded'
 	);
+	context.registerAction(unloadPluginAction);
+	context.registerAction(loadPluginAction);
+	context.registerAction(setPluginStatusAtNextStartupAction);
+	context.registerAction(testConnectionAction);
+	context.registerAction(createConnectionAction);
+	context.registerAction(modifyConnectionAction);
+	context.registerAction(deleteConnectionAction);
+
+	context.pluginManager.init(config.plugins, context, swaggerDocument);
 
 	if (context.server instanceof Error) {
 		// https plugin tried to be loaded but failed
@@ -1160,7 +1076,7 @@ const init = async (licenseContainer) => {
 		context.security.acl.middleware.isAdmin,
 		(request, response) => {
 			response.json(
-				pluginManager.plugins.map((plugin) => {
+				context.pluginManager.plugins.map((plugin) => {
 					const removeProp = 'context';
 					const { [removeProp]: removedPropFromOptions, ...restOptions } = plugin.options;
 					return {
