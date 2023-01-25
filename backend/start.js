@@ -3,6 +3,7 @@ const os = require('os');
 const path = require('path');
 const http = require('http');
 const EventEmitter = require('events');
+const EventEmitter2 = require('eventemitter2');
 const { v4: uuidv4 } = require('uuid');
 const express = require('express');
 const session = require('express-session');
@@ -64,6 +65,7 @@ const licenseContainer = require('./src/license/LicenseContainer');
 const checker = new LicenseChecker();
 let context = {
 	eventEmitter: new EventEmitter(),
+	actionEmitter: new EventEmitter2({ wildcard: true, delimiter: '/' }),
 	brokerManager: new BrokerManager(),
 	requestHandlers: new Map(),
 	security: {
