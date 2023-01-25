@@ -989,16 +989,28 @@ const init = async (licenseContainer) => {
 		globalSystem,
 		globalTopicTree,
 		licenseContainer,
+		broadcastWebSocketMessage,
+		sendTopicTreeUpdate,
+		sendSystemStatusUpdate,
+		loadConfig,
 		actions: {
-			broadcastWebSocketMessage,
-			loadConfig,
 			handleConnectServerToBroker,
 			handleDisconnectServerFromBroker,
-			sendSystemStatusUpdate,
-			sendTopicTreeUpdate,
-			preprocessUser: actions.actions.preprocessUser
 		},
-		preprocessUserFunctions: actions.preprocessUserFunctions
+		middleware: {
+			preprocessUser: async (request, response, next) => {
+				for (const preprocessUserFunction of context.preprocessUserFunctions) {
+					try {
+						await preprocessUserFunction(request);
+					} catch (error) {
+						console.error('Error during user processing:', error);
+						return next(error);
+					}
+				}
+				return next();
+			}
+		},
+		preprocessUserFunctions: []
 	};
 
 	const pluginManager = new PluginManager();

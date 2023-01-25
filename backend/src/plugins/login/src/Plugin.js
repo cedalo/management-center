@@ -61,7 +61,7 @@ module.exports = class Plugin extends BasePlugin {
 			done(null, user);
 		});
 
-		router.use(context.actions.preprocessUser);
+		router.use(context.middleware.preprocessUser);
 
 		context.security.isLoggedIn = (request, response, next) => {
 			if (request.isAuthenticated()) {
