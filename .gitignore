@@ -107,3 +107,4 @@ public
 # TernJS port file
 .tern-port
 releases
+/config/management-center/*
