@@ -391,7 +391,7 @@ const init = async (licenseContainer) => {
 				}
 			});
 			//   });
-	
+
 			brokerClient.on('message', (topic, message, packet) => {
 				if (topic.startsWith('$SYS')) {
 					updateSystemTopics(system, topic, message, packet);
@@ -421,7 +421,7 @@ const init = async (licenseContainer) => {
 		// });
 		context.brokerManager.handleNewBrokerConnection(connection, brokerClient, system, topicTreeManager /*, proxyClient */);
 		configManager.updateConnection(connection.id, connection);
-		
+
 		// try {
 		// 	await proxyClient.connect({ socketEndpointURL: 'ws://localhost:8088' });
 		// 	await proxyClient.connectToBroker(connection.name);
@@ -463,7 +463,7 @@ const init = async (licenseContainer) => {
 		}
 	}
 	console.log(`Starting Mosquitto proxy server at ${protocol}://${host}:${port}`);
-	
+
 
 	// TODO: move somewhere else
 	const userCanAccessAPI = (user, api, connection) => {
@@ -641,7 +641,7 @@ const init = async (licenseContainer) => {
 					const testClient = new NodeMosquittoClient({
 						/* logger: console */
 					});
-          
+
           			const filteredConnection = configManager.filterConnectionObject(connection);
 					filteredConnection.reconnectPeriod = 0; // add reconnectPeriod to MQTTjsClient so that it does not try to constantly reconnect on unsuccessful connection
 
@@ -715,7 +715,7 @@ const init = async (licenseContainer) => {
 					}
 				} catch(error) {
 					console.log('error when deleting:', error);
-					throw error;	
+					throw error;
 				}
 			}
 			default: {
@@ -1075,7 +1075,7 @@ const init = async (licenseContainer) => {
 		);
 	});
 
-	router.get('/*', 
+	router.get('/*',
 		(request, response, next) => {
 			if (request.path.includes('.png')) {
 				next();
@@ -1201,7 +1201,7 @@ const licenseContainer = {};
 			if (error.message === 'Exit') {
 			} else {
 				console.error(error);
-				console.trace();
+				console.log();
 			}
 		}
 	});
