@@ -14,7 +14,7 @@ const plugins = [
 				// console.log(Object.entries(result.metafile.outputs));
 				if (result.metafile && result.metafile.outputs) {
 					const [mainBundle, { cssBundle }] = Object.entries(result.metafile.outputs).find(
-						([k, v]) => v.entryPoint === ENTRYPOINT
+						([k, v]) => v.entryPoint === ENTRYPOINT.split(path.sep).join(path.posix.sep)
 					);
 					// fs.writeFileSync('metafile.json', JSON.stringify(result.metafile));
 
