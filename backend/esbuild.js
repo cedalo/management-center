@@ -12,25 +12,30 @@ const plugins = [
 		setup(build) {
 			build.onEnd((result) => {
 				// console.log(Object.entries(result.metafile.outputs));
-				const [mainBundle, { cssBundle }] = Object.entries(result.metafile.outputs).find(
-					([k, v]) => v.entryPoint === ENTRYPOINT
-				);
-				// fs.writeFileSync('metafile.json', JSON.stringify(result.metafile));
+				if (result.metafile && result.metafile.outputs) {
+					const [mainBundle, { cssBundle }] = Object.entries(result.metafile.outputs).find(
+						([k, v]) => v.entryPoint === ENTRYPOINT
+					);
+					// fs.writeFileSync('metafile.json', JSON.stringify(result.metafile));
 
-				if (result.errors.length === 0) {
-					const updatedIndexHtml = indexHTML
-						.replace(
-							/<script defer="defer" src="\/static\/js\/main[^>]*>/,
-							`<script defer="defer" src="${mainBundle.replace(
-								/.*public\/static\//,
-								'/static/'
-							)}"></script>`
-						)
-						.replace(
-							/<link href="\/static\/css\/main[^>]*>/,
-							`<link href="${cssBundle.replace(/.*public\/static\//, '/static/')}" rel="stylesheet" />`
-						);
-					fs.writeFile(path.join(__dirname, 'public/index.html'), updatedIndexHtml, () => {});
+					if (result.errors.length === 0) {
+						const updatedIndexHtml = indexHTML
+							.replace(
+								/<script defer="defer" src="\/static\/js\/main[^>]*>/,
+								`<script defer="defer" src="${mainBundle.replace(
+									/.*public\/static\//,
+									'/static/'
+								)}"></script>`
+							)
+							.replace(
+								/<link href="\/static\/css\/main[^>]*>/,
+								`<link href="${cssBundle.replace(
+									/.*public\/static\//,
+									'/static/'
+								)}" rel="stylesheet" />`
+							);
+						fs.writeFile(path.join(__dirname, 'public/index.html'), updatedIndexHtml, () => {});
+					}
 				}
 			});
 		}
