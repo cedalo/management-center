@@ -1,11 +1,11 @@
 import React from 'react';
-import { SnackbarProvider } from 'notistack';
+import {SnackbarProvider} from 'notistack';
 import clsx from 'clsx';
-import { Provider, useSelector, useDispatch } from 'react-redux';
+import {Provider, useSelector, useDispatch} from 'react-redux';
 import Joyride from 'react-joyride';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import {makeStyles, useTheme} from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { ThemeProvider } from '@material-ui/core/styles';
+import {ThemeProvider} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -15,7 +15,7 @@ import IconButton from '@material-ui/core/IconButton';
 import TourIcon from '@material-ui/icons/Slideshow';
 import ThemeModeIcon from '@material-ui/icons/Brightness4';
 import Container from '@material-ui/core/Container';
-import { ConfirmProvider } from 'material-ui-confirm';
+import {ConfirmProvider} from 'material-ui-confirm';
 import LogoutButton from './components/LogoutButton';
 import ProfileButton from './components/ProfileButton';
 import LicenseErrorDialog from './components/LicenseErrorDialog';
@@ -34,7 +34,7 @@ import useLocalStorage from './helpers/useLocalStorage';
 import OnBoardingDialog from './components/OnBoardingDialog';
 import steps from './tutorial/steps';
 
-import { BrowserRouter as Router, Switch, Route, Link as RouterLink, Redirect } from 'react-router-dom';
+import {BrowserRouter as Router, Switch, Route, Link as RouterLink, Redirect} from 'react-router-dom';
 import CustomDrawer from './components/CustomDrawer';
 import AppRoutes from './AppRoutes';
 
@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
 		})
 	},
 	menuButton: {
-		marginRight: 36
+		marginRight: '12px'
 	},
 	hide: {
 		display: 'none'
@@ -190,115 +190,103 @@ export default function App(props) {
 		return (
 			<ThemeProvider theme={appliedTheme}>
 				<SnackbarProvider>
-				<Joyride
-					run={showTour}
-					continuous={true}
-					//   getHelpers={this.getHelpers}
-					scrollToFirstStep={true}
-					showProgress={true}
-					showSkipButton={true}
-					steps={steps}
-					callback={onTourStateChange}
-					styles={{
-						options: {
-							zIndex: 5000
-						}
-					}}
-				/>
-				<ConfirmProvider>
-					<CssBaseline />
-					<Router basename={process.env.PUBLIC_URL}>
-						<Provider store={store}>
-							<WebSocketProvider>
-								<div className={classes.root}>
-									<NewsletterPopup />
-									<OnBoardingDialog />
-									<Switch>
-										<Route path="/login">
-											<AppBar
-												position="fixed"
-												className={clsx(classes.appBar, {
-													[classes.appBarShift]: open
-												})}
-											>
-												<Toolbar>
-													<Typography variant="h6" noWrap></Typography>
-												</Toolbar>
-											</AppBar>
-											{/* <Container className={classes.container}>
+					<Joyride
+						run={showTour}
+						continuous={true}
+						//   getHelpers={this.getHelpers}
+						scrollToFirstStep={true}
+						showProgress={true}
+						showSkipButton={true}
+						steps={steps}
+						callback={onTourStateChange}
+						styles={{
+							options: {
+								zIndex: 5000
+							}
+						}}
+					/>
+					<ConfirmProvider>
+						<CssBaseline/>
+						<Router basename={process.env.PUBLIC_URL}>
+							<Provider store={store}>
+								<WebSocketProvider>
+									<div className={classes.root}>
+										<NewsletterPopup/>
+										<OnBoardingDialog/>
+										<Switch>
+											<Route path="/login">
+												<AppBar
+													position="fixed"
+													className={clsx(classes.appBar, {
+														[classes.appBarShift]: open
+													})}
+												>
+													<Toolbar>
+														<Typography variant="h6" noWrap></Typography>
+													</Toolbar>
+												</AppBar>
+												{/* <Container className={classes.container}>
 					<Login />
 				  </Container> */}
-										</Route>
-										<Route path="/">
-											<AppBar
-												position="fixed"
-												className={clsx(classes.appBar, {
-													[classes.appBarShift]: open
-												})}
-											>
-												<Toolbar>
-													<IconButton
-														color="inherit"
-														aria-label="open drawer"
-														onClick={handleDrawerOpen}
-														edge="start"
-														className={clsx(classes.menuButton, {
-															[classes.hide]: open
-														})}
-													>
-														<MenuIcon />
-													</IconButton>
-													<Typography noWrap>
-														<img
-															className={clsx(classes.logo)}
-															src={
-																darkMode === 'true'
-																	? response?.dark?.logo?.path || file
-																	: response?.light?.logo?.path || file
-															}
-															style={
-																response?.light?.logo?.height &&
-																response?.light?.logo?.width && {
-																	height: response?.light?.logo?.height,
-																	width: response?.light?.logo?.width
-																}
-															}
-														/>
-													</Typography>
-													<section className={classes.rightToolbar}>
-														<BrokerSelect />
-														<Tooltip title="Switch mode">
-															<IconButton
-																edge="end"
-																aria-label="Theme Mode"
-																aria-controls="theme-mode"
-																aria-haspopup="true"
-																onClick={() => onChangeTheme()}
-																color="inherit"
-																className={classes.toolbarButton}
-															>
-																<ThemeModeIcon fontSize="small" />
-															</IconButton>
-														</Tooltip>
-														{ !hideInfoPage ? <InfoButton /> : null }
-														<Tooltip title="Start tour">
-															<IconButton
-																edge="end"
-																aria-label="Tour"
-																aria-controls="tour"
-																aria-haspopup="true"
-																onClick={() => handleStartTour()}
-																color="inherit"
-																className={classes.toolbarButton}
-															>
-																<TourIcon fontSize="small" />
-															</IconButton>
-														</Tooltip>
+											</Route>
+											<Route path="/">
+												<AppBar
+													position="fixed"
+													className={clsx(classes.appBar, {
+														[classes.appBarShift]: open
+													})}
+												>
+													<Toolbar>
+														<IconButton
+															color="inherit"
+															aria-label="open drawer"
+															onClick={handleDrawerOpen}
+															edge="start"
+															className={clsx(classes.menuButton, {
+																[classes.hide]: open
+															})}
+														>
+															<MenuIcon/>
+														</IconButton>
+														<Typography noWrap>
+															<Typography variant="h5">
+																Mosquitto Management Center
+															</Typography>
+														</Typography>
+														<section className={classes.rightToolbar}>
+															<BrokerSelect/>
+															<Tooltip title="Switch mode">
+																<IconButton
+																	edge="end"
+																	aria-label="Theme Mode"
+																	aria-controls="theme-mode"
+																	aria-haspopup="true"
+																	onClick={() => onChangeTheme()}
+																	color="inherit"
+																	className={classes.toolbarButton}
+																>
+																	<ThemeModeIcon fontSize="small"/>
+																</IconButton>
+															</Tooltip>
+															{!hideInfoPage ? <InfoButton/> : null}
+															<Tooltip title="Start tour">
+																<IconButton
+																	edge="end"
+																	aria-label="Tour"
+																	aria-controls="tour"
+																	aria-haspopup="true"
+																	onClick={() => handleStartTour()}
+																	color="inherit"
+																	className={classes.toolbarButton}
+																>
+																	<TourIcon fontSize="small"/>
+																</IconButton>
+															</Tooltip>
 
-														{ !hideProfileButton ? <ProfileButton /> : null }
-														{ !hideLogoutButton ? <LogoutButton /> : null }
+															{!hideProfileButton ? <ProfileButton/> : null}
+															{!hideLogoutButton ? <LogoutButton/> : null}
 
-														{/* <IconButton
+															{/* <IconButton
 						  edge="end"
 						  aria-label="Notifications"
 						  aria-controls="notifications"
@@ -309,28 +297,30 @@ export default function App(props) {
 						  >
 							  <NotificationsIcon />
 						  </IconButton> */}
-													</section>
-												</Toolbar>
-											</AppBar>
-											{/* <NewsDrawer /> */}
+														</section>
+													</Toolbar>
+												</AppBar>
+												{/* <NewsDrawer /> */}
 
-											<nav>
-												{/* <Hidden xsDown implementation="css"> */}
-												<CustomDrawer hideConnections={hideConnections} open={open} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} />
-											</nav>
-											<LicenseErrorDialog />
-											<DisconnectedDialog />
+												<nav>
+													{/* <Hidden xsDown implementation="css"> */}
+													<CustomDrawer hideConnections={hideConnections} open={open}
+																  handleDrawerOpen={handleDrawerOpen}
+																  handleDrawerClose={handleDrawerClose}/>
+												</nav>
+												<LicenseErrorDialog/>
+												<DisconnectedDialog/>
 
-											<Container className={classes.container}>											
-												<AppRoutes />
-											</Container>
-										</Route>
-									</Switch>
-								</div>
-							</WebSocketProvider>
-						</Provider>
-					</Router>
-				</ConfirmProvider>
+												<Container className={classes.container}>
+													<AppRoutes/>
+												</Container>
+											</Route>
+										</Switch>
+									</div>
+								</WebSocketProvider>
+							</Provider>
+						</Router>
+					</ConfirmProvider>
 				</SnackbarProvider>
 			</ThemeProvider>
 		);
