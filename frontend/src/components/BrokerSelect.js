@@ -105,8 +105,9 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 		>
 			{appBar ?
 				<Typography
+					variant="subtitle2"
 					style={{
-						margin: '4px 13px'
+						margin: '5px 10px'
 					}}
 				>
 					Connection:

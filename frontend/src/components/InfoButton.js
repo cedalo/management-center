@@ -8,8 +8,8 @@ import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
 	toolbarButton: {
-		// marginTop: theme.spacing(0.8),
-		marginBottom: theme.spacing(0.2)
+		marginTop: '2px' // theme.spacing(0.8),
+		// marginBottom: theme.spacing(0.2)
 	}
 }));
 

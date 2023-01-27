@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 		display: 'flex',
 	},
 	box: {
-		padding: '75px 14px 14px 14px',
+		padding: '60px 15px 15px 15px',
 		width: '100%',
 		height: '100%',
 	},
@@ -104,8 +104,8 @@ const useStyles = makeStyles((theme) => ({
 		minWidth: 120
 	},
 	toolbarButton: {
-		// marginTop: theme.spacing(0.8),
-		marginBottom: theme.spacing(0.2)
+		marginTop: '2px' // theme.spacing(0.8),
+		// marginBottom: theme.spacing(0.2)
 	},
 	content: {
 		flexGrow: 1,
