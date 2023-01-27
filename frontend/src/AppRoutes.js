@@ -54,7 +54,7 @@ import { atLeastAdmin, atLeastEditor, atLeastViewer } from './utils/accessUtils/
 
 
 const useStyles = makeStyles((theme) => ({
-	
+
 }));
 
 function AppRoutes(props) {
@@ -67,7 +67,7 @@ function AppRoutes(props) {
 	if ((hasError || response) && (hasErrorConfig || responseConfig)) {
 		let hideConnections = (typeof responseConfig?.hideConnections === 'boolean') ? responseConfig?.hideConnections : false;
 		let hideInfoPage = (typeof responseConfig?.hideInfoPage === 'boolean') ? responseConfig?.hideInfoPage : false;
-	
+
 
 		//   const container = window !== undefined ? () => window().document.body : undefined;
 
@@ -144,7 +144,7 @@ function AppRoutes(props) {
 					<Connections />
 				</Route> : null }
 				{atLeastAdmin(userProfile) && <Route path="/config/settings">
-					<Settings />
+					<Settings onChangeTheme={props.onChangeTheme}/>
 				</Route>}
 				<Route path="/config">
 					<Config />
@@ -156,7 +156,7 @@ function AppRoutes(props) {
 					path="/admin/users/detail/:userId"
 					component={UserDetail}
 				/>
-	
+
 
 				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups/new">
 					<UserGroupNew />

@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import Typography from '@material-ui/core/Typography';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputBase from '@material-ui/core/InputBase';
@@ -77,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sendMessage, userProfile }) => {
+const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sendMessage, userProfile, appBar }) => {
 	const classes = useStyles();
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
@@ -86,7 +86,7 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 	React.useEffect(() => {
 		setConnection(currentConnectionName);
 	}, [currentConnectionName]);
-	
+
 	const handleConnectionChangeOuter = async (event) => {
 		const connectionID = event.target.value;
 		const { client } = context;
@@ -95,15 +95,31 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 	};
 
 	return brokerConnections ? (
-		<FormControl id="connection-select" variant="outlined" className={classes.formControl}>
-			<InputLabel
-				id="broker-select-outlined-label"
-				classes={{
-					root: classes.label
-				}}
-			>
-				Connection
-			</InputLabel>
+		<FormControl
+			id="connection-select"
+			variant="outlined"
+			className={classes.formControl}
+			style={{
+				flexDirection: appBar ? 'row' : 'column'
+			}}
+		>
+			{appBar ?
+				<Typography
+					style={{
+						margin: '4px 13px'
+					}}
+				>
+					Connection:
+				</Typography> :
+				<InputLabel
+					id="broker-select-outlined-label"
+					classes={{
+						root: classes.label
+					}}
+				>
+					Connection
+				</InputLabel>
+			}
 			<Select
 				// displayEmpty
 				defaultValue={currentConnectionName}

@@ -14,7 +14,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import IconButton from '@material-ui/core/IconButton';
 import TourIcon from '@material-ui/icons/Slideshow';
 import ThemeModeIcon from '@material-ui/icons/Brightness4';
-import Container from '@material-ui/core/Container';
+import Box from '@material-ui/core/Box';
 import {ConfirmProvider} from 'material-ui-confirm';
 import LogoutButton from './components/LogoutButton';
 import ProfileButton from './components/ProfileButton';
@@ -54,10 +54,12 @@ const file =
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		display: 'flex'
+		display: 'flex',
 	},
-	container: {
-		paddingTop: '100px'
+	box: {
+		padding: '75px 14px 14px 14px',
+		width: '100%',
+		height: '100%',
 	},
 	logo: {
 		width: '80px',
@@ -70,7 +72,11 @@ const useStyles = makeStyles((theme) => ({
 		transition: theme.transitions.create(['width', 'margin'], {
 			easing: theme.transitions.easing.sharp,
 			duration: theme.transitions.duration.leavingScreen
-		})
+		}),
+		minHeight: '50px'
+	},
+	mainToolBar: {
+		minHeight: '50px'
 	},
 	appBarShift: {
 		marginLeft: drawerWidth,
@@ -81,7 +87,8 @@ const useStyles = makeStyles((theme) => ({
 		})
 	},
 	menuButton: {
-		marginRight: '12px'
+		marginRight: '12px',
+		minHeight: '50px'
 	},
 	hide: {
 		display: 'none'
@@ -97,7 +104,7 @@ const useStyles = makeStyles((theme) => ({
 		minWidth: 120
 	},
 	toolbarButton: {
-		marginTop: theme.spacing(0.8),
+		// marginTop: theme.spacing(0.8),
 		marginBottom: theme.spacing(0.2)
 	},
 	content: {
@@ -108,6 +115,7 @@ const useStyles = makeStyles((theme) => ({
 		width: 500
 	}
 }));
+
 
 export default function App(props) {
 	// const { window } = props;
@@ -185,8 +193,6 @@ export default function App(props) {
 			setOpen(false);
 		};
 
-		//   const container = window !== undefined ? () => window().document.body : undefined;
-
 		return (
 			<ThemeProvider theme={appliedTheme}>
 				<SnackbarProvider>
@@ -216,27 +222,34 @@ export default function App(props) {
 										<Switch>
 											<Route path="/login">
 												<AppBar
+													elevation={0}
 													position="fixed"
 													className={clsx(classes.appBar, {
 														[classes.appBarShift]: open
 													})}
 												>
-													<Toolbar>
+													<Toolbar
+														disableGutters
+														className={classes.mainToolBar}
+													>
 														<Typography variant="h6" noWrap></Typography>
 													</Toolbar>
 												</AppBar>
-												{/* <Container className={classes.container}>
-					<Login />
-				  </Container> */}
 											</Route>
 											<Route path="/">
 												<AppBar
+													elevation={0}
 													position="fixed"
 													className={clsx(classes.appBar, {
 														[classes.appBarShift]: open
 													})}
 												>
-													<Toolbar>
+													<Toolbar
+														className={classes.mainToolBar}
+														style={{
+															paddingLeft: '15px'
+														}}
+													>
 														<IconButton
 															color="inherit"
 															aria-label="open drawer"
@@ -254,20 +267,20 @@ export default function App(props) {
 															</Typography>
 														</Typography>
 														<section className={classes.rightToolbar}>
-															<BrokerSelect/>
-															<Tooltip title="Switch mode">
-																<IconButton
-																	edge="end"
-																	aria-label="Theme Mode"
-																	aria-controls="theme-mode"
-																	aria-haspopup="true"
-																	onClick={() => onChangeTheme()}
-																	color="inherit"
-																	className={classes.toolbarButton}
-																>
-																	<ThemeModeIcon fontSize="small"/>
-																</IconButton>
-															</Tooltip>
+															<BrokerSelect appBar/>
+															{/*<Tooltip title="Switch mode">*/}
+															{/*	<IconButton*/}
+															{/*		edge="end"*/}
+															{/*		aria-label="Theme Mode"*/}
+															{/*		aria-controls="theme-mode"*/}
+															{/*		aria-haspopup="true"*/}
+															{/*		onClick={() => onChangeTheme()}*/}
+															{/*		color="inherit"*/}
+															{/*		className={classes.toolbarButton}*/}
+															{/*	>*/}
+															{/*		<ThemeModeIcon fontSize="small"/>*/}
+															{/*	</IconButton>*/}
+															{/*</Tooltip>*/}
 															{!hideInfoPage ? <InfoButton/> : null}
 															<Tooltip title="Start tour">
 																<IconButton
@@ -285,18 +298,6 @@ export default function App(props) {
 
 															{!hideProfileButton ? <ProfileButton/> : null}
 															{!hideLogoutButton ? <LogoutButton/> : null}
-
-															{/* <IconButton
-						  edge="end"
-						  aria-label="Notifications"
-						  aria-controls="notifications"
-						  aria-haspopup="true"
-						  // onClick={() => setDarkMode(!darkMode)}
-						  color="inherit"
-						  className={classes.toolbarButton}
-						  >
-							  <NotificationsIcon />
-						  </IconButton> */}
 														</section>
 													</Toolbar>
 												</AppBar>
@@ -311,9 +312,9 @@ export default function App(props) {
 												<LicenseErrorDialog/>
 												<DisconnectedDialog/>
 
-												<Container className={classes.container}>
-													<AppRoutes/>
-												</Container>
+												<Box className={classes.box}>
+													<AppRoutes onChangeTheme={(mode) => setDarkMode(mode)}/>
+												</Box>
 											</Route>
 										</Switch>
 									</div>
