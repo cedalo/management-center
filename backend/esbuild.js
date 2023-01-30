@@ -54,9 +54,9 @@ const run = async () => {
 		outdir: path.join(__dirname, 'public'),
 		bundle: true,
 		minify: true,
-		entryNames: 'static/[ext]/main-[hash]',
-		assetNames: 'static/media/[name]-[hash]',
-		chunkNames: 'static/[ext]/[name]-[hash]',
+		entryNames: 'static/[ext]/main',
+		assetNames: 'static/media/[name]',
+		chunkNames: 'static/[ext]/[name]',
 		target: ['chrome96', 'firefox96'],
 		plugins,
 		loader: {
