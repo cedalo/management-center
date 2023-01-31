@@ -5,7 +5,8 @@ const theme = createTheme({
 	palette: {
 		type: 'dark',
 		primary: {
-			main: '#556cd6'
+			main: '#212121'
+			// main: '#556cd6'
 			//   main: '#00695f',
 			//   main: '#ffc107',
 			//   main: 'rgb(44, 19, 56)',
@@ -16,7 +17,7 @@ const theme = createTheme({
 			//   main: '#ffcd38',
 		},
 		menuItem: {
-			color: '#2697ed',
+			color: '#FD602E',
 		},
 		error: {
 			main: red.A400

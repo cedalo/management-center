@@ -11,6 +11,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import InfoIcon from '@material-ui/icons/Info';
 import {makeStyles, useTheme, withStyles} from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
 import {withRouter, BrowserRouter as Router, Switch, Route, Link as RouterLink, Redirect} from 'react-router-dom';
@@ -34,6 +35,7 @@ import StreamsIcon from '@material-ui/icons/Timeline';
 import SecurityIcon from '@material-ui/icons/Security';
 import UserGroupsIcon from '@material-ui/icons/PeopleOutline';
 import {atLeastAdmin, atLeastEditor, atLeastViewer} from '../utils/accessUtils/access';
+import InfoButton from './InfoButton';
 
 const drawerWidth = 240;
 
@@ -145,6 +147,7 @@ const CustomDrawer = ({
 						  userManagementFeature,
 						  dynamicSecurityFeature,
 						  hideConnections,
+						  hideInfoPage,
 						  open,
 						  handleDrawerOpen,
 						  handleDrawerClose,
@@ -273,7 +276,15 @@ const CustomDrawer = ({
 				>
 					<List>
 						{adminOpen ? <Divider/> : null}
-						{adminOpen && atLeastAdmin(userProfile) &&
+						{adminOpen ?
+							<ListItemLink
+							id="menu-item-info"
+							classes={classes}
+							to="/info"
+							primary="Info"
+							icon={<InfoIcon fontSize="small"/>}
+						/> : null}
+						{!hideInfoPage && adminOpen && atLeastAdmin(userProfile) &&
 							<ListItemLink
 								id="menu-item-plugins"
 								classes={classes}

@@ -45,7 +45,11 @@ const useStyles = makeStyles((theme) => ({
 		paddingTop: theme.spacing(3)
 	},
 	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+	breadcrumbLink: theme.palette.breadcrumbLink,
+	container: {
+		paddingLeft: '0px',
+		paddingRight: '0px'
+	}
 }));
 
 const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus, defaultClient, currentConnection, currentConnectionName, connected }) => {
@@ -58,10 +62,10 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 	const publishMessages = (parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent) / totalMessages) * 100;
 	const otherMessages =
 	((totalMessages - parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent)) / totalMessages) * 100;
-	
+
 	const timerRef = React.useRef();
 	const [waitingForSysTopic, setWaitingForSysTopic] = React.useState(true);
-	
+
 	const cleanRef = () => {
 		if (timerRef.current) {
 			clearTimeout(timerRef.current);
@@ -73,7 +77,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 		// timerRef.current = window.setTimeout(() => {
 		// 	setWaitingForSysTopic(false);
 		// }, 16000);
-		
+
 		return () => {
 			cleanRef();
 		}
@@ -109,7 +113,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 			});
 		}
 	}
-	
+
 	const data = {
 		datasets: [
 			{
@@ -158,11 +162,15 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 							<AlertTitle>System status information not accessible</AlertTitle>
 							The selected broker connection is not active
 						</Alert>
-					</Delayed> 
+					</Delayed>
 				</> : <></>
 			}
-			{systemStatus?.$SYS && connected ? <Container maxWidth={false}>
-				<Grid container spacing={3}>
+			{systemStatus?.$SYS && connected ? <Container classes={{root: classes.container}} maxWidth={false}>
+				<Grid
+					container
+					classes={{root: classes.container }}
+					spacing={3}
+				>
 					<Grid item xs={10}>
 						<Typography variant="h5" component="div" gutterBottom>
 							{currentConnectionName}
@@ -187,7 +195,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 						<Info
 							label="Clients total"
 							value={systemStatus?.$SYS?.broker?.clients?.total}
-							icon={<ClientIcon />}
+							icon={<ClientIcon color="#FF0000"/>}
 						/>
 					</Grid>
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
@@ -345,16 +353,16 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 							dataDescriptions={dataDescriptions}
 						/>
 					</Grid> */}
-					<Grid item lg={12} sm={12} xl={12} xs={12}>
-						{brokerLicenseLoading ? 
-						<Alert severity="info">
-							<AlertTitle>Loading license information</AlertTitle>
-							<CircularProgress color="secondary" />
-						</Alert> : null}
+					{/*<Grid item lg={12} sm={12} xl={12} xs={12}>*/}
+					{/*	{brokerLicenseLoading ?*/}
+					{/*	<Alert severity="info">*/}
+					{/*		<AlertTitle>Loading license information</AlertTitle>*/}
+					{/*		<CircularProgress color="secondary" />*/}
+					{/*	</Alert> : null}*/}
 
-						{brokerLicense ? <LicenseTable license={brokerLicense} /> : null}
+					{/*	{brokerLicense ? <LicenseTable license={brokerLicense} /> : null}*/}
 
-					</Grid>
+					{/*</Grid>*/}
 				</Grid>
 				</Container> : (connected ? (
 				(waitingForSysTopic ?

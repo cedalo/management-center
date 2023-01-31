@@ -116,7 +116,7 @@ const CustomRow = (props) => {
 		mouseY: event.clientY - 4,
 	  });
 	};
-  
+
 	const handleClose = () => {
 		setCursorPosInfo(initialCursorPosInfo);
 	};
@@ -258,7 +258,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection, connect
 	const { enqueueSnackbar } = useSnackbar();
 	const { client: brokerClient } = context;
 	const [connection, setConnection] = React.useState('');
-	
+
 	const [premiumFeatureDialogOpen, setPremiumFeatureDialogOpen] = React.useState(false);
 
 	const handleClosePremiumFeatureDialog = () => {
@@ -402,22 +402,27 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection, connect
 					Connections
 				</Typography>
 			</Breadcrumbs>
-			<br />
-			<Button
-				variant="outlined"
-				color="default"
-				size="small"
-				className={classes.button}
-				startIcon={<AddIcon />}
-				onClick={(event) => {
-					event.stopPropagation();
-					onNewConnection();
-				}}
-			>
-				New Connection
-			</Button>
-			<br />
-			<br />
+			<Typography style={{marginTop: '10px'}} variant="h4">
+				Connections
+			</Typography>
+			<div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px'}}>
+				<Typography style={{fontSize: '10pt'}}>
+					List of Connections. Connections configure the access to an existing broker instance.
+				</Typography>
+				<Button
+					variant="outlined"
+					color="default"
+					size="small"
+					className={classes.button}
+					startIcon={<AddIcon />}
+					onClick={(event) => {
+						event.stopPropagation();
+						onNewConnection();
+					}}
+				>
+					New Connection
+				</Button>
+			</div>
 			{brokerConnections && brokerConnections?.length > 0 ? (
 				<div>
 					<Hidden xsDown implementation="css">
@@ -448,7 +453,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection, connect
 										brokerConnections
 											.sort((a, b) => a.name.localeCompare(b.name))
 											.map((brokerConnection) => (
-												<CustomRow 
+												<CustomRow
 													hover
 													onClick={() => onSelectConnection(brokerConnection)}
 													brokerConnection={brokerConnection}

@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 		display: 'flex',
 	},
 	box: {
-		padding: '60px 15px 15px 15px',
+		padding: '60px 20px 20px 20px',
 		width: '100%',
 		height: '100%',
 	},
@@ -281,7 +281,7 @@ export default function App(props) {
 															{/*		<ThemeModeIcon fontSize="small"/>*/}
 															{/*	</IconButton>*/}
 															{/*</Tooltip>*/}
-															{!hideInfoPage ? <InfoButton/> : null}
+															{/*{!hideInfoPage ? <InfoButton/> : null}*/}
 															<Tooltip title="Start tour">
 																<IconButton
 																	edge="end"
@@ -305,9 +305,13 @@ export default function App(props) {
 
 												<nav>
 													{/* <Hidden xsDown implementation="css"> */}
-													<CustomDrawer hideConnections={hideConnections} open={open}
-																  handleDrawerOpen={handleDrawerOpen}
-																  handleDrawerClose={handleDrawerClose}/>
+													<CustomDrawer
+														hideConnections={hideConnections}
+														hideInfoPage={hideInfoPage}
+														open={open}
+														handleDrawerOpen={handleDrawerOpen}
+														handleDrawerClose={handleDrawerClose}
+													/>
 												</nav>
 												<LicenseErrorDialog/>
 												<DisconnectedDialog/>

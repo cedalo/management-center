@@ -16,7 +16,7 @@ const theme = createTheme({
 			//   main: '#ffcd38',
 		},
 		menuItem: {
-			color: '#2979ff',
+			color: '#FD602E',
 		},
 		error: {
 			main: red.A400
