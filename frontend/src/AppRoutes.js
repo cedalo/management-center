@@ -51,6 +51,8 @@ import TestCollections from './components/TestCollections';
 import TestCollectionDetail from './components/TestCollectionDetail';
 import ApplicationTokens from './components/ApplicationTokens';
 import { atLeastAdmin, atLeastEditor, atLeastViewer } from './utils/accessUtils/access';
+import Certificates from './admin/certificates/components/Certificates';
+import CertificateDetail from './admin/certificates/components/CertificateDetail';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -73,30 +75,21 @@ function AppRoutes(props) {
 
 		return (
 			<Switch>
-				<Route
-					path="/security/clients/detail/:clientId"
-					component={ClientDetail}
-				/>
+				<Route path="/security/clients/detail/:clientId" component={ClientDetail} />
 				<Route path="/security/clients/new">
 					<ClientNew />
 				</Route>
 				<Route path="/security/clients">
 					<Clients />
 				</Route>
-				<Route
-					path="/security/groups/detail/:groupId"
-					component={GroupDetail}
-				/>
+				<Route path="/security/groups/detail/:groupId" component={GroupDetail} />
 				<Route path="/security/groups/new">
 					<GroupNew />
 				</Route>
 				<Route path="/security/groups">
 					<Groups />
 				</Route>
-				<Route
-					path="/security/roles/detail/:roleId"
-					component={RoleDetail}
-				/>
+				<Route path="/security/roles/detail/:roleId" component={RoleDetail} />
 				<Route path="/security/acl">
 					<DefaultACLAccess />
 				</Route>
@@ -115,16 +108,19 @@ function AppRoutes(props) {
 				<Route path="/terminal">
 					<Terminal />
 				</Route>
-				{atLeastAdmin(userProfile, currentConnectionName) && <Route
-					path="/streams/detail/:streamId"
-					component={StreamDetail}
-				/>}
-				{atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams/new">
-					<StreamNew />
-				</Route>}
-				{atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams">
-					<Streams />
-				</Route>}
+				{atLeastAdmin(userProfile, currentConnectionName) && (
+					<Route path="/streams/detail/:streamId" component={StreamDetail} />
+				)}
+				{atLeastAdmin(userProfile, currentConnectionName) && (
+					<Route path="/streams/new">
+						<StreamNew />
+					</Route>
+				)}
+				{atLeastAdmin(userProfile, currentConnectionName) && (
+					<Route path="/streams">
+						<Streams />
+					</Route>
+				)}
 				<Route path="/system/status">
 					<Status />
 				</Route>
@@ -134,43 +130,64 @@ function AppRoutes(props) {
 				<Route path="/system">
 					<System />
 				</Route>
-				{atLeastAdmin(userProfile) && <Route path="/config/connections/new">
-					<ConnectionNew />
-				</Route>}
-				{atLeastAdmin(userProfile, connection?.name) && <Route path="/config/connections/detail/:connectionId">
-					<ConnectionDetail />
-				</Route>}
-				{ !hideConnections ? <Route path="/config/connections">
-					<Connections />
-				</Route> : null }
-				{atLeastAdmin(userProfile) && <Route path="/config/settings">
-					<Settings />
-				</Route>}
+				{atLeastAdmin(userProfile) && (
+					<Route path="/config/connections/new">
+						<ConnectionNew />
+					</Route>
+				)}
+				{atLeastAdmin(userProfile, connection?.name) && (
+					<Route path="/config/connections/detail/:connectionId">
+						<ConnectionDetail />
+					</Route>
+				)}
+				{!hideConnections ? (
+					<Route path="/config/connections">
+						<Connections />
+					</Route>
+				) : null}
+				{/* CERT: check profile? */}
+				<Route path="/admin/certs/detail/:certId">
+					<CertificateDetail />
+				</Route>
+				<Route path="/admin/certs">
+					<SortableTablePage Component={Certificates} />
+				</Route>
+				{/* <Route path="/admin/certs/new">
+					<CertificateAdd />
+				</Route>  */}
+				{/* CERT: ~ */}
+				{atLeastAdmin(userProfile) && (
+					<Route path="/config/settings">
+						<Settings />
+					</Route>
+				)}
 				<Route path="/config">
 					<Config />
 				</Route>
 				<Route path="/profile">
 					<UserProfile />
 				</Route>
-				<Route
-					path="/admin/users/detail/:userId"
-					component={UserDetail}
-				/>
-	
+				<Route path="/admin/users/detail/:userId" component={UserDetail} />
 
-				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups/new">
-					<UserGroupNew />
-				</Route>}
-				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups/detail/:groupId"
-						component={UserGroupDetail}
-				/>}
-				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups">
-					<SortableTablePage Component={UserGroups} />
-				</Route>}
+				{atLeastAdmin(userProfile) && (
+					<Route path="/admin/user-groups/new">
+						<UserGroupNew />
+					</Route>
+				)}
+				{atLeastAdmin(userProfile) && (
+					<Route path="/admin/user-groups/detail/:groupId" component={UserGroupDetail} />
+				)}
+				{atLeastAdmin(userProfile) && (
+					<Route path="/admin/user-groups">
+						<SortableTablePage Component={UserGroups} />
+					</Route>
+				)}
 
-				{atLeastAdmin(userProfile) && <Route path="/admin/tokens">
-					<ApplicationTokens />
-				</Route>}
+				{atLeastAdmin(userProfile) && (
+					<Route path="/admin/tokens">
+						<ApplicationTokens />
+					</Route>
+				)}
 
 				<Route path="/admin/users/new">
 					<UserNew />
@@ -178,10 +195,7 @@ function AppRoutes(props) {
 				<Route path="/admin/users">
 					<Users />
 				</Route>
-				<Route
-					path="/admin/clusters/detail/:clusterId"
-					component={ClusterDetail}
-				/>
+				<Route path="/admin/clusters/detail/:clusterId" component={ClusterDetail} />
 				<Route path="/admin/clusters/new">
 					<ClusterNew />
 				</Route>
@@ -200,21 +214,14 @@ function AppRoutes(props) {
 				<Route path="/home">
 					<Home />
 				</Route>
-				{ !hideInfoPage ? <Route path="/info">
-					<InfoPage />
-				</Route> : null }
-				<Route
-					path="/testCollections/tests/detail/:id"
-					component={TestEdit}
-				/>
-				<Route
-					path="/testCollections/detail/:id"
-					component={TestCollectionDetail}
-				/>
-				<Route
-					path="/testCollections"
-					component={TestCollections}
-				/>
+				{!hideInfoPage ? (
+					<Route path="/info">
+						<InfoPage />
+					</Route>
+				) : null}
+				<Route path="/testCollections/tests/detail/:id" component={TestEdit} />
+				<Route path="/testCollections/detail/:id" component={TestCollectionDetail} />
+				<Route path="/testCollections" component={TestCollections} />
 				<Route path="/">
 					<Redirect to="/system/status" />
 				</Route>
