@@ -723,7 +723,7 @@ module.exports = class BaseMosquittoProxyClient {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
-			request: 'createCluster',
+			request: 'cluster-management/createCluster',
 			clusterConfiguration
 		});
 		return response.response;
@@ -734,7 +734,7 @@ module.exports = class BaseMosquittoProxyClient {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
-			request: 'listClusters'
+			request: 'cluster-management/getClusters'
 		});
 		return response.response;
 	}
@@ -744,7 +744,7 @@ module.exports = class BaseMosquittoProxyClient {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
-			request: 'getCluster',
+			request: 'cluster-management/getCluste',
 			clustername
 		}, timeout);
 		return response.response;
@@ -754,7 +754,7 @@ module.exports = class BaseMosquittoProxyClient {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
-			request: 'checkClusterHealthStatus',
+			request: 'cluster-management/checkClusterHealthStatus',
 			clustername
 		});
 		return response.response;
@@ -764,7 +764,7 @@ module.exports = class BaseMosquittoProxyClient {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
-			request: 'modifyCluster',
+			request: 'cluster-management/modifyCluster',
 			cluster
 		});
 		return response.response;
@@ -774,7 +774,7 @@ module.exports = class BaseMosquittoProxyClient {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
-			request: 'deleteCluster',
+			request: 'cluster-management/deleteCluster',
 			clustername
 		});
 		return response.response;
@@ -784,7 +784,7 @@ module.exports = class BaseMosquittoProxyClient {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
-			request: 'deleteAllClusters',
+			request: 'cluster-management/deleteAllClusters',
 		}, 20000);
 		return response.response;
 	}
@@ -793,7 +793,7 @@ module.exports = class BaseMosquittoProxyClient {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
-			request: 'joinCluster',
+			request: 'cluster-management/joinCluster',
 			clustername,
 			node
 		}, 20000);
@@ -804,7 +804,7 @@ module.exports = class BaseMosquittoProxyClient {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
-			request: 'leaveCluster',
+			request: 'cluster-management/leaveCluster',
 			clustername,
 			brokerId
 		}, 20000);
