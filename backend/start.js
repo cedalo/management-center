@@ -915,6 +915,12 @@ const init = async (licenseContainer) => {
 			handleDisconnectServerFromBroker,
 		},
 		middleware: {
+			isPluginLoaded: (plugin) => (request, response, next) => {
+				if (plugin.isLoaded()) {
+					return next();
+				}
+				response.status(404).send('Plugin not enabled');
+			},
 			preprocessUser: async (request, response, next) => {
 				for (const preprocessUserFunction of context.preprocessUserFunctions) {
 					try {
