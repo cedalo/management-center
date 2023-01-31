@@ -541,7 +541,42 @@ module.exports = class BaseMosquittoProxyClient {
 		}
 	}
 
-
+	/**
+	 * ******************************************************************************************
+	 * Methods for certificate management
+	 * ******************************************************************************************
+	 */
+	async doApiRequest(request, ...args) {
+		try {
+			const response = await request(...args, this._headers);
+			return response.data;
+		} catch (error) {
+			switch (error.response?.status) {
+				case 400:
+					throw new APIError('400', error.response.data || 'Invalid request');
+				case 404:
+					throw new APINotFoundError();
+				default:
+					throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
+			}
+		}
+	}
+	async getCertificates() {
+		const url = `${this._httpEndpointURL}/api/cert-management/certs`;
+		return this.doApiRequest(axios.get, url);
+	}
+	async addCertificate(cert) {
+		const url = `${this._httpEndpointURL}/api/cert-management/certs`;
+		return this.doApiRequest(axios.post, url, { cert });
+	}
+	async updateCertificate(cert) {
+		const url = `${this._httpEndpointURL}/api/cert-management/certs/${cert.id}`;
+		return this.doApiRequest(axios.put, url, { cert });
+	}
+	async deleteCertificate(id) {
+		const url = `${this._httpEndpointURL}/api/cert-management/certs/${id}`;
+		return this.doApiRequest(axios.delete, url);
+	}
 
 	/**
 	 * ******************************************************************************************
