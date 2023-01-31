@@ -402,7 +402,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection, connect
 					Connections
 				</Typography>
 			</Breadcrumbs>
-			<Typography style={{marginTop: '10px'}} variant="h4">
+			<Typography style={{marginTop: '10px'}} variant="h6">
 				Connections
 			</Typography>
 			<div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px'}}>

@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import MenuIcon from '@material-ui/icons/Menu';
 import IconButton from '@material-ui/core/IconButton';
 import TourIcon from '@material-ui/icons/Slideshow';
+import HelpIcon from '@material-ui/icons/HelpOutline';
 import ThemeModeIcon from '@material-ui/icons/Brightness4';
 import Box from '@material-ui/core/Box';
 import {ConfirmProvider} from 'material-ui-confirm';
@@ -88,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 	menuButton: {
 		marginRight: '12px',
-		minHeight: '50px'
+		minHeight: '50px',
 	},
 	hide: {
 		display: 'none'
@@ -104,7 +105,8 @@ const useStyles = makeStyles((theme) => ({
 		minWidth: 120
 	},
 	toolbarButton: {
-		marginTop: '2px' // theme.spacing(0.8),
+		marginTop: '2px',
+		color: theme.palette.type === 'dark' ? 'white' : 'rgba(117, 117, 117)',
 		// marginBottom: theme.spacing(0.2)
 	},
 	content: {
@@ -251,18 +253,20 @@ export default function App(props) {
 														}}
 													>
 														<IconButton
-															color="inherit"
 															aria-label="open drawer"
 															onClick={handleDrawerOpen}
 															edge="start"
 															className={clsx(classes.menuButton, {
 																[classes.hide]: open
 															})}
+															style={{
+																color: darkMode === 'true' ? 'white' : 'rgba(117, 117, 117)',
+															}}
 														>
 															<MenuIcon/>
 														</IconButton>
 														<Typography noWrap>
-															<Typography variant="h5">
+															<Typography variant="h5" style={{color: '#FD602E', fontWeight: '500'}}>
 																Mosquitto Management Center
 															</Typography>
 														</Typography>
@@ -289,10 +293,29 @@ export default function App(props) {
 																	aria-controls="tour"
 																	aria-haspopup="true"
 																	onClick={() => handleStartTour()}
-																	color="inherit"
 																	className={classes.toolbarButton}
+																	style={{
+																			color: darkMode === 'true' ? 'white' : 'rgba(117, 117, 117)',
+																		}}
+
 																>
 																	<TourIcon fontSize="small"/>
+																</IconButton>
+															</Tooltip>
+															<Tooltip title="Help">
+																<IconButton
+																	edge="end"
+																	aria-label="Tour"
+																	aria-controls="tour"
+																	aria-haspopup="true"
+																	onClick={() => handleStartTour()}
+																	className={classes.toolbarButton}
+																	style={{
+																			color: darkMode === 'true' ? 'white' : 'rgba(117, 117, 117)',
+																		}}
+
+																>
+																	<HelpIcon fontSize="small"/>
 																</IconButton>
 															</Tooltip>
 

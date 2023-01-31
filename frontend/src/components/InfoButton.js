@@ -8,7 +8,9 @@ import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
 	toolbarButton: {
-		marginTop: '2px' // theme.spacing(0.8),
+		marginTop: '2px',
+		color: theme.palette.type === 'dark' ? 'white' : 'rgba(117, 117, 117)',
+
 		// marginBottom: theme.spacing(0.2)
 	}
 }));

@@ -5,10 +5,7 @@ import { createTheme } from '@material-ui/core/styles';
 const theme = createTheme({
 	palette: {
 		primary: {
-			main: '#556cd6'
-			//   main: '#00695f',
-			//   main: '#ffc107',
-			//   main: 'rgb(44, 19, 56)',
+			main: '#556cd6',
 		},
 		secondary: {
 			main: '#7c88cc'
@@ -38,6 +35,13 @@ const theme = createTheme({
 			'&:hover': {
 				textDecoration: 'underline'
 			}
+		}
+	},
+	overrides: {
+		MuiAppBar: {
+			colorPrimary: {
+				backgroundColor: '#F7F9FC',
+			},
 		}
 	}
 });

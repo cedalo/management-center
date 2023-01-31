@@ -185,7 +185,6 @@ const CustomDrawer = ({
 	<List>
 		<ListItemLink id="menu-item-home" classes={classes} to="/home" primary="Home" icon={<HomeIcon />} />
 	</List> */}
-			<Divider/>
 			<Box style={{overflow: 'hidden', height: '100%'}}>
 				<List>
 					{open ? <ListSubheader className={classes.menuSubHeader}>Monitoring</ListSubheader> : null}
