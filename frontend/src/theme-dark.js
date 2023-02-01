@@ -5,7 +5,7 @@ const theme = createTheme({
 	palette: {
 		type: 'dark',
 		primary: {
-			main: '#212121'
+			main: '#FD602E'
 			// main: '#556cd6'
 			//   main: '#00695f',
 			//   main: '#ffc107',
@@ -35,6 +35,13 @@ const theme = createTheme({
 			'&:hover': {
 				textDecoration: 'underline'
 			}
+		}
+	},
+	overrides: {
+		MuiAppBar: {
+			colorPrimary: {
+				backgroundColor: '#212121',
+			},
 		}
 	}
 });

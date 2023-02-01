@@ -37,6 +37,7 @@ import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import PremiumFeatureDialog from '../../../components/PremiumFeatureDialog';
 import BrokerStatusIcon from '../../../components/BrokerStatusIcon';
+import ContainerHeader from '../../../components/ContainerHeader';
 
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
@@ -171,6 +172,7 @@ const CustomRow = (props) => {
 			<TableCell align="right">
 				<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}>
 					<Switch
+						color="primary"
 						disabled={!atLeastAdmin(userProfile, brokerConnection.name)}
 						checked={brokerConnection.status?.connected}
 						name="connectionConnected"
@@ -402,18 +404,15 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection, connect
 					Connections
 				</Typography>
 			</Breadcrumbs>
-			<Typography style={{marginTop: '10px'}} variant="h6">
-				Connections
-			</Typography>
-			<div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px'}}>
-				<Typography style={{fontSize: '10pt'}}>
-					List of Connections. Connections configure the access to an existing broker instance.
-				</Typography>
+			<ContainerHeader
+				title="Connections"
+				subTitle="List of Connections. Connections configure the access to an existing broker instance."
+			>
 				<Button
 					variant="outlined"
-					color="default"
+					color="primary"
 					size="small"
-					className={classes.button}
+					// className={classes.button}
 					startIcon={<AddIcon />}
 					onClick={(event) => {
 						event.stopPropagation();
@@ -422,7 +421,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection, connect
 				>
 					New Connection
 				</Button>
-			</div>
+			</ContainerHeader>
 			{brokerConnections && brokerConnections?.length > 0 ? (
 				<div>
 					<Hidden xsDown implementation="css">

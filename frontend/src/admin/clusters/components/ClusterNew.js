@@ -41,15 +41,15 @@ import CardContent from '@material-ui/core/CardContent';
 const useStyles = makeStyles((theme) => ({
 	root: {
 		'& > *': {
-			margin: theme.spacing(1)
+			// margin: theme.spacing(1)
 		},
 		'& .MuiTextField-root': {
-			margin: theme.spacing(1),
+			// margin: theme.spacing(1),
 		}
 	},
 	buttons: {
 		'& > *': {
-			margin: theme.spacing(1)
+			// margin: theme.spacing(1)
 		}
 	},
 	form: {
@@ -107,7 +107,7 @@ const ClusterNew = (props) => {
 	const onSaveCluster = async () => {
 		try {
 			await client.createCluster({
-				clustername, 
+				clustername,
 				description: clusterDescription,
 				nodes
 			});
@@ -170,6 +170,7 @@ const ClusterNew = (props) => {
 										helperText={clusternameExists && 'A cluster with this clustername already exists.'}
 										required
 										id="clustername"
+										size="small"
 										label="Cluster name"
 										onChange={(event) => setClustername(event.target.value)}
 										defaultValue="Example"
@@ -189,6 +190,7 @@ const ClusterNew = (props) => {
 									<TextField
 										required={false}
 										id="description"
+										size="small"
 										label="Cluster description"
 										onChange={(event) => setClusterDescription(event.target.value)}
 										defaultValue="Example cluster"
@@ -201,8 +203,9 @@ const ClusterNew = (props) => {
 									<Card variant="outlined">
 										<CardHeader
 											subheader="Node 1"
+
 										/>
-										<CardContent>
+										<CardContent style={{paddingTop: '0px'}} >
 											<SelectNodeComponent
 												defaultNode={node1}
 											/>
@@ -212,8 +215,9 @@ const ClusterNew = (props) => {
 									<Card variant="outlined">
 										<CardHeader
 											subheader="Node 2"
+											disableTypography
 										/>
-										<CardContent>
+										<CardContent style={{paddingTop: '0px'}} >
 											<SelectNodeComponent
 												defaultNode={node2}
 											/>
@@ -223,8 +227,9 @@ const ClusterNew = (props) => {
 									<Card variant="outlined">
 										<CardHeader
 											subheader="Node 3"
+											disableTypography
 										/>
-										<CardContent>
+										<CardContent style={{paddingTop: '0px'}} >
 											<SelectNodeComponent
 												defaultNode={node3}
 											/>

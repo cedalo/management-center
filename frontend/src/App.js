@@ -308,7 +308,7 @@ export default function App(props) {
 																	aria-label="Tour"
 																	aria-controls="tour"
 																	aria-haspopup="true"
-																	onClick={() => handleStartTour()}
+																	onClick={() => window.open('https://docs.cedalo.com/management-center', '_blank')}
 																	className={classes.toolbarButton}
 																	style={{
 																			color: darkMode === 'true' ? 'white' : 'rgba(117, 117, 117)',
