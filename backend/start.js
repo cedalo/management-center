@@ -1087,6 +1087,27 @@ const init = async (licenseContainer) => {
 	);
 	router.use(express.static(path.join(__dirname, 'public')));
 
+	router.use('/api/*', (error, request, response, next) => {
+		if (error) {
+			switch (error.code) {
+				case 'CONFLICT':
+					return response.status(409).send({ code: error.code, message: error.message });
+				case 'INVALID':
+					return response.status(400).send({ code: error.code, message: error.message });
+				case 'NOT_ALLOWED':
+					return response.status(403).send({ code: error.code, message: error.message });
+				default: {
+					console.error(error.stack);
+					return response
+						.status(500)
+						.send({ code: 'INTERNAL_ERROR', message: 'An internal server error occurred' });
+				}
+			}
+		} else {
+			next();
+		}
+	});
+
 	router.use((error, request, response, next) => {
 		if (error) {
 			console.error(error.stack);
