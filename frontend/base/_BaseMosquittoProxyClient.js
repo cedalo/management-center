@@ -573,9 +573,9 @@ module.exports = class BaseMosquittoProxyClient {
 		const url = `${this._httpEndpointURL}/api/cert-management/certs/${cert.id}`;
 		return this.doApiRequest(axios.put, url, { cert });
 	}
-	async deleteCertificate(id) {
+	async deleteCertificate(id, force) {
 		const url = `${this._httpEndpointURL}/api/cert-management/certs/${id}`;
-		return this.doApiRequest(axios.delete, url);
+		return this.doApiRequest(axios.delete, url, { data: { force } });
 	}
 
 	/**
