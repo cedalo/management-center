@@ -4,6 +4,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import CloudUpload from '@material-ui/icons/CloudUpload';
 
 const useStyles = makeStyles((theme) => ({
+	button: {
+		margin: theme.spacing(1),
+		width: '20%'
+	},
 	restrictButtonHeight: {
 		maxHeight: '27px'
 	}

@@ -22,6 +22,7 @@ import AutoSuggest from '../../../components/AutoSuggest';
 import PremiumFeatureDialog from '../../../components/PremiumFeatureDialog';
 import { WebSocketContext } from '../../../websockets/WebSocket';
 import { WarningHint } from './AlertHint';
+import DeleteCertificateDialog from './DeleteCertificateDialog';
 import PathCrumbs from './PathCrumbs';
 
 const useStyles = makeStyles((theme) => ({
@@ -54,6 +55,7 @@ const Certificates = (props) => {
 	const { isSupportedTLS } = props;
 	const { onSort, sortBy, sortDirection, disableSort } = props;
 	const [premiumFeatureDialogOpen, setPremiumFeatureDialogOpen] = useState(false);
+	const [deleteOptions, setDeleteOptions] = useState({ open: false });
 	const [certs, setCerts] = useState([]);
 
 	const loadCerts = async () => {
@@ -66,42 +68,31 @@ const Certificates = (props) => {
 			});
 		}
 	};
-	const deleteCert = async (cert) => {
-		try {
-			await client.deleteCertificate(cert.id);
-			loadCerts();
-		} catch (error) {
-			enqueueSnackbar(
-				`Error deleting certificate "${cert.name}" from server. Reason: ${error.message || error}`,
-				{
-					variant: 'error'
-				}
-			);
+	const openDeleteDialog = (cert) => {
+		setDeleteOptions({ open: true, cert });
+	}
+	const closeDeleteDialog = () => {
+		loadCerts();
+		setDeleteOptions({ open: false });
+	}
+	const handleClosePremiumFeatureDialog = () => {
+		setPremiumFeatureDialogOpen(false);
+	};
+	const onAddNewCertificate = (event) => {
+		event.stopPropagation();
+		// navigate('/admin/certs/detail/new');
+		history.push('/admin/certs/detail/new', { name: '', filename: '', connections: [] });
+	};
+	const onSelectCertificate = (cert) => (event) => {
+		if (event.target.nodeName?.toLowerCase() === 'td') {
+			event.stopPropagation();
+			history.push(`/admin/certs/detail/${cert.id}`, cert);
 		}
 	};
 
 	useEffect(() => {
 		loadCerts();
 	}, []);
-
-	const handleClosePremiumFeatureDialog = () => {
-		setPremiumFeatureDialogOpen(false);
-	};
-
-	const onAddNewCertificate = (event) => {
-		console.log('add new certificate!');
-		event.stopPropagation();
-		// navigate('/admin/certs/detail/new');
-		history.push('/admin/certs/detail/new', { name: '', filename: '', connections: [] });
-	};
-
-	const onSelectCertificate = (cert) => (event) => {
-		if (event.target.nodeName?.toLowerCase() === 'td') {
-			event.stopPropagation();
-			console.log('select certificate!');
-			history.push(`/admin/certs/detail/${cert.id}`, cert);
-		}
-	};
 
 	return (
 		<div>
@@ -110,6 +101,12 @@ const Certificates = (props) => {
 			<br />
 			{isSupportedTLS ? (
 				<>
+					<DeleteCertificateDialog
+						client={client}
+						onClose={closeDeleteDialog}
+						cert={deleteOptions.cert}
+						open={deleteOptions.open}
+					/>
 					<Button
 						variant="outlined"
 						color="default"
@@ -132,7 +129,6 @@ const Certificates = (props) => {
 						</Button>
 					)}
 					<br />
-					{/* wrap in box or paper */}
 					<TableContainer component={Paper} className={classes.tableContainer}>
 						<Table>
 							<TableHead>
@@ -169,23 +165,22 @@ const Certificates = (props) => {
 										<TableCell>{cert.name}</TableCell>
 										<TableCell>{cert.filename}</TableCell>
 										<TableCell className={classes.badges}>
-											{/* CERT: want to show registered connections */}
 											<AutoSuggest
-											// suggestions={connectionSuggestions}
-											// values={cert.connections
-											// 		.filter((brokerid) => !!connectionsMap.get(brokerid))
-											// 		.map((brokerid) => ({
-											// 	label: connectionsMap.get(brokerid).name,
-											// 	value: connectionsMap.get(brokerid).id
-											// }))}
-											// handleChange={(value) => {
-											// 	onUpdateConnections(cert, value);
-											// }}
+												disabled
+												placeholder="Not deployed"
+												values={(cert.connections || []).map((conn) => ({
+													label: conn.name,
+													value: conn.id
+												}))}
+												TextFieldProps={{
+													label: 'Deployed to',
+													variant: 'outlined'
+												}}
 											/>
 										</TableCell>
 										<TableCell align="right">
 											<Tooltip title="Delete Certificate">
-												<IconButton size="small" onClick={() => deleteCert(cert)}>
+												<IconButton size="small" onClick={() => openDeleteDialog(cert)}>
 													<DeleteIcon fontSize="small" />
 												</IconButton>
 											</Tooltip>
@@ -194,7 +189,6 @@ const Certificates = (props) => {
 								))}
 							</TableBody>
 						</Table>
-						) : (
 					</TableContainer>
 				</>
 			) : (

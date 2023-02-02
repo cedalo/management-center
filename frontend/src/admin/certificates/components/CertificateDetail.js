@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
@@ -43,24 +43,54 @@ const useStyles = makeStyles((theme) => ({
 		// width: 200,
 	}
 }));
+const deployMessage = (cert) => ({
+	error: {
+		add: `'Failed to deploy certificate "${cert.name}"`,
+		update: `'Failed to deploy certificate "${cert.name}"`
+	},
+	success: {
+		add: `Certificate "${cert.name}" successfully added.`,
+		update: `Certificate "${cert.name}" successfully updated.`
+	},
+	warning: {
+		add: `New certificate "${cert.name}" could not be deployed to all brokers.`,
+		update: `Certificate "${cert.name}" could not be updated on all brokers.`
+	}
+});
 
+
+const isValid = (crt) => crt.name && crt.filename && crt.cert;
 const compareByName = (a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+
+const notifyError = (message, enqueueSnackbar) =>
+	enqueueSnackbar(`${message} Reason: ${error.message || error}`, {
+		variant: 'error'
+	});
 
 const CertificateDetail = ({ connections = [] }) => {
 	const classes = useStyles();
 	const history = useHistory();
 	const { enqueueSnackbar } = useSnackbar();
+	const [canSave, setCanSave] = useState(false);
 	const [cert, setCert] = useState(history.location.state);
 	const context = useContext(WebSocketContext);
 	const { client } = context;
 	const allConnections = connections.sort(compareByName).map((conn) => ({ label: conn.name, value: conn.id }));
+	const initial = useRef(false);
+
+	useEffect(() => {
+		if (initial.current) setCanSave(isValid(cert));
+		else initial.current = true;
+	}, [cert]);
 
 	const onNameChange = (event) => {
-		setCert({ ...cert, name: event.target.value });
+		const name = event.target.value;
+		if (name !== cert.name) {
+			setCert({ ...cert, name });
+		}
 	};
 	const onCertUpload = ({ error, data, file } = {}) => {
-		// CERT: error notification
-		if (error) console.log(error);
+		if (error) notifyError(`Failed to upload certificate file "${file.name}".`, enqueueSnackbar);
 		else setCert({ ...cert, filename: file.name, cert: data });
 	};
 	const onCertDelete = (/* event */) => {
@@ -72,27 +102,29 @@ const CertificateDetail = ({ connections = [] }) => {
 	};
 	const onSave = async (/* event */) => {
 		try {
-			if (cert.id == null) {
-				await client.addCertificate(cert);
-				enqueueSnackbar(`Certificate "${cert.name}" successfully added.`, { variant: 'success' });
-			} else {
-				await client.updateCertificate(cert);
-				enqueueSnackbar(`Certificate "${cert.name}" successfully updated.`, { variant: 'success' });
+			const { action, deploy } = await (cert.id == null
+				? client.addCertificate(cert)
+				: client.updateCertificate(cert));
+			// check deploy status
+			switch (deploy.status) {
+				case 200:
+					enqueueSnackbar(deployMessage(cert).success[action], { variant: 'success' });
+					break;
+				case 207:
+					enqueueSnackbar(deployMessage(cert).warning[action], { variant: 'warning' });
+					break;
+				default:
+					enqueueSnackbar(deployMessage(cert).error[action], { variant: 'error' });
 			}
 		} catch (error) {
+			console.log(error);
 			const action = cert.id == null ? 'adding' : 'updating';
-			enqueueSnackbar(`Error ${action} certificate "${cert.name}". Reason: ${error.message || error}`, {
-				variant: 'error'
-			});
+			enqueueSnackbar(`Error ${action} certificate "${cert.name}".`, { variant: 'error' });
 		}
 		history.goBack();
 	};
 	const onCancel = (event) => {
 		history.goBack();
-	};
-	// CERT: return false if no changes were made...
-	const validate = (crt) => {
-		return crt.name && crt.filename && crt.cert;
 	};
 
 	return (
@@ -140,7 +172,7 @@ const CertificateDetail = ({ connections = [] }) => {
 									// InputLabelProps={{ shrink: true }}
 									InputProps={{
 										startAdornment: (
-											<UploadButton name="ca" onUpload={onCertUpload} size={{ width: '20%' }} />
+											<UploadButton name="ca" onUpload={onCertUpload} size={{ width: '50%' }} />
 										),
 										endAdornment: (
 											<IconButton
@@ -167,7 +199,7 @@ const CertificateDetail = ({ connections = [] }) => {
 									}))}
 									handleChange={onConnectionChoosed}
 									TextFieldProps={{
-										label: 'Deploy to connections',
+										label: 'Deploy to',
 										variant: 'outlined'
 									}}
 								/>
@@ -176,7 +208,7 @@ const CertificateDetail = ({ connections = [] }) => {
 								<Grid item xs={12} className={classes.buttons}>
 									<SaveCancelButtons
 										onSave={onSave}
-										saveDisabled={!validate(cert)}
+										saveDisabled={!canSave}
 										onCancel={onCancel}
 									/>
 								</Grid>
