@@ -1,7 +1,7 @@
 const BasePlugin = require('../../BasePlugin');
+const { createActions } = require('./actions');
 const meta = require('./meta');
 const swagger = require('./swagger.js');
-
 
 module.exports = class Plugin extends BasePlugin {
 	constructor() {

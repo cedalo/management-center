@@ -679,9 +679,9 @@ const init = async (licenseContainer) => {
 			}
 			default: {
 				if (context.security.acl.noRestrictedRoles(user)) {
-					const handler = context.requestHandlers.get(request);
-					if (handler) {
-						const result = await handler[request](message, user);
+					const actionName = context.requestHandlers.get(request);
+					if (actionName) {
+						const result = await context.runAction(user, actionName, data);
 						return result;
 					} else {
 						throw new Error(`Unsupported request: ${request}`);
@@ -935,10 +935,9 @@ const init = async (licenseContainer) => {
 		sendTopicTreeUpdate,
 		sendSystemStatusUpdate,
 		loadConfig,
-		actions: {
-			handleConnectServerToBroker,
-			handleDisconnectServerFromBroker,
-		},
+		handleConnectServerToBroker,
+		handleDisconnectServerFromBroker,
+		actions: {},
 		middleware: {
 			isPluginLoaded: (plugin) => (request, response, next) => {
 				if (plugin.isLoaded()) {
