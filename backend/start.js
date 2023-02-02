@@ -898,13 +898,17 @@ const init = async (licenseContainer) => {
 			context.actions[type] = { fn, filter };
 		},
 		runAction: (user, type, data) => {
-			const action = context.actions[type];
-			if (!action) {
-				throw new Error(`Unknown action: "${type}"`);
-			}
+			try {
+				const action = context.actions[type];
+				if (!action) {
+					throw new Error(`Unknown action: "${type}"`);
+				}
 
-			context.actionEmitter.emit(type, { type, user, data: action.filter(data) });
-			return action.fn({ ...context, user }, data);
+				context.actionEmitter.emit(type, { type, user, data: action.filter(data) });
+				return action.fn({ ...context, user }, data);
+			} catch (error) {
+				console.error(error);
+			}
 		},
 		broadcastWebSocketMessage,
 		sendTopicTreeUpdate,
@@ -1096,7 +1100,7 @@ const init = async (licenseContainer) => {
 				case 'NOT_ALLOWED':
 					return response.status(403).send({ code: error.code, message: error.message });
 				default: {
-					console.error(error.stack);
+					console.error(error);
 					return response
 						.status(500)
 						.send({ code: 'INTERNAL_ERROR', message: 'An internal server error occurred' });
