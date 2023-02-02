@@ -324,7 +324,7 @@ const init = async (licenseContainer) => {
 			// TODO: handle disconnection
 			connectionConfiguration.status = {
 				connected: false,
-				timestamp: Date.now()
+				timestamp: Date.now(),
 			};
 		}
 		try {
@@ -362,11 +362,12 @@ const init = async (licenseContainer) => {
 			});
 		} catch (error) {
 			//  //!! disconnect broker client
+			console.error(`Error when connecting "${connectionConfiguration.id}":`);
 			console.error(error);
 			connectionConfiguration.status = {
 				connected: false,
 				timestamp: Date.now(),
-				error: error
+				error: error?.message || error
 			};
 
 			sendConnectionsUpdate(brokerClient, user);
@@ -424,7 +425,7 @@ const init = async (licenseContainer) => {
 		// 	console.error(message);
 		// });
 		context.brokerManager.handleNewBrokerConnection(connection, brokerClient, system, topicTreeManager /*, proxyClient */);
-		configManager.updateConnection(connection.id, connection);
+		configManager.updateConnection(connection.id, connectionConfiguration);
 		
 		// try {
 		// 	await proxyClient.connect({ socketEndpointURL: 'ws://localhost:8088' });

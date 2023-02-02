@@ -205,6 +205,11 @@ module.exports = class ConfigManager {
 	createConnection(connection) {
 		const newConnection = this.preprocessConnection(connection);
 
+		newConnection.status = {
+			connected: false,
+			timestamp: Date.now()
+		};
+
 		db.get('connections')
 			.push(newConnection)
 			.write();
