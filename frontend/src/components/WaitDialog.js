@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 
 // import MessagePage from './MessagePage';
 
-const WaitDialog = ({ open, title, message, handleClose }) => {
+const WaitDialog = ({ actions, open, title, message, handleClose }) => {
 
 	return (
 		<Dialog
@@ -30,7 +30,7 @@ const WaitDialog = ({ open, title, message, handleClose }) => {
 					</Grid>
 				</Grid>
 			</DialogContent>
-			<DialogActions></DialogActions>
+			<DialogActions>{ actions ? actions : null}</DialogActions>
 		</Dialog>
 	);
 };
