@@ -546,7 +546,7 @@ const createUserTable = (tokens, classes, props, onDeleteToken) => {
                                         </TableCell>
 										<TableCell>{token.role}</TableCell>
                                         <TableCell>
-											{(token.requestedBy.length > 18) ?
+											{(token.requestedBy?.length > 18) ?
 												<Tooltip title={token.requestedBy}>
 													<div>
 														{token.requestedBy.substring(0, 18) + '...'}
