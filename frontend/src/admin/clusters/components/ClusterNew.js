@@ -203,7 +203,7 @@ const ClusterNew = (props) => {
 									<Card variant="outlined">
 										<CardHeader
 											subheader="Node 1"
-
+											disableTypography
 										/>
 										<CardContent style={{paddingTop: '0px'}} >
 											<SelectNodeComponent

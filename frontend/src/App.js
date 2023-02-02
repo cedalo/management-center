@@ -56,6 +56,7 @@ const file =
 const useStyles = makeStyles((theme) => ({
 	root: {
 		display: 'flex',
+		height: '100%'
 	},
 	box: {
 		padding: '60px 20px 20px 20px',
@@ -267,7 +268,7 @@ export default function App(props) {
 														</IconButton>
 														<Typography noWrap>
 															<Typography variant="h5" style={{color: '#FD602E', fontWeight: '500'}}>
-																Mosquitto Management Center
+																Management Center
 															</Typography>
 														</Typography>
 														<section className={classes.rightToolbar}>

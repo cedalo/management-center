@@ -391,7 +391,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection, connect
 	};
 
 	return (
-		<div>
+		<div style={{height: '100%'}}>
 			<PremiumFeatureDialog open={premiumFeatureDialogOpen} handleClose={handleClosePremiumFeatureDialog} />
 			<Breadcrumbs aria-label="breadcrumb">
 				<RouterLink className={classes.breadcrumbLink} to="/home">
@@ -404,110 +404,115 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection, connect
 					Connections
 				</Typography>
 			</Breadcrumbs>
-			<ContainerHeader
-				title="Connections"
-				subTitle="List of Connections. Connections configure the access to an existing broker instance."
-			>
-				<Button
-					variant="outlined"
-					color="primary"
-					size="small"
-					// className={classes.button}
-					startIcon={<AddIcon />}
-					onClick={(event) => {
-						event.stopPropagation();
-						onNewConnection();
-					}}
+			<div style={{height: 'calc(100% - 26px)'}}>
+
+			<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
+				<ContainerHeader
+					title="Connections"
+					subTitle="List of Connections. Connections configure the access to an existing broker instance."
 				>
-					New Connection
-				</Button>
-			</ContainerHeader>
-			{brokerConnections && brokerConnections?.length > 0 ? (
-				<div>
-					<Hidden xsDown implementation="css">
-						<TableContainer component={Paper}>
-							<Table>
-								<TableHead>
-									<TableRow>
-										{GROUP_TABLE_COLUMNS.map((column) => (
-											<TableCell
-												key={column.id}
-												// sortDirection={sortBy === column.id ? sortDirection : false}
-											>
-												{/* <TableSortLabel
-													active={sortBy === column.id}
-													direction={sortDirection}
-													// onClick={() => onSort(column.id)}
+					<Button
+						variant="outlined"
+						color="primary"
+						size="small"
+						// className={classes.button}
+						startIcon={<AddIcon />}
+						onClick={(event) => {
+							event.stopPropagation();
+							onNewConnection();
+						}}
+					>
+						New Connection
+					</Button>
+				</ContainerHeader>
+				{brokerConnections && brokerConnections?.length > 0 ? (
+					<div style={{heigth: '100%', overflowY: 'auto'}}>
+						<Hidden xsDown implementation="css">
+							<TableContainer>
+								<Table stickyHeader size="small"  aria-label="sticky table">
+									<TableHead>
+										<TableRow>
+											{GROUP_TABLE_COLUMNS.map((column) => (
+												<TableCell
+													key={column.id}
+													// sortDirection={sortBy === column.id ? sortDirection : false}
 												>
+													{/* <TableSortLabel
+														active={sortBy === column.id}
+														direction={sortDirection}
+														// onClick={() => onSort(column.id)}
+													>
+														{column.key}
+													</TableSortLabel> */}
 													{column.key}
-												</TableSortLabel> */}
-												{column.key}
-											</TableCell>
-										))}
-										<TableCell />
-									</TableRow>
-								</TableHead>
-								<TableBody>
-									{brokerConnections &&
-										brokerConnections
-											.sort((a, b) => a.name.localeCompare(b.name))
-											.map((brokerConnection) => (
-												<CustomRow
-													hover
-													onClick={() => onSelectConnection(brokerConnection)}
-													brokerConnection={brokerConnection}
-													handleBrokerConnectionConnectDisconnect={handleBrokerConnectionConnectDisconnect}
-													onDeleteConnection={onDeleteConnection}
-													userProfile={userProfile}
-													classes={classes}
-												/>
+												</TableCell>
 											))}
-								</TableBody>
-							</Table>
-						</TableContainer>
-					</Hidden>
-					<Hidden smUp implementation="css">
-						<Paper>
-							<List className={classes.root}>
-								{brokerConnections && Array.isArray(brokerConnections)
-									? brokerConnections.map((brokerConnection) => (
-										<React.Fragment>
-											<ListItem alignItems="flex-start">
-												<ListItemText
-													primary={<span>{brokerConnection.name}</span>}
-													secondary={
-														<React.Fragment>
-															<Typography
-																component="span"
-																variant="body2"
-																className={classes.inline}
-																color="textPrimary"
-															>
-																{brokerConnection.externalUrl || brokerConnection.url}
-															</Typography>
-														</React.Fragment>
-													}
-												/>
-												{/* <ListItemSecondaryAction>
-					  <IconButton edge="end" aria-label="edit">
-						<EditIcon />
-					  </IconButton>
-					  <IconButton edge="end" aria-label="delete">
-						<DeleteIcon />
-					  </IconButton>
-					</ListItemSecondaryAction> */}
-											</ListItem>
-											<Divider />
-										</React.Fragment>
-									))
-									: null}
-							</List>
-						</Paper>
-					</Hidden>
-				</div>
-			) : (
-				<div>No connections found</div>
-			)}
+											<TableCell />
+										</TableRow>
+									</TableHead>
+									<TableBody>
+										{brokerConnections &&
+											brokerConnections
+												.sort((a, b) => a.name.localeCompare(b.name))
+												.map((brokerConnection) => (
+													<CustomRow
+														hover
+														onClick={() => onSelectConnection(brokerConnection)}
+														brokerConnection={brokerConnection}
+														handleBrokerConnectionConnectDisconnect={handleBrokerConnectionConnectDisconnect}
+														onDeleteConnection={onDeleteConnection}
+														userProfile={userProfile}
+														classes={classes}
+													/>
+												))}
+									</TableBody>
+								</Table>
+							</TableContainer>
+						</Hidden>
+						<Hidden smUp implementation="css">
+							<Paper>
+								<List className={classes.root}>
+									{brokerConnections && Array.isArray(brokerConnections)
+										? brokerConnections.map((brokerConnection) => (
+											<React.Fragment>
+												<ListItem alignItems="flex-start">
+													<ListItemText
+														primary={<span>{brokerConnection.name}</span>}
+														secondary={
+															<React.Fragment>
+																<Typography
+																	component="span"
+																	variant="body2"
+																	className={classes.inline}
+																	color="textPrimary"
+																>
+																	{brokerConnection.externalUrl || brokerConnection.url}
+																</Typography>
+															</React.Fragment>
+														}
+													/>
+													{/* <ListItemSecondaryAction>
+						  <IconButton edge="end" aria-label="edit">
+							<EditIcon />
+						  </IconButton>
+						  <IconButton edge="end" aria-label="delete">
+							<DeleteIcon />
+						  </IconButton>
+						</ListItemSecondaryAction> */}
+												</ListItem>
+												<Divider />
+											</React.Fragment>
+										))
+										: null}
+								</List>
+							</Paper>
+						</Hidden>
+					</div>
+				) : (
+					<div>No connections found</div>
+				)}
+			</div>
+			</div>
 		</div>
 	);
 };
