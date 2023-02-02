@@ -49,7 +49,7 @@ import { updateBrokerConnected } from '../../../actions/actions';
 
 import { handleConnectionChange } from '../../../utils/connectionUtils/connections';
 
-import { atLeastAdmin } from '../../../utils/accessUtils/access';
+import { atLeastAdmin, isGroupMember } from '../../../utils/accessUtils/access';
 // import {
 // 	colors,
 //   } from '@material-ui/core';
@@ -86,7 +86,10 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink,
 	cursorPointer: {
 		cursor: 'pointer'
-	}
+	},
+	invisibleButton: {
+		display: 'none',
+	},
 }));
 
 
@@ -192,7 +195,7 @@ const CustomRow = (props) => {
 					/>
 				</Tooltip>
 				<IconButton
-					disabled={brokerConnection.status?.connected}
+					disabled={brokerConnection.status?.connected || !atLeastAdmin(userProfile, brokerConnection.name)}
 					size="small"
 					onClick={(event) => {
 						event.stopPropagation();
@@ -443,7 +446,7 @@ const Connections = ({ brokerConnections, onSort, sortBy, sortDirection, connect
 				variant="outlined"
 				color="default"
 				size="small"
-				className={classes.button}
+				className={`${classes.button}${isGroupMember(userProfile) ? ` ${classes.invisibleButton}` : ''}`}
 				startIcon={<AddIcon />}
 				onClick={(event) => {
 					event.stopPropagation();

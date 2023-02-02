@@ -50,7 +50,7 @@ import TestEdit from './components/TestEdit';
 import TestCollections from './components/TestCollections';
 import TestCollectionDetail from './components/TestCollectionDetail';
 import ApplicationTokens from './components/ApplicationTokens';
-import { atLeastAdmin, atLeastEditor, atLeastViewer } from './utils/accessUtils/access';
+import { atLeastAdmin, atLeastEditor, atLeastViewer, isGroupMember } from './utils/accessUtils/access';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -134,7 +134,7 @@ function AppRoutes(props) {
 				<Route path="/system">
 					<System />
 				</Route>
-				{atLeastAdmin(userProfile) && <Route path="/config/connections/new">
+				{atLeastAdmin(userProfile) && !isGroupMember(userProfile) && <Route path="/config/connections/new">
 					<ConnectionNew />
 				</Route>}
 				{atLeastAdmin(userProfile, connection?.name) && <Route path="/config/connections/detail/:connectionId">

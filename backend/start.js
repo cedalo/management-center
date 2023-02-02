@@ -679,7 +679,7 @@ const init = async (licenseContainer) => {
 			}
 			case 'createConnection': {
 				const { connection } = message;
-				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
+				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, null, null, 'createConnection')) {
 					try {
 						if (configManager.connections.length < context.licenseContainer.license.maxBrokerConnections) {
 							configManager.createConnection(connection);
