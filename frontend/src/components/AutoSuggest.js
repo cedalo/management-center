@@ -266,7 +266,7 @@ const components = {
 	ValueContainer
 };
 
-export default function AutoSuggest({ disabled, handleDelete, handleChange, suggestions, values, placeholder }) {
+export default function AutoSuggest({ disabled, handleDelete, handleChange, suggestions, values, placeholder, TextFieldProps = {} }) {
 	const classes = useStyles();
 	const theme = useTheme();
 
@@ -292,7 +292,8 @@ export default function AutoSuggest({ disabled, handleDelete, handleChange, sugg
 						InputLabelProps: {
 							htmlFor: 'react-select-multiple',
 							shrink: true
-						}
+						},
+						...TextFieldProps
 					}}
 					placeholder={placeholder || 'Select...'}
 					options={suggestions}
