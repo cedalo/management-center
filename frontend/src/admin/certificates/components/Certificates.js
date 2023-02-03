@@ -53,7 +53,7 @@ const Certificates = (props) => {
 
 	// CERT: instead of isSupportedTLS maybe check for certs?
 	const { isSupportedTLS } = props;
-	const { onSort, sortBy, sortDirection, disableSort } = props;
+	const { doSort, onSort, sortBy, sortDirection, disableSort } = props;
 	const [premiumFeatureDialogOpen, setPremiumFeatureDialogOpen] = useState(false);
 	const [deleteOptions, setDeleteOptions] = useState({ open: false });
 	const [certs, setCerts] = useState([]);
@@ -88,13 +88,16 @@ const Certificates = (props) => {
 	const onSelectCertificate = (cert) => (event) => {
 		event.stopPropagation();
 		history.push(`/admin/certs/detail/${cert.id}`, cert);
-		// if (event.target.nodeName?.toLowerCase() === 'td') {
-		// }
 	};
 
 	useEffect(() => {
 		loadCerts();
 	}, []);
+
+	useEffect(() => {
+		if (sortBy) setCerts(doSort([...certs], sortDirection, (a) => a[sortBy]));
+		// CERT: handle sort reset else setCerts(certs);
+	}, [sortBy, sortDirection])
 
 	return (
 		<div>
