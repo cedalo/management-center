@@ -548,8 +548,8 @@ module.exports = class BaseMosquittoProxyClient {
 	 */
 	async doApiRequest(request, ...args) {
 		try {
-			const response = await request(...args, this._headers);
-			return response.data;
+			const { data, status } = await request(...args, this._headers);
+			return { data, status };
 		} catch (error) {
 			switch (error.response?.status) {
 				case 400:
