@@ -18,10 +18,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useSnackbar } from 'notistack';
-import AutoSuggest from '../../../components/AutoSuggest';
 import PremiumFeatureDialog from '../../../components/PremiumFeatureDialog';
 import { WebSocketContext } from '../../../websockets/WebSocket';
 import { WarningHint } from './AlertHint';
+import ChipsList from './ChipsList';
 import DeleteCertificateDialog from './DeleteCertificateDialog';
 import PathCrumbs from './PathCrumbs';
 
@@ -68,7 +68,9 @@ const Certificates = (props) => {
 			});
 		}
 	};
-	const openDeleteDialog = (cert) => {
+
+	const onDeleteCert = (cert) => (event) => {
+		event.stopPropagation();
 		setDeleteOptions({ open: true, cert });
 	}
 	const closeDeleteDialog = () => {
@@ -84,10 +86,10 @@ const Certificates = (props) => {
 		history.push('/admin/certs/detail/new', { name: '', filename: '', connections: [] });
 	};
 	const onSelectCertificate = (cert) => (event) => {
-		if (event.target.nodeName?.toLowerCase() === 'td') {
-			event.stopPropagation();
-			history.push(`/admin/certs/detail/${cert.id}`, cert);
-		}
+		event.stopPropagation();
+		history.push(`/admin/certs/detail/${cert.id}`, cert);
+		// if (event.target.nodeName?.toLowerCase() === 'td') {
+		// }
 	};
 
 	useEffect(() => {
@@ -166,22 +168,13 @@ const Certificates = (props) => {
 										<TableCell>{cert.name}</TableCell>
 										<TableCell>{cert.filename}</TableCell>
 										<TableCell className={classes.badges}>
-											<AutoSuggest
-												disabled
-												placeholder="Not deployed"
-												values={(cert.connections || []).map((conn) => ({
-													label: conn.name,
-													value: conn.id
-												}))}
-												TextFieldProps={{
-													label: 'Deployed to',
-													variant: 'outlined'
-												}}
+											<ChipsList
+												values={(cert.connections || []).map((conn) => ({ label: conn.name }))}
 											/>
 										</TableCell>
 										<TableCell align="right">
 											<Tooltip title="Delete Certificate">
-												<IconButton size="small" onClick={() => openDeleteDialog(cert)}>
+												<IconButton size="small" onClick={onDeleteCert(cert)}>
 													<DeleteIcon fontSize="small" />
 												</IconButton>
 											</Tooltip>
