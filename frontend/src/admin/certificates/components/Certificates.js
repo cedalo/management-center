@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 const CERT_TABLE_COLUMNS = [
 	{ id: 'name', key: 'Name', sortable: true },
 	{ id: 'filename', key: 'Filename', sortable: true },
-	{ id: 'connections', key: 'Connections', sortable: false }
+	{ id: 'brokers', key: 'Brokers', sortable: false }
 ];
 
 const Certificates = (props) => {
@@ -60,8 +60,8 @@ const Certificates = (props) => {
 
 	const loadCerts = async () => {
 		try {
-			const allCerts = await client.getCertificates();
-			setCerts(Array.from(Object.values(allCerts)));
+			const { data } = await client.getCertificates();
+			setCerts(Array.from(Object.values(data)));
 		} catch (error) {
 			enqueueSnackbar(`Error loading certificate from server. Reason: ${error.message || error}`, {
 				variant: 'error'
@@ -128,6 +128,7 @@ const Certificates = (props) => {
 							Reset
 						</Button>
 					)}
+					<br />
 					<br />
 					<TableContainer component={Paper} className={classes.tableContainer}>
 						<Table>

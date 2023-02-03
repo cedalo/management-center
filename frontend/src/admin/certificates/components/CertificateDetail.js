@@ -54,7 +54,7 @@ const deployMessage = (cert) => ({
 	},
 	warning: {
 		add: `New certificate "${cert.name}" could not be deployed to all brokers.`,
-		update: `Certificate "${cert.name}" could not be updated on all brokers.`
+		update: `Certificate "${cert.name}" could not be updated on all brokers. Kept previous and updated certificates!`
 	}
 });
 
@@ -101,12 +101,10 @@ const CertificateDetail = ({ connections = [] }) => {
 		setCert({ ...cert, connections: choosedConns.map((conn) => ({ id: conn.value, name: conn.label })) });
 	};
 	const onSave = async (/* event */) => {
+		const action = cert.id == null ? 'add' : 'update';
 		try {
-			const { action, deploy } = await (cert.id == null
-				? client.addCertificate(cert)
-				: client.updateCertificate(cert));
-			// check deploy status
-			switch (deploy.status) {
+			const { status } = await (action === 'add' ? client.addCertificate(cert) : client.updateCertificate(cert));
+			switch (status) {
 				case 200:
 					enqueueSnackbar(deployMessage(cert).success[action], { variant: 'success' });
 					break;
@@ -117,8 +115,6 @@ const CertificateDetail = ({ connections = [] }) => {
 					enqueueSnackbar(deployMessage(cert).error[action], { variant: 'error' });
 			}
 		} catch (error) {
-			console.log(error);
-			const action = cert.id == null ? 'adding' : 'updating';
 			enqueueSnackbar(`Error ${action} certificate "${cert.name}".`, { variant: 'error' });
 		}
 		history.goBack();
