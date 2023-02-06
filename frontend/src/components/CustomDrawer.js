@@ -30,7 +30,8 @@ import StreamsheetsIcon from '@material-ui/icons/GridOn';
 import StreamsIcon from '@material-ui/icons/Timeline';
 import SecurityIcon from '@material-ui/icons/Security';
 import UserGroupsIcon from '@material-ui/icons/PeopleOutline';
-import CertificateIcon from '@material-ui/icons/HttpsOutlined';
+// import CertificateIcon from '@material-ui/icons/HttpsOutlined';
+import CertificateIcon from '@material-ui/icons/VerifiedUserOutlined'; // GppGoodOutlined';
 import { atLeastAdmin, atLeastEditor, atLeastViewer } from '../utils/accessUtils/access';
 
 const drawerWidth = 240;
