@@ -27,6 +27,7 @@ const DeleteCertificateDialog = ({ open, cert, client, onClose }) => {
 		// remove from management center
 		try {
 			await client.deleteCertificate(cert.id, true);
+			enqueueSnackbar(successMessage(cert), { variant: 'success' });
 		} catch (error) {
 			enqueueSnackbar(errorMessage(cert, error), { variant: 'error' });
 		} finally {
