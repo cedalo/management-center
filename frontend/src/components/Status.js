@@ -34,6 +34,13 @@ import { WebSocketContext } from '../websockets/WebSocket';
 
 import Delayed from '../utils/Delayed';
 
+const getUptimeReadable = (uptimeString) => {
+	if (uptimeString) {
+		let humanReadable = uptimeString;
+		humanReadable = humanReadable.substring(0, humanReadable.length - 8).trim();
+		return `${moment.duration({seconds: humanReadable}).humanize()} (${uptimeString})`;
+	}
+}
 
 const formatAsNumber = (metric) => new Intl.NumberFormat().format(metric);
 
@@ -256,7 +263,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 										<TableCell component="th" scope="row">
 											Uptime
 										</TableCell>
-										<TableCell align="right">{systemStatus?.$SYS?.broker?.uptime}</TableCell>
+										<TableCell align="right">{getUptimeReadable(systemStatus?.$SYS?.broker?.uptime)}</TableCell>
 									</TableRow>
 									<TableRow key="url">
 										<TableCell component="th" scope="row">
