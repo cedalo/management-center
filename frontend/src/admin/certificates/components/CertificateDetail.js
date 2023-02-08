@@ -129,8 +129,8 @@ const CertificateDetail = ({ connections = [] }) => {
 				path={[
 					{ link: 'home' },
 					{ link: 'admin' },
-					{ link: 'admin/certs', title: 'Certs' },
-					{ title: 'Certificate' }
+					{ link: 'admin/certs', title: 'Certificates' },
+					{ title: 'CA Certificate' }
 				]}
 			/>
 			<br />
@@ -187,7 +187,6 @@ const CertificateDetail = ({ connections = [] }) => {
 							<Grid item xs={12}>
 								<AutoSuggest
 									placeholder="Deploy certificate to connections..."
-									// CERT: filter those already added
 									suggestions={allConnections}
 									values={(cert.connections || []).map((conn) => ({
 										label: conn.name,
