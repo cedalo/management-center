@@ -1,5 +1,7 @@
-import React, { useContext } from 'react';
-import { connect } from 'react-redux';
+import Paper from '@material-ui/core/Paper';
+import Box from '@material-ui/core/Box';
+import React, {useContext, useState} from 'react';
+import {connect} from 'react-redux';
 import clsx from 'clsx';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
@@ -9,9 +11,10 @@ import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
+import InfoIcon from '@material-ui/icons/Info';
+import {makeStyles, useTheme, withStyles} from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
-import { withRouter, BrowserRouter as Router, Switch, Route, Link as RouterLink, Redirect } from 'react-router-dom';
+import {withRouter, BrowserRouter as Router, Switch, Route, Link as RouterLink, Redirect} from 'react-router-dom';
 import PluginsIcon from '@material-ui/icons/Power';
 import TerminalIcon from '@material-ui/icons/Computer';
 import ConnectionsIcon from '@material-ui/icons/SettingsInputComponent';
@@ -22,6 +25,7 @@ import GroupIcon from '@material-ui/icons/Group';
 import PersonIcon from '@material-ui/icons/Person';
 import RoleIcon from '@material-ui/icons/Policy';
 import UsersIcon from '@material-ui/icons/People';
+import MoreIcon from '@material-ui/icons/MoreHoriz';
 import ClusterIcon from '@material-ui/icons/Storage';
 import InspectClientsIcon from '@material-ui/icons/Search';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
@@ -30,13 +34,14 @@ import StreamsheetsIcon from '@material-ui/icons/GridOn';
 import StreamsIcon from '@material-ui/icons/Timeline';
 import SecurityIcon from '@material-ui/icons/Security';
 import UserGroupsIcon from '@material-ui/icons/PeopleOutline';
-import { atLeastAdmin, atLeastEditor, atLeastViewer } from '../utils/accessUtils/access';
+import {atLeastAdmin, atLeastEditor, atLeastViewer} from '../utils/accessUtils/access';
+import InfoButton from './InfoButton';
 
 const drawerWidth = 240;
 
 function ListItemLink(props) {
 	const theme = useTheme();
-	const { id, icon, primary, to = null, classes } = props;
+	const {id, icon, primary, to = null, classes} = props;
 
 	const renderLink = React.useMemo(
 		() => React.forwardRef((itemProps, ref) => <RouterLink to={to} ref={ref} {...itemProps} />),
@@ -48,24 +53,24 @@ function ListItemLink(props) {
 	return (
 		<li id={id}>
 
-		<Tooltip title={primary}>
-			<MenuItem
-				button
-				component={renderLink}
-				selected={isSelected}
-				classes={{
-					root: classes.menuItemRoot,
-					selected: classes.menuItemSelected
-				}}
-			>
-				{icon ? <ListItemIcon style={{
-					color: isSelected ? theme.palette.menuItem.color : ''
-				}}>{icon}</ListItemIcon> : null}
-				<ListItemText primary={primary} classes={{ 
-					root: classes.menuItem,
-					primary: classes.menuItem
-				}} />
-			</MenuItem>
+			<Tooltip title={primary}>
+				<MenuItem
+					button
+					component={renderLink}
+					selected={isSelected}
+					classes={{
+						root: classes.menuItemRoot,
+						selected: classes.menuItemSelected
+					}}
+				>
+					{icon ? <ListItemIcon style={{
+						color: isSelected ? theme.palette.menuItem.color : ''
+					}}>{icon}</ListItemIcon> : null}
+					<ListItemText primary={primary} classes={{
+						root: classes.menuItem,
+						primary: classes.menuItem
+					}}/>
+				</MenuItem>
 			</Tooltip>
 		</li>
 	);
@@ -88,17 +93,18 @@ const useStyles = makeStyles((theme) => ({
 		alignItems: 'center',
 		justifyContent: 'flex-end',
 		padding: theme.spacing(0, 1),
-		...theme.mixins.toolbar
+		minHeight: '50px'
+		// ...theme.mixins.toolbar
 	},
 	menuItem: {
 		fontSize: '14px',
-	  },
+	},
 	menuItemRoot: {
 		fontSize: '14px',
 		"&$menuItemSelected, &$menuItemSelected:focus, &$menuItemSelected:hover": {
-		  backgroundColor: "inherit"
+			backgroundColor: "inherit"
 		}
-	  },
+	},
 	menuItemSelected: {
 		color: theme.palette.menuItem.color,
 	},
@@ -136,9 +142,21 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const CustomDrawer = ({ userProfile = {}, userManagementFeature, dynamicSecurityFeature, hideConnections, open, handleDrawerOpen, handleDrawerClose, currentConnectionName, connected}) => {
+const CustomDrawer = ({
+						  userProfile = {},
+						  userManagementFeature,
+						  dynamicSecurityFeature,
+						  hideConnections,
+						  hideInfoPage,
+						  open,
+						  handleDrawerOpen,
+						  handleDrawerClose,
+						  currentConnectionName,
+						  connected
+					  }) => {
 	const classes = useStyles();
 	const theme = useTheme();
+	const [adminOpen, setAdminOpen] = useState(false);
 
 	return <Drawer
 		variant="permanent"
@@ -156,9 +174,9 @@ const CustomDrawer = ({ userProfile = {}, userManagementFeature, dynamicSecurity
 		<div className={classes.toolbar}>
 			<IconButton onClick={handleDrawerClose}>
 				{theme.direction === 'rtl' ? (
-					<ChevronRightIcon />
+					<ChevronRightIcon/>
 				) : (
-					<ChevronLeftIcon />
+					<ChevronLeftIcon/>
 				)}
 			</IconButton>
 		</div>
@@ -167,148 +185,161 @@ const CustomDrawer = ({ userProfile = {}, userManagementFeature, dynamicSecurity
 	<List>
 		<ListItemLink id="menu-item-home" classes={classes} to="/home" primary="Home" icon={<HomeIcon />} />
 	</List> */}
-			<Divider />
-			<List>
-				{open ? <ListSubheader className={classes.menuSubHeader}>Monitoring</ListSubheader> : null}
-				<ListItemLink
-					id="menu-item-status"
-					classes={classes}
-					to="/system/status"
-					primary="System Status"
-					icon={<EqualizerIcon fontSize="small" />}
-				/>
-				<ListItemLink
-					id="menu-item-topics"
-					classes={classes}
-					to="/system/topics"
-					primary="Topic Tree"
-					icon={<TopicTreeIcon fontSize="small" />}
-				/>
-				{<ListItemLink
-					classes={classes}
-					to="/admin/inspect/clients"
-					primary="Clients"
-					icon={<InspectClientsIcon fontSize="small" />}
-				/>}
-			</List>
-			<Divider />
-			{atLeastEditor(userProfile, currentConnectionName) && <><List>
-				{open ? <ListSubheader className={classes.menuSubHeader}>Dynamic Security</ListSubheader> : null}
-				<ListItemLink
-					id="menu-item-clients"
-					classes={classes}
-					to="/security/clients"
-					primary="Clients"
-					icon={<PersonIcon fontSize="small" />}
-				/>
-				<ListItemLink
-					id="menu-item-groups"
-					classes={classes}
-					to="/security/groups"
-					primary="Groups"
-					icon={<GroupIcon fontSize="small" />}
-				/>
-				<ListItemLink
-					id="menu-item-roles"
-					classes={classes}
-					to="/security/roles"
-					primary="Roles"
-					icon={<RoleIcon fontSize="small" />}
-				/>
-			</List>
-			<Divider /></>}
-			{/* <List>
-<ListItemLink 
-classes={classes}
-to="/streams"
-primary="🚧 Streams"
-icon={<StreamsIcon />}
-/>
-</List>
-<Divider /> */}
+			<Box style={{overflow: 'hidden', height: '100%'}}>
+				<List>
+					{open ? <ListSubheader className={classes.menuSubHeader}>Monitoring</ListSubheader> : null}
+					{atLeastAdmin(userProfile) && <ListItemLink
+						classes={classes}
+						to="/admin/clusters"
+						primary="Cluster Management"
+						icon={<ClusterIcon fontSize="small"/>}
+					/>}
+					{(atLeastAdmin(userProfile, currentConnectionName) && !hideConnections) ? <ListItemLink
+						classes={classes}
+						to="/config/connections"
+						primary="Connections"
+						icon={<ConnectionsIcon fontSize="small"/>}
+					/> : null}
+				</List>
+				<Divider/>
+				<List>
+					<ListItemLink
+						id="menu-item-status"
+						classes={classes}
+						to="/system/status"
+						primary="System Status"
+						icon={<EqualizerIcon fontSize="small"/>}
+					/>
+					<ListItemLink
+						id="menu-item-topics"
+						classes={classes}
+						to="/system/topics"
+						primary="Topic Tree"
+						icon={<TopicTreeIcon fontSize="small"/>}
+					/>
+					{<ListItemLink
+						classes={classes}
+						to="/admin/inspect/clients"
+						primary="Clients"
+						icon={<InspectClientsIcon fontSize="small"/>}
+					/>}
+					{atLeastAdmin(userProfile, currentConnectionName) &&
+						<ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon/>}/>}
+				</List>
+				<Divider/>
+				{atLeastEditor(userProfile, currentConnectionName) && <><List>
+					{open ? <ListSubheader className={classes.menuSubHeader}>Dynamic Security</ListSubheader> : null}
+					<ListItemLink
+						id="menu-item-clients"
+						classes={classes}
+						to="/security/clients"
+						primary="Clients"
+						icon={<PersonIcon fontSize="small"/>}
+					/>
+					<ListItemLink
+						id="menu-item-groups"
+						classes={classes}
+						to="/security/groups"
+						primary="Groups"
+						icon={<GroupIcon fontSize="small"/>}
+					/>
+					<ListItemLink
+						id="menu-item-roles"
+						classes={classes}
+						to="/security/roles"
+						primary="Roles"
+						icon={<RoleIcon fontSize="small"/>}
+					/>
+				</List>
+					<Divider/></>}
+				<List id="menu-items-tools">
+					{open ? <ListSubheader className={classes.menuSubHeader}>Tools</ListSubheader> : null}
+					<ListItemLink
+						classes={classes}
+						to="/tools/streamsheets"
+						primary="Streamsheets"
+						icon={<StreamsheetsIcon fontSize="small"/>}
+					/>
 
-			<Divider />
-			{atLeastAdmin(userProfile) && <><List>
-				{open ? <ListSubheader className={classes.menuSubHeader}>Management</ListSubheader> : null}
-				<ListItemLink
-					id="menu-item-plugins"
-					classes={classes}
-					to="/plugins"
-					primary="Plugins"
-					icon={<PluginsIcon fontSize="small" />}
-				/>
-				{/* <ListItemLink
-classes={classes} 
-to="/config/settings"
-primary="Settings"
-icon={<SettingsIcon />}
-/> */}
-			</List>
-			<Divider /></>}
-			<List id="menu-items-tools">
-				{open ? <ListSubheader className={classes.menuSubHeader}>Tools</ListSubheader> : null}
-				<ListItemLink
-					classes={classes}
-					to="/tools/streamsheets"
-					primary="Streamsheets"
-					icon={<StreamsheetsIcon fontSize="small" />}
-				/>
-
-				{atLeastAdmin(userProfile, currentConnectionName) && <ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon />} />}
-				{atLeastAdmin(userProfile, currentConnectionName) && <ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon />} />}
-			</List>
-			<Divider />
-			<List>
-				{(atLeastAdmin(userProfile, currentConnectionName) && open) ? <ListSubheader className={classes.menuSubHeader}>Admin</ListSubheader> : null}
-
-
-				{(atLeastAdmin(userProfile, currentConnectionName) && !hideConnections) ? <ListItemLink
-					classes={classes}
-					to="/config/connections"
-					primary="Connections"
-					icon={<ConnectionsIcon fontSize="small" />}
-				/> : null}
-				{/* <ListItemLink classes={classes} to="/config/settings" primary="Settings" icon={<SettingsIcon />} /> */}
-
-				{atLeastAdmin(userProfile) && userManagementAccess(userManagementFeature) ? <ListItemLink
-					classes={classes}
-					to="/admin/users"
-					primary="User Management"
-					icon={<UsersIcon fontSize="small" />}
-				/> : null}
-				{atLeastAdmin(userProfile) && <ListItemLink
-					classes={classes}
-					to="/admin/user-groups"
-					primary="User Groups"
-					icon={<UserGroupsIcon fontSize="small" />}
-				/>}
-				{atLeastAdmin(userProfile) ? <ListItemLink
-					classes={classes}
-					to="/admin/tokens"
-					primary="App Tokens"
-					icon={<SecurityIcon fontSize="small" />}
-				/> : null}
-				{/* {clusterManagementAccess(clusterManagementFeature) ? <ListItemLink
-					classes={classes}
-					to="/admin/cluster"
-					primary="Cluster Management"
-					icon={<ClusterIcon fontSize="small" />}
-				/> : null} */}
-
-				{atLeastAdmin(userProfile) && <ListItemLink
-					classes={classes}
-					to="/admin/clusters"
-					primary="Cluster Management"
-					icon={<ClusterIcon fontSize="small" />}
-				/>}
-
-				{atLeastAdmin(userProfile) && <ListItemLink
-					classes={classes}
-					to="/config/settings"
-					primary="Settings"
-					icon={<SettingsIcon fontSize="small" />}
-				/>}
-			</List>
+					{atLeastAdmin(userProfile, currentConnectionName) &&
+						<ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon/>}/>}
+				</List>
+				<Divider/>
+				<Paper
+					style={{
+						position: 'absolute',
+						bottom: '0px',
+						boxShadow: 'none',
+						width: '100%',
+					}}
+				>
+					<List>
+						{adminOpen ? <Divider/> : null}
+						{adminOpen ?
+							<ListItemLink
+							id="menu-item-info"
+							classes={classes}
+							to="/info"
+							primary="Info"
+							icon={<InfoIcon fontSize="small"/>}
+						/> : null}
+						{!hideInfoPage && adminOpen && atLeastAdmin(userProfile) &&
+							<ListItemLink
+								id="menu-item-plugins"
+								classes={classes}
+								to="/plugins"
+								primary="Plugins"
+								icon={<PluginsIcon fontSize="small"/>}
+							/>}
+						{adminOpen && atLeastAdmin(userProfile) && userManagementAccess(userManagementFeature) ?
+							<ListItemLink
+								classes={classes}
+								to="/admin/users"
+								primary="User Management"
+								icon={<UsersIcon fontSize="small"/>}
+							/> : null}
+						{adminOpen && atLeastAdmin(userProfile) && <ListItemLink
+							classes={classes}
+							to="/admin/user-groups"
+							primary="User Groups"
+							icon={<UserGroupsIcon fontSize="small"/>}
+						/>}
+						{adminOpen && atLeastAdmin(userProfile) ? <ListItemLink
+							classes={classes}
+							to="/admin/tokens"
+							primary="App Tokens"
+							icon={<SecurityIcon fontSize="small"/>}
+						/> : null}
+						{adminOpen && atLeastAdmin(userProfile) &&
+							<ListItemLink
+								classes={classes}
+								to="/config/settings"
+								primary="Settings"
+								icon={<SettingsIcon fontSize="small"/>}
+							/>}
+						<Divider/>
+						<Tooltip
+							enterDelay={500}
+							placement="right"
+							title="Admin"
+							key="admin"
+						>
+							<MenuItem
+								button
+								onClick={() => setAdminOpen(!adminOpen)}
+							>
+								<ListItemIcon style={{}}>
+									<MoreIcon/>
+								</ListItemIcon>
+								<ListItemText primary="Administration" classes={{
+									root: classes.menuItem,
+									primary: classes.menuItem
+								}}/>
+							</MenuItem>
+						</Tooltip>
+					</List>
+				</Paper>
+			</Box>
 		</div>
 	</Drawer>
 
