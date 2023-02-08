@@ -11,7 +11,6 @@ const AlertHint = ({ message, severity, title }) => (
 	</>
 );
 
-export const WarningHint = (props) => AlertHint({ ...props, severity: 'warning' });
-// CERT: more to come
-// export const ErrorHint
-// export const InfoHint
+export const InfoHint = ({ title, message }) => AlertHint({ title, message, severity: 'info' });
+export const ErrorHint = ({ title, message }) => AlertHint({ title, message, severity: 'error' });
+export const WarningHint = ({ title, message }) => AlertHint({ title, message, severity: 'warning' });
