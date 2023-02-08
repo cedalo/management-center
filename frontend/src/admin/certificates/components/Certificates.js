@@ -18,7 +18,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useSnackbar } from 'notistack';
-import PremiumFeatureDialog from '../../../components/PremiumFeatureDialog';
 import { WebSocketContext } from '../../../websockets/WebSocket';
 import { WarningHint } from './AlertHint';
 import ChipsList from './ChipsList';
@@ -44,17 +43,15 @@ const CERT_TABLE_COLUMNS = [
 	{ id: 'brokers', key: 'Brokers', sortable: false }
 ];
 
-const Certificates = (props) => {
+const hasLicenseFeature = (name) => (license) => true || !!license?.features.some((feature) => feature.name === name);
+const isLicensed = hasLicenseFeature('cert-management');
+
+const Certificates = ({ isCertSupported, doSort, onSort, sortBy, sortDirection, disableSort }) => {
 	const classes = useStyles();
 	// const navigate = useNavigate();
 	const history = useHistory();
 	const { enqueueSnackbar } = useSnackbar();
 	const { client } = useContext(WebSocketContext);
-
-	// CERT: instead of isSupportedTLS maybe check for certs?
-	const { isSupportedTLS } = props;
-	const { doSort, onSort, sortBy, sortDirection, disableSort } = props;
-	const [premiumFeatureDialogOpen, setPremiumFeatureDialogOpen] = useState(false);
 	const [deleteOptions, setDeleteOptions] = useState({ open: false });
 	const [certs, setCerts] = useState([]);
 
@@ -77,9 +74,6 @@ const Certificates = (props) => {
 		loadCerts();
 		setDeleteOptions({ open: false });
 	}
-	const handleClosePremiumFeatureDialog = () => {
-		setPremiumFeatureDialogOpen(false);
-	};
 	const onAddNewCertificate = (event) => {
 		event.stopPropagation();
 		// navigate('/admin/certs/detail/new');
@@ -101,10 +95,9 @@ const Certificates = (props) => {
 
 	return (
 		<div>
-			<PremiumFeatureDialog open={premiumFeatureDialogOpen} handleClose={handleClosePremiumFeatureDialog} />
-			<PathCrumbs path={[{ link: 'home' }, { link: 'admin' }, { title: 'Certificate' }]} />
+			<PathCrumbs path={[{ link: 'home' }, { link: 'admin' }, { title: 'Certificates' }]} />
 			<br />
-			{isSupportedTLS ? (
+			{isCertSupported ? (
 				<>
 					<DeleteCertificateDialog
 						client={client}
@@ -190,8 +183,8 @@ const Certificates = (props) => {
 				</>
 			) : (
 				WarningHint({
-					title: 'TLS feature is not available',
-					message: 'Make sure that support for custom TLS certificates is included in your MMC license.'
+					title: 'Certificates management feature is not available',
+					message: 'Make sure that support for certificates management is included in your MMC license.'
 				})
 			)}
 		</div>
@@ -201,7 +194,7 @@ const Certificates = (props) => {
 const mapStateToProps = (state) => {
 	return {
 		connection: state.brokerConnections?.currentConnection,
-		isSupportedTLS: state.systemStatus?.features?.tls?.supported
+		isCertSupported: isLicensed(state.license?.license)
 	};
 };
 
