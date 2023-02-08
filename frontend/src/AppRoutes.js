@@ -145,17 +145,16 @@ function AppRoutes(props) {
 						<Connections />
 					</Route>
 				) : null}
-				{/* CERT: check profile? */}
-				<Route path="/admin/certs/detail/:certId">
-					<CertificateDetail />
-				</Route>
-				<Route path="/admin/certs">
-					<SortableTablePage Component={Certificates} />
-				</Route>
-				{/* <Route path="/admin/certs/new">
-					<CertificateAdd />
-				</Route>  */}
-				{/* CERT: ~ */}
+				{atLeastAdmin(userProfile) && (
+					<Route path="/admin/certs/detail/:certId">
+						<CertificateDetail />
+					</Route>
+				)}
+				{atLeastAdmin(userProfile) && (
+					<Route path="/admin/certs">
+						<SortableTablePage Component={Certificates} />
+					</Route>
+				)}
 				{atLeastAdmin(userProfile) && (
 					<Route path="/config/settings">
 						<Settings />
