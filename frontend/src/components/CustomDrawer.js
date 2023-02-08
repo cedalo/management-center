@@ -271,12 +271,6 @@ icon={<SettingsIcon />}
 					icon={<ConnectionsIcon fontSize="small" />}
 				/> : null}
 				{/* <ListItemLink classes={classes} to="/config/settings" primary="Settings" icon={<SettingsIcon />} /> */}
-				{atLeastAdmin(userProfile) && <ListItemLink
-					classes={classes}
-					to="/admin/certs"
-					primary="Certificates Management"
-					icon={<CertificateIcon fontSize="small" />}
-				/>}
 				{atLeastAdmin(userProfile) && userManagementAccess(userManagementFeature) ? <ListItemLink
 					classes={classes}
 					to="/admin/users"
@@ -288,6 +282,12 @@ icon={<SettingsIcon />}
 					to="/admin/user-groups"
 					primary="User Groups"
 					icon={<UserGroupsIcon fontSize="small" />}
+				/>}
+				{atLeastAdmin(userProfile) && <ListItemLink
+					classes={classes}
+					to="/admin/certs"
+					primary="Certificates Management"
+					icon={<CertificateIcon fontSize="small" />}
 				/>}
 				{atLeastAdmin(userProfile) ? <ListItemLink
 					classes={classes}
