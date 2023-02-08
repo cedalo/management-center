@@ -285,7 +285,8 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 										<TableCell component="th" scope="row">
 											Uptime
 										</TableCell>
-										<TableCell align="right">{getUptimeReadable(systemStatus?.$SYS?.broker?.uptime)}</TableCell>
+										{/* <TableCell align="right">{getUptimeReadable(systemStatus?.$SYS?.broker?.uptime)}</TableCell> */}
+										<TableCell align="right">{secondsToDhms(systemStatus?.$SYS?.broker?.uptime)}</TableCell>
 									</TableRow>
 									<TableRow key="url">
 										<TableCell component="th" scope="row">
