@@ -40,13 +40,13 @@ const useStyles = makeStyles((theme) => ({
 const CERT_TABLE_COLUMNS = [
 	{ id: 'name', key: 'Name', sortable: true },
 	{ id: 'filename', key: 'Filename', sortable: true },
-	{ id: 'brokers', key: 'Brokers', sortable: false }
+	{ id: 'broker', key: 'Broker', sortable: false }
 ];
 
 const hasLicenseFeature = (name) => (license) => true || !!license?.features.some((feature) => feature.name === name);
 const isLicensed = hasLicenseFeature('cert-management');
 
-const Certificates = ({ isCertSupported, doSort, onSort, sortBy, sortDirection, disableSort }) => {
+const Certificates = ({ isCertSupported, doSort, onSort, sortBy, sortDirection }) => {
 	const classes = useStyles();
 	// const navigate = useNavigate();
 	const history = useHistory();
@@ -90,7 +90,6 @@ const Certificates = ({ isCertSupported, doSort, onSort, sortBy, sortDirection, 
 
 	useEffect(() => {
 		if (sortBy) setCerts(doSort([...certs], sortDirection, (a) => a[sortBy]));
-		// CERT: handle sort reset else setCerts(certs);
 	}, [sortBy, sortDirection])
 
 	return (
@@ -115,17 +114,6 @@ const Certificates = ({ isCertSupported, doSort, onSort, sortBy, sortDirection, 
 					>
 						Add Certificate
 					</Button>
-					{certs.length > 0 && (
-						<Button
-							size="small"
-							color="primary"
-							variant="outlined"
-							style={{ marginLeft: '20px' }}
-							onClick={disableSort}
-						>
-							Reset
-						</Button>
-					)}
 					<br />
 					<br />
 					<TableContainer component={Paper} className={classes.tableContainer}>
