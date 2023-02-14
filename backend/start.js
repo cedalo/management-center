@@ -180,10 +180,10 @@ const addStreamsheetsConfig = (config) => {
 
 const stopFunctions = [];
 
-const eventify = function(arr, callback) {
-    arr.push = function(e) {
-        Array.prototype.push.call(arr, e);
-        callback(arr, e);
+const eventify = function(array, callback) {
+    array.push = function(element) {
+        Array.prototype.push.call(array, element);
+        callback(array, element);
     };
 };
 
@@ -203,11 +203,11 @@ const stop = async () => {
 };
 controlElements.stop = stop;
 
-eventify(stopFunctions, async function(updatedArr, element) { // add callback to stopFunctions array, will be called on every push
-	if (controlElements.stopSignalSent) {
-		await element();
-	}
-});
+eventify(stopFunctions, async function(array, element) { // add callback to stopFunctions array, will be called on every push
+	if (controlElements.stopSignalSent) { // user can send a stop signal while some async operations are still being handled and
+		await element(); 				// and some stop fuinctions have not been added to the array.for example stop signal is sent while connecting a broker.
+	}									// in this case as soon as the broker connected, it's stop functions which disconnects it is added to the stopFunctions array
+});										// and due to the callback it checks if stop signal has already been issued and gets executed immediately.
 
 const createOptions = (connection) => {
 	// remove unwanted parameters
