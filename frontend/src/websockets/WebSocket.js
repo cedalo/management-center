@@ -49,7 +49,7 @@ import {
 
 import WS_BASE from './config';
 import WebMosquittoProxyClient from '../client/WebMosquittoProxyClient';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const WebSocketContext = createContext(null);
 
@@ -58,8 +58,8 @@ export { WebSocketContext };
 const ERROR_MESSAGE = "BaseMosquittoProxyClient: Timeout";
 
 
-let client;
 let ws;
+let currentConnectionName;
 
 
 const init = async (client, dispatch, connectionConfiguration) => {
@@ -328,6 +328,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 
 export default ({ children }) => {
 	const dispatch = useDispatch();
+	currentConnectionName = useSelector(state => state.brokerConnections?.currentConnectionName);
 
 	const sendMessage = (roomId, message) => {
 		const payload = {
@@ -335,8 +336,8 @@ export default ({ children }) => {
 		};
 	};
 
-	if (!client) {
-		client = new WebMosquittoProxyClient({ logger: console });
+	if (!ws?.client) {
+		let client = new WebMosquittoProxyClient({ logger: console });
 		client.closeHandler = (event) => {
 			dispatch(updateProxyConnected(false));
 		};
@@ -376,7 +377,9 @@ export default ({ children }) => {
 		client.on('connections', async (message) => {
 			dispatch(updateBrokerConnections(message.payload));
 			message.payload.forEach((connection) => {
-				dispatch(updateBrokerConnected(connection.status.connected, connection.name));
+				if (currentConnectionName === connection.name) {
+					dispatch(updateBrokerConnected(connection.status.connected, connection.name));
+				}
 			});
 		});
 		client.on('error', (message) => {
