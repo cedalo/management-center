@@ -326,6 +326,7 @@ const init = async (licenseContainer) => {
 				connected: false,
 				timestamp: Date.now(),
 			};
+			configManager.updateConnection(connection.id, connectionConfiguration);
 		}
 		try {
 			await brokerClient.connect({
@@ -338,6 +339,7 @@ const init = async (licenseContainer) => {
 			connectionConfiguration.status.connected = true;
 			connectionConfiguration.status.timestamp = Date.now();
 			console.log(`Connected to '${connection.name}' at ${connection.url}`);
+
 			brokerClient.on('close', () => {
 				context.eventEmitter.emit('close', connectionConfiguration);
 				connectionConfiguration.status = {
@@ -346,22 +348,29 @@ const init = async (licenseContainer) => {
 					error: {
 						errno: 1,
 						code: 'ECONNCLOSED',
-						syscall: 'on'
+						syscall: 'on',
+						interrupted: brokerClient.disconnectedByUser ? false : true
 					}
 				};
+				if (brokerClient.disconnectedByUser) {
+					brokerClient.disconnectedByUser = false;
+				}
 				sendConnectionsUpdate(brokerClient, user);
+				configManager.updateConnection(connection.id, connectionConfiguration);
 			});
-			// TODO: this listener is not applied
+			// this listener is applied only on reconnect (at the time we apply this listener the conenction had already been established and the first connect event alrady fired)
 			brokerClient.on('connect', () => {
-				context.eventEmitter.emit('connect', connectionConfiguration);
+				context.eventEmitter.emit('reconnect', connectionConfiguration);
 				connectionConfiguration.status = {
 					connected: true,
-					timestamp: Date.now()
+					timestamp: Date.now(),
+					reconnect: true
 				};
 				sendConnectionsUpdate(brokerClient, user);
+				configManager.updateConnection(connection.id, connectionConfiguration);
 			});
 		} catch (error) {
-			//  //!! disconnect broker client
+			// disconnect broker client
 			console.error(`Error when connecting "${connectionConfiguration.id}":`);
 			console.error(error);
 			connectionConfiguration.status = {
@@ -371,6 +380,7 @@ const init = async (licenseContainer) => {
 			};
 
 			sendConnectionsUpdate(brokerClient, user);
+			configManager.updateConnection(connection.id, connectionConfiguration);
 		} finally {
 			stopFunctions.push(async () => {
 				await brokerClient.disconnect()
@@ -381,18 +391,25 @@ const init = async (licenseContainer) => {
 		let error;
 
 		if (!connectionConfiguration.status.error) {
-			brokerClient.subscribe('$SYS/#', (error) => {
-				console.log(`Subscribed to system topics for '${connection.name}'`);
-				if (error) {
-					console.error(error);
-				}
-			});
-			brokerClient.subscribe('$CONTROL/dynamic-security/v1/#', (error) => {
-				console.log(`Subscribed to dynamic-security topics for '${connection.name}'`);
-				if (error) {
-					console.error(error);
-				}
-			});
+			// means we have connected successfully
+			connectionConfiguration.status = {
+				connected: true,
+				timestamp: Date.now()
+			};
+			sendConnectionsUpdate(brokerClient, user);
+			configManager.updateConnection(connection.id, connectionConfiguration);
+			// brokerClient.subscribe('$SYS/#', (error) => {
+			// 	console.log(`Subscribed to system topics for '${connection.name}'`);
+			// 	if (error) {
+			// 		console.error(error);
+			// 	}
+			// });
+			// brokerClient.subscribe('$CONTROL/dynamic-security/v1/#', (error) => {
+			// 	console.log(`Subscribed to dynamic-security topics for '${connection.name}'`);
+			// 	if (error) {
+			// 		console.error(error);
+			// 	}
+			// });
 			//   });
 	
 			brokerClient.on('message', (topic, message, packet) => {
@@ -425,7 +442,7 @@ const init = async (licenseContainer) => {
 		// 	console.error(message);
 		// });
 		context.brokerManager.handleNewBrokerConnection(connection, brokerClient, system, topicTreeManager /*, proxyClient */);
-		configManager.updateConnection(connection.id, connectionConfiguration);
+		// configManager.updateConnection(connection.id, connectionConfiguration);
 		
 		// try {
 		// 	await proxyClient.connect({ socketEndpointURL: 'ws://localhost:8088' });
@@ -444,14 +461,14 @@ const init = async (licenseContainer) => {
 		}
 		context.brokerManager.handleDeleteBrokerConnection(connection);
 
-		if (!connection.status) {
-			connection.status = {};
-		}
+		// if (!connection.status) {
+		// 	connection.status = {};
+		// }
 
-		connection.status.connected = false;
-		connection.status.timestamp = Date.now();
+		// connection.status.connected = false;
+		// connection.status.timestamp = Date.now();
 
-		configManager.updateConnection(connection.id, connection);
+		// configManager.updateConnection(connection.id, connection);
 	}
 
 
@@ -460,7 +477,8 @@ const init = async (licenseContainer) => {
 			if (i < maxBrokerConnections) {
 				const connection = connections[i];
 				const wasConnected = connection.status && connection.status.connected;
-				const hadError = connection.status && connection.status.error;
+				const closedByUser = connection.status && connection.status.error && typeof connection.status.error === 'object' && connection.status.error.code === 'ECONNCLOSED' && !connection.status.error.interrupted;
+				const hadError = connection.status && connection.status.error && !closedByUser;
 				if (wasConnected || hadError || connection.status === undefined) { // Note that we don't connect in case broker was manually disconnected. We connect only in the three cases descirbed in if
 					handleConnectServerToBroker(connections[i]);
 				}
