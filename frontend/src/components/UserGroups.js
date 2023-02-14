@@ -231,7 +231,8 @@ const UserGroups = (props) => {
 
 
 	// TODO: probably extract into reducer
-	const userSuggestions = users.map(el => el.username)
+	const userSuggestions = users//.filter(el => !el.isSuperAdmin) // superadmin cannot be restricted and added to a group
+		.map(el => el.username)
         .sort()
 		.map((username) => ({
 			label: username,
