@@ -122,9 +122,12 @@ function AppRoutes(props) {
 				{atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams/new">
 					<StreamNew />
 				</Route>}
-				{atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams">
+				{/* {atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams">
+					<Streams /> //* when refreshing the page this line will always redirect to dashboard because at the time of refresh user is none and permission checks fails, then redirect happens
+				</Route>} */}
+				<Route path="/streams">
 					<Streams />
-				</Route>}
+				</Route>
 				<Route path="/system/status">
 					<Status />
 				</Route>
@@ -164,13 +167,19 @@ function AppRoutes(props) {
 				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups/detail/:groupId"
 						component={UserGroupDetail}
 				/>}
-				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups">
+				<Route path="/admin/user-groups">
 					<SortableTablePage Component={UserGroups} />
-				</Route>}
+				</Route>
+				{/* {atLeastAdmin(userProfile) && <Route path="/admin/user-groups">
+					<SortableTablePage Component={UserGroups} />
+				</Route>} */}
 
-				{atLeastAdmin(userProfile) && <Route path="/admin/tokens">
+				{/* {atLeastAdmin(userProfile) && <Route path="/admin/tokens">
 					<ApplicationTokens />
-				</Route>}
+				</Route>} */}
+				<Route path="/admin/tokens">
+					<ApplicationTokens />
+				</Route>
 
 				<Route path="/admin/users/new">
 					<UserNew />
