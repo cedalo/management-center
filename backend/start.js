@@ -19,7 +19,7 @@ const UsageTracker = require('./src/usage/UsageTracker');
 const InstallationManager = require('./src/usage/InstallationManager');
 const ConfigManager = require('./src/config/ConfigManager');
 const SettingsManager = require('./src/settings/SettingsManager');
-const { loadInstallation } = require('./src/utils/utils');
+const { loadInstallation, stripConnectionsCredentials } = require('./src/utils/utils');
 const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
 const swaggerDocument = require('./swagger.js');
 const Logger = require('./src/utils/Logger');
@@ -577,15 +577,7 @@ const init = async (licenseContainer) => {
 				// const connections = context.brokerManager.getBrokerConnections();
 				const connections = configManager.connections;
 				const filteredConnections = context.security.acl.filterAllowedConnections(connections, user.connections);
-				const result = filteredConnections.map(connection => {
-						if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, connection.name)) {
-								return connection;
-						} else {
-								const connectionCopy = Object.assign({}, connection);
-								delete connectionCopy.credentials;
-								return connectionCopy;
-						}
-				});
+				const result = stripConnectionsCredentials(filteredConnections, user, context);
 				return result;
 			}
 			case 'getBrokerConfigurations': {

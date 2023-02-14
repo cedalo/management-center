@@ -43,6 +43,20 @@ const loadInstallation = () => {
 };
 
 
+
+const stripConnectionsCredentials = (connections, user, context) => {
+    return connections.map(connection => {
+        if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, connection.name)) {
+                return connection;
+        } else {
+                const connectionCopy = Object.assign({}, connection);
+                delete connectionCopy.credentials;
+                return connectionCopy;
+        }
+    });
+};
+
+
 const getCircularReplacer = () => {
     const seen = new WeakMap();
     return (key, property) => {
@@ -99,5 +113,6 @@ module.exports = {
 	loadInstallation,
 	removeCircular,
     stringToBool,
-    getBaseDirectory
+    getBaseDirectory,
+    stripConnectionsCredentials
 };
