@@ -810,7 +810,7 @@ const init = async (licenseContainer) => {
 	};
 
 	const sendConnectionsUpdate = (brokerClient, user) => {
-		const connections = context.brokerManager.getBrokerConnections();
+		const connections = context.configManager.connections; // context.brokerManager.getBrokerConnections(); brokerManager does not include connections that have been disconnected by the user before the start of the MMC
 		let payload = connections;
 
 		if (user) {
