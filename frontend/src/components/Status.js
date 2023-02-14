@@ -79,11 +79,13 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 		}
 	}, []);
 
+
 	if (connected && !systemStatus?.$SYS) {
-		cleanRef();
-		timerRef.current = window.setTimeout(() => {
-			setWaitingForSysTopic(false);
-		}, 16000);
+		if (!timerRef.current) {
+			timerRef.current = window.setTimeout(() => {
+				setWaitingForSysTopic(false);
+			}, 16000);
+		}
 	}
 
 	const onRestart = async (brokerConnectionName, serviceName) => {
