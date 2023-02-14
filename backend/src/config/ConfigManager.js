@@ -6,10 +6,13 @@ const { isObject } = require('util');
 const { URL } = require('url');
 const { getBaseDirectory } = require('../utils/utils');
 
-const CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING = process.env.CEDALO_CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING;
+const CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING = process.env.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING;
 const CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING = process.env.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING;
 const CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING = process.env.CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING;
 const CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING = process.env.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING;
+const CEDALO_MC_BROKER_CONNECTION_MQTT_PORT = process.env.CEDALO_MC_BROKER_CONNECTION_MQTT_PORT;
+const CEDALO_MC_BROKER_CONNECTION_MQTTS_PORT = process.env.CEDALO_MC_BROKER_CONNECTION_MQTTS_PORT;
+const CEDALO_MC_BROKER_CONNECTION_WEBSOCKET_PATH = process.env.CEDALO_MC_BROKER_CONNECTION_WEBSOCKET_PATH;
 const configFile = process.env.CEDALO_MC_PROXY_CONFIG || path.join(process.env.CEDALO_MC_PROXY_CONFIG_DIR || getBaseDirectory(__dirname), 'config.json');
 
 const adapter = new FileSync(configFile);
@@ -93,7 +96,7 @@ module.exports = class ConfigManager {
 
 	updatePluginFromConfiguration(pluginId, plugin) {
 		if (!isObject(plugin)) {
-			throw new Error('Pluin is of invalid type/empty/not provided');
+			throw new Error('Plugin is of invalid type/empty/not provided');
 		}
 
 		let pluginName = pluginId.replace('cedalo_', '');
@@ -131,8 +134,8 @@ module.exports = class ConfigManager {
 			return connection;
 		}
 
-		const internalMqttPort = 1883;
-		const externalMqttsPort = 8883;
+		const internalMqttPort = CEDALO_MC_BROKER_CONNECTION_MQTT_PORT || 1883;
+		const externalMqttsPort = CEDALO_MC_BROKER_CONNECTION_MQTTS_PORT || 8883;
 		const externalMqttPort = internalMqttPort
 		const hostname = new URL(connection.url).hostname;
 		const externalHostname = this.toExternalHostnamesMap.get(hostname) || null;
@@ -152,7 +155,7 @@ module.exports = class ConfigManager {
 				externalUnencryptedUrl = 'mqtt://' + externalHostname + `:${externalMqttPort}`; // modify externalURL
 			}
 			if (allowWebsockets) {
-				externalWebsocketsUrl = 'wss://' + externalHostname + '/mqtt'; // TODO use URL object to safely concat to url
+				externalWebsocketsUrl = 'wss://' + externalHostname + CEDALO_MC_BROKER_CONNECTION_WEBSOCKET_PATH || '/mqtt'; // TODO use URL object to safely concat to url
 			}
 		} else {
 			externalEncryptedUrl = null;
