@@ -141,6 +141,19 @@ const CertificateDetail = ({ connections = [] }) => {
 						<Grid container spacing={1} alignItems="flex-end">
 							<Grid item xs={12}>
 								<TextField
+									id="caid"
+									label="ID"
+									variant="outlined"
+									className={classes.textField}
+									InputLabelProps={{ shrink: true }}
+									fullWidth
+									value={cert.id}
+									defaultValue=""
+									disabled
+								/>
+							</Grid>
+							<Grid item xs={12}>
+								<TextField
 									id="caname"
 									label="Name"
 									variant="outlined"
@@ -201,11 +214,7 @@ const CertificateDetail = ({ connections = [] }) => {
 							</Grid>
 							<Grid container xs={12} alignItems="flex-start">
 								<Grid item xs={12} className={classes.buttons}>
-									<SaveCancelButtons
-										onSave={onSave}
-										saveDisabled={!canSave}
-										onCancel={onCancel}
-									/>
+									<SaveCancelButtons onSave={onSave} saveDisabled={!canSave} onCancel={onCancel} />
 								</Grid>
 							</Grid>
 						</Grid>
