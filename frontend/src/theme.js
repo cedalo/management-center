@@ -5,10 +5,7 @@ import { createTheme } from '@material-ui/core/styles';
 const theme = createTheme({
 	palette: {
 		primary: {
-			main: '#556cd6'
-			//   main: '#00695f',
-			//   main: '#ffc107',
-			//   main: 'rgb(44, 19, 56)',
+			main: '#FD602E',
 		},
 		secondary: {
 			main: '#7c88cc'
@@ -16,13 +13,14 @@ const theme = createTheme({
 			//   main: '#ffcd38',
 		},
 		menuItem: {
-			color: '#2979ff',
+			color: '#FD602E',
 		},
 		error: {
 			main: red.A400
 		},
 		background: {
-			default: 'rgb(254, 249, 248)'
+			// default: 'rgb(254, 249, 248)'
+			default: 'white'
 		},
 		breadcrumbItem: {
 			fontSize: '12px',
@@ -37,6 +35,13 @@ const theme = createTheme({
 			'&:hover': {
 				textDecoration: 'underline'
 			}
+		}
+	},
+	overrides: {
+		MuiAppBar: {
+			colorPrimary: {
+				backgroundColor: '#F7F9FC',
+			},
 		}
 	}
 });
