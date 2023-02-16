@@ -1216,7 +1216,6 @@ const licenseContainer = {};
 			if (error.message === 'Exit') {
 			} else {
 				console.error(error);
-				console.trace();
 			}
 		}
 	});
