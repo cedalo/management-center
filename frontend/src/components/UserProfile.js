@@ -156,6 +156,7 @@ const UserProfile = (props) => {
 			<form className={classes.form} noValidate autoComplete="off">
 				<div className={classes.margin}>
 					{(userProfile?.username === ROOT_USERNAME) ? <Alert style={{marginBottom: '12px'}} severity="info">Note that you cannot edit a root user</Alert> : <></>}
+					{backendParameters.ssoUsed ? <Alert style={{marginBottom: '12px'}} severity="info">Note that you cannot edit password of the SSO users</Alert>:<></>}
 					<Grid container spacing={1} alignItems="flex-end">
 						<Grid item xs={12}>
 							<TextField
@@ -177,52 +178,59 @@ const UserProfile = (props) => {
 								}}
 							/>
 						</Grid>
-						<Grid item xs={12}>
-							<TextField
-								required
-								disabled={!editMode}
-								id="password"
-								label="Password Change"
-								error={!passwordsMatch}
-								helperText={!passwordsMatch && 'Passwords must match.'}
-								onChange={(event) => setPassword(event.target.value)}
-								defaultValue=""
-								variant="outlined"
-								fullWidth
-								type="password"
-								className={classes.textField}
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position="start">
-											<PasswordIcon />
-										</InputAdornment>
-									)
-								}}
-							/>
-						</Grid>
-						<Grid item xs={12}>
-							<TextField
-								required
-								disabled={!editMode}
-								id="password-confirm"
-								label="Password Confirm"
-								error={!passwordsMatch}
-								helperText={!passwordsMatch && 'Passwords must match.'}
-								onChange={(event) => setPasswordConfirm(event.target.value)}
-								defaultValue=""
-								variant="outlined"
-								fullWidth
-								type="password"
-								className={classes.textField}
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position="start">
-											<PasswordIcon />
-										</InputAdornment>
-									)
-								}}
-							/>
-						</Grid>
+
+						{backendParameters.ssoUsed ?
+							null
+						:
+							<>
+								<Grid item xs={12}>
+									<TextField
+										required
+										disabled={!editMode}
+										id="password"
+										label="Password Change"
+										error={!passwordsMatch}
+										helperText={!passwordsMatch && 'Passwords must match.'}
+										onChange={(event) => setPassword(event.target.value)}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										type="password"
+										className={classes.textField}
+										InputProps={{
+											startAdornment: (
+												<InputAdornment position="start">
+													<PasswordIcon />
+												</InputAdornment>
+											)
+										}}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										required
+										disabled={!editMode}
+										id="password-confirm"
+										label="Password Confirm"
+										error={!passwordsMatch}
+										helperText={!passwordsMatch && 'Passwords must match.'}
+										onChange={(event) => setPasswordConfirm(event.target.value)}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										type="password"
+										className={classes.textField}
+										InputProps={{
+											startAdornment: (
+												<InputAdornment position="start">
+													<PasswordIcon />
+												</InputAdornment>
+											)
+										}}
+									/>
+								</Grid>
+							</>
+						}
 						{/* <Grid item xs={12}>
 							<AutoSuggest
 								disabled

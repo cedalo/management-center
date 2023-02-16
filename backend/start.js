@@ -273,7 +273,8 @@ const init = async (licenseContainer) => {
 	addStreamsheetsConfig(config);
 	config.parameters = {
 		showFeedbackForm: CEDALO_MC_SHOW_FEEDBACK_FORM,
-		rootUsername: CEDALO_MC_USERNAME
+		rootUsername: CEDALO_MC_USERNAME,
+		ssoUsed: false
 	};
 
 	let server;
@@ -982,6 +983,7 @@ const init = async (licenseContainer) => {
 
 	const pluginManager = new PluginManager();
 	pluginManager.init(config.plugins, context, swaggerDocument);
+	context.config.parameters.ssoUsed = pluginManager.plugins.find(plugin => plugin._meta.id.includes('_sso') && plugin._status.type === 'loaded') || false;
 
 	if (context.server instanceof Error) { // https plugin tried to be loaded but failed
 		console.error('HTTPS not properly configured. Exiting...');

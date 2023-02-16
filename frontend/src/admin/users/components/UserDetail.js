@@ -74,7 +74,7 @@ const UserDetail = (props) => {
 		}
 	}, []);
 
-	const { user, userRoles = [] } = props;
+	const { user, userRoles = [], backendParameters } = props;
 	if (user) {
 		user.password = null;
 	}
@@ -183,44 +183,50 @@ const UserDetail = (props) => {
 							}}
 						/>
 					</Grid>
-					<Grid item xs={12}>
-						<TextField
-							disabled={!editMode}
-							required
-							id="password"
-							label="Password"
-							helperText={passwordError || "You can change the password here, empty password will be ignored"}
-							value={updatedUser?.password}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							type="password"
-							className={classes.textField}
-							onChange={(event) => {
-								if (event.target.value) {
-									setPasswordError(null);
-								} else {
-									setPasswordError(PASSWORD_ERROR_MESSAGE);
-								}
-								if (editMode) {
-									setUpdatedUser({
-										...updatedUser,
-										password: event.target.value
-									});
-								}
-							}}
-							error={!!passwordError}
-							onFocus={() => {
-								if (!updatedUser?.password) {
-									setPasswordError(PASSWORD_ERROR_MESSAGE);
-								}
-							}}
-							onBlur={() => {
-								setPasswordError(null);
-							}}
-							inputRef={ref}
-						/>
-					</Grid>
+					{backendParameters.ssoUsed ?
+						null
+					:
+						<>
+							<Grid item xs={12}>
+								<TextField
+									disabled={!editMode}
+									required
+									id="password"
+									label="Password"
+									helperText={passwordError || "You can change the password here, empty password will be ignored"}
+									value={updatedUser?.password}
+									defaultValue=""
+									variant="outlined"
+									fullWidth
+									type="password"
+									className={classes.textField}
+									onChange={(event) => {
+										if (event.target.value) {
+											setPasswordError(null);
+										} else {
+											setPasswordError(PASSWORD_ERROR_MESSAGE);
+										}
+										if (editMode) {
+											setUpdatedUser({
+												...updatedUser,
+												password: event.target.value
+											});
+										}
+									}}
+									error={!!passwordError}
+									onFocus={() => {
+										if (!updatedUser?.password) {
+											setPasswordError(PASSWORD_ERROR_MESSAGE);
+										}
+									}}
+									onBlur={() => {
+										setPasswordError(null);
+									}}
+									inputRef={ref}
+								/>
+							</Grid>
+						</>
+					}
 					<Grid item xs={12} style={{paddingTop: '10px'}}>
 						<AutoSuggest
 							disabled={!editMode}
@@ -293,6 +299,7 @@ const mapStateToProps = (state) => {
 	return {
 		user: state.users?.user,
 		userRoles: state.userRoles?.userRoles,
+		backendParameters: state.backendParameters?.backendParameters,
 	};
 };
 

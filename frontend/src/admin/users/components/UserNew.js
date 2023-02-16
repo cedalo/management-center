@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const UserNew = (props) => {
-	const { users, userRoles = [], userManagementFeature } = props;
+	const { users, userRoles = [], userManagementFeature, backendParameters } = props;
 	const classes = useStyles();
 
 	const [username, setUsername] = useState('');
@@ -88,10 +88,10 @@ const UserNew = (props) => {
 	const validate = () => {
 		const valid = passwordsMatch 
 			&& !usernameExists 
-			&& username !== '' 
-			&& password !== ''
+			&& username !== ''
+			&& (password !== '' || backendParameters.ssoUsed)
 			&& roles.length
-			&& username.match(/^[0-9a-zA-Z!#$%&'*+\-/=?^_`{|}~.@]+$/);
+			&& username.match(/^[0-9a-zA-Z!#$%&'*+\-/=?^_`{|}~.@]+$/); // we can technically also send this pattern from the backend in backendParameters
 		return valid;
 	};
 
@@ -104,7 +104,11 @@ const UserNew = (props) => {
 
 	const onSaveUser = async () => {
 		try {
-			await client.createUser(username, password, roles);
+			let pwd = password;
+			if (backendParameters.ssoUsed) {
+				pwd = undefined;
+			}
+			await client.createUser(username, pwd, roles);
 			const users = await client.listUsers();
 			dispatch(updateUsers(users));
 			history.push(`/admin/users`);
@@ -179,50 +183,58 @@ const UserNew = (props) => {
 										}}
 									/>
 								</Grid>
-								<Grid item xs={12}>
-									<TextField
-										required
-										id="password"
-										label="Password"
-										error={!passwordsMatch}
-										helperText={!passwordsMatch && 'Passwords must match.'}
-										onChange={(event) => setPassword(event.target.value)}
-										defaultValue=""
-										variant="outlined"
-										fullWidth
-										type="password"
-										className={classes.textField}
-										InputProps={{
-											startAdornment: (
-												<InputAdornment position="start">
-													<PasswordIcon />
-												</InputAdornment>
-											)
-										}}
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<TextField
-										required
-										id="password-confirm"
-										label="Password Confirm"
-										error={!passwordsMatch}
-										helperText={!passwordsMatch && 'Passwords must match.'}
-										onChange={(event) => setPasswordConfirm(event.target.value)}
-										defaultValue=""
-										variant="outlined"
-										fullWidth
-										type="password"
-										className={classes.textField}
-										InputProps={{
-											startAdornment: (
-												<InputAdornment position="start">
-													<PasswordIcon />
-												</InputAdornment>
-											)
-										}}
-									/>
-								</Grid>
+
+								{backendParameters.ssoUsed ?
+									null
+								:
+									<>
+										<Grid item xs={12}>
+											<TextField
+												required
+												id="password"
+												label="Password"
+												error={!passwordsMatch}
+												helperText={!passwordsMatch && 'Passwords must match.'}
+												onChange={(event) => setPassword(event.target.value)}
+												defaultValue=""
+												variant="outlined"
+												fullWidth
+												type="password"
+												className={classes.textField}
+												InputProps={{
+													startAdornment: (
+														<InputAdornment position="start">
+															<PasswordIcon />
+														</InputAdornment>
+													)
+												}}
+											/>
+										</Grid>
+										<Grid item xs={12}>
+											<TextField
+												required
+												id="password-confirm"
+												label="Password Confirm"
+												error={!passwordsMatch}
+												helperText={!passwordsMatch && 'Passwords must match.'}
+												onChange={(event) => setPasswordConfirm(event.target.value)}
+												defaultValue=""
+												variant="outlined"
+												fullWidth
+												type="password"
+												className={classes.textField}
+												InputProps={{
+													startAdornment: (
+														<InputAdornment position="start">
+															<PasswordIcon />
+														</InputAdornment>
+													)
+												}}
+											/>
+										</Grid>
+									</>
+								}
+
 								<Grid item xs={12}>
 									<AutoSuggest
 										placeholder="Select roles..."
@@ -259,6 +271,7 @@ const mapStateToProps = (state) => {
 		userRoles: state.userRoles?.userRoles,
 		users: state.users?.users,
 		userManagementFeature: state.systemStatus?.features?.usermanagement,
+		backendParameters: state.backendParameters?.backendParameters,
 	};
 };
 
