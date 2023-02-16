@@ -97,7 +97,7 @@ function Control(props) {
 		children,
 		innerProps,
 		innerRef,
-		selectProps: { classes, TextFieldProps }
+		selectProps: { classes, TextFieldProps, inputProps }
 	} = props;
 
 	return (
@@ -109,7 +109,8 @@ function Control(props) {
 					className: classes.input,
 					ref: innerRef,
 					children,
-					...innerProps
+					...innerProps,
+					...inputProps
 				}
 			}}
 			{...TextFieldProps}
@@ -266,7 +267,7 @@ const components = {
 	ValueContainer
 };
 
-export default function AutoSuggest({ disabled, handleDelete, handleChange, suggestions, values, placeholder, TextFieldProps = {} }) {
+export default function AutoSuggest({ disabled, handleDelete, handleChange, suggestions, values, placeholder, inputProps, TextFieldProps = {} }) {
 	const classes = useStyles();
 	const theme = useTheme();
 
@@ -295,6 +296,7 @@ export default function AutoSuggest({ disabled, handleDelete, handleChange, sugg
 						},
 						...TextFieldProps
 					}}
+					inputProps={inputProps}
 					placeholder={placeholder || 'Select...'}
 					options={suggestions}
 					components={components}
