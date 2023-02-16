@@ -39,11 +39,12 @@ const UploadButton = ({ name, disabled, onUpload }) => {
 	return (
 		<Button
 			className={`${classes.button} ${classes.restrictButtonHeight}`}
-			color="secondary"
+			color="primary"
 			component="label"
 			disabled={disabled}
 			onChange={onChange(onUpload)}
 			size="small"
+			style={{width: '150px'}}
 			startIcon={<CloudUpload />}
 			variant="contained"
 		>

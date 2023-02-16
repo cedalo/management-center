@@ -1,41 +1,33 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import {
-	Button,
-	IconButton,
-	Paper,
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TableRow,
-	TableSortLabel,
-	Tooltip
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Button, IconButton, TableCell, TableRow, Tooltip } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useSnackbar } from 'notistack';
+import ContainerHeader from '../../../components/ContainerHeader';
 import { WebSocketContext } from '../../../websockets/WebSocket';
 import { WarningHint } from './AlertHint';
 import ChipsList from './ChipsList';
+import ContentContainer from './ContentContainer';
+import ContentTable from './ContentTable';
 import DeleteCertificateDialog from './DeleteCertificateDialog';
-import PathCrumbs from './PathCrumbs';
 
-const useStyles = makeStyles((theme) => ({
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink,
+const StyledTableRow = withStyles((theme) => ({
+	root: {
+		'&:nth-of-type(odd)': {
+			backgroundColor: theme.palette.tables?.odd
+		}
+	}
+}))(TableRow);
+const BadgesCell = withStyles((theme) => ({
 	badges: {
 		'& > *': {
 			margin: theme.spacing(0.5)
 		}
-	},
-	tableContainer: {
-		minHeight: '500px'
 	}
-}));
+}))(TableCell);
 
 const CERT_TABLE_COLUMNS = [
 	{ id: 'name', key: 'Name', sortable: true },
@@ -46,8 +38,30 @@ const CERT_TABLE_COLUMNS = [
 const hasLicenseFeature = (name) => (license) => true || !!license?.features.some((feature) => feature.name === name);
 const isLicensed = hasLicenseFeature('cert-management');
 
+const CustomTableRow = ({ cert, onSelect, onDelete }) => {
+	return (
+		<StyledTableRow hover key={cert.name} onClick={onSelect(cert)} style={{ cursor: 'pointer' }}>
+			<TableCell>{cert.name}</TableCell>
+			<TableCell>{cert.filename}</TableCell>
+			<BadgesCell>
+				<ChipsList
+					values={(cert.connections || []).map((conn) => ({
+						label: conn.name
+					}))}
+				/>
+			</BadgesCell>
+			<TableCell align="right">
+				<Tooltip title="Delete Certificate">
+					<IconButton size="small" onClick={onDelete(cert)}>
+						<DeleteIcon fontSize="small" />
+					</IconButton>
+				</Tooltip>
+			</TableCell>
+		</StyledTableRow>
+	);
+};
+
 const Certificates = ({ isCertSupported, doSort, onSort, sortBy, sortDirection }) => {
-	const classes = useStyles();
 	// const navigate = useNavigate();
 	const history = useHistory();
 	const { enqueueSnackbar } = useSnackbar();
@@ -69,11 +83,11 @@ const Certificates = ({ isCertSupported, doSort, onSort, sortBy, sortDirection }
 	const onDeleteCert = (cert) => (event) => {
 		event.stopPropagation();
 		setDeleteOptions({ open: true, cert });
-	}
+	};
 	const closeDeleteDialog = () => {
 		loadCerts();
 		setDeleteOptions({ open: false });
-	}
+	};
 	const onAddNewCertificate = (event) => {
 		event.stopPropagation();
 		// navigate('/admin/certs/detail/new');
@@ -90,92 +104,45 @@ const Certificates = ({ isCertSupported, doSort, onSort, sortBy, sortDirection }
 
 	useEffect(() => {
 		if (sortBy) setCerts(doSort([...certs], sortDirection, (a) => a[sortBy]));
-	}, [sortBy, sortDirection])
+	}, [sortBy, sortDirection]);
 
 	return (
-		<div>
-			<PathCrumbs path={[{ link: 'home' }, { link: 'admin' }, { title: 'Certificates' }]} />
-			<br />
-			{isCertSupported ? (
-				<>
-					<DeleteCertificateDialog
-						client={client}
-						onClose={closeDeleteDialog}
-						cert={deleteOptions.cert}
-						open={deleteOptions.open}
-					/>
-					<Button
-						variant="outlined"
-						color="default"
-						size="small"
-						className={classes.button}
-						startIcon={<AddIcon />}
-						onClick={onAddNewCertificate}
-					>
-						Add Certificate
-					</Button>
-					<br />
-					<br />
-					<TableContainer component={Paper} className={classes.tableContainer}>
-						<Table>
-							<TableHead>
-								<TableRow>
-									{CERT_TABLE_COLUMNS.map((column) => (
-										<TableCell
-											key={column.id}
-											sortDirection={sortBy === column.id ? sortDirection : false}
-										>
-											{column.sortable ? (
-												<TableSortLabel
-													active={sortBy === column.id}
-													direction={sortDirection}
-													onClick={() => onSort(column.id)}
-												>
-													{column.key}
-												</TableSortLabel>
-											) : (
-												<>{column.key}</>
-											)}
-										</TableCell>
-									))}
-									<TableCell />
-								</TableRow>
-							</TableHead>
-							<TableBody>
-								{certs.map((cert) => (
-									<TableRow
-										hover
-										key={cert.name}
-										onClick={onSelectCertificate(cert)}
-										style={{ cursor: 'pointer' }}
-									>
-										<TableCell>{cert.name}</TableCell>
-										<TableCell>{cert.filename}</TableCell>
-										<TableCell className={classes.badges}>
-											<ChipsList
-												values={(cert.connections || []).map((conn) => ({ label: conn.name }))}
-											/>
-										</TableCell>
-										<TableCell align="right">
-											<Tooltip title="Delete Certificate">
-												<IconButton size="small" onClick={onDeleteCert(cert)}>
-													<DeleteIcon fontSize="small" />
-												</IconButton>
-											</Tooltip>
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-					</TableContainer>
-				</>
-			) : (
-				WarningHint({
-					title: 'Certificates management feature is not available',
-					message: 'Make sure that support for certificates management is included in your MMC license.'
-				})
-			)}
-		</div>
+		<>
+			<DeleteCertificateDialog
+				client={client}
+				onClose={closeDeleteDialog}
+				cert={deleteOptions.cert}
+				open={deleteOptions.open}
+			/>
+			<ContentContainer path={[{ link: 'home' }, { link: 'admin' }, { title: 'Certificates' }]}>
+				{isCertSupported ? (
+					<>
+						<ContainerHeader title="Certificates" subTitle="List of currently maintained certificates.">
+							<Button
+								variant="outlined"
+								color="primary"
+								size="small"
+								startIcon={<AddIcon />}
+								onClick={onAddNewCertificate}
+							>
+								Add Certificate
+							</Button>
+						</ContainerHeader>
+						<ContentTable columns={CERT_TABLE_COLUMNS}>
+							{/* TODO sort rows */}
+							{certs.map((cert) => (
+								<CustomTableRow cert={cert} onSelect={onSelectCertificate} onDelete={onDeleteCert} />
+							))}
+						</ContentTable>
+					</>
+				) : (
+					WarningHint({
+						title: 'Certificates management feature is not available',
+						message: 'Make sure that support for certificates management is included in your MMC license.'
+					})
+				)}
+			</ContentContainer>
+		</>
 	);
 };
 
