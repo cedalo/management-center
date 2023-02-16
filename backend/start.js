@@ -721,7 +721,11 @@ const init = async (licenseContainer) => {
 				try {
 					const { id } = message;
 					if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, null, id)) {
-						configManager.deleteConnection(id, user);
+						const connection = configManager.getConnection(id);
+						if (connection.cluster) {
+							throw new Error(`Could not delete "${id}" because it's part of the cluster "${connection.cluster}". Delete cluster first`);
+						}
+						configManager.deleteConnection(id);
 						return configManager.connections;
 					} else {
 						throw new NotAuthorizedError();
