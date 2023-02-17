@@ -16,10 +16,6 @@ module.exports = class SettingsManager {
 		db.defaults({
 			settings: defaultSettings
 		}).write();
-
-		if (this.settings.topicTreeEnabled) {
-			this.callToCallbacks(defaultSettings, this.settings);
-		}
 	}
 
 	get settings() {
@@ -38,4 +34,3 @@ module.exports = class SettingsManager {
 		this._context?.eventEmitter?.emit('settings-update', oldSettings, this.settings);
 	}
 };
-// topicTreeEnabled
