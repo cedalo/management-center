@@ -334,6 +334,7 @@ const init = async (licenseContainer) => {
 				mqttEndpointURL: connection.url,
 				options: createOptions(connection)
 			});
+			context.eventEmitter.emit('connect', connectionConfiguration);
 
 			topicTreeManager.start();
 

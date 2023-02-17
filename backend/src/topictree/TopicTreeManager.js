@@ -11,6 +11,8 @@ module.exports = class TopicTreeManager {
         };
         this._settingsManager = settingsManager;
         this._context.eventEmitter?.on('settings-update', this.topicTreeEnableDisableCallback.bind(this));
+        this._context.eventEmitter?.on('reconnect', this.topicTreeConnectReconnectCallback.bind(this)); // if topic tree reconnected
+        this._context.eventEmitter?.on('connect', this.topicTreeConnectReconnectCallback.bind(this)); // if topic tree is enabled on startup we need to sub to all topics
         this._listeners = [];
     }
 
@@ -32,6 +34,14 @@ module.exports = class TopicTreeManager {
             this.stop();
 		} else if (!oldSettings.topicTreeEnabled && newSettings.topicTreeEnabled) {
             this.subToAllTopics();
+        }
+    }
+
+    topicTreeConnectReconnectCallback(connectionConfiguration) {
+        if (connectionConfiguration.name === this._topicTree._name) { // if broker name the same
+            if (this._settingsManager.settings.topicTreeEnabled) {
+                this.subToAllTopics();
+            }
         }
     }
 
