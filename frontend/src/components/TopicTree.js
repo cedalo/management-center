@@ -58,6 +58,14 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
+
+const shortenString = (string) => {
+	if (string && string.length > 37) {
+		return string.slice(0, 36) + '...';
+	}
+	return string;
+};
+
 const prettifyJSON = (jsonString) => {
 	const json = JSON.parse(jsonString);
 	const prettifiedJSON = JSON.stringify(json, null, 2);
@@ -143,7 +151,7 @@ function StyledTreeItem(props) {
 					{message && (
 						<Tooltip title="Message body">
 							<Typography variant="caption" color="inherit" className={classes.label}>
-								<Chip size="small" label={message} color="primary" />
+								<Chip size="small" label={shortenString(message)} color="primary" />
 							</Typography>
 						</Tooltip>
 					)}
