@@ -67,8 +67,14 @@ const shortenString = (string) => {
 };
 
 const prettifyJSON = (jsonString) => {
-	const json = JSON.parse(jsonString);
-	const prettifiedJSON = JSON.stringify(json, null, 2);
+	let prettifiedJSON;
+	try {
+		const json = JSON.parse(jsonString);
+		prettifiedJSON = JSON.stringify(json, null, 2);
+	} catch(error) {
+		console.error('Error when converting to json:', error);
+		return jsonString;
+	}
 	return prettifiedJSON;
 }
 
