@@ -5,6 +5,7 @@ const http = require('http');
 const EventEmitter = require('events');
 const { v4: uuidv4 } = require('uuid');
 const express = require('express');
+const ejs = require('ejs');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const cors = require('cors');
