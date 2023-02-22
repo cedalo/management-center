@@ -20,7 +20,7 @@ const UsageTracker = require('./src/usage/UsageTracker');
 const InstallationManager = require('./src/usage/InstallationManager');
 const ConfigManager = require('./src/config/ConfigManager');
 const SettingsManager = require('./src/settings/SettingsManager');
-const { loadInstallation, stripConnectionsCredentials } = require('./src/utils/utils');
+const { loadInstallation, stripConnectionsCredentials, generateSecret } = require('./src/utils/utils');
 const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
 const swaggerDocument = require('./swagger.js');
 const Logger = require('./src/utils/Logger');
@@ -254,7 +254,7 @@ const init = async (licenseContainer) => {
 	app.set('view engine', 'ejs');
 	app.set('views', path.join(__dirname, 'views'));
 
-	const sessionParser = session({ secret: process.env.CEDALO_MC_SESSION_SECRET || "secret",
+	const sessionParser = session({ secret: process.env.CEDALO_MC_SESSION_SECRET || generateSecret(),
 									cookie: (process.env.CEDALO_MC_SESSION_MAXAGE ?
 												( (parseInt(process.env.CEDALO_MC_SESSION_MAXAGE) === -1) ?
 													undefined

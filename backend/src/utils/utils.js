@@ -3,7 +3,7 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
-
+const crypto = require('crypto');
 
 const getBaseDirectory = (dirname) => {
 	// if (process.env.CEDALO_MC_SINGLE_BACKUP_DIRECTORY) {
@@ -108,11 +108,17 @@ const stringToBool = (string) => {
 };
 
 
+const generateSecret = () => { // TODO: change the location of this fucntion, also use it in plugins' secret generator, or transfer secretGenerator code here
+    return crypto.randomBytes(64).toString('hex');
+};
+
+
 
 module.exports = {
 	loadInstallation,
 	removeCircular,
     stringToBool,
     getBaseDirectory,
-    stripConnectionsCredentials
+    stripConnectionsCredentials,
+    generateSecret
 };
