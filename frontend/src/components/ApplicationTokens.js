@@ -127,7 +127,7 @@ const formatDateToISO8601String = (date) => {
 };
 
 
-const getDateString = (date, separator='T') => { // convert to ISO 8601 format date string without seconds portion
+const getDateString = (date, separator=' ') => { // convert to ISO 8601 format date string without seconds portion
 	return date.getFullYear() + '-'
 			+ ((date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)) + '-'
 			+ (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + separator
