@@ -245,7 +245,7 @@ const UserProfile = (props) => {
 				</div>
 			</form>
 
-			{(!editMode && userProfile?.username !== ROOT_USERNAME) && (
+			{(!editMode && userProfile?.username !== ROOT_USERNAME && !backendParameters.ssoUsed) && (
 				<Grid item xs={12} className={classes.buttons}>
 					<Button
 						variant="contained"
