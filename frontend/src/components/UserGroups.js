@@ -303,14 +303,16 @@ const UserGroups = (props) => {
 				New User Group
 			</Button>
 			{Object.keys(userGroups).length > 0 ? (
-				<Button size="small"
-						color="primary"
-						variant="outlined"
-						style={{marginLeft: "20px"}}
-						onClick={() => {disableSort()}}
-				>
-					Unsort
-				</Button>
+				<Tooltip title="Remove table sorting">
+					<Button size="small"
+							color="primary"
+							variant="outlined"
+							style={{marginLeft: "20px"}}
+							onClick={() => {disableSort()}}
+					>
+						Unsort
+					</Button>
+				</Tooltip>
 			) : ""}
 			<br />
 			<br />
