@@ -123,7 +123,7 @@ const stringToDate = (dateString) => { // ISO 8601 format date string
 
 
 const formatDateToISO8601String = (date) => {
-	return getDateString(date, ' ') + ':' + (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
+	return getUTCDateString(date, ' ') + ':' + (date.getUTCSeconds() < 10 ? '0' + date.getUTCSeconds() : date.getUTCSeconds()) + '000Z';
 };
 
 
@@ -135,6 +135,14 @@ const getDateString = (date, separator='T') => { // convert to ISO 8601 format d
 			+ (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes());
 };
 
+
+const getUTCDateString = (date, separator='T') => { // convert to ISO 8601 format date string without seconds portion
+	return date.getUTCFullYear() + '-'
+			+ ((date.getUTCMonth() + 1) < 10 ? '0' + (date.getUTCMonth() + 1) : (date.getUTCMonth() + 1)) + '-'
+			+ (date.getUTCDate() < 10 ? '0' + date.getUTCDate() : date.getUTCDate()) + separator
+			+ (date.getUTCHours() < 10 ? '0' + date.getUTCHours() : date.getUTCHours()) + ':'
+			+ (date.getUTCMinutes() < 10 ? '0' + date.getUTCMinutes() : date.getUTCMinutes());
+};
 
 const shortenTokenName = (tokenName) => {
 	return tokenName && ((tokenName.length > 30) ? tokenName.substring(0, 30) + '...' : tokenName);
