@@ -222,8 +222,7 @@ const createOptions = (connection) => {
 	return {
 		...credentials,
 		...restOfConnection,
-		connectTimeout: process.env.CEDALO_MC_TIMOUT_MOSQUITTO_CONNECT || 5000,
-		rejectUnauthorized: process.env.CEDALO_MC_REJECT_UNAUTHORIZED !== 'false'
+		connectTimeout: process.env.CEDALO_MC_TIMOUT_MOSQUITTO_CONNECT || 5000
 	}
 }
 
