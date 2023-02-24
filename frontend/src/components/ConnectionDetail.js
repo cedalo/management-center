@@ -1,43 +1,24 @@
-import React, { useContext, useState } from 'react';
-import { Redirect, Link as RouterLink } from 'react-router-dom';
-import { connect, useDispatch } from 'react-redux';
-
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+import {connect} from 'react-redux';
+import {Redirect} from 'react-router-dom';
 import ConnectionDetailComponent from './ConnectionDetailComponent';
-
-const useStyles = makeStyles((theme) => ({
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
-}));
+import ContainerBreadCrumbs from './ContainerBreadCrumbs';
+import ContainerHeader from './ContainerHeader';
 
 const ConnectionDetail = (props) => {
-	const classes = useStyles();
-
 	const { selectedConnectionToEdit: connection } = props;
 
 	return connection ? (
 		<div>
-			<Breadcrumbs aria-label="breadcrumb">
-				<RouterLink className={classes.breadcrumbLink} to="/home">
-					Home
-				</RouterLink>
-				<RouterLink className={classes.breadcrumbLink} to="/config">
-					Config
-				</RouterLink>
-				<RouterLink className={classes.breadcrumbLink} to="/config/connections">
-					Connections
-				</RouterLink>
-				<Typography className={classes.breadcrumbItem} color="textPrimary">
-					{connection.id}
-				</Typography>
-			</Breadcrumbs>
-			<br />
+			<ContainerBreadCrumbs title={connection.id} links={[{name: 'Home', route: '/home'},{name: 'Connections', route: '/connections'}]}/>
+			<ContainerHeader
+				title="Edit Connection"
+				subTitle="View and modify connection settings. To modify click on the edit button below."
+			/>
 			<ConnectionDetailComponent />
 		</div>
 	) : (
-		<Redirect to="/config/connections" push />
+		<Redirect to="/connections" push />
 	);
 };
 

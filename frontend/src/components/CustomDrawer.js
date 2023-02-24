@@ -190,13 +190,13 @@ const CustomDrawer = ({
 					{open ? <ListSubheader className={classes.menuSubHeader}>Monitoring</ListSubheader> : null}
 					{atLeastAdmin(userProfile) && <ListItemLink
 						classes={classes}
-						to="/admin/clusters"
+						to="/clusters"
 						primary="Cluster Management"
 						icon={<ClusterIcon fontSize="small"/>}
 					/>}
 					{(atLeastAdmin(userProfile, currentConnectionName) && !hideConnections) ? <ListItemLink
 						classes={classes}
-						to="/config/connections"
+						to="/connections"
 						primary="Connections"
 						icon={<ConnectionsIcon fontSize="small"/>}
 					/> : null}

@@ -134,13 +134,13 @@ function AppRoutes(props) {
 				<Route path="/system">
 					<System />
 				</Route>
-				{atLeastAdmin(userProfile) && <Route path="/config/connections/new">
+				{atLeastAdmin(userProfile) && <Route path="/connections/new">
 					<ConnectionNew />
 				</Route>}
-				{atLeastAdmin(userProfile, connection?.name) && <Route path="/config/connections/detail/:connectionId">
+				{atLeastAdmin(userProfile, connection?.name) && <Route path="/connections/:connectionId">
 					<ConnectionDetail />
 				</Route>}
-				{ !hideConnections ? <Route path="/config/connections">
+				{ !hideConnections ? <Route path="/connections">
 					<Connections />
 				</Route> : null }
 				{atLeastAdmin(userProfile) && <Route path="/config/settings">
@@ -179,13 +179,13 @@ function AppRoutes(props) {
 					<Users />
 				</Route>
 				<Route
-					path="/admin/clusters/detail/:clusterId"
+					path="/clusters/detail/:clusterId"
 					component={ClusterDetail}
 				/>
-				<Route path="/admin/clusters/new">
+				<Route path="/clusters/new">
 					<ClusterNew />
 				</Route>
-				<Route path="/admin/clusters">
+				<Route path="/clusters">
 					<Clusters />
 				</Route>
 				<Route path="/admin/inspect/clients">
