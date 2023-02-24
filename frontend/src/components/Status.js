@@ -214,7 +214,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 					</Grid>}
 					<Grid item lg={3} sm={6} xl={3} xs={12}>
 						<Info
-							label="Clients total"
+							label="Clients"
 							value={systemStatus?.$SYS?.broker?.clients?.total}
 							icon={<ClientIcon color="#FF0000"/>}
 						/>
