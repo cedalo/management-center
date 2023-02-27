@@ -103,11 +103,11 @@ const UserNew = (props) => {
 	const { client } = context;
 
 	const onSaveUser = async () => {
+		let pwd = password;
+		if (backendParameters.ssoUsed) {
+			pwd = undefined;
+		}
 		try {
-			let pwd = password;
-			if (backendParameters.ssoUsed) {
-				pwd = undefined;
-			}
 			await client.createUser(username, pwd, roles);
 			const users = await client.listUsers();
 			dispatch(updateUsers(users));
