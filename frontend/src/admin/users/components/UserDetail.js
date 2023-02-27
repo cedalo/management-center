@@ -240,6 +240,9 @@ const UserDetail = (props) => {
 							}))}
 							handleChange={(value) => {
 								if (editMode) {
+									if (!value) {
+										value = [];
+									}
 									setUpdatedUser({
 										...updatedUser,
 										roles: value.map((role) => role.value)
