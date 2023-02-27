@@ -108,6 +108,9 @@ const UserDetail = (props) => {
 	};
 
 	const onUpdateUserDetail = async () => {
+		if (backendParameters.ssoUsed) {
+			updatedUser.password = undefined;
+		}
 		try {
 			await brokerClient.updateUser(updatedUser);
 			enqueueSnackbar('User successfully updated', {
