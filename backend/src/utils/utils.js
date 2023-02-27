@@ -44,14 +44,15 @@ const loadInstallation = () => {
 
 
 
-const stripConnectionsCredentials = (connections, user, context) => {
+const stripConnectionsCredentials = (connections, user, context, customAuthorizationFunction) => {
     return connections.map(connection => {
-        if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, connection.name)) {
-                return connection;
+        const authorizationFunction = customAuthorizationFunction || context.security.acl.atLeastAdmin;
+        if (context.security.acl.isConnectionAuthorized(user, authorizationFunction, connection.name)) {
+            return connection;
         } else {
-                const connectionCopy = Object.assign({}, connection);
-                delete connectionCopy.credentials;
-                return connectionCopy;
+            const connectionCopy = Object.assign({}, connection);
+            delete connectionCopy.credentials;
+            return connectionCopy;
         }
     });
 };
