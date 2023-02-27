@@ -232,7 +232,7 @@ const CustomDrawer = ({
 					<ListItemLink
 						id="menu-item-clients"
 						classes={classes}
-						to="/security/clients"
+						to="/clients"
 						primary="Clients"
 						icon={<PersonIcon fontSize="small"/>}
 					/>

@@ -100,7 +100,7 @@ const ClientNew = (props) => {
 			await client.createClient(username, password, clientID, '', textname, textdescription);
 			const clients = await client.listClients();
 			dispatch(updateClients(clients));
-			history.push(`/security/clients`);
+			history.push(`/clients`);
 			enqueueSnackbar(`Client "${username}" successfully created.`, {
 				variant: 'success'
 			});

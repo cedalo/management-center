@@ -1,55 +1,32 @@
-import React, { useContext, useState } from 'react';
-import { Redirect, Link as RouterLink } from 'react-router-dom';
-import { connect, useDispatch } from 'react-redux';
-import { updateClient, updateClients } from '../actions/actions';
-import { useSnackbar } from 'notistack';
-
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import Avatar from '@material-ui/core/Avatar';
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
-import ClientIDIcon from '@material-ui/icons/Fingerprint';
-import ClientIcon from '@material-ui/icons/Person';
-import CredentialsIcon from '@material-ui/icons/Lock';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Divider from '@material-ui/core/Divider';
-import EditIcon from '@material-ui/icons/Edit';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
 import Grid from '@material-ui/core/Grid';
-import GroupIcon from '@material-ui/icons/Group';
-import GroupsIcon from '@material-ui/icons/Group';
-import HidePasswordIcon from '@material-ui/icons/VisibilityOff';
-import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
-import PasswordIcon from '@material-ui/icons/VpnKey';
-import PropTypes from 'prop-types';
-import SaveIcon from '@material-ui/icons/Save';
-import ShowPasswordIcon from '@material-ui/icons/Visibility';
-import Switch from '@material-ui/core/Switch';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
+import {makeStyles} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { WebSocketContext } from '../websockets/WebSocket';
-import { makeStyles } from '@material-ui/core/styles';
-import qs from 'qs';
-import { useConfirm } from 'material-ui-confirm';
-
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import EditIcon from '@material-ui/icons/Edit';
+import ClientIDIcon from '@material-ui/icons/Fingerprint';
+import SaveIcon from '@material-ui/icons/Save';
+import PasswordIcon from '@material-ui/icons/VpnKey';
+import {useConfirm} from 'material-ui-confirm';
+import {useSnackbar} from 'notistack';
+import PropTypes from 'prop-types';
+import React, {useContext} from 'react';
+import {connect, useDispatch} from 'react-redux';
+import {Link as RouterLink, Redirect} from 'react-router-dom';
+import {updateClient, updateClients} from '../actions/actions';
+import {WebSocketContext} from '../websockets/WebSocket';
 
 
 const PASSWORD_ERROR_MESSAGE = 'Password should not be empty';
 
 
 function TabPanel(props) {
-	const { children, value, index, ...other } = props;
+	const {children, value, index, ...other} = props;
 
 	return (
 		<div
@@ -99,11 +76,6 @@ const useStyles = makeStyles((theme) => ({
 		display: 'flex',
 		flexWrap: 'wrap'
 	},
-	textField: {
-		// marginLeft: theme.spacing(1),
-		// marginRight: theme.spacing(1),
-		// width: 200,
-	},
 	buttons: {
 		'& > *': {
 			margin: theme.spacing(1)
@@ -121,9 +93,9 @@ const ClientDetail = (props) => {
 	const [value, setValue] = React.useState(0);
 	const [showPassword, setShowPassword] = React.useState(false);
 	const [editMode, setEditMode] = React.useState(false);
-	const { enqueueSnackbar } = useSnackbar();
+	const {enqueueSnackbar} = useSnackbar();
 	const ref = React.useRef();
-	const [passwordError, setPasswordError] = React.useState(null); 
+	const [passwordError, setPasswordError] = React.useState(null);
 
 	React.useEffect(() => {
 		if (document.hasFocus() && ref.current.contains(document.activeElement)) {
@@ -133,7 +105,7 @@ const ClientDetail = (props) => {
 		}
 	}, []);
 
-	const { client = {}, defaultClient } = props;
+	const {client = {}, defaultClient} = props;
 	const [updatedClient, setUpdatedClient] = React.useState({
 		...client
 	});
@@ -141,7 +113,7 @@ const ClientDetail = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
-	const { client: brokerClient } = context;
+	const {client: brokerClient} = context;
 
 	const validate = () => {
 		if (passwordError) {
@@ -192,7 +164,7 @@ const ClientDetail = (props) => {
 	};
 	const {
 		match: {
-			params: { clientId }
+			params: {clientId}
 		}
 	} = props;
 	// TODO: get client by id if current client is not defined
@@ -206,14 +178,14 @@ const ClientDetail = (props) => {
 				<RouterLink className={classes.breadcrumbLink} to="/security">
 					Security
 				</RouterLink>
-				<RouterLink className={classes.breadcrumbLink} to="/security/clients">
+				<RouterLink className={classes.breadcrumbLink} to="/clients">
 					Clients
 				</RouterLink>
 				<Typography className={classes.breadcrumbItem} color="textPrimary">
 					{client.username}
 				</Typography>
 			</Breadcrumbs>
-			<br />
+			<br/>
 			<Paper className={classes.paper}>
 				{/* <Tabs
         value={value}
@@ -237,80 +209,80 @@ const ClientDetail = (props) => {
       </Tabs> */}
 				{/* <TabPanel value={value} index={0}> */}
 				<form className={classes.form} noValidate autoComplete="off">
-						<Grid container spacing={1} alignItems="flex-end" className={classes.margin}>
-							<Grid item xs={12}>
-								<TextField
-									required={editMode}
-									disabled={true}
-									onChange={(event) => {
-										if (editMode) {
-											setUpdatedClient({
-												...updatedClient,
-												username: event.target.value
-											});
-										}
-									}}
-									id="username"
-									label="username"
-									value={updatedClient.username}
-									defaultValue=""
-									variant="outlined"
-									fullWidth
-									className={classes.textField}
-									InputProps={{
-										startAdornment: (
-											<InputAdornment position="start">
-												<AccountCircle />
-											</InputAdornment>
-										)
-									}}
-								/>
-							</Grid>
-							<Grid item xs={12}>
-								<TextField
-									disabled={!editMode}
-									onChange={(event) => {
-										if (event.target.value) {
-											setPasswordError(null);
-										} else {
-											setPasswordError(PASSWORD_ERROR_MESSAGE);
-										}
-										if (editMode) {
-											setUpdatedClient({
-												...updatedClient,
-												password: event.target.value
-											})
-										}
-									}}
-									id="password"
-									label="Password"
-									helperText={passwordError || "You can change the password here, empty password will be ignored"}
-									style={{paddingBottom: '10px'}}
-									value={client.password}
-									error={!!passwordError}
-									// defaultValue="*****"
-									onFocus={() => {
-										if (!updatedClient.password) {
-											setPasswordError(PASSWORD_ERROR_MESSAGE);
-										}
-									}}
-									onBlur={() => {
+					<Grid container spacing={1} alignItems="flex-end" className={classes.margin}>
+						<Grid item xs={12}>
+							<TextField
+								required={editMode}
+								disabled={true}
+								onChange={(event) => {
+									if (editMode) {
+										setUpdatedClient({
+											...updatedClient,
+											username: event.target.value
+										});
+									}
+								}}
+								id="username"
+								label="username"
+								value={updatedClient.username}
+								defaultValue=""
+								variant="outlined"
+								fullWidth
+								className={classes.textField}
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position="start">
+											<AccountCircle/>
+										</InputAdornment>
+									)
+								}}
+							/>
+						</Grid>
+						<Grid item xs={12}>
+							<TextField
+								disabled={!editMode}
+								onChange={(event) => {
+									if (event.target.value) {
 										setPasswordError(null);
-									}}
-									inputRef={ref}
-									variant="outlined"
-									fullWidth
-									type={showPassword ? 'text' : 'password'}
-									className={classes.textField}
-									InputProps={{
-										startAdornment: (
-											<InputAdornment position="start">
-												<PasswordIcon />
-											</InputAdornment>
-										)
-									}}
-								/>
-								{/* <IconButton onClick={() => {
+									} else {
+										setPasswordError(PASSWORD_ERROR_MESSAGE);
+									}
+									if (editMode) {
+										setUpdatedClient({
+											...updatedClient,
+											password: event.target.value
+										})
+									}
+								}}
+								id="password"
+								label="Password"
+								helperText={passwordError || "You can change the password here, empty password will be ignored"}
+								style={{paddingBottom: '10px'}}
+								value={client.password}
+								error={!!passwordError}
+								// defaultValue="*****"
+								onFocus={() => {
+									if (!updatedClient.password) {
+										setPasswordError(PASSWORD_ERROR_MESSAGE);
+									}
+								}}
+								onBlur={() => {
+									setPasswordError(null);
+								}}
+								inputRef={ref}
+								variant="outlined"
+								fullWidth
+								type={showPassword ? 'text' : 'password'}
+								className={classes.textField}
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position="start">
+											<PasswordIcon/>
+										</InputAdornment>
+									)
+								}}
+							/>
+							{/* <IconButton onClick={() => {
 									if (showPassword) {
 										setShowPassword(false);
 									} else {
@@ -319,77 +291,77 @@ const ClientDetail = (props) => {
 								}} >
 								{ showPassword ? <HidePasswordIcon /> : <ShowPasswordIcon /> }
 								</IconButton> */}
-							</Grid>
-							<Grid item xs={12}>
-								<TextField
-									disabled={!editMode}
-									id="client-id"
-									label="Client ID"
-									value={updatedClient.clientid}
-									defaultValue=""
-									variant="outlined"
-									fullWidth
-									className={classes.textField}
-									onChange={(event) => {
-										if (editMode) {
-											setUpdatedClient({
-												...updatedClient,
-												clientid: event.target.value
-											});
-										}
-									}}
-									InputProps={{
-										startAdornment: (
-											<InputAdornment position="start">
-												<ClientIDIcon />
-											</InputAdornment>
-										)
-									}}
-								/>
-							</Grid>
-							<Grid item xs={12}>
-								<TextField
-									disabled={!editMode}
-									onChange={(event) => {
-										if (editMode) {
-											setUpdatedClient({
-												...updatedClient,
-												textname: event.target.value
-											});
-										}
-									}}
-									id="textname"
-									label="Text name"
-									value={updatedClient.textname}
-									//   onChange={(event) => setTextName(event.target.value)}
-									defaultValue=""
-									variant="outlined"
-									fullWidth
-									className={classes.textField}
-								/>
-							</Grid>
-							<Grid item xs={12}>
-								<TextField
-									disabled={!editMode}
-									onChange={(event) => {
-										if (editMode) {
-											setUpdatedClient({
-												...updatedClient,
-												textdescription: event.target.value
-											});
-										}
-									}}
-									id="textdescription"
-									label="Text description"
-									value={updatedClient.textdescription}
-									//   onChange={(event) => setTextDescription(event.target.value)}
-									defaultValue=""
-									variant="outlined"
-									fullWidth
-									className={classes.textField}
-								/>
-							</Grid>
 						</Grid>
+						<Grid item xs={12}>
+							<TextField
+								disabled={!editMode}
+								id="client-id"
+								label="Client ID"
+								value={updatedClient.clientid}
+								defaultValue=""
+								variant="outlined"
+								fullWidth
+								className={classes.textField}
+								onChange={(event) => {
+									if (editMode) {
+										setUpdatedClient({
+											...updatedClient,
+											clientid: event.target.value
+										});
+									}
+								}}
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position="start">
+											<ClientIDIcon/>
+										</InputAdornment>
+									)
+								}}
+							/>
+						</Grid>
+						<Grid item xs={12}>
+							<TextField
+								disabled={!editMode}
+								onChange={(event) => {
+									if (editMode) {
+										setUpdatedClient({
+											...updatedClient,
+											textname: event.target.value
+										});
+									}
+								}}
+								id="textname"
+								label="Text name"
+								value={updatedClient.textname}
+								//   onChange={(event) => setTextName(event.target.value)}
+								defaultValue=""
+								variant="outlined"
+								fullWidth
+								className={classes.textField}
+							/>
+						</Grid>
+						<Grid item xs={12}>
+							<TextField
+								disabled={!editMode}
+								onChange={(event) => {
+									if (editMode) {
+										setUpdatedClient({
+											...updatedClient,
+											textdescription: event.target.value
+										});
+									}
+								}}
+								id="textdescription"
+								label="Text description"
+								value={updatedClient.textdescription}
+								//   onChange={(event) => setTextDescription(event.target.value)}
+								defaultValue=""
+								variant="outlined"
+								fullWidth
+								className={classes.textField}
+							/>
+						</Grid>
+					</Grid>
 				</form>
 				{/* </TabPanel> */}
 				{/* <TabPanel value={value} index={1}>
@@ -418,7 +390,7 @@ const ClientDetail = (props) => {
 							variant="contained"
 							color="primary"
 							className={classes.button}
-							startIcon={<EditIcon />}
+							startIcon={<EditIcon/>}
 							onClick={() => setEditMode(true)}
 						>
 							Edit
@@ -432,7 +404,7 @@ const ClientDetail = (props) => {
 							disabled={!validate()}
 							color="primary"
 							className={classes.button}
-							startIcon={<SaveIcon />}
+							startIcon={<SaveIcon/>}
 							onClick={(event) => {
 								event.stopPropagation();
 								onUpdateClient();
@@ -454,7 +426,7 @@ const ClientDetail = (props) => {
 			</Paper>
 		</div>
 	) : (
-		<Redirect to="/security/clients" push />
+		<Redirect to="/clients" push/>
 	);
 };
 

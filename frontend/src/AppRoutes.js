@@ -74,13 +74,13 @@ function AppRoutes(props) {
 		return (
 			<Switch>
 				<Route
-					path="/security/clients/detail/:clientId"
+					path="/clients/detail/:clientId"
 					component={ClientDetail}
 				/>
-				<Route path="/security/clients/new">
+				<Route path="/clients/new">
 					<ClientNew />
 				</Route>
-				<Route path="/security/clients">
+				<Route path="/clients">
 					<Clients />
 				</Route>
 				<Route

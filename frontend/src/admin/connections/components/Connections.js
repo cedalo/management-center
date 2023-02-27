@@ -413,7 +413,7 @@ const Connections = ({
 						</Button>
 					</ContainerHeader>
 					{brokerConnections && brokerConnections?.length > 0 ? (
-						<div style={{heigth: '100%', overflowY: 'auto'}}>
+						<div style={{height: '100%', overflowY: 'auto'}}>
 							<Hidden xsDown implementation="css">
 								<TableContainer>
 									<Table stickyHeader size="small" aria-label="sticky table">
@@ -478,14 +478,6 @@ const Connections = ({
 																</React.Fragment>
 															}
 														/>
-														{/* <ListItemSecondaryAction>
-						  <IconButton edge="end" aria-label="edit">
-							<EditIcon />
-						  </IconButton>
-						  <IconButton edge="end" aria-label="delete">
-							<DeleteIcon />
-						  </IconButton>
-						</ListItemSecondaryAction> */}
 													</ListItem>
 													<Divider/>
 												</React.Fragment>
