@@ -561,6 +561,10 @@ module.exports = class BaseMosquittoProxyClient {
 			}
 		}
 	}
+	async getListeners(brokerId) {
+		const url = `${this._httpEndpointURL}/api/cert-management/listeners/${brokerId}`;
+		return this.doApiRequest(axios.get, url);
+	}
 	async getCertificates() {
 		const url = `${this._httpEndpointURL}/api/cert-management/certs`;
 		return this.doApiRequest(axios.get, url);
@@ -576,6 +580,10 @@ module.exports = class BaseMosquittoProxyClient {
 	async deleteCertificate(id, force) {
 		const url = `${this._httpEndpointURL}/api/cert-management/certs/${id}`;
 		return this.doApiRequest(axios.delete, url, { data: { force } });
+	}
+	async deployCertificate(cert, connection, listeners) {
+		const url = `${this._httpEndpointURL}/api/cert-management/deploy/${cert.id}`;
+		return this.doApiRequest(axios.put, url, { connection, listeners });
 	}
 
 	/**
