@@ -19,8 +19,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {Alert, AlertTitle} from '@material-ui/lab';
 import TreeItem from '@material-ui/lab/TreeItem';
 import TreeView from '@material-ui/lab/TreeView';
-import Type from 'ajv/lib/vocabularies/jtd/type';
-
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, {useEffect} from 'react';
