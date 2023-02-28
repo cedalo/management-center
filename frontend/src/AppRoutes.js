@@ -76,14 +76,14 @@ function AppRoutes(props) {
 
 		return (
 			<Switch>
-				<Route
-					path="/security/clients/detail/:clientId"
-					component={ClientDetail}
-				/>
-				<Route path="/security/clients/new">
+				<Route path="/clients/new">
 					<ClientNew />
 				</Route>
-				<Route path="/security/clients">
+				<Route
+					path="/clients/:clientId"
+					component={ClientDetail}
+				/>
+				<Route path="/clients">
 					<Clients />
 				</Route>
 				<Route
@@ -137,13 +137,13 @@ function AppRoutes(props) {
 				<Route path="/system">
 					<System />
 				</Route>
-				{atLeastAdmin(userProfile) && <Route path="/config/connections/new">
+				{atLeastAdmin(userProfile) && <Route path="/connections/new">
 					<ConnectionNew />
 				</Route>}
-				{atLeastAdmin(userProfile, connection?.name) && <Route path="/config/connections/detail/:connectionId">
+				{atLeastAdmin(userProfile, connection?.name) && <Route path="/connections/:connectionId">
 					<ConnectionDetail />
 				</Route>}
-				{ !hideConnections ? <Route path="/config/connections">
+				{ !hideConnections ? <Route path="/connections">
 					<Connections />
 				</Route> : null }
 				{atLeastAdmin(userProfile) && (
@@ -197,13 +197,13 @@ function AppRoutes(props) {
 					<Users />
 				</Route>
 				<Route
-					path="/admin/clusters/detail/:clusterId"
+					path="/clusters/detail/:clusterId"
 					component={ClusterDetail}
 				/>
-				<Route path="/admin/clusters/new">
+				<Route path="/clusters/new">
 					<ClusterNew />
 				</Route>
-				<Route path="/admin/clusters">
+				<Route path="/clusters">
 					<Clusters />
 				</Route>
 				<Route path="/admin/inspect/clients">

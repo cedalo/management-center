@@ -73,7 +73,7 @@ const SaveButton = (props) => {
 		<div className={classes.root}>
 			<div className={classes.wrapper}>
 				<Button
-					variant="outlined"
+					variant="contained"
 					size="small"
 					color="primary"
 					className={buttonClassname}
@@ -81,12 +81,12 @@ const SaveButton = (props) => {
 					onClick={handleButtonClick}
 					startIcon={<SaveIcon />}
 				>
-					{/* Save */}
+	                {/* Save */}
 					{saveCaption}
-				</Button>
-				<Button
-					variant="outlined"
-					size="small"
+		  </Button>
+		  <Button
+			  variant="contained"
+			  size="small"
 					onClick={(event) => {
 						event.stopPropagation();
 						onCancel();

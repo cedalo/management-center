@@ -30,6 +30,7 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Link as RouterLink, useHistory} from 'react-router-dom';
+import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
 import WaitDialog from '../../../components/WaitDialog';
 import {WebSocketContext} from '../../../websockets/WebSocket';
@@ -228,7 +229,7 @@ const Clusters = (props) => {
 			const cluster = await brokerClient.getCluster(clustername, numberOfNodes);
 			dispatch(updateCluster(cluster));
 			setProgressDialogOpen(false);
-			history.push(`/admin/clusters/detail/${clustername}`);
+			history.push(`/clusters/detail/${clustername}`);
 		} catch(error) {
 			enqueueSnackbar(`Cluster loading failed. Reason: ${error.message || error}`, {
 				variant: 'error'
@@ -237,7 +238,7 @@ const Clusters = (props) => {
 	};
 
 	const onNewCluster = () => {
-		history.push('/admin/clusters/new');
+		history.push('/clusters/new');
 	};
 
 	const onCheckHealthStatus = async (clustername) => {
@@ -288,17 +289,7 @@ const Clusters = (props) => {
 
 	return (
 		<div>
-			<Breadcrumbs aria-label="breadcrumb">
-				<RouterLink className={classes.breadcrumbLink} to="/home">
-					Home
-				</RouterLink>
-				<RouterLink className={classes.breadcrumbLink} color="inherit" to="/admin">
-					Admin
-				</RouterLink>
-				<Typography className={classes.breadcrumbItem} color="textPrimary">
-					Clusters
-				</Typography>
-			</Breadcrumbs>
+			<ContainerBreadCrumbs title="Clusters" links={[{name: 'Home', route: '/home'}]}/>
 			<ContainerHeader
 				title="Clusters"
 				subTitle="Clusters enable Mosquitto High Availabiliy. Here you can and modify the cluster setup by creating or deleting a cluster, adding or deleting a node in a cluster and more."

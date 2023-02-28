@@ -42,7 +42,7 @@ function Config() {
 						title="Connections"
 						description="Manage connections"
 						image={'settings.png'}
-						link="/config/connections"
+						link="/connections"
 					/>
 				</Grid>
 				<Grid item lg={4} sm={4} xl={4} xs={12}>

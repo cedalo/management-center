@@ -54,11 +54,10 @@ const useStyles = makeStyles((theme) => ({
 		fontSize: 14
 	},
 	paper: {
-		position: 'absolute',
-		zIndex: 1,
-		marginTop: theme.spacing(1),
-		left: 0,
-		right: 0
+		// position: 'absolute',
+		// marginTop: theme.spacing(1),
+		// left: 0,
+		// right: 0
 	},
 	divider: {
 		height: theme.spacing(1)
@@ -277,7 +276,19 @@ export default function AutoSuggest({ disabled, handleDelete, handleChange, sugg
 			color: theme.palette.text.primary,
 			'& input': {
 				font: 'inherit'
-			}
+			},
+		}),
+		clearIndicator: (base) => ({
+			...base,
+			cursor: 'pointer'
+		}),
+		dropdownIndicator: (base) => ({
+			...base,
+			cursor: 'pointer'
+		}),
+		menu: (base) => ({
+			...base,
+			zIndex: '10000'
 		})
 	};
 
@@ -285,7 +296,10 @@ export default function AutoSuggest({ disabled, handleDelete, handleChange, sugg
 		<div className={classes.root}>
 			<NoSsr>
 				<Select
-					isDisabled={disabled}
+					menuPortalTarget={document.body}
+					menuPosition={'fixed'}
+					menuPlacement="auto"
+					minMenuHeight={300}
 					classes={classes}
 					styles={selectStyles}
 					inputId="react-select-multiple"

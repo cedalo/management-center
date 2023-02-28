@@ -23,7 +23,7 @@ const theme = createTheme({
 			default: 'white'
 		},
 		breadcrumbItem: {
-			fontSize: '12px',
+			fontSize: '0.7rem',
 			fontWeight: '500',
 			textTransform: 'uppercase'
 		},
@@ -31,7 +31,7 @@ const theme = createTheme({
 			color: 'inherit',
 			textDecoration: 'none',
 			textTransform: 'uppercase',
-			fontSize: '12px',
+			fontSize: '0.7rem',
 			'&:hover': {
 				textDecoration: 'underline'
 			}

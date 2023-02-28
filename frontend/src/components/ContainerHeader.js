@@ -6,11 +6,11 @@ export default function ConnectionHeader(props) {
 	// const theme = useTheme();
 
 	return (
-		<div>
+		<div style={{marginBottom: '15px'}}>
 			<Typography style={{marginTop: '10px'}} variant="h6">
 				{props.title}
 			</Typography>
-			<div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px'}}>
+			<div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
 				<Typography style={{fontSize: '10pt'}}>
 					{props.subTitle}
 				</Typography>

@@ -206,10 +206,7 @@ const ClusterDetail = (props) => {
 			<RouterLink className={classes.breadcrumbLink} to="/home">
 				Home
 			</RouterLink>
-			<RouterLink className={classes.breadcrumbLink} color="inherit" to="/admin">
-				Admin
-			</RouterLink>
-			<RouterLink className={classes.breadcrumbLink} to="/admin/clusters">
+			<RouterLink className={classes.breadcrumbLink} to="/clusters">
 				Clusters
 			</RouterLink>
 			<Typography className={classes.breadcrumbItem} color="textPrimary">
@@ -442,7 +439,7 @@ const ClusterDetail = (props) => {
 			/>
 		</Paper>
 	</div>) : (
-		<Redirect to="/admin/clusters" push />
+		<Redirect to="/clusters" push />
 	);
 };
 
