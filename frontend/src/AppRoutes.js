@@ -83,6 +83,9 @@ function AppRoutes(props) {
 				<Route path="/clients">
 					<Clients />
 				</Route>
+				<Route path="/inspect/clients">
+					<InspectClients />
+				</Route>
 				<Route
 					path="/security/groups/detail/:groupId"
 					component={GroupDetail}
@@ -128,7 +131,7 @@ function AppRoutes(props) {
 				<Route path="/system/status">
 					<Status />
 				</Route>
-				<Route path="/system/topics">
+				<Route path="/inspect/topics">
 					<TopicTree />
 				</Route>
 				<Route path="/system">
@@ -187,9 +190,6 @@ function AppRoutes(props) {
 				</Route>
 				<Route path="/clusters">
 					<Clusters />
-				</Route>
-				<Route path="/admin/inspect/clients">
-					<InspectClients />
 				</Route>
 				<Route path="/tools/streamsheets">
 					<Streamsheets />

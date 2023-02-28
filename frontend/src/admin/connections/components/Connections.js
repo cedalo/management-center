@@ -23,8 +23,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import React, {useContext} from 'react';
@@ -39,9 +37,6 @@ import PremiumFeatureDialog from '../../../components/PremiumFeatureDialog';
 import {atLeastAdmin} from '../../../utils/accessUtils/access';
 import {handleConnectionChange} from '../../../utils/connectionUtils/connections';
 import {WebSocketContext} from '../../../websockets/WebSocket';
-// import {
-// 	colors,
-//   } from '@material-ui/core';
 
 
 const GROUP_TABLE_COLUMNS = [
@@ -71,8 +66,6 @@ const useStyles = makeStyles((theme) => ({
 	iconRoot: {
 		textAlign: 'center'
 	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink,
 	cursorPointer: {
 		cursor: 'pointer'
 	}
@@ -414,8 +407,8 @@ const Connections = ({
 					</ContainerHeader>
 					{brokerConnections && brokerConnections?.length > 0 ? (
 						<div style={{height: '100%', overflowY: 'auto'}}>
-							<Hidden xsDown implementation="css">
-								<TableContainer>
+							<Hidden style={{height: '100%'}} xsDown implementation="js">
+								<TableContainer style={{maxHeight: '100%'}}>
 									<Table stickyHeader size="small" aria-label="sticky table">
 										<TableHead>
 											<TableRow>

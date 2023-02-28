@@ -27,7 +27,7 @@ import RoleIcon from '@material-ui/icons/Policy';
 import UsersIcon from '@material-ui/icons/People';
 import MoreIcon from '@material-ui/icons/MoreHoriz';
 import ClusterIcon from '@material-ui/icons/Storage';
-import InspectClientsIcon from '@material-ui/icons/Search';
+import InspectClientsIcon from '@material-ui/icons/RecordVoiceOver';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StreamsheetsIcon from '@material-ui/icons/GridOn';
@@ -213,18 +213,16 @@ const CustomDrawer = ({
 					<ListItemLink
 						id="menu-item-topics"
 						classes={classes}
-						to="/system/topics"
+						to="/inspect/topics"
 						primary="Topic Tree"
 						icon={<TopicTreeIcon fontSize="small"/>}
 					/>
 					{<ListItemLink
 						classes={classes}
-						to="/admin/inspect/clients"
+						to="/inspect/clients"
 						primary="Clients"
 						icon={<InspectClientsIcon fontSize="small"/>}
 					/>}
-					{atLeastAdmin(userProfile, currentConnectionName) &&
-						<ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon/>}/>}
 				</List>
 				<Divider/>
 				{atLeastEditor(userProfile, currentConnectionName) && <><List>
@@ -254,13 +252,14 @@ const CustomDrawer = ({
 					<Divider/></>}
 				<List id="menu-items-tools">
 					{open ? <ListSubheader className={classes.menuSubHeader}>Tools</ListSubheader> : null}
+					{atLeastAdmin(userProfile, currentConnectionName) &&
+						<ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon/>}/>}
 					<ListItemLink
 						classes={classes}
 						to="/tools/streamsheets"
 						primary="Streamsheets"
 						icon={<StreamsheetsIcon fontSize="small"/>}
 					/>
-
 					{atLeastAdmin(userProfile, currentConnectionName) &&
 						<ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon/>}/>}
 				</List>
