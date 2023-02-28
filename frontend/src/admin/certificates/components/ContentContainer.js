@@ -4,7 +4,7 @@ import PathCrumbs from './PathCrumbs';
 
 const getHeaderContent = (children) => {
 	children = children.length ? children : children.props && children.props.children;
-	const [header, content] = children.length ? children : [children];
+	const [header, content] = children?.length ? children : [children];
 	return { header: content && header, content: content || header };
 };
 const ContentContainer = ({ children, path }) => {

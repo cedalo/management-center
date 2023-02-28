@@ -53,6 +53,7 @@ import TestCollections from './components/TestCollections';
 import TestCollectionDetail from './components/TestCollectionDetail';
 import ApplicationTokens from './components/ApplicationTokens';
 import { atLeastAdmin, atLeastEditor, atLeastViewer } from './utils/accessUtils/access';
+import CertificateDeploy from './admin/certificates/components/CertificateDeploy';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -148,6 +149,11 @@ function AppRoutes(props) {
 				{atLeastAdmin(userProfile) && (
 					<Route path="/admin/certs/detail/:certId">
 						<CertificateDetail />
+					</Route>
+				)}
+				{atLeastAdmin(userProfile) && (
+					<Route path="/admin/certs/deploy/:certId">
+						<CertificateDeploy />
 					</Route>
 				)}
 				{atLeastAdmin(userProfile) && (

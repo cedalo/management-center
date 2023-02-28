@@ -1,15 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import {Grid, IconButton, TextField, useTheme } from '@material-ui/core';
+import {Grid, IconButton, TextField } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
-import { WebSocketContext } from '../../../websockets/WebSocket';
-import SaveCancelButtons from '../../../components/SaveCancelButtons';
-import AutoSuggest from '../../../components/AutoSuggest';
-import UploadButton from './UploadButton';
 import { useSnackbar } from 'notistack';
+import SaveCancelButtons from '../../../components/SaveCancelButtons';
+import { WebSocketContext } from '../../../websockets/WebSocket';
 import ContentContainer from './ContentContainer';
+import UploadButton from './UploadButton';
 
 const useStyles = makeStyles((theme) => ({
 	buttons: {
@@ -31,16 +29,6 @@ const useStyles = makeStyles((theme) => ({
 	},
 	margin: {
 		margin: theme.spacing(2)
-	},
-	paper: {
-		padding: theme.spacing(2),
-		textAlign: 'center',
-		color: theme.palette.text.secondary
-	},
-	textField: {
-		// marginLeft: theme.spacing(1),
-		// marginRight: theme.spacing(1),
-		// width: 200,
 	}
 }));
 const deployMessage = (cert) => ({
@@ -59,23 +47,20 @@ const deployMessage = (cert) => ({
 });
 
 const isValid = (crt) => crt.name && crt.filename && crt.cert;
-const compareByName = (a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
 
 const notifyError = (message, enqueueSnackbar) =>
 	enqueueSnackbar(`${message} Reason: ${error.message || error}`, {
 		variant: 'error'
 	});
 
-const CertificateDetail = ({ connections = [] }) => {
+const CertificateDetail = () => {
 	const classes = useStyles();
-	const theme = useTheme();
 	const history = useHistory();
 	const { enqueueSnackbar } = useSnackbar();
 	const [canSave, setCanSave] = useState(false);
 	const [cert, setCert] = useState(history.location.state);
 	const context = useContext(WebSocketContext);
 	const { client } = context;
-	const allConnections = connections.sort(compareByName).map((conn) => ({ label: conn.name, value: conn.id }));
 	const initial = useRef(false);
 
 	useEffect(() => {
@@ -96,10 +81,6 @@ const CertificateDetail = ({ connections = [] }) => {
 	const onCertDelete = (/* event */) => {
 		setCert({ ...cert, filename: '', cert: null });
 	};
-	const onConnectionChoosed = (choosedConns) => {
-		choosedConns = choosedConns || [];
-		setCert({ ...cert, connections: choosedConns.map((conn) => ({ id: conn.value, name: conn.label })) });
-	};
 	const onSave = async (/* event */) => {
 		const action = cert.id == null ? 'add' : 'update';
 		try {
@@ -119,7 +100,7 @@ const CertificateDetail = ({ connections = [] }) => {
 		}
 		history.goBack();
 	};
-	const onCancel = (event) => {
+	const onCancel = (/* event */) => {
 		history.goBack();
 	};
 
@@ -151,7 +132,7 @@ const CertificateDetail = ({ connections = [] }) => {
 						<Grid item xs={12}>
 							<TextField
 								id="caname"
-								label="Name"
+								label="Descriptive Name"
 								variant="outlined"
 								className={classes.textField}
 								InputLabelProps={{ shrink: true }}
@@ -191,23 +172,6 @@ const CertificateDetail = ({ connections = [] }) => {
 								}}
 							/>
 						</Grid>
-						<Grid item xs={12}>
-							<AutoSuggest
-								placeholder="Select broker(s) to deploy certificate to..."
-								suggestions={allConnections}
-								values={(cert.connections || []).map((conn) => ({
-									label: conn.name,
-									value: conn.id
-								}))}
-								handleChange={onConnectionChoosed}
-								TextFieldProps={{
-									label: 'Deploy to',
-									variant: 'outlined',
-									margin: classes.margin
-								}}
-								inputProps={{ style: { margin: theme.spacing(1.2)} }}
-							/>
-						</Grid>
 						<Grid container xs={12} alignItems="flex-start">
 							<Grid item xs={12} className={classes.buttons}>
 								<SaveCancelButtons onSave={onSave} saveDisabled={!canSave} onCancel={onCancel} />
@@ -220,8 +184,4 @@ const CertificateDetail = ({ connections = [] }) => {
 	);
 };
 
-const mapStateToProps = (state) => {
-	return { connections: state.brokerConnections?.brokerConnections };
-};
-
-export default connect(mapStateToProps)(CertificateDetail);
+export default CertificateDetail;

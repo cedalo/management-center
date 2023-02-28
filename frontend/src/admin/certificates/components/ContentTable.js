@@ -8,7 +8,9 @@ const ContentTable = ({ children, columns }) => {
 				<TableHead>
 					<TableRow>
 						{columns.map((column) => (
-							<TableCell key={column.id}>{column.key}</TableCell>
+							<TableCell aling={column.align} key={column.id}>
+								{column.key}
+							</TableCell>
 						))}
 						<TableCell />
 					</TableRow>
