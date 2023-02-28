@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { Box, Button, Collapse, IconButton, TableCell, TableRow, Tooltip } from '@material-ui/core';
+import { Button, IconButton, TableCell, TableRow, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -13,7 +13,7 @@ import { WarningHint } from './AlertHint';
 import ChipsList from './ChipsList';
 import ContentContainer from './ContentContainer';
 import ContentTable from './ContentTable';
-import DeleteCertificateDialog from './DeleteCertificateDialog';
+import CertificateDeleteDialog from './CertificateDeleteDialog';
 
 const StyledTableRow = withStyles((theme) => ({
 	root: {
@@ -130,7 +130,7 @@ const Certificates = ({ isCertSupported, doSort, sortBy, sortDirection }) => {
 
 	return (
 		<>
-			<DeleteCertificateDialog
+			<CertificateDeleteDialog
 				client={client}
 				onClose={closeDeleteDialog}
 				cert={deleteOptions.cert}

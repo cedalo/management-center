@@ -31,18 +31,10 @@ const useStyles = makeStyles((theme) => ({
 		margin: theme.spacing(2)
 	}
 }));
-const deployMessage = (cert) => ({
-	error: {
-		add: `'Failed to deploy certificate "${cert.name}"`,
-		update: `'Failed to deploy certificate "${cert.name}"`
-	},
+const saveMessage = (cert) => ({
 	success: {
 		add: `Certificate "${cert.name}" successfully added.`,
 		update: `Certificate "${cert.name}" successfully updated.`
-	},
-	warning: {
-		add: `New certificate "${cert.name}" could not be deployed to all brokers.`,
-		update: `Certificate "${cert.name}" could not be updated on all brokers. Kept previous and updated certificates!`
 	}
 });
 
@@ -84,19 +76,10 @@ const CertificateDetail = () => {
 	const onSave = async (/* event */) => {
 		const action = cert.id == null ? 'add' : 'update';
 		try {
-			const { status } = await (action === 'add' ? client.addCertificate(cert) : client.updateCertificate(cert));
-			switch (status) {
-				case 200:
-					enqueueSnackbar(deployMessage(cert).success[action], { variant: 'success' });
-					break;
-				case 207:
-					enqueueSnackbar(deployMessage(cert).warning[action], { variant: 'warning' });
-					break;
-				default:
-					enqueueSnackbar(deployMessage(cert).error[action], { variant: 'error' });
-			}
+			await (action === 'add' ? client.addCertificate(cert) : client.updateCertificate(cert));
+			enqueueSnackbar(saveMessage(cert).success[action], { variant: 'success' });
 		} catch (error) {
-			enqueueSnackbar(`Error ${action} certificate "${cert.name}".`, { variant: 'error' });
+			enqueueSnackbar(`Failed to ${action} "${cert.name}"! Reason: ${error.message}`, { variant: 'error' });
 		}
 		history.goBack();
 	};

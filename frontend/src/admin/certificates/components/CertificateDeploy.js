@@ -159,6 +159,11 @@ const markUsedListeners = (certificate, connection, listeners) => {
 		return listener;
 	});
 };
+const deployMessage = (cert) => ({
+	error: `'Failed to deploy certificate "${cert.name}"`,
+	success: `Certificate "${cert.name}" successfully deployed.`,
+	warning: `Problems while deploying certificate "${cert.name}"!`
+});
 
 const CertificateDeploy = ({ connections = [] }) => {
 	const history = useHistory();
@@ -207,18 +212,17 @@ const CertificateDeploy = ({ connections = [] }) => {
 			const { status } = await client.deployCertificate(certificate, connection, selectedListeners);
 			switch (status) {
 				case 200:
-					enqueueSnackbar(deployMessage(certificate).success[action], { variant: 'success' });
+					enqueueSnackbar(deployMessage(certificate).success, { variant: 'success' });
 					break;
 				case 207:
-					enqueueSnackbar(deployMessage(certificate).warning[action], { variant: 'warning' });
+					enqueueSnackbar(deployMessage(certificate).warning, { variant: 'warning' });
 					break;
 				default:
-					enqueueSnackbar(deployMessage(certificate).error[action], { variant: 'error' });
+					enqueueSnackbar(deployMessage(certificate).error, { variant: 'error' });
 			}
 		} catch (error) {
 			enqueueSnackbar(`Error ${action} certificate "${certificate.name}".`, { variant: 'error' });
 		}
-		// history.goBack();
 	};
 
 	const onSelectListener = (event) => {
