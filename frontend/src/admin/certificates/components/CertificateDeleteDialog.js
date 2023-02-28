@@ -7,12 +7,12 @@ import { WarningHint } from './AlertHint';
 const deleteMessage = (cert) =>
 	`Removing certificate "${cert.name}" from management-center and registered connections...`;
 const errorMessage = (cert, error) =>
-	`Error deleting certificate "${cert.name}" from server. Reason: ${error.message || error}`;
+	`Failed to delete certificate "${cert.name}"! Reason: ${error.message || error}`;
 const successMessage = (cert,) =>
-	`Successfully delete certificate "${cert.name}" from server.`;
-const warningMessage = (cert) => `Failed to revoke certificate "${cert.name}" from all registered brokers.`;
+	`Successfully deleted certificate "${cert.name}"!`;
+const warningMessage = (cert, message) => `Failed to delete "${cert.name}"! Reason: ${message}`;
 
-const DeleteCertificateDialog = ({ open, cert, client, onClose }) => {
+const CertificateDeleteDialog = ({ open, cert, client, onClose }) => {
 	const [options, setOptions] = useState({ actions: undefined, message: '' });
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -36,11 +36,11 @@ const DeleteCertificateDialog = ({ open, cert, client, onClose }) => {
 	};
 	const deleteCert = async (cert) => {
 		try {
-			const { status } = await client.deleteCertificate(cert.id);
+			const { status, data } = await client.deleteCertificate(cert.id);
 			// check deploy status
 			switch(status) {
 				case 207: {
-					const message = WarningHint({ message: warningMessage(cert) });
+					const message = WarningHint({ message: warningMessage(cert, data.error) });
 					const actions = (
 						<>
 							<Button onClick={onForceDelete}>Delete Anyway</Button>
@@ -63,4 +63,4 @@ const DeleteCertificateDialog = ({ open, cert, client, onClose }) => {
 
 	return <WaitDialog title="Delete certificate" message={options.message} open={open} actions={options.actions} />;
 };
-export default DeleteCertificateDialog;
+export default CertificateDeleteDialog;
