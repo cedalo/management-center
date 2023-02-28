@@ -73,7 +73,7 @@ const SaveButton = (props) => {
 		<div className={classes.root}>
 			<div className={classes.wrapper}>
 				<Button
-					variant="outlined"
+					variant="contained"
 					size="small"
 					color="primary"
 					className={buttonClassname}
@@ -84,7 +84,7 @@ const SaveButton = (props) => {
 					Save
 		  </Button>
 		  <Button
-			  variant="outlined"
+			  variant="contained"
 			  size="small"
 					onClick={(event) => {
 						event.stopPropagation();

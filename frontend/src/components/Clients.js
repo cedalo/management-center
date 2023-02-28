@@ -78,10 +78,10 @@ const clientShape = PropTypes.shape({
 const USER_TABLE_COLUMNS = [
 	{id: 'username', key: 'Username'},
 	{id: 'clientid', key: 'Client ID'},
-	{id: 'textname', key: 'Text name'},
+	{id: 'textname', key: 'Textname'},
 	{id: 'textdescription', key: 'Description'},
 	{id: 'groups', key: 'Groups'},
-	{id: 'roles', key: 'Client Roles'},
+	{id: 'roles', key: 'Roles'},
 	{id: 'actions', key: ' '}
 ];
 
@@ -160,7 +160,7 @@ const Clients = (props) => {
 	const onSelectClient = async (username) => {
 		const client = await brokerClient.getClient(username);
 		dispatch(updateClient(client));
-		history.push(`/clients/detail/${username}`);
+		history.push(`/clients/${username}`);
 	};
 
 	const onNewClient = () => {
@@ -170,7 +170,7 @@ const Clients = (props) => {
 	const onEditClient = async (username) => {
 		const client = await brokerClient.getClient(username);
 		dispatch(updateClient(client));
-		history.push(`/clients/detail/${username}/?action=edit`);
+		history.push(`/clients/${username}/?action=edit`);
 	};
 
 	const onDeleteClient = async (username) => {
