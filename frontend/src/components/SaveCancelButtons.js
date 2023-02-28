@@ -41,7 +41,7 @@ const SaveButton = (props) => {
 	const [loading, setLoading] = React.useState(false);
 	const [success, setSuccess] = React.useState(false);
 	const timer = React.useRef();
-	const { onSave, saveDisabled, onCancel } = props;
+	const { onSave, saveDisabled, onCancel, saveCaption = 'Save' } = props;
 
 	const buttonClassname = clsx({
 		[classes.buttonSuccess]: success,
@@ -81,11 +81,12 @@ const SaveButton = (props) => {
 					onClick={handleButtonClick}
 					startIcon={<SaveIcon />}
 				>
-					Save
-		  </Button>
-		  <Button
-			  variant="outlined"
-			  size="small"
+					{/* Save */}
+					{saveCaption}
+				</Button>
+				<Button
+					variant="outlined"
+					size="small"
 					onClick={(event) => {
 						event.stopPropagation();
 						onCancel();
