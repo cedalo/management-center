@@ -107,6 +107,10 @@ const ListenerSelect = ({ listeners, onSelect }) => {
 	);
 };
 
+const byName = (a, b) => {
+	if (a.name < b.name) return -1;
+	return a.name > b.name ? 1 : 0;
+}
 const ConnectionSelect = ({ connections, selected = {}, onSelect }) => {
 	const classes = useStyles();
 	return (
@@ -122,7 +126,7 @@ const ConnectionSelect = ({ connections, selected = {}, onSelect }) => {
 			}}
 			input={<CustomInput />}
 		>
-			{connections.map((conn) => (
+			{connections.sort(byName).map((conn) => (
 				<MenuItem
 					key={conn.name}
 					value={conn.id}

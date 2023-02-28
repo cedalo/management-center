@@ -33,7 +33,7 @@ const BadgesCell = withStyles((theme) => ({
 const CERT_TABLE_COLUMNS = [
 	{ id: 'name', key: 'Descriptive Name', sortable: true },
 	{ id: 'filename', key: 'Filename', sortable: true },
-	{ id: 'broker', key: 'Broker', sortable: false },
+	{ id: 'broker', key: 'Used by', sortable: false },
 	{ id: 'deploy', key: '', sortable: false },
 	{ id: 'delete', key: '', sortable: false }
 ];
