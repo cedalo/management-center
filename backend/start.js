@@ -44,6 +44,7 @@ console.log(`MMC is starting in the ${process.env.CEDALO_MC_MODE === 'offline' ?
 const LicenseChecker = require('./src/license/LicenseChecker');
 const acl = require('./src/security/acl');
 const TopicTreeManager = require('./src/topictree/TopicTreeManager');
+const licenseContainer = require('./src/license/LicenseContainer');
 // const NodeMosquittoProxyClient = require('../frontend/src/client/NodeMosquittoProxyClient');
 // const licenseManager = new LicenseManager();
 // await licenseManager.loadLicense();
@@ -1182,7 +1183,6 @@ const init = async (licenseContainer) => {
 	stopFunctions.push(() => wss.close());
 };
 
-const licenseContainer = {};
 (async () => {
 	await checker.check(async (error, license) => {
 		if (error) {
