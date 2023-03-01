@@ -420,7 +420,7 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 												Payload History
 											</Typography>,
 											<Paper variant="outlined" elevation={1} style={{maxHeight: '400px'}}>
-												<Box style={{padding: '8px', maxHeight: '290px', overflowY: 'auto'}}>
+												<Box style={{padding: '8px', maxHeight: '390px', overflowY: 'auto'}}>
 													<Box>
 														<Typography
 															style={{

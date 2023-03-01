@@ -30,7 +30,7 @@ import ClusterIcon from '@material-ui/icons/Storage';
 import InspectClientsIcon from '@material-ui/icons/RecordVoiceOver';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import SettingsIcon from '@material-ui/icons/Settings';
-import StreamsheetsIcon from '@material-ui/icons/GridOn';
+import StreamsheetsIcon from '@material-ui/icons/TableChart';
 import StreamsIcon from '@material-ui/icons/Timeline';
 import SecurityIcon from '@material-ui/icons/Security';
 import UserGroupsIcon from '@material-ui/icons/PeopleOutline';
@@ -260,15 +260,15 @@ const CustomDrawer = ({
 				<List id="menu-items-tools">
 					{open ? <ListSubheader className={classes.menuSubHeader}>Tools</ListSubheader> : null}
 					{atLeastAdmin(userProfile, currentConnectionName) &&
-						<ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon/>}/>}
+						<ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon fontSize="small"/>}/>}
+					{atLeastAdmin(userProfile, currentConnectionName) &&
+						<ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon fontSize="small"/>}/>}
 					<ListItemLink
 						classes={classes}
 						to="/tools/streamsheets"
 						primary="Streamsheets"
 						icon={<StreamsheetsIcon fontSize="small"/>}
 					/>
-					{atLeastAdmin(userProfile, currentConnectionName) &&
-						<ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon/>}/>}
 				</List>
 				<Divider/>
 				<Paper
