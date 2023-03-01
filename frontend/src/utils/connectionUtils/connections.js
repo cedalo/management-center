@@ -24,7 +24,7 @@ import {
 } from '../../admin/inspect/actions/actions';
 
 
-export const handleConnectionChange = async (dispatch, client, newConnectionName, currentConnectionName, setConnection) => {
+export const handleConnectionChange = async (dispatch, client, newConnectionName, currentConnectionName, setConnection, connected) => {
     dispatch(updateBrokerLicenseInformation(null));
     dispatch(updateInspectClients([]));
     dispatch(updateClients([]));

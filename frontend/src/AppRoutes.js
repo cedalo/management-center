@@ -44,6 +44,7 @@ import Clusters from './admin/clusters/components/Clusters';
 import ClusterDetail from './admin/clusters/components/ClusterDetail';
 import InspectClients from './admin/inspect/components/InspectClients';
 import Certificates from './admin/certificates/components/Certificates';
+import CertificateDeploy from './admin/certificates/components/CertificateDeploy';
 import CertificateDetail from './admin/certificates/components/CertificateDetail';
 
 import { Switch, Route, Redirect } from 'react-router-dom';
@@ -52,13 +53,7 @@ import TestEdit from './components/TestEdit';
 import TestCollections from './components/TestCollections';
 import TestCollectionDetail from './components/TestCollectionDetail';
 import ApplicationTokens from './components/ApplicationTokens';
-import { atLeastAdmin, atLeastEditor, atLeastViewer } from './utils/accessUtils/access';
-import CertificateDeploy from './admin/certificates/components/CertificateDeploy';
-
-
-const useStyles = makeStyles((theme) => ({
-
-}));
+import { atLeastAdmin, atLeastEditor, atLeastViewer, isGroupMember } from './utils/accessUtils/access';
 
 function AppRoutes(props) {
 
@@ -70,7 +65,6 @@ function AppRoutes(props) {
 	if ((hasError || response) && (hasErrorConfig || responseConfig)) {
 		let hideConnections = (typeof responseConfig?.hideConnections === 'boolean') ? responseConfig?.hideConnections : false;
 		let hideInfoPage = (typeof responseConfig?.hideInfoPage === 'boolean') ? responseConfig?.hideInfoPage : false;
-
 
 		//   const container = window !== undefined ? () => window().document.body : undefined;
 
@@ -85,6 +79,9 @@ function AppRoutes(props) {
 				/>
 				<Route path="/clients">
 					<Clients />
+				</Route>
+				<Route path="/inspect/clients">
+					<InspectClients filter={props.filter}/>
 				</Route>
 				<Route
 					path="/security/groups/detail/:groupId"
@@ -125,19 +122,22 @@ function AppRoutes(props) {
 				{atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams/new">
 					<StreamNew />
 				</Route>}
-				{atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams">
+				{/* {atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams">
+					<Streams /> //* when refreshing the page this line will always redirect to dashboard because at the time of refresh user is none and permission checks fails, then redirect happens
+				</Route>} */}
+				<Route path="/streams">
 					<Streams />
-				</Route>}
+				</Route>
 				<Route path="/system/status">
 					<Status />
 				</Route>
-				<Route path="/system/topics">
+				<Route path="/inspect/topics">
 					<TopicTree />
 				</Route>
 				<Route path="/system">
 					<System />
 				</Route>
-				{atLeastAdmin(userProfile) && <Route path="/connections/new">
+				{atLeastAdmin(userProfile) && !isGroupMember(userProfile) && <Route path="/connections/new">
 					<ConnectionNew />
 				</Route>}
 				{atLeastAdmin(userProfile, connection?.name) && <Route path="/connections/:connectionId">
@@ -182,13 +182,19 @@ function AppRoutes(props) {
 				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups/detail/:groupId"
 						component={UserGroupDetail}
 				/>}
-				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups">
+				<Route path="/admin/user-groups">
 					<SortableTablePage Component={UserGroups} />
-				</Route>}
+				</Route>
+				{/* {atLeastAdmin(userProfile) && <Route path="/admin/user-groups">
+					<SortableTablePage Component={UserGroups} />
+				</Route>} */}
 
-				{atLeastAdmin(userProfile) && <Route path="/admin/tokens">
+				{/* {atLeastAdmin(userProfile) && <Route path="/admin/tokens">
 					<ApplicationTokens />
-				</Route>}
+				</Route>} */}
+				<Route path="/admin/tokens">
+					<ApplicationTokens />
+				</Route>
 
 				<Route path="/admin/users/new">
 					<UserNew />
@@ -205,9 +211,6 @@ function AppRoutes(props) {
 				</Route>
 				<Route path="/clusters">
 					<Clusters />
-				</Route>
-				<Route path="/admin/inspect/clients">
-					<InspectClients />
 				</Route>
 				<Route path="/tools/streamsheets">
 					<Streamsheets />
@@ -248,7 +251,7 @@ const mapStateToProps = (state) => {
 		userProfile: state.userProfile?.userProfile,
 		userManagementFeature: state.systemStatus?.features?.usermanagement,
 		selectedConnectionToEdit: state.brokerConnections?.selectedConnectionToEdit,
-		currentConnectionName: state.brokerConnections.currentConnectionName,
+		currentConnectionName: state.brokerConnections?.currentConnectionName,
 	};
 };
 

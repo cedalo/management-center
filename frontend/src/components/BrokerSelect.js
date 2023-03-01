@@ -92,7 +92,7 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 		const connectionID = event.target.value;
 		const { client } = context;
 
-		handleConnectionChange(dispatch, client, connectionID, connection, setConnection);
+		handleConnectionChange(dispatch, client, connectionID, connection, setConnection, connected);
 	};
 
 	return brokerConnections ? (
@@ -161,7 +161,7 @@ const mapStateToProps = (state) => {
 	return {
 		brokerConnections: state.brokerConnections.brokerConnections,
 		connected: state.brokerConnections.connected,
-		currentConnectionName: state.brokerConnections.currentConnectionName,
+		currentConnectionName: state.brokerConnections?.currentConnectionName,
 		userProfile: state.userProfile?.userProfile,
 	};
 };

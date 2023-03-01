@@ -231,7 +231,8 @@ const UserGroups = (props) => {
 
 
 	// TODO: probably extract into reducer
-	const userSuggestions = users.map(el => el.username)
+	const userSuggestions = users//.filter(el => !el.isSuperAdmin) // superadmin cannot be restricted and added to a group
+		.map(el => el.username)
         .sort()
 		.map((username) => ({
 			label: username,
@@ -301,16 +302,18 @@ const UserGroups = (props) => {
 			>
 				New User Group
 			</Button>
-			{Object.keys(userGroups).length > 0 ? (
-				<Button size="small"
-						color="primary"
-						variant="outlined"
-						style={{marginLeft: "20px"}}
-						onClick={() => {disableSort()}}
-				>
-					Unsort
-				</Button>
-			) : ""}
+			{/* {Object.keys(userGroups).length > 0 ? (
+				<Tooltip title="Remove table sorting">
+					<Button size="small"
+							color="primary"
+							variant="outlined"
+							style={{marginLeft: "20px"}}
+							onClick={() => {disableSort()}}
+					>
+						Unsort
+					</Button>
+				</Tooltip>
+			) : ""} */}
 			<br />
 			<br />
 			</>}

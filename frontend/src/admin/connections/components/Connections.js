@@ -1,6 +1,5 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Collapse from '@material-ui/core/Collapse';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import Hidden from '@material-ui/core/Hidden';
@@ -23,8 +22,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import React, {useContext} from 'react';
@@ -33,23 +30,24 @@ import {useHistory} from 'react-router-dom';
 
 import {updateBrokerConfigurations, updateBrokerConnections, updateSelectedConnection} from '../../../actions/actions';
 import BrokerStatusIcon from '../../../components/BrokerStatusIcon';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import Collapse from '@material-ui/core/Collapse';
 import ContainerHeader from '../../../components/ContainerHeader';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import PremiumFeatureDialog from '../../../components/PremiumFeatureDialog';
 import {atLeastAdmin} from '../../../utils/accessUtils/access';
 import {handleConnectionChange} from '../../../utils/connectionUtils/connections';
 import {WebSocketContext} from '../../../websockets/WebSocket';
-// import {
-// 	colors,
-//   } from '@material-ui/core';
 
 
 const GROUP_TABLE_COLUMNS = [
-	// {id: 'expand', key: ''},
+	{id: 'expand', key: '', width: '10px'},
 	{id: 'id', key: 'ID'},
 	{id: 'configurationName', key: 'Name'},
 	{id: 'URL', key: 'URL'},
-	{id: 'status', key: 'Status'}
+	{id: 'status', key: 'Status', width: '10px'},
+	{id: 'action', key: ' ', width: '100px'}
 ];
 
 const StyledTableRow = withStyles((theme) => ({
@@ -71,11 +69,12 @@ const useStyles = makeStyles((theme) => ({
 	iconRoot: {
 		textAlign: 'center'
 	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink,
 	cursorPointer: {
 		cursor: 'pointer'
-	}
+	},
+	invisibleButton: {
+		display: 'none',
+	},
 }));
 
 
@@ -91,10 +90,6 @@ const CustomRow = (props) => {
 	const [open, setOpen] = React.useState(false);
 
 	const [cursorPosInfo, setCursorPosInfo] = React.useState(initialCursorPosInfo);
-	// const [textToCopy, setTextToCopy] = React.useState({
-	// 	internalUrl: '',
-	// 	externalUrl: '',
-	// });
 
 	const handleClick = (event) => {
 		event.preventDefault();
@@ -124,10 +119,23 @@ const CustomRow = (props) => {
 		handleClose();
 	}
 
-	const externalURLExists = (brokerConnection.externalUrl !== brokerConnection.url && brokerConnection.externalUrl);
-	const makeCollapsible = externalURLExists || brokerConnection.ca || brokerConnection.cert || brokerConnection.key;
-	const numberOfAdditionalFields = !!externalURLExists + !!brokerConnection.ca + !!brokerConnection.cert + !!brokerConnection.key;
+	const someExternalURLExists = !!(brokerConnection.externalUnencryptedUrl || brokerConnection.externalEncryptedUrl);
+	const bothExternalURLExists = !!(brokerConnection.externalUnencryptedUrl && brokerConnection.externalEncryptedUrl);
+
+	const oneExternalURLExists = someExternalURLExists && !bothExternalURLExists;
+	const makeCollapsible = someExternalURLExists || brokerConnection.ca || brokerConnection.cert || brokerConnection.key;
+
+	const numberOfAdditionalFields = !!brokerConnection.websocketsUrl +
+									!!brokerConnection.externalUnencryptedUrl +
+									!!brokerConnection.externalEncryptedUrl +
+									!!brokerConnection.ca +
+									!!brokerConnection.cert +
+									!!brokerConnection.key;
+
 	const columnSize = (numberOfAdditionalFields === 1) ? 12 : 6;
+
+	const url = brokerConnection.externalEncryptedUrl || brokerConnection.externalUnencryptedUrl || brokerConnection.internalUrl || brokerConnection.url;
+
 
 	return <>
 		<StyledTableRow
@@ -138,24 +146,25 @@ const CustomRow = (props) => {
 			onContextMenu={handleClick}
 			className={atLeastAdmin(userProfile, brokerConnection.name) ? props.classes.cursorPointer : ''}
 		>
-			{/*<TableCell>*/}
-			{/*	<IconButton aria-label="expand row" size="small"*/}
-			{/*				disabled={!makeCollapsible}*/}
-			{/*				onClick={(event) => {*/}
-			{/*					event.stopPropagation();*/}
-			{/*					setOpen(!open);*/}
-			{/*				}}>*/}
-			{/*		{open ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}*/}
-			{/*	</IconButton>*/}
-			{/*</TableCell>*/}
-			<TableCell>{brokerConnection.id}</TableCell>
-			<TableCell>{brokerConnection.name}</TableCell>
-			<TableCell>{brokerConnection.externalUrl || brokerConnection.url}</TableCell>
-			<TableCell>
+			<TableCell style={{padding: '6px'}}>
+				<IconButton aria-label="expand row" size="small"
+					disabled={!makeCollapsible}
+					style={makeCollapsible ? {opacity: "100%"} : {opacity: "0%"}}
+					onClick={(event) =>{
+						event.stopPropagation();
+						setOpen(!open);
+					}}>
+					{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+				</IconButton>
+			</TableCell>
+			<TableCell style={{padding: '6px'}}>{brokerConnection.id}</TableCell>
+			<TableCell style={{padding: '6px'}}>{brokerConnection.name}</TableCell>
+			<TableCell style={{padding: '6px'}}>{url}</TableCell>
+			<TableCell style={{padding: '6px'}}>
 				<BrokerStatusIcon brokerConnection={brokerConnection}/>
 				{}
 			</TableCell>
-			<TableCell align="right">
+			<TableCell  style={{padding: '6px'}} align="right">
 				<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}>
 					<Switch
 						color="primary"
@@ -171,7 +180,7 @@ const CustomRow = (props) => {
 					/>
 				</Tooltip>
 				<IconButton
-					disabled={brokerConnection.status?.connected}
+					disabled={brokerConnection.status?.connected || !atLeastAdmin(userProfile, brokerConnection.name)}
 					size="small"
 					onClick={(event) => {
 						event.stopPropagation();
@@ -188,12 +197,30 @@ const CustomRow = (props) => {
 					<Box margin={1} style={{marginTop: '16px'}} align="center">
 						{/* {brokerConnection.externalUrl ? <Typography>Internal URL: {brokerConnection.url}</Typography> : null} */}
 						<Grid container spacing={2} alignItems="flex-end">
-							{externalURLExists ? <Grid item xs={columnSize} align="center">
-									<Typography style={{fontSize: 'small'}}>
-										<span style={{fontWeight: 'bold'}}>Internal URL: </span>{brokerConnection.url}
-									</Typography>
-								</Grid>
-								: null}
+							{brokerConnection.internalUrl ? <Grid item xs={columnSize} align="center">
+																<Typography style={{fontSize: 'small'}}>
+																	<span style={{fontWeight: 'bold'}}>Internal URL: </span>{brokerConnection.internalUrl}
+																</Typography>
+															</Grid>
+							: null}
+							{brokerConnection.externalEncryptedUrl ? <Grid item xs={columnSize} align="center">
+																<Typography style={{fontSize: 'small'}}>
+																	<span style={{fontWeight: 'bold'}}>External MQTTS URL: </span>{brokerConnection.externalEncryptedUrl}
+																</Typography>
+															</Grid>
+							: null}
+							{brokerConnection.externalUnencryptedUrl ? <Grid item xs={columnSize} align="center">
+																<Typography style={{fontSize: 'small'}}>
+																	<span style={{fontWeight: 'bold'}}>External MQTT URL: </span>{brokerConnection.externalUnencryptedUrl}
+																</Typography>
+															</Grid>
+							: null}
+							{brokerConnection.websocketsUrl ? <Grid item xs={columnSize} align="center">
+																<Typography style={{fontSize: 'small'}}>
+																	<span style={{fontWeight: 'bold'}}>External WS URL: </span>{brokerConnection.websocketsUrl}
+																</Typography>
+															</Grid>
+							: null}
 							{brokerConnection.ca ? <Grid item xs={columnSize} align="center">
 									<Typography style={{fontSize: 'small'}}>
 										<span style={{fontWeight: 'bold'}}>CA Cert File: </span>{brokerConnection.caFile}
@@ -230,11 +257,17 @@ const CustomRow = (props) => {
 					: undefined
 			}
 		>
-			{!externalURLExists ? <MenuItem onClick={() => copyText(brokerConnection.url)}>Copy URL</MenuItem> : null}
-			{externalURLExists ?
-				<MenuItem onClick={() => copyText(brokerConnection.url)}>Copy Internal URL</MenuItem> : null}
-			{externalURLExists ?
-				<MenuItem onClick={() => copyText(brokerConnection.externalUrl)}>Copy External URL</MenuItem> : null}
+			{!oneExternalURLExists && !brokerConnection.internalUrl ? <MenuItem onClick={() => copyText(brokerConnection.url)}>Copy URL</MenuItem> : null}
+			{brokerConnection.internalUrl ? <MenuItem onClick={() => copyText(brokerConnection.internalUrl)}>Copy Internal URL</MenuItem> : null}
+			{oneExternalURLExists ? <MenuItem onClick={() => copyText(brokerConnection.externalUnencryptedUrl || brokerConnection.externalEncryptedUrl)}>Copy External URL</MenuItem> :
+									bothExternalURLExists ? (
+										<>
+											<MenuItem onClick={() => copyText(brokerConnection.externalUnencryptedUrl)}>Copy External MQTT URL</MenuItem>
+											<MenuItem onClick={() => copyText(brokerConnection.externalEncryptedUrl)}>Copy External MWTTS URL</MenuItem>
+										</>
+									) : null
+			}
+			{brokerConnection.websocketsUrl ? <MenuItem onClick={() => copyText(brokerConnection.websocketsUrl)}>Copy WS URL</MenuItem> : null}
 		</Menu>
 	</>
 };
@@ -290,7 +323,7 @@ const Connections = ({
 		try {
 			await brokerClient.connectServerToBroker(id);
 			if (!connected) {
-				handleConnectionChange(dispatch, brokerClient, name, currentConnectionName).catch(
+				handleConnectionChange(dispatch, brokerClient, name, currentConnectionName, connected).catch(
 					(error) => console.error('Error while pulling information from the broker on reconnect: ' + error));
 				// await brokerClient.connectToBroker(name);
 				// dispatch(updateBrokerConnected(true, name));
@@ -338,7 +371,7 @@ const Connections = ({
 			});
 			connections = await brokerClient.getBrokerConnections();
 			dispatch(updateBrokerConnections(connections));
-			handleConnectionChange(dispatch, brokerClient, currentConnectionName, name).catch(
+			handleConnectionChange(dispatch, brokerClient, currentConnectionName, name, connected).catch(
 				(error) => console.error('Error while pulling information from the broker on disconnect: ' + error));
 		} catch (error) {
 			// setPremiumFeatureDialogOpen(true);
@@ -414,13 +447,14 @@ const Connections = ({
 					</ContainerHeader>
 					{brokerConnections && brokerConnections?.length > 0 ? (
 						<div style={{height: '100%', overflowY: 'auto'}}>
-							<Hidden xsDown implementation="css">
-								<TableContainer>
+							<Hidden style={{height: '100%'}} xsDown implementation="js">
+								<TableContainer style={{maxHeight: '100%'}}>
 									<Table stickyHeader size="small" aria-label="sticky table">
 										<TableHead>
 											<TableRow>
 												{GROUP_TABLE_COLUMNS.map((column) => (
 													<TableCell
+														style={{padding: '6px', width: column.width}}
 														key={column.id}
 														// sortDirection={sortBy === column.id ? sortDirection : false}
 													>
@@ -434,7 +468,6 @@ const Connections = ({
 														{column.key}
 													</TableCell>
 												))}
-												<TableCell/>
 											</TableRow>
 										</TableHead>
 										<TableBody>
@@ -501,7 +534,7 @@ const mapStateToProps = (state) => {
 		brokerConnections: state.brokerConnections?.brokerConnections,
 		connected: state.brokerConnections.connected,
 		userProfile: state.userProfile?.userProfile,
-		currentConnectionName: state.brokerConnections.currentConnectionName,
+		currentConnectionName: state.brokerConnections?.currentConnectionName,
 	};
 };
 

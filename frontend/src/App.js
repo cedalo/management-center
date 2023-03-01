@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {SnackbarProvider} from 'notistack';
 import clsx from 'clsx';
 import {Provider, useSelector, useDispatch} from 'react-redux';
@@ -26,6 +26,9 @@ import InfoButton from './components/InfoButton';
 import customTheme from './theme';
 import darkTheme from './theme-dark';
 import NewsletterPopup from './components/NewsletterPopup';
+import UpgradeButton from './components/UpgradeButton';
+import FeedbackButton from './components/FeedbackButton';
+import FilterName from './components/FilterName';
 // import Login from "./components/Login";
 import store from './store';
 import WebSocketProvider from './websockets/WebSocket';
@@ -128,6 +131,8 @@ export default function App(props) {
 	const [showTour, setShowTour] = React.useState(false);
 	const [value, setValue] = React.useState('recents');
 	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
+	const [filter, setFilter] = useState('');
+	const [showFilter, setShowFilter] = useState(false);
 
 	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/theme`);
 	const [responseConfig, loadingConfig, hasErrorConfig] = useFetch(`${process.env.PUBLIC_URL}/api/config`);
@@ -271,22 +276,15 @@ export default function App(props) {
 																Management Center
 															</Typography>
 														</Typography>
+														{showFilter ? (
+															<div style={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+																<FilterName filter={filter} onUpdateFilter={setFilter} />
+															</div>
+														) : null}
 														<section className={classes.rightToolbar}>
+															<FeedbackButton/>
+															<UpgradeButton/>
 															<BrokerSelect appBar/>
-															{/*<Tooltip title="Switch mode">*/}
-															{/*	<IconButton*/}
-															{/*		edge="end"*/}
-															{/*		aria-label="Theme Mode"*/}
-															{/*		aria-controls="theme-mode"*/}
-															{/*		aria-haspopup="true"*/}
-															{/*		onClick={() => onChangeTheme()}*/}
-															{/*		color="inherit"*/}
-															{/*		className={classes.toolbarButton}*/}
-															{/*	>*/}
-															{/*		<ThemeModeIcon fontSize="small"/>*/}
-															{/*	</IconButton>*/}
-															{/*</Tooltip>*/}
-															{/*{!hideInfoPage ? <InfoButton/> : null}*/}
 															<Tooltip title="Start tour">
 																<IconButton
 																	edge="end"
@@ -325,14 +323,13 @@ export default function App(props) {
 														</section>
 													</Toolbar>
 												</AppBar>
-												{/* <NewsDrawer /> */}
 
 												<nav>
-													{/* <Hidden xsDown implementation="css"> */}
 													<CustomDrawer
 														hideConnections={hideConnections}
 														hideInfoPage={hideInfoPage}
 														open={open}
+														setShowFilter={(show) => setShowFilter(show)}
 														handleDrawerOpen={handleDrawerOpen}
 														handleDrawerClose={handleDrawerClose}
 													/>
@@ -341,7 +338,7 @@ export default function App(props) {
 												<DisconnectedDialog/>
 
 												<Box className={classes.box}>
-													<AppRoutes onChangeTheme={(mode) => setDarkMode(mode)}/>
+													<AppRoutes filter={filter} onChangeTheme={(mode) => setDarkMode(mode)}/>
 												</Box>
 											</Route>
 										</Switch>

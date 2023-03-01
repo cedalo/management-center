@@ -16,6 +16,10 @@ class Logger {
             this.logger.log(...arguments);
         }
     }
+
+    trace() {
+        this.logger.log('trace not implemented'); // trace will anyways not give a full stacktrace
+    }
 }
 
 module.exports = Logger;

@@ -224,4 +224,9 @@ module.exports = class BaseMosquittoClient {
 	get connected() {
 		return this._isConnected;
 	}
+
+
+	set connected(value) {
+		this._isConnected = value;
+	}
 };

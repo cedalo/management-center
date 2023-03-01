@@ -1,7 +1,7 @@
 const path = require('path');
 
 const PLUGIN_DIR = process.env.CEDALO_MC_PLUGIN_DIR;
-const LOGIN_PLUGIN_FEATURE_IDS = ['saml-sso'];
+const CUSTOM_LOGIN_PLUGIN_FEATURE_IDS = ['saml-sso'];
 const OS_PLUGINS_IDS = ['cedalo_login', 'cedalo_user_profile', 'cedalo_connect_disconnect'];
 
 
@@ -13,7 +13,7 @@ module.exports = class PluginManager {
 	_enabledCustomLoginPlugin() {
 		for (const plugin of this._plugins) {
 			if (plugin._status.type !== 'error') {
-				if (LOGIN_PLUGIN_FEATURE_IDS.includes(plugin.meta.featureId)) {
+				if (CUSTOM_LOGIN_PLUGIN_FEATURE_IDS.includes(plugin.meta.featureId)) {
 					return true;
 				}
 			}
@@ -67,7 +67,7 @@ module.exports = class PluginManager {
 		// also load application-tokens first as it redefines isLoggedIn function
 		// saml-sso redefines the whole login
 		// cedalo_multiple_connections add MultiBrokerManager to context which is needed by cert management plugin
-		const PLUGIN_IDS_OF_HIGHEST_PRIORITY = ['cedalo_multiple_connections', 'security', 'saml_sso', ...OS_PLUGINS_IDS, 'application_tokens', 'user_management'];
+		const PLUGIN_IDS_OF_HIGHEST_PRIORITY = ['cedalo_multiple_connections', /* 'cedalo_login_rate_limit' */, 'cedalo_saml_sso', ...OS_PLUGINS_IDS, 'cedalo_application_tokens', 'cedalo_user_management'];
 
 		for (const pluginId of PLUGIN_IDS_OF_HIGHEST_PRIORITY.reverse()) {
 			const pluginIndex = plugins.findIndex((el) => {
@@ -135,7 +135,7 @@ module.exports = class PluginManager {
 					swaggerDocument.tags = Object.assign(swaggerDocument.tags || {}, plugin.swagger.tags);
 					swaggerDocument.paths = Object.assign(swaggerDocument.paths || {}, plugin.swagger.paths);
 					swaggerDocument.components.schemas = Object.assign(swaggerDocument.components.schemas || {}, plugin.swagger.components?.schemas);
-					swaggerDocument.components.errors = Object.assign(swaggerDocument.components.errors || {}, plugin.swagger.components?.errors);
+					swaggerDocument.components.statuses = Object.assign(swaggerDocument.components.statuses || {}, plugin.swagger.components?.statuses);
 				}
 
 				if (plugin._status.type !== 'error') {

@@ -17,7 +17,7 @@ import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import {Alert, AlertTitle} from '@material-ui/lab';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Redirect, useHistory} from 'react-router-dom';
 import {updateBrokerConfigurations, updateBrokerConnections} from '../actions/actions';
@@ -277,6 +277,29 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 	};
 
 
+	const checkAndSetErrors = () => {
+		if (!connection[clientCertificateFileFieldName] && !connection[clientCertificateFileFieldName]) {
+			setErrors({...errors, [clientCertificateFieldName]: null});
+			setErrors({...errors, [clientPrivateKeyFieldName]: null});
+		}
+		// the !clientCertificateFile part means that clientCertificate was not loaded because the respective input field hasn't been set with its name yet
+		if (connection[clientPrivateKeyFieldName] && !connection[clientCertificateFileFieldName]) {
+			setErrors({...errors, [clientCertificateFieldName]: {message: 'You have provided a private key but no certificate'}});
+		}
+		else if (connection[clientCertificateFieldName] && !connection[clientPrivateKeyFileFieldName]) {
+			setErrors({...errors, [clientPrivateKeyFieldName]: {message: 'You have provided a certificate but no private key'}});
+		}
+		else if ((connection[clientCertificateFieldName] && connection[clientPrivateKeyFileFieldName]) || (!connection[clientCertificateFieldName] && !connection[clientPrivateKeyFileFieldName])) {
+			setErrors((prevState) => ({...prevState, [clientPrivateKeyFieldName]: null, [clientCertificateFieldName]: null}));
+		}
+	};
+
+
+	useEffect(() => {
+		checkAndSetErrors();
+	}, [connection]);
+
+
 	const handleFileUpload = (e) => {
 		const fileReader = new FileReader();
 		const name = e.target.getAttribute('name');
@@ -289,18 +312,6 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 
 		if (!name) {
 			console.error('No "name" (e.target.getAttribute("name") passed into handleFileUpload')
-		}
-
-		if (name === clientPrivateKeyFieldName && !connection[clientCertificateFileFieldName]) {
-			setErrors({
-				...errors,
-				[clientCertificateFieldName]: {message: 'You have provided a private key but no certificate'}
-			});
-		} else if (name === clientCertificateFieldName && !connection[clientPrivateKeyFileFieldName]) {
-			setErrors({
-				...errors,
-				[clientPrivateKeyFieldName]: {message: 'You have provided a certificate but no private key'}
-			});
 		}
 
 		fileReader.readAsDataURL(e.target.files[0]);
@@ -326,7 +337,6 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 				[makeFileField(name)]: filename
 			}));
 
-			setErrors((prevState) => ({...prevState, [name]: null}));
 			setConnected(false); // ??!!
 		};
 	};
