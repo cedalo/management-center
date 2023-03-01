@@ -34,6 +34,7 @@ import { useSnackbar } from 'notistack';
 import SaveCancelButtons from '../../../components/SaveCancelButtons';
 import ContainerHeader from '../../../components/ContainerHeader';
 import { WebSocketContext } from '../../../websockets/WebSocket';
+import { ErrorHint } from './AlertHint';
 import ContentContainer from './ContentContainer';
 
 const CustomInput = withStyles((theme) => ({
@@ -110,7 +111,7 @@ const ListenerSelect = ({ listeners, onSelect }) => {
 const byName = (a, b) => {
 	if (a.name < b.name) return -1;
 	return a.name > b.name ? 1 : 0;
-}
+};
 const ConnectionSelect = ({ connections, selected = {}, onSelect }) => {
 	const classes = useStyles();
 	return (
@@ -165,26 +166,27 @@ const deployMessage = (cert) => ({
 	warning: `Problems while deploying certificate "${cert.name}"!`
 });
 
+const isConnected = (conn) => conn?.status?.connected;
+
 const CertificateDeploy = ({ connections = [] }) => {
 	const history = useHistory();
 	const [certificate] = useState(history.location.state);
 	const { enqueueSnackbar } = useSnackbar();
 	const [canUpdate, setCanUpdate] = useState(false);
-	const [connection, selectConnection] = useState(connections.find((c) => c.status?.connected) || connections[0]);
+	const [connection, selectConnection] = useState(connections.find(isConnected) || connections[0]);
 	const [listeners, setListeners] = useState(null);
 	const { client } = useContext(WebSocketContext);
+	const hasConnectedConnection = connections.some(isConnected);
 
 	const loadListeners = async () => {
 		try {
-			if (connection?.status?.connected) {
+			if (isConnected(connection)) {
 				const { data } = await client.getListeners(connection.id);
 				setListeners(markUsedListeners(certificate, getConnectionInfo(connection), data));
 			} else {
+				const name = connection?.name || 'n.a.';
+				if (listeners != null) enqueueSnackbar(`Connection "${name}" is not connected`, { variant: 'warning' });
 				setListeners(null);
-				if (!connection?.status?.connected) {
-					const name = connection?.name || 'n.a.';
-					enqueueSnackbar(`Connection "${name}" is not connected`, { variant: 'warning' });
-				}
 			}
 		} catch (error) {
 			enqueueSnackbar(`Cannot deploy because listeners could not be loaded. Reason: ${error.message || error}`, {
@@ -214,6 +216,7 @@ const CertificateDeploy = ({ connections = [] }) => {
 			switch (status) {
 				case 200:
 					enqueueSnackbar(deployMessage(certificate).success, { variant: 'success' });
+					setCanUpdate(false);
 					break;
 				case 207:
 					enqueueSnackbar(deployMessage(certificate).warning, { variant: 'warning' });
@@ -251,45 +254,52 @@ const CertificateDeploy = ({ connections = [] }) => {
 			]}
 		>
 			<ContainerHeader title={`Deploy Certificate ${certificate.name}`}></ContainerHeader>
-			<Table size="small" aria-label="listeners">
-				<TableHead>
-					<TableRow>
-						<TableCell>Choose connection</TableCell>
-						<TableCell align="left">
-							<ConnectionSelect
-								connections={connections}
-								selected={connection}
-								onSelect={onSelectConnection}
-							/>
-						</TableCell>
-					</TableRow>
-				</TableHead>
-				<TableBody>
-					<TableRow>
-						<TableCell style={{ verticalAlign: 'top' }}>Select target listeners</TableCell>
-						<TableCell align="left">
-							{listeners == null ? (
-								<Typography variant="h8" gutterBottom component="div">
-									Loading available listeners...
-								</Typography>
-							) : (
-								<ListenerSelect listeners={listeners} onSelect={onSelectListener} />
-							)}
-						</TableCell>
-					</TableRow>
-					<TableRow>
-						<TableCell style={{ borderBottom: 'none' }}>
-							<SaveCancelButtons
-								saveCaption="Deploy"
-								onSave={onDeploy}
-								saveDisabled={!canUpdate}
-								onCancel={onCancel}
-							/>{' '}
-						</TableCell>
-						<TableCell style={{ borderBottom: 'none' }}> </TableCell>
-					</TableRow>
-				</TableBody>
-			</Table>
+			{hasConnectedConnection ? (
+				<Table size="small" aria-label="listeners">
+					<TableHead>
+						<TableRow>
+							<TableCell>Choose connection</TableCell>
+							<TableCell align="left">
+								<ConnectionSelect
+									connections={connections}
+									selected={connection}
+									onSelect={onSelectConnection}
+								/>
+							</TableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						<TableRow>
+							<TableCell style={{ verticalAlign: 'top' }}>Select target listeners</TableCell>
+							<TableCell align="left">
+								{listeners == null ? (
+									<Typography variant="h8" gutterBottom component="div">
+										Loading available listeners...
+									</Typography>
+								) : (
+									<ListenerSelect listeners={listeners} onSelect={onSelectListener} />
+								)}
+							</TableCell>
+						</TableRow>
+						<TableRow>
+							<TableCell style={{ borderBottom: 'none' }}>
+								<SaveCancelButtons
+									saveCaption="Deploy"
+									onSave={onDeploy}
+									saveDisabled={!canUpdate}
+									onCancel={onCancel}
+								/>
+							</TableCell>
+							<TableCell style={{ borderBottom: 'none' }}> </TableCell>
+						</TableRow>
+					</TableBody>
+				</Table>
+			) : (
+				ErrorHint({
+					title: 'Deploy not possible!',
+					message: 'Cannot deploy because no connected connection available.'
+				})
+			)}
 		</ContentContainer>
 	);
 };
