@@ -1,3 +1,4 @@
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
@@ -10,9 +11,9 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import TextField from '@material-ui/core/TextField';
+import FormGroup from '@material-ui/core/FormGroup';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -39,10 +40,8 @@ const useStyles = makeStyles((theme) => ({
 		}
 	},
 	payloadDetail: {
-		width: '100%'
-	},
-	payloadHistory: {
-		verticalAlign: 'top'
+		width: '100%',
+		fontFamily: 'Roboto'
 	},
 	paper: {
 		// padding: theme.spacing(2),
@@ -51,13 +50,18 @@ const useStyles = makeStyles((theme) => ({
 	leftBorder: {
 		borderLeft: `1px solid ${theme.palette.divider}`,
 		paddingLeft: '10px'
+	},
+	treeHeader: {
+		borderBottom: `1px solid ${theme.palette.divider}`,
+		display: 'grid',
+		gridTemplateColumns: 'auto 241px 80px 130px',
+		paddingBottom: '8px'
 	}
 }));
 
 const prettifyJSON = (jsonString) => {
 	const json = JSON.parse(jsonString);
-	const prettifiedJSON = JSON.stringify(json, null, 2);
-	return prettifiedJSON;
+	return JSON.stringify(json, null, 2);
 }
 
 const isJSON = (text) => text?.startsWith('{') || text?.startsWith('[');
@@ -276,7 +280,7 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 
 
 	return (
-		<div>
+		<div style={{height: '100%'}}>
 			<ContainerBreadCrumbs title="Topic Tree"
 								  links={[{name: 'Home', route: '/home'}, {name: 'Inspect', route: '/Inspect'}]}/>
 			<div style={{height: 'calc(100% - 26px)'}}>
@@ -313,171 +317,172 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 
 					<Grid container spacing={3}>
 						<Grid item xs={8}>
-							<div className={classes.paper}>
-								<div style={{display: 'grid',  gridTemplateColumns: 'auto 241px 80px 130px', marginBottom: '8px'}}>
-									<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
-										Name
-									</Typography>
-									<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
-										Payload
-									</Typography>
-									<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
-										Subtopics
-									</Typography>
-									<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
-										Messages
-									</Typography>
+							<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
+								{/*<div className={classes.paper}>*/}
+									<div className={classes.treeHeader}>
+										<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+											Name
+										</Typography>
+										<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+											Last Payload
+										</Typography>
+										<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+											Subtopics
+										</Typography>
+										<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+											Messages
+										</Typography>
+									</div>
+									<Box style={{overflowY: 'auto'}}>
+									<TreeView
+										className={classes.root}
+										defaultCollapseIcon={<ExpandMoreIcon/>}
+										defaultExpandIcon={<ChevronRightIcon/>}
+										// defaultExpanded={["topic-tree-root"]}
+									>
+										{renderTree(data)}
+									</TreeView>
+									</Box>
+								{/*</div>*/}
 								</div>
-								<TreeView
-									className={classes.root}
-									defaultCollapseIcon={<ExpandMoreIcon/>}
-									defaultExpandIcon={<ChevronRightIcon/>}
-									// defaultExpanded={["topic-tree-root"]}
-								>
-									{renderTree(data)}
-								</TreeView>
-							</div>
 						</Grid>
 						<Grid item xs={4}>
 							<Box className={classes.leftBorder}>
-								{selectedNode?._topic && (
-									<TextField
-										id="topicpath"
-										label="Topic Path"
-										value={selectedNode?._topic}
-										variant="outlined"
-										fullWidth
-										size="small"
-										margin="dense"
-										InputProps={{
-											readOnly: true,
-										}}
-									/>
-								)}
-								<TableContainer className={classes.table}>
-									<Table size="medium">
-										<TableBody>
-											{selectedNode?._created && (
-												<TableRow>
-													<TableCell>
-														<strong>Created</strong>
-													</TableCell>
-													<TableCell>{moment(selectedNode?._created).format(
-														'LLLL')}</TableCell>
-												</TableRow>
-											)}
-											{selectedNode?._lastModified && (
-												<TableRow>
-													<TableCell>
-														<strong>Last modified</strong>
-													</TableCell>
-													<TableCell>{moment(selectedNode?._lastModified).format(
-														'LLLL')}</TableCell>
-												</TableRow>
-											)}
-											{typeof selectedNode?._qos === 'number' && (
-												<TableRow>
-													<TableCell>
-														<strong>QoS</strong>
-													</TableCell>
-													<TableCell>{selectedNode?._qos}</TableCell>
-												</TableRow>
-											)}
-											{(selectedNode?._retain === false || selectedNode?._retain === true) && (
-												<TableRow>
-													<TableCell>
-														<strong>Retain</strong>
-													</TableCell>
-													<TableCell>{selectedNode?._retain ? 'yes' : 'no'}</TableCell>
-												</TableRow>
-											)}
-											{selectedNode?._topicsCounter >= 0 && (
-												<TableRow>
-													<TableCell>
-														<strong>Sub topics</strong>
-													</TableCell>
-													<TableCell>{selectedNode?._topicsCounter}</TableCell>
-												</TableRow>
-											)}
-											{selectedNode?._messagesCounter && (
-												<TableRow>
-													<TableCell>
-														<strong>Total messages</strong>
-													</TableCell>
-													<TableCell>{selectedNode?._messagesCounter}</TableCell>
-												</TableRow>
-											)}
-											{/* {selectedNode?._message && selectedNode?._message.startsWith('{') && ( */}
-											{selectedNode?._message && (
-												<TableRow>
-													<TableCell
-														className={classes.payloadHistory}
+								<FormGroup>
+									{selectedNode?._topic && (
+										<TextField
+											id="topicpath"
+											label="Topic Path"
+											value={selectedNode?._topic}
+											margin="normal"
+											variant="outlined"
+											fullWidth
+											size="small"
+											InputProps={{
+												readOnly: true,
+											}}
+										/>
+									)}
+									{selectedNode?._created && (
+										<TextField
+											id="created"
+											label="Created"
+											margin="normal"
+											value={moment(selectedNode?._created).format('LLL')}
+											variant="outlined"
+											fullWidth
+											size="small"
+											InputProps={{
+												readOnly: true,
+											}}
+										/>
+									)}
+									{selectedNode?._lastModified && (
+										<TextField
+											id="last"
+											label="Last Modified"
+											margin="normal"
+											value={moment(selectedNode?._lastModified).format('LLL')}
+											variant="outlined"
+											fullWidth
+											size="small"
+											InputProps={{
+												readOnly: true,
+											}}
+										/>
+									)}
+									<Grid container spacing={1} alignItems="flex-end">
+										<Grid item xs={6}>
+										{typeof selectedNode?._qos === 'number' && (
+											<TextField
+												id="qos"
+												label="QoS"
+												margin="normal"
+												value={selectedNode?._qos}
+												variant="outlined"
+												fullWidth
+												size="small"
+												InputProps={{
+													readOnly: true,
+												}}
+											/>
+										)}
+										</Grid>
+											<Grid item xs={6}>
+										{(selectedNode?._retain === false || selectedNode?._retain === true) && (
+											<TextField
+												id="retain"
+												label="Retain"
+												margin="normal"
+												value={selectedNode?._retain ? 'Yes' : 'No'}
+												variant="outlined"
+												fullWidth
+												size="small"
+												InputProps={{
+													readOnly: true,
+												}}
+											/>
+										)}
+									</Grid>
+									</Grid>
+									{selectedNode?._message ? [
+										<Typography
+											style={{
+												fontWeight: '500',
+												margin: '4px 0px'
+											}}
+										>
+											Payload History
+										</Typography>,
+										<Paper variant="outlined" elevation={1} style={{maxHeight: '300px'}}>
+											<Box style={{padding: '8px', maxHeight: '290px', overflowY: 'auto'}}>
+												<Box>
+													<Typography
+														style={{
+															fontSize: '9pt',
+															margin: '4px 0px'
+														}}
 													>
-														<strong>Payload</strong>
-													</TableCell>
-													<TableCell>
-														<TextareaAutosize
-															className={classes.payloadDetail}
-															rows={5}
-															value={
-																isJSON(selectedNode?._message)
-																	? prettifyJSON(selectedNode?._message)
-																	: selectedNode?._message
-															}
-														/>
-													</TableCell>
-												</TableRow>
-											)}
-											{/* {selectedNode?._message && !selectedNode?._message.startsWith('{') && (
-										<TableRow>
-											<TableCell>
-												<strong>Payload</strong>
-											</TableCell>
-											<TableCell>{selectedNode?._message}</TableCell>
-										</TableRow>
-									)} */}
-										</TableBody>
-									</Table>
-								</TableContainer>
-								<TableContainer component={Paper} className={classes.table}>
-									<Table size="medium">
-										<TableBody>
-											{/* TODO: extract as component */}
-											{messageHistory ? messageHistory.map((entry, index) => {
-												if (index > 0) {
-													// if (entry?._message && entry?._message.startsWith('{')) {
-													if (entry?._message) {
-														return <TableRow>
-															<TableCell
-																className={classes.payloadHistory}
+														Last Payload
+													</Typography>
+													<TextareaAutosize
+														className={classes.payloadDetail}
+														maximumHeight={5}
+														value={
+															isJSON(selectedNode?._message)
+																? prettifyJSON(selectedNode?._message)
+																: selectedNode?._message
+														}
+													/>
+												</Box>
+												{messageHistory && messageHistory.map((entry, index) => {
+													if (index && entry?._message) {
+														return <Box>
+															<Typography
+																style={{
+																	fontSize: '9pt',
+																	margin: '4px 0px'
+																}}
 															>
-																<strong>{moment(entry._received).format(
-																	'HH:mm:ss:SSS')}</strong>
-															</TableCell>
-															<TableCell>
-																<TextareaAutosize
-																	className={classes.payloadDetail}
-																	rows={5}
-																	value={
-																		isJSON(entry?._message)
-																			? prettifyJSON(entry?._message)
-																			: entry?._message
-																	}
-																/>
-															</TableCell>
-														</TableRow>
-														// } else if(entry?._message &&
-														// !entry?._message.startsWith('{')) { return <TableRow>
-														// <TableCell>
-														// <strong>{moment(entry._received).format('HH:mm:ss:SSS')}</strong>
-														// </TableCell> <TableCell>{entry?._message}</TableCell>
-														// </TableRow>
+																{moment(entry._received).format(
+																	'HH:mm:ss:SSS')}
+															</Typography>
+															<TextareaAutosize
+																className={classes.payloadDetail}
+																maximumHeight={5}
+																value={
+																	isJSON(entry?._message)
+																		? prettifyJSON(entry?._message)
+																		: entry?._message
+																}
+															/>
+														</Box>
 													}
-												}
-											}) : null}
-										</TableBody>
-									</Table>
-								</TableContainer>
+												})}
+											</Box>
+										</Paper>] : null
+									}
+								</FormGroup>
 							</Box>
 						</Grid>
 					</Grid>
