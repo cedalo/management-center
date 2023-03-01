@@ -44,7 +44,7 @@ const CertificateDeleteDialog = ({ open, cert, client, onClose }) => {
 					const actions = (
 						<>
 							<Button onClick={onForceDelete}>Delete Anyway</Button>
-							<Button onClick={onClose}>Ok</Button>
+							<Button onClick={onClose}>Cancel</Button>
 						</>
 					);
 					setOptions({ message, actions });

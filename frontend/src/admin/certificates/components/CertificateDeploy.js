@@ -187,9 +187,10 @@ const CertificateDeploy = ({ connections = [] }) => {
 				}
 			}
 		} catch (error) {
-			enqueueSnackbar(`Error loading certificate from server. Reason: ${error.message || error}`, {
+			enqueueSnackbar(`Cannot deploy because listeners could not be loaded. Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
+			history.goBack();
 		}
 	};
 	useEffect(() => {
@@ -221,7 +222,9 @@ const CertificateDeploy = ({ connections = [] }) => {
 					enqueueSnackbar(deployMessage(certificate).error, { variant: 'error' });
 			}
 		} catch (error) {
-			enqueueSnackbar(`Error ${action} certificate "${certificate.name}".`, { variant: 'error' });
+			enqueueSnackbar(`Error deploying certificate "${certificate.name}". Reason: ${error.message}`, {
+				variant: 'error'
+			});
 		}
 	};
 
@@ -263,7 +266,7 @@ const CertificateDeploy = ({ connections = [] }) => {
 				</TableHead>
 				<TableBody>
 					<TableRow>
-						<TableCell style={{ verticalAlign: 'top' }}>Select listeners to deploy to</TableCell>
+						<TableCell style={{ verticalAlign: 'top' }}>Select target listeners</TableCell>
 						<TableCell align="left">
 							{listeners == null ? (
 								<Typography variant="h8" gutterBottom component="div">
