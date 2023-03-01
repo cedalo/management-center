@@ -303,189 +303,193 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 							</Button> : null}
 					</ContainerHeader>
 
-					{(settings?.topicTreeEnabled === false) ? <><br/><Alert severity="warning">
-						<AlertTitle>Topic tree not enabled</AlertTitle>
-						The MMC is currently not collecting topic tree data. If you want to collect data, please enable
-						the topic tree feature in the settings page.
-						Note that if you enable this setting and the MMC is collecting topic tree data, the performance
-						of the MMC backend might decrease.
-					</Alert></> : null}
+					{(settings?.topicTreeEnabled === false) ?
+						<Alert style={{height: 'fit-content'}} severity="warning">
+							<AlertTitle>Topic tree not enabled</AlertTitle>
+							The MMC is currently not collecting topic tree data. If you want to collect data, please enable
+							the topic tree feature in the settings page.
+							Note that if you enable this setting and the MMC is collecting topic tree data, the performance
+							of the MMC backend might decrease.
+						</Alert>
+					 : null}
 					{(error.occured) ? <><br/><Alert severity="error">
 						<AlertTitle>An error has occured</AlertTitle>
 						{error.message}
 					</Alert></> : null}
 
-					<Grid container spacing={3}>
-						<Grid item xs={8}>
-							<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
-								{/*<div className={classes.paper}>*/}
-									<div className={classes.treeHeader}>
-										<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
-											Name
-										</Typography>
-										<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
-											Last Payload
-										</Typography>
-										<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
-											Subtopics
-										</Typography>
-										<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
-											Messages
-										</Typography>
-									</div>
-									<Box style={{overflowY: 'auto'}}>
-									<TreeView
-										className={classes.root}
-										defaultCollapseIcon={<ExpandMoreIcon/>}
-										defaultExpandIcon={<ChevronRightIcon/>}
-										// defaultExpanded={["topic-tree-root"]}
-									>
-										{renderTree(data)}
-									</TreeView>
-									</Box>
-								{/*</div>*/}
-								</div>
-						</Grid>
-						<Grid item xs={4}>
-							<Box className={classes.leftBorder}>
-								<FormGroup>
-									{selectedNode?._topic && (
-										<TextField
-											id="topicpath"
-											label="Topic Path"
-											value={selectedNode?._topic}
-											margin="normal"
-											variant="outlined"
-											fullWidth
-											size="small"
-											InputProps={{
-												readOnly: true,
-											}}
-										/>
-									)}
-									{selectedNode?._created && (
-										<TextField
-											id="created"
-											label="Created"
-											margin="normal"
-											value={moment(selectedNode?._created).format('LLL')}
-											variant="outlined"
-											fullWidth
-											size="small"
-											InputProps={{
-												readOnly: true,
-											}}
-										/>
-									)}
-									{selectedNode?._lastModified && (
-										<TextField
-											id="last"
-											label="Last Modified"
-											margin="normal"
-											value={moment(selectedNode?._lastModified).format('LLL')}
-											variant="outlined"
-											fullWidth
-											size="small"
-											InputProps={{
-												readOnly: true,
-											}}
-										/>
-									)}
-									<Grid container spacing={1} alignItems="flex-end">
-										<Grid item xs={6}>
-										{typeof selectedNode?._qos === 'number' && (
-											<TextField
-												id="qos"
-												label="QoS"
-												margin="normal"
-												value={selectedNode?._qos}
-												variant="outlined"
-												fullWidth
-												size="small"
-												InputProps={{
-													readOnly: true,
-												}}
-											/>
-										)}
-										</Grid>
-											<Grid item xs={6}>
-										{(selectedNode?._retain === false || selectedNode?._retain === true) && (
-											<TextField
-												id="retain"
-												label="Retain"
-												margin="normal"
-												value={selectedNode?._retain ? 'Yes' : 'No'}
-												variant="outlined"
-												fullWidth
-												size="small"
-												InputProps={{
-													readOnly: true,
-												}}
-											/>
-										)}
-									</Grid>
-									</Grid>
-									{selectedNode?._message ? [
-										<Typography
-											style={{
-												fontWeight: '500',
-												margin: '4px 0px'
-											}}
+					{settings?.topicTreeEnabled ?
+						<Grid container spacing={3}>
+							<Grid item xs={8}>
+								<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
+									{/*<div className={classes.paper}>*/}
+										<div className={classes.treeHeader}>
+											<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+												Name
+											</Typography>
+											<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+												Last Payload
+											</Typography>
+											<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+												Subtopics
+											</Typography>
+											<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+												Messages
+											</Typography>
+										</div>
+										<Box style={{overflowY: 'auto'}}>
+										<TreeView
+											className={classes.root}
+											defaultCollapseIcon={<ExpandMoreIcon/>}
+											defaultExpandIcon={<ChevronRightIcon/>}
+											// defaultExpanded={["topic-tree-root"]}
 										>
-											Payload History
-										</Typography>,
-										<Paper variant="outlined" elevation={1} style={{maxHeight: '300px'}}>
-											<Box style={{padding: '8px', maxHeight: '290px', overflowY: 'auto'}}>
-												<Box>
-													<Typography
-														style={{
-															fontSize: '9pt',
-															margin: '4px 0px'
-														}}
-													>
-														Last Payload
-													</Typography>
-													<TextareaAutosize
-														className={classes.payloadDetail}
-														maximumHeight={5}
-														value={
-															isJSON(selectedNode?._message)
-																? prettifyJSON(selectedNode?._message)
-																: selectedNode?._message
+											{renderTree(data)}
+										</TreeView>
+										</Box>
+									{/*</div>*/}
+									</div>
+							</Grid>
+							<Grid item xs={4}>
+								<Box className={classes.leftBorder}>
+									<FormGroup>
+										{selectedNode?._topic && (
+											<TextField
+												id="topicpath"
+												label="Topic Path"
+												value={selectedNode?._topic}
+												margin="normal"
+												variant="outlined"
+												fullWidth
+												size="small"
+												InputProps={{
+													readOnly: true,
+												}}
+											/>
+										)}
+										{selectedNode?._created && (
+											<TextField
+												id="created"
+												label="Created"
+												margin="normal"
+												value={moment(selectedNode?._created).format('LLL')}
+												variant="outlined"
+												fullWidth
+												size="small"
+												InputProps={{
+													readOnly: true,
+												}}
+											/>
+										)}
+										{selectedNode?._lastModified && (
+											<TextField
+												id="last"
+												label="Last Modified"
+												margin="normal"
+												value={moment(selectedNode?._lastModified).format('LLL')}
+												variant="outlined"
+												fullWidth
+												size="small"
+												InputProps={{
+													readOnly: true,
+												}}
+											/>
+										)}
+										<Grid container spacing={1} alignItems="flex-end">
+											<Grid item xs={6}>
+											{typeof selectedNode?._qos === 'number' && (
+												<TextField
+													id="qos"
+													label="QoS"
+													margin="normal"
+													value={selectedNode?._qos}
+													variant="outlined"
+													fullWidth
+													size="small"
+													InputProps={{
+														readOnly: true,
+													}}
+												/>
+											)}
+											</Grid>
+												<Grid item xs={6}>
+											{(selectedNode?._retain === false || selectedNode?._retain === true) && (
+												<TextField
+													id="retain"
+													label="Retain"
+													margin="normal"
+													value={selectedNode?._retain ? 'Yes' : 'No'}
+													variant="outlined"
+													fullWidth
+													size="small"
+													InputProps={{
+														readOnly: true,
+													}}
+												/>
+											)}
+										</Grid>
+										</Grid>
+										{selectedNode?._message ? [
+											<Typography
+												style={{
+													fontWeight: '500',
+													margin: '4px 0px'
+												}}
+											>
+												Payload History
+											</Typography>,
+											<Paper variant="outlined" elevation={1} style={{maxHeight: '300px'}}>
+												<Box style={{padding: '8px', maxHeight: '290px', overflowY: 'auto'}}>
+													<Box>
+														<Typography
+															style={{
+																fontSize: '9pt',
+																margin: '4px 0px'
+															}}
+														>
+															Last Payload
+														</Typography>
+														<TextareaAutosize
+															className={classes.payloadDetail}
+															maximumHeight={5}
+															value={
+																isJSON(selectedNode?._message)
+																	? prettifyJSON(selectedNode?._message)
+																	: selectedNode?._message
+															}
+														/>
+													</Box>
+													{messageHistory && messageHistory.map((entry, index) => {
+														if (index && entry?._message) {
+															return <Box>
+																<Typography
+																	style={{
+																		fontSize: '9pt',
+																		margin: '4px 0px'
+																	}}
+																>
+																	{moment(entry._received).format(
+																		'HH:mm:ss:SSS')}
+																</Typography>
+																<TextareaAutosize
+																	className={classes.payloadDetail}
+																	maximumHeight={5}
+																	value={
+																		isJSON(entry?._message)
+																			? prettifyJSON(entry?._message)
+																			: entry?._message
+																	}
+																/>
+															</Box>
 														}
-													/>
+													})}
 												</Box>
-												{messageHistory && messageHistory.map((entry, index) => {
-													if (index && entry?._message) {
-														return <Box>
-															<Typography
-																style={{
-																	fontSize: '9pt',
-																	margin: '4px 0px'
-																}}
-															>
-																{moment(entry._received).format(
-																	'HH:mm:ss:SSS')}
-															</Typography>
-															<TextareaAutosize
-																className={classes.payloadDetail}
-																maximumHeight={5}
-																value={
-																	isJSON(entry?._message)
-																		? prettifyJSON(entry?._message)
-																		: entry?._message
-																}
-															/>
-														</Box>
-													}
-												})}
-											</Box>
-										</Paper>] : null
-									}
-								</FormGroup>
-							</Box>
-						</Grid>
-					</Grid>
+											</Paper>] : null
+										}
+									</FormGroup>
+								</Box>
+							</Grid>
+						</Grid> : null
+					}
 				</div>
 			</div>
 			{topicTree && <div style={{
