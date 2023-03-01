@@ -38,7 +38,7 @@ const CERT_TABLE_COLUMNS = [
 	{ id: 'delete', key: '', sortable: false }
 ];
 
-const hasLicenseFeature = (name) => (license) => true || !!license?.features.some((feature) => feature.name === name);
+const hasLicenseFeature = (name) => (license) => !!license?.features.some((feature) => feature.name === name);
 const isLicensed = hasLicenseFeature('cert-management');
 
 const CustomTableRow = ({ cert, handleDelete }) => {
@@ -97,13 +97,15 @@ const Certificates = ({ isCertSupported, doSort, sortBy, sortDirection }) => {
 	const [certs, setCerts] = useState([]);
 
 	const loadCerts = async () => {
-		try {
-			const { data } = await client.getCertificates();
-			setCerts(Array.from(Object.values(data)));
-		} catch (error) {
-			enqueueSnackbar(`Error loading certificates from server. Reason: ${error.message || error}`, {
-				variant: 'error'
-			});
+		if (isCertSupported) {
+			try {
+				const { data } = await client.getCertificates();
+				setCerts(Array.from(Object.values(data)));
+			} catch (error) {
+				enqueueSnackbar(`Error loading certificates from server. Reason: ${error.message || error}`, {
+					variant: 'error'
+				});
+			}
 		}
 	};
 
