@@ -377,6 +377,6 @@ module.exports = {
             }
         }
     },
-    "errors": {
+    "statuses": {
     }
 }

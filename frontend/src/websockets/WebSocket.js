@@ -29,7 +29,8 @@ import {
 	updateTests,
 	updateTestCollections,
 	updateApplicationTokens,
-	updateLoading
+	updateLoading,
+	updateBackendParameters
 } from '../actions/actions';
 
 import {
@@ -48,7 +49,7 @@ import {
 
 import WS_BASE from './config';
 import WebMosquittoProxyClient from '../client/WebMosquittoProxyClient';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const WebSocketContext = createContext(null);
 
@@ -57,8 +58,8 @@ export { WebSocketContext };
 const ERROR_MESSAGE = "BaseMosquittoProxyClient: Timeout";
 
 
-let client;
 let ws;
+let currentConnectionName;
 
 
 const init = async (client, dispatch, connectionConfiguration) => {
@@ -73,6 +74,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 	dispatch(updateRolesAll([]));
 	dispatch(updateStreams([]));
 	dispatch(updateSystemStatus({}));
+	dispatch(updateBackendParameters({}));
 
 
 	// TODO: merge with code from BrokerSelect
@@ -103,6 +105,14 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			status: 'failed',
 			error
 		}));
+	}
+
+
+	try {
+		const backendParameters = await client.getBackendParameters();
+		dispatch(updateBackendParameters(backendParameters));
+	} catch (error) {
+		console.error('backendParameters could not be fetched. Reason:', error);
 	}
 
 
@@ -318,6 +328,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 
 export default ({ children }) => {
 	const dispatch = useDispatch();
+	currentConnectionName = useSelector(state => state.brokerConnections?.currentConnectionName);
 
 	const sendMessage = (roomId, message) => {
 		const payload = {
@@ -325,8 +336,8 @@ export default ({ children }) => {
 		};
 	};
 
-	if (!client) {
-		client = new WebMosquittoProxyClient({ logger: console });
+	if (!ws?.client) {
+		let client = new WebMosquittoProxyClient({ logger: console });
 		client.closeHandler = (event) => {
 			dispatch(updateProxyConnected(false));
 		};
@@ -366,7 +377,9 @@ export default ({ children }) => {
 		client.on('connections', async (message) => {
 			dispatch(updateBrokerConnections(message.payload));
 			message.payload.forEach((connection) => {
-				dispatch(updateBrokerConnected(connection.status.connected, connection.name));
+				if (currentConnectionName === connection.name) {
+					dispatch(updateBrokerConnected(connection.status.connected, connection.name));
+				}
 			});
 		});
 		client.on('error', (message) => {
@@ -378,6 +391,11 @@ export default ({ children }) => {
 		.catch(error => {
 			if (!`${error}`.startsWith('You don\'t have enough user rights')) { // is thrown in case readonly roles
 				console.error('Error during initialization:', error);
+				try {
+					error = JSON.stringify(error);
+				} catch(exception) {
+					console.error('Could not display error in UI', exception);
+				}
 				alert(`An unexpected error while communicating with the backend occured: ${error}`);
 			} else {
 				console.error(error);

@@ -66,12 +66,15 @@ const ClusterNew = (props) => {
 	const [clustername, setClustername] = useState('Example');
 	const [clusterDescription, setClusterDescription] = useState('Example cluster');
 	const [node1, setNode1] = useState({
+		nodeId: 1,
 		port: 7000
 	});
 	const [node2, setNode2] = useState({
+		nodeId: 2,
 		port: 7000
 	});
 	const [node3, setNode3] = useState({
+		nodeId: 3,
 		port: 7000
 	});
 
@@ -83,8 +86,23 @@ const ClusterNew = (props) => {
 		node1, node2, node3
 	];
 
+	const areNodeIdsUnique = () => {
+		return (new Set([node1.nodeId, node2.nodeId, node3.nodeId])).size === 3;
+	};
+
+	const arePrivateAddressesPresent = () => {
+		return node1.address && node2.address && node3.address;
+	};
+
+	const areBrokersPresent = () => {
+		return node1.broker && node2.broker && node3.broker;
+	};
+
 	const validate = () => {
-		const valid = !clusternameExists && clustername !== '';
+		const valid = !clusternameExists && clustername !== ''
+					&& arePrivateAddressesPresent()
+					&& areBrokersPresent()
+					&& areNodeIdsUnique(); 
 		return valid;
 	};
 
@@ -192,6 +210,8 @@ const ClusterNew = (props) => {
 									<CardContent style={{paddingTop: '0px'}}>
 										<SelectNodeComponent
 											defaultNode={node1}
+											setNode={setNode1}
+											checkAllNodeIds={areNodeIdsUnique}
 										/>
 									</CardContent>
 								</Card>
@@ -205,6 +225,8 @@ const ClusterNew = (props) => {
 									<CardContent style={{paddingTop: '0px'}}>
 										<SelectNodeComponent
 											defaultNode={node2}
+											setNode={setNode2}
+											checkAllNodeIds={areNodeIdsUnique}
 										/>
 									</CardContent>
 								</Card>
@@ -218,6 +240,8 @@ const ClusterNew = (props) => {
 									<CardContent style={{paddingTop: '0px'}}>
 										<SelectNodeComponent
 											defaultNode={node3}
+											setNode={setNode3}
+											checkAllNodeIds={areNodeIdsUnique}
 										/>
 									</CardContent>
 								</Card>

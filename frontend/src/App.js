@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {SnackbarProvider} from 'notistack';
 import clsx from 'clsx';
 import {Provider, useSelector, useDispatch} from 'react-redux';
@@ -26,6 +26,8 @@ import InfoButton from './components/InfoButton';
 import customTheme from './theme';
 import darkTheme from './theme-dark';
 import NewsletterPopup from './components/NewsletterPopup';
+import UpgradeButton from './components/UpgradeButton';
+import FeedbackButton from './components/FeedbackButton';
 import FilterName from './components/FilterName';
 // import Login from "./components/Login";
 import store from './store';
@@ -280,6 +282,8 @@ export default function App(props) {
 															</div>
 														) : null}
 														<section className={classes.rightToolbar}>
+															<FeedbackButton/>
+															<UpgradeButton/>
 															<BrokerSelect appBar/>
 															<Tooltip title="Start tour">
 																<IconButton

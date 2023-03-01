@@ -1,25 +1,31 @@
 const path = require('path');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
-const { reverseMap, removeCircular } = require('../utils/utils');
+const { removeCircular, stringToBool } = require('../utils/utils');
 const { isObject } = require('util');
 const { URL } = require('url');
-const { createConnection } = require('net');
+const { getBaseDirectory } = require('../utils/utils');
 
+const CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING = process.env.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING;
+const CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING = process.env.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING;
+const CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING = process.env.CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING;
+const CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING = process.env.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING;
+const CEDALO_MC_BROKER_CONNECTION_MQTT_PORT = process.env.CEDALO_MC_BROKER_CONNECTION_MQTT_PORT;
+const CEDALO_MC_BROKER_CONNECTION_MQTTS_PORT = process.env.CEDALO_MC_BROKER_CONNECTION_MQTTS_PORT;
+const CEDALO_MC_BROKER_CONNECTION_WEBSOCKET_PATH = process.env.CEDALO_MC_BROKER_CONNECTION_WEBSOCKET_PATH;
+const configFile = process.env.CEDALO_MC_PROXY_CONFIG || path.join(process.env.CEDALO_MC_PROXY_CONFIG_DIR || getBaseDirectory(__dirname), 'config.json');
 
-const DOCKER_ENV = process.env.CEDALO_DOCKER_ENV; // 
-const configFile = process.env.CEDALO_MC_PROXY_CONFIG || path.join(process.env.CEDALO_MC_PROXY_CONFIG_DIR || __dirname, 'config.json');
 const adapter = new FileSync(configFile);
 const db = low(adapter);
 
 
-const dockerEnvStringToMap = (string) => {
+const mapStringToMap = (string, converter=(x) => x) => {
 	const map = new Map();
 	const parts = string.split(';');
 
 	for (const part of parts) {
 		const [key, value] = part.split(':');
-		map.set(key, value);
+		map.set(key, converter(value));
 	}
 
 	return map;
@@ -31,10 +37,22 @@ module.exports = class ConfigManager {
 	constructor(maxBrokerConnections) {
 		this._maxBrokerConnections = maxBrokerConnections;
 		// construct objects from env vars
-		this.dockerEnv = DOCKER_ENV;
-		if (this.dockerEnv) {
-			this.toExternalHostnamesMap = dockerEnvStringToMap(this.dockerEnv); // map docker servicename to an actual external server url
-			this.toInternalHostnamesMap = reverseMap(this.toExternalHostnamesMap); // map external server url to docker servicenames
+		this.hostMappingString = CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING;
+		this.mqttsMappingString = CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING;
+		this.mqttMappingString = CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING;
+		this.wsMappingString = CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING;
+
+		if (this.hostMappingString) {
+			this.toExternalHostnamesMap = mapStringToMap(this.hostMappingString); // map private network address or docker servicename to an actual external server url
+		}
+		if (this.mqttsMappingString) {
+			this.allowEncryptedMap = mapStringToMap(this.mqttsMappingString, stringToBool); // map private network address or docker servicename to a boolean which allows mqtts traffic
+		}
+		if (this.mqttMappingString) {
+			this.allowUnencryptedMap = mapStringToMap(this.mqttMappingString, stringToBool);
+		}
+		if (this.wsMappingString) {
+			this.allowWebsocketsMap = mapStringToMap(this.wsMappingString, stringToBool); 
 		}
 	}
 
@@ -67,9 +85,18 @@ module.exports = class ConfigManager {
 		db.update('plugins', (oldPlugins) => plugins).write();
 	}
 
+	get parameters() {
+		let parameters = db.get('parameters').value();
+		return parameters;
+	}
+
+	set parameters(parameters) {
+		db.update('parameters', (oldParameters) => parameters).write();
+	}
+
 	updatePluginFromConfiguration(pluginId, plugin) {
 		if (!isObject(plugin)) {
-			throw new Error('Pluin is of invalid type/empty/not provided');
+			throw new Error('Plugin is of invalid type/empty/not provided');
 		}
 
 		let pluginName = pluginId.replace('cedalo_', '');
@@ -101,18 +128,53 @@ module.exports = class ConfigManager {
 	}
 
 	processInternalExternalURLs(connection) {
+		if (connection.internalUrl || connection.websocketsUrl ||
+			connection.externalEncryptedUrl || connection.externalUnencryptedUrl
+		) {
+			return connection;
+		}
+
+		const internalMqttPort = CEDALO_MC_BROKER_CONNECTION_MQTT_PORT || 1883;
+		const externalMqttsPort = CEDALO_MC_BROKER_CONNECTION_MQTTS_PORT || 8883;
+		const externalMqttPort = internalMqttPort
 		const hostname = new URL(connection.url).hostname;
-		const internalHostname = this.toInternalHostnamesMap.get(hostname) || hostname;
-		const externalHostname = this.toExternalHostnamesMap.get(hostname) || hostname;
+		const externalHostname = this.toExternalHostnamesMap.get(hostname) || null;
+		const allowUnencrypted = this.allowUnencryptedMap.get(hostname) || null;
+		const allowEncrypted = this.allowEncryptedMap.get(hostname) || null;
+		const allowWebsockets = this.allowWebsocketsMap.get(hostname) || null;
 
-		const internalURL = connection.url.replace(hostname, internalHostname);
-		const externalURL = connection.url.replace(hostname, externalHostname);
+		let externalWebsocketsUrl;
+		let externalEncryptedUrl;
+		let externalUnencryptedUrl;
 
-		return {
+		if (externalHostname) {
+			if (allowEncrypted) {
+				externalEncryptedUrl = 'mqtts://' + externalHostname + `:${externalMqttsPort}`; // modify externalURL
+			}
+			if (allowUnencrypted) {
+				externalUnencryptedUrl = 'mqtt://' + externalHostname + `:${externalMqttPort}`; // modify externalURL
+			}
+			if (allowWebsockets) {
+				externalWebsocketsUrl = 'wss://' + externalHostname + CEDALO_MC_BROKER_CONNECTION_WEBSOCKET_PATH || '/mqtt'; // TODO use URL object to safely concat to url
+			}
+		} else {
+			externalEncryptedUrl = null;
+			externalUnencryptedUrl = null;
+			externalWebsocketsUrl = null;
+		}
+
+
+		const resultingConnection = {
 			...connection,
-			url: internalURL,
-			externalUrl: externalURL,
+			url: connection.url,
+			internalUrl: ((externalEncryptedUrl || externalUnencryptedUrl)  && connection.url) || null, /*if extenal url fouund this means we are using internal url to connect*/
+			websocketsUrl: externalWebsocketsUrl || null,
+			// externalEncryptedUrl: externalEncryptedUrl || (connection.url.includes('mqtts://') && connection.url) || null, // if externalEncryptedURL not found this means that we are already using external url (in connection.url) to connect
+			externalEncryptedUrl: externalEncryptedUrl || null,
+			// externalUnencryptedUrl: externalUnencryptedUrl || (connection.url.includes('mqtt://') && connection.url) || null, // if externalUnencryptedURL not found this means that we are already using external url (in connection.url) to connect
+			externalUnencryptedUrl: externalUnencryptedUrl || null,
 		};
+		return resultingConnection;
 	}
 
 
@@ -123,7 +185,7 @@ module.exports = class ConfigManager {
 		connection = removeCircular(connection);
 
 		let newConnection = this.filterConnectionObject(connection);
-		if (newConnection.url && this.dockerEnv) {
+		if (newConnection.url && this.hostMappingString) {
 			newConnection = this.processInternalExternalURLs(newConnection);
 		}
 
@@ -145,6 +207,11 @@ module.exports = class ConfigManager {
 
 	createConnection(connection) {
 		const newConnection = this.preprocessConnection(connection);
+
+		newConnection.status = {
+			connected: false,
+			timestamp: Date.now()
+		};
 
 		db.get('connections')
 			.push(newConnection)

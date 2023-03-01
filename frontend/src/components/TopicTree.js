@@ -60,9 +60,24 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
+
+const shortenString = (string) => {
+	if (string && string.length > 37) {
+		return string.slice(0, 36) + '...';
+	}
+	return string;
+};
+
 const prettifyJSON = (jsonString) => {
-	const json = JSON.parse(jsonString);
-	return JSON.stringify(json, null, 2);
+	let prettifiedJSON;
+	try {
+		const json = JSON.parse(jsonString);
+		prettifiedJSON = JSON.stringify(json, null, 2);
+	} catch(error) {
+		console.error('Error when converting to json:', error);
+		return jsonString;
+	}
+	return prettifiedJSON;
 }
 
 const isJSON = (text) => text?.startsWith('{') || text?.startsWith('[');
@@ -130,7 +145,7 @@ function StyledTreeItem(props) {
 						<Tooltip title="Message body">
 							<Typography style={{minWidth: '240px'}} variant="body2" color="inherit"
 										className={classes.label}>
-								{message}
+								{shortenString(message)}
 							</Typography>
 						</Tooltip>
 					)}
@@ -510,7 +525,7 @@ const mapStateToProps = (state) => {
 		settings: state.settings?.settings,
 		lastUpdated: state.topicTree.lastUpdated,
 		topicTree: state.topicTree,
-		currentConnectionName: state.brokerConnections.currentConnectionName,
+		currentConnectionName: state.brokerConnections?.currentConnectionName,
 		topicTreeRestFeature: state.systemStatus?.features?.topictreerest,
 	};
 };

@@ -1,7 +1,7 @@
 export const isConnectionAllowed = (userProfile, currentConnectionName, permissionFunction) => {
 	if (!userProfile || !currentConnectionName) return undefined;
 	if (typeof userProfile === 'object' && Object.keys(userProfile).length === 0) return undefined; // check if userProfile is an empty object
-	if (typeof currentConnectionName === 'object' && Object.keys(currentConnectionName).length === 0) return undefined; // TODO: remove this check. Add check that permissionFunction is a function instead
+	if (typeof currentConnectionName === 'object' && Object.keys(currentConnectionName).length === 0) return undefined;
 
 	for (const connection of userProfile.connections) {
 		if (connection.name === currentConnectionName) {
@@ -31,4 +31,9 @@ export const atLeastViewer = (userProfile, currentConnectionName) => {
 	const connectionAllowed = isConnectionAllowed(userProfile, currentConnectionName, viewerOrHigher);
 
 	return  connectionAllowed === undefined ? viewerOrHigher(userProfile) : connectionAllowed;
+};
+
+
+export const isGroupMember = (userProfile) => {
+	return userProfile?.connections && typeof userProfile.connections === 'object' && Object.keys(userProfile.connections).length !== 0;
 };

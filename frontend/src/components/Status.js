@@ -90,11 +90,13 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 		}
 	}, []);
 
+
 	if (connected && !systemStatus?.$SYS) {
-		cleanRef();
-		timerRef.current = window.setTimeout(() => {
-			setWaitingForSysTopic(false);
-		}, 16000);
+		if (!timerRef.current) {
+			timerRef.current = window.setTimeout(() => {
+				setWaitingForSysTopic(false);
+			}, 16000);
+		}
 	}
 
 	const onRestart = async (brokerConnectionName, serviceName) => {
@@ -292,7 +294,7 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 										<TableCell component="th" scope="row">
 											URL
 										</TableCell>
-										<TableCell align="right">{currentConnection?.url}</TableCell>
+										<TableCell align="right">{currentConnection?.externalEncryptedUrl || currentConnection?.externalUnencryptedUrl || currentConnection?.internalUrl || currentConnection?.url}</TableCell>
 									</TableRow>
 								</TableBody>
 							</Table>
@@ -419,8 +421,8 @@ const mapStateToProps = (state) => {
 		lastUpdated: state.systemStatus.lastUpdated,
 		systemStatus: state.systemStatus.systemStatus,
 		defaultClient: state.brokerConnections?.defaultClient,
-		currentConnection: state.brokerConnections.currentConnection,
-		currentConnectionName: state.brokerConnections.currentConnectionName,
+		currentConnection: state.brokerConnections?.currentConnection,
+		currentConnectionName: state.brokerConnections?.currentConnectionName,
 		connected: state.brokerConnections?.connected,
 	};
 };

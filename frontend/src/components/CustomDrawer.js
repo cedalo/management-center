@@ -119,7 +119,11 @@ const useStyles = makeStyles((theme) => ({
 		width: drawerWidth,
 		flexShrink: 0,
 		whiteSpace: 'nowrap',
-		backgroundColor: theme.palette.drawer?.backgroundColor
+		backgroundColor: theme.palette.drawer?.backgroundColor,
+		'&::-webkit-scrollbar': {
+			width: "0",
+			display: "none"
+		}
 	},
 	drawerOpen: {
 		width: drawerWidth,
