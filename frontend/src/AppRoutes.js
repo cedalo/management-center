@@ -52,11 +52,6 @@ import TestCollectionDetail from './components/TestCollectionDetail';
 import ApplicationTokens from './components/ApplicationTokens';
 import { atLeastAdmin, atLeastEditor, atLeastViewer } from './utils/accessUtils/access';
 
-
-const useStyles = makeStyles((theme) => ({
-
-}));
-
 function AppRoutes(props) {
 
 	const { selectedConnectionToEdit: connection } = props;
@@ -67,7 +62,6 @@ function AppRoutes(props) {
 	if ((hasError || response) && (hasErrorConfig || responseConfig)) {
 		let hideConnections = (typeof responseConfig?.hideConnections === 'boolean') ? responseConfig?.hideConnections : false;
 		let hideInfoPage = (typeof responseConfig?.hideInfoPage === 'boolean') ? responseConfig?.hideInfoPage : false;
-
 
 		//   const container = window !== undefined ? () => window().document.body : undefined;
 
@@ -84,7 +78,7 @@ function AppRoutes(props) {
 					<Clients />
 				</Route>
 				<Route path="/inspect/clients">
-					<InspectClients />
+					<InspectClients filter={props.filter}/>
 				</Route>
 				<Route
 					path="/security/groups/detail/:groupId"

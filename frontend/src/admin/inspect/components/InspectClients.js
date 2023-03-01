@@ -20,7 +20,7 @@ import {Alert, AlertTitle} from '@material-ui/lab';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
@@ -105,11 +105,12 @@ const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelect
 								clients.map((client) => (
 									<StyledTableRow
 										hover
-										key={client.username}
+										// key={client.username}
 										onClick={(event) => {
 											onSelectClient(client.username);
 										}}
 										style={{ cursor: 'pointer' }}
+										key={`filter${String(Math.random())}`}
 									>
 										<TableCell>{client.username}</TableCell>
 										<TableCell>{client.clientid}</TableCell>
@@ -179,11 +180,9 @@ const Clients = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
-	const confirm = useConfirm();
-	const { enqueueSnackbar } = useSnackbar();
 	const { client: brokerClient } = context;
-
-	const { inspectFeature, userProfile, roles = [], clients = [], onSort, sortBy, sortDirection } = props;
+	const { inspectFeature, userProfile, roles = [], clients = [], filter, onSort, sortBy, sortDirection } = props;
+	const [filteredClients, setFilteredClients] = useState(clients);
 
 	const onUpdateUserRoles = async (user, roles = []) => {
 		if (!roles) {
@@ -201,7 +200,16 @@ const Clients = (props) => {
 		history.push(`/inspect/clients/${username}`);
 	};
 
-	console.log('clients:', clients);
+	React.useEffect(() => {
+		setFilteredClients(clients.filter(clientL => clientL.username.startsWith(filter)));
+	}, [filter]);
+
+	React.useEffect(() => {
+		setFilteredClients(clients);
+	}, [clients]);
+
+
+	console.log('clients:', filteredClients);
 
 	return (
 		<div style={{height: '100%'}}>
@@ -227,7 +235,7 @@ const Clients = (props) => {
 							Make sure that this feature is included in your MMC license.
 						</Alert>
 					</> : null}
-					{ createClientsTable(clients, classes, props, onUpdateUserRoles, onSelectClient) }
+					{ createClientsTable(filteredClients, classes, props, onUpdateUserRoles, onSelectClient) }
 				</div>
 			</div>
 		</div>

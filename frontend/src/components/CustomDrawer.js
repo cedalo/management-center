@@ -152,11 +152,14 @@ const CustomDrawer = ({
 						  handleDrawerOpen,
 						  handleDrawerClose,
 						  currentConnectionName,
-						  connected
+						  connected,
+						  setShowFilter
 					  }) => {
 	const classes = useStyles();
 	const theme = useTheme();
 	const [adminOpen, setAdminOpen] = useState(false);
+
+	setShowFilter('/inspect/clients' === location.pathname);
 
 	return <Drawer
 		variant="permanent"
@@ -276,12 +279,12 @@ const CustomDrawer = ({
 						{adminOpen ? <Divider/> : null}
 						{adminOpen ?
 							<ListItemLink
-							id="menu-item-info"
-							classes={classes}
-							to="/info"
-							primary="Info"
-							icon={<InfoIcon fontSize="small"/>}
-						/> : null}
+								id="menu-item-info"
+								classes={classes}
+								to="/info"
+								primary="Info"
+								icon={<InfoIcon fontSize="small"/>}
+							/> : null}
 						{!hideInfoPage && adminOpen && atLeastAdmin(userProfile) &&
 							<ListItemLink
 								id="menu-item-plugins"

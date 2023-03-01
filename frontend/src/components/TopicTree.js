@@ -41,7 +41,8 @@ const useStyles = makeStyles((theme) => ({
 	},
 	payloadDetail: {
 		width: '100%',
-		fontFamily: 'Roboto'
+		fontFamily: 'Roboto',
+		fontSize: '11px'
 	},
 	paper: {
 		// padding: theme.spacing(2),
