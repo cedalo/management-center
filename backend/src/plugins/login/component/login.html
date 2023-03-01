@@ -176,6 +176,10 @@
         .buttonBlue:hover {
             background: #357bd8;
         }
+
+        #subtitle {
+            color: #666666;
+        }
     </style>
 </head>
 
@@ -183,7 +187,9 @@
     <div id="container">
         <!-- <div style="width: 100vw; height: 100vh; background-image: url('images/loginbg.png');""> -->
         <form method="POST" action="./auth">
-            <div id="logo-container"><img id="logo" src="images/logo-red.png" width="150px" /></div>
+            <div id="logo-container"><a href="https://cedalo.com" target="_blank"><img id="logo" src="images/logo-red.png" width="150px" /></a>
+                <!-- <br/><br/><span id="subtitle">Mosquitto Management Center</span> -->
+            </div>
             <div id="error-container"></div>
             <div class="group">
                 <input id="username" type="text" name="username"><span class="highlight"></span><span

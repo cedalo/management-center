@@ -62,6 +62,7 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 					type="number"
 					required={true}
 					id="node-id"
+					size="small"
 					label="Node ID"
 					InputProps={{ inputProps: { min: 1, max: 1023 } }}
 					onChange={(event) => {
@@ -83,6 +84,7 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 			<Grid item xs={10} sm={4} align="center">
 				<TextField
 					required={true}
+					size="small"
 					id="private-ip-address"
 					label="Private IP address"
 					onChange={(event) => setNode({...defaultNode, address: trimString(event.target.value)})}
@@ -93,15 +95,16 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 				/>
 			</Grid>
 			<Grid item xs={12} sm={6} align="center">
-				<FormControl variant="outlined" className={classes.formControl}>
-					<InputLabel htmlFor="broker">Broker</InputLabel>
-					<Select
-						autoFocus
+					<TextField
+						select
+						label="Broker"
+						size="small"
+						variant="outlined"
 						defaultValue=""
+						fullWidth
 						placeholder='Please select an instance'
 						value={defaultNode.broker}
 						onChange={(event) => handleSelectBroker(event.target.value)}
-						label="Instance"
 					>
 						{
 							availableBrokerConnections.map(brokerConnection =>
@@ -115,8 +118,7 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 								</MenuItem>
 							)
 						}
-					</Select>
-				</FormControl>
+					</TextField>
 			</Grid>
 		</Grid>
 	);

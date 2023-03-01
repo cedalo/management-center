@@ -41,7 +41,7 @@ const SaveButton = (props) => {
 	const [loading, setLoading] = React.useState(false);
 	const [success, setSuccess] = React.useState(false);
 	const timer = React.useRef();
-	const { onSave, saveDisabled, onCancel } = props; 
+	const { onSave, saveDisabled, onCancel } = props;
 
 	const buttonClassname = clsx({
 		[classes.buttonSuccess]: success,
@@ -74,6 +74,7 @@ const SaveButton = (props) => {
 			<div className={classes.wrapper}>
 				<Button
 					variant="contained"
+					size="small"
 					color="primary"
 					className={buttonClassname}
 					disabled={loading || saveDisabled}
@@ -83,7 +84,8 @@ const SaveButton = (props) => {
 					Save
 		  </Button>
 		  <Button
-					variant="contained"
+			  variant="contained"
+			  size="small"
 					onClick={(event) => {
 						event.stopPropagation();
 						onCancel();

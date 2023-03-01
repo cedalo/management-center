@@ -54,7 +54,7 @@ import { atLeastAdmin, atLeastEditor, atLeastViewer, isGroupMember } from './uti
 
 
 const useStyles = makeStyles((theme) => ({
-	
+
 }));
 
 function AppRoutes(props) {
@@ -67,21 +67,24 @@ function AppRoutes(props) {
 	if ((hasError || response) && (hasErrorConfig || responseConfig)) {
 		let hideConnections = (typeof responseConfig?.hideConnections === 'boolean') ? responseConfig?.hideConnections : false;
 		let hideInfoPage = (typeof responseConfig?.hideInfoPage === 'boolean') ? responseConfig?.hideInfoPage : false;
-	
+
 
 		//   const container = window !== undefined ? () => window().document.body : undefined;
 
 		return (
 			<Switch>
-				<Route
-					path="/security/clients/detail/:clientId"
-					component={ClientDetail}
-				/>
-				<Route path="/security/clients/new">
+				<Route path="/clients/new">
 					<ClientNew />
 				</Route>
-				<Route path="/security/clients">
+				<Route
+					path="/clients/:clientId"
+					component={ClientDetail}
+				/>
+				<Route path="/clients">
 					<Clients />
+				</Route>
+				<Route path="/inspect/clients">
+					<InspectClients />
 				</Route>
 				<Route
 					path="/security/groups/detail/:groupId"
@@ -131,23 +134,23 @@ function AppRoutes(props) {
 				<Route path="/system/status">
 					<Status />
 				</Route>
-				<Route path="/system/topics">
+				<Route path="/inspect/topics">
 					<TopicTree />
 				</Route>
 				<Route path="/system">
 					<System />
 				</Route>
-				{atLeastAdmin(userProfile) && !isGroupMember(userProfile) && <Route path="/config/connections/new">
+				{atLeastAdmin(userProfile) && !isGroupMember(userProfile) && <Route path="/connections/new">
 					<ConnectionNew />
 				</Route>}
-				{atLeastAdmin(userProfile, connection?.name) && <Route path="/config/connections/detail/:connectionId">
+				{atLeastAdmin(userProfile, connection?.name) && <Route path="/connections/:connectionId">
 					<ConnectionDetail />
 				</Route>}
-				{ !hideConnections ? <Route path="/config/connections">
+				{ !hideConnections ? <Route path="/connections">
 					<Connections />
 				</Route> : null }
 				{atLeastAdmin(userProfile) && <Route path="/config/settings">
-					<Settings />
+					<Settings onChangeTheme={props.onChangeTheme}/>
 				</Route>}
 				<Route path="/config">
 					<Config />
@@ -159,7 +162,7 @@ function AppRoutes(props) {
 					path="/admin/users/detail/:userId"
 					component={UserDetail}
 				/>
-	
+
 
 				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups/new">
 					<UserGroupNew />
@@ -188,17 +191,14 @@ function AppRoutes(props) {
 					<Users />
 				</Route>
 				<Route
-					path="/admin/clusters/detail/:clusterId"
+					path="/clusters/detail/:clusterId"
 					component={ClusterDetail}
 				/>
-				<Route path="/admin/clusters/new">
+				<Route path="/clusters/new">
 					<ClusterNew />
 				</Route>
-				<Route path="/admin/clusters">
+				<Route path="/clusters">
 					<Clusters />
-				</Route>
-				<Route path="/admin/inspect/clients">
-					<InspectClients />
 				</Route>
 				<Route path="/tools/streamsheets">
 					<Streamsheets />

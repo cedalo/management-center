@@ -1,11 +1,11 @@
 import React from 'react';
-import { SnackbarProvider } from 'notistack';
+import {SnackbarProvider} from 'notistack';
 import clsx from 'clsx';
-import { Provider, useSelector, useDispatch } from 'react-redux';
+import {Provider, useSelector, useDispatch} from 'react-redux';
 import Joyride from 'react-joyride';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import {makeStyles, useTheme} from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { ThemeProvider } from '@material-ui/core/styles';
+import {ThemeProvider} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -13,9 +13,10 @@ import Typography from '@material-ui/core/Typography';
 import MenuIcon from '@material-ui/icons/Menu';
 import IconButton from '@material-ui/core/IconButton';
 import TourIcon from '@material-ui/icons/Slideshow';
+import HelpIcon from '@material-ui/icons/HelpOutline';
 import ThemeModeIcon from '@material-ui/icons/Brightness4';
-import Container from '@material-ui/core/Container';
-import { ConfirmProvider } from 'material-ui-confirm';
+import Box from '@material-ui/core/Box';
+import {ConfirmProvider} from 'material-ui-confirm';
 import LogoutButton from './components/LogoutButton';
 import ProfileButton from './components/ProfileButton';
 import LicenseErrorDialog from './components/LicenseErrorDialog';
@@ -36,7 +37,7 @@ import useLocalStorage from './helpers/useLocalStorage';
 import OnBoardingDialog from './components/OnBoardingDialog';
 import steps from './tutorial/steps';
 
-import { BrowserRouter as Router, Switch, Route, Link as RouterLink, Redirect } from 'react-router-dom';
+import {BrowserRouter as Router, Switch, Route, Link as RouterLink, Redirect} from 'react-router-dom';
 import CustomDrawer from './components/CustomDrawer';
 import AppRoutes from './AppRoutes';
 
@@ -56,10 +57,13 @@ const file =
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		display: 'flex'
+		display: 'flex',
+		height: '100%'
 	},
-	container: {
-		paddingTop: '100px'
+	box: {
+		padding: '60px 20px 20px 20px',
+		width: '100%',
+		height: '100%',
 	},
 	logo: {
 		width: '80px',
@@ -72,7 +76,11 @@ const useStyles = makeStyles((theme) => ({
 		transition: theme.transitions.create(['width', 'margin'], {
 			easing: theme.transitions.easing.sharp,
 			duration: theme.transitions.duration.leavingScreen
-		})
+		}),
+		minHeight: '50px'
+	},
+	mainToolBar: {
+		minHeight: '50px'
 	},
 	appBarShift: {
 		marginLeft: drawerWidth,
@@ -83,7 +91,8 @@ const useStyles = makeStyles((theme) => ({
 		})
 	},
 	menuButton: {
-		marginRight: 36
+		marginRight: '12px',
+		minHeight: '50px',
 	},
 	hide: {
 		display: 'none'
@@ -99,8 +108,9 @@ const useStyles = makeStyles((theme) => ({
 		minWidth: 120
 	},
 	toolbarButton: {
-		marginTop: theme.spacing(0.8),
-		marginBottom: theme.spacing(0.2)
+		marginTop: '2px',
+		color: theme.palette.type === 'dark' ? 'white' : 'rgba(117, 117, 117)',
+		// marginBottom: theme.spacing(0.2)
 	},
 	content: {
 		flexGrow: 1,
@@ -188,154 +198,162 @@ export default function App(props) {
 			setOpen(false);
 		};
 
-		//   const container = window !== undefined ? () => window().document.body : undefined;
-
 		return (
 			<ThemeProvider theme={appliedTheme}>
 				<SnackbarProvider>
-				<Joyride
-					run={showTour}
-					continuous={true}
-					//   getHelpers={this.getHelpers}
-					scrollToFirstStep={true}
-					showProgress={true}
-					showSkipButton={true}
-					steps={steps}
-					callback={onTourStateChange}
-					styles={{
-						options: {
-							zIndex: 5000
-						}
-					}}
-				/>
-				<ConfirmProvider>
-					<CssBaseline />
-					<Router basename={process.env.PUBLIC_URL}>
-						<Provider store={store}>
-							<WebSocketProvider>
-								<div className={classes.root}>
-									<NewsletterPopup />
-									<OnBoardingDialog />
-									<Switch>
-										<Route path="/login">
-											<AppBar
-												position="fixed"
-												className={clsx(classes.appBar, {
-													[classes.appBarShift]: open
-												})}
-											>
-												<Toolbar>
-													<Typography variant="h6" noWrap></Typography>
-												</Toolbar>
-											</AppBar>
-											{/* <Container className={classes.container}>
-					<Login />
-				  </Container> */}
-										</Route>
-										<Route path="/">
-											<AppBar
-												position="fixed"
-												className={clsx(classes.appBar, {
-													[classes.appBarShift]: open
-												})}
-											>
-												<Toolbar>
-													<IconButton
-														color="inherit"
-														aria-label="open drawer"
-														onClick={handleDrawerOpen}
-														edge="start"
-														className={clsx(classes.menuButton, {
-															[classes.hide]: open
-														})}
+					<Joyride
+						run={showTour}
+						continuous={true}
+						//   getHelpers={this.getHelpers}
+						scrollToFirstStep={true}
+						showProgress={true}
+						showSkipButton={true}
+						steps={steps}
+						callback={onTourStateChange}
+						styles={{
+							options: {
+								zIndex: 5000
+							}
+						}}
+					/>
+					<ConfirmProvider>
+						<CssBaseline/>
+						<Router basename={process.env.PUBLIC_URL}>
+							<Provider store={store}>
+								<WebSocketProvider>
+									<div className={classes.root}>
+										<NewsletterPopup/>
+										<OnBoardingDialog/>
+										<Switch>
+											<Route path="/login">
+												<AppBar
+													elevation={0}
+													position="fixed"
+													className={clsx(classes.appBar, {
+														[classes.appBarShift]: open
+													})}
+												>
+													<Toolbar
+														disableGutters
+														className={classes.mainToolBar}
 													>
-														<MenuIcon />
-													</IconButton>
-													<Typography noWrap>
-														<img
-															className={clsx(classes.logo)}
-															src={
-																darkMode === 'true'
-																	? response?.dark?.logo?.path || file
-																	: response?.light?.logo?.path || file
-															}
-															style={
-																response?.light?.logo?.height &&
-																response?.light?.logo?.width && {
-																	height: response?.light?.logo?.height,
-																	width: response?.light?.logo?.width
-																}
-															}
-														/>
-													</Typography>
-													<section className={classes.rightToolbar}>
-														<FeedbackButton/>
-														<UpgradeButton/>
-														<BrokerSelect />
-														<Tooltip title="Switch mode">
-															<IconButton
-																edge="end"
-																aria-label="Theme Mode"
-																aria-controls="theme-mode"
-																aria-haspopup="true"
-																onClick={() => onChangeTheme()}
-																color="inherit"
-																className={classes.toolbarButton}
-															>
-																<ThemeModeIcon fontSize="small" />
-															</IconButton>
-														</Tooltip>
-														{ !hideInfoPage ? <InfoButton /> : null }
-														<Tooltip title="Start tour">
-															<IconButton
-																edge="end"
-																aria-label="Tour"
-																aria-controls="tour"
-																aria-haspopup="true"
-																onClick={() => handleStartTour()}
-																color="inherit"
-																className={classes.toolbarButton}
-															>
-																<TourIcon fontSize="small" />
-															</IconButton>
-														</Tooltip>
+														<Typography variant="h6" noWrap></Typography>
+													</Toolbar>
+												</AppBar>
+											</Route>
+											<Route path="/">
+												<AppBar
+													elevation={0}
+													position="fixed"
+													className={clsx(classes.appBar, {
+														[classes.appBarShift]: open
+													})}
+												>
+													<Toolbar
+														className={classes.mainToolBar}
+														style={{
+															paddingLeft: '15px'
+														}}
+													>
+														<IconButton
+															aria-label="open drawer"
+															onClick={handleDrawerOpen}
+															edge="start"
+															className={clsx(classes.menuButton, {
+																[classes.hide]: open
+															})}
+															style={{
+																color: darkMode === 'true' ? 'white' : 'rgba(117, 117, 117)',
+															}}
+														>
+															<MenuIcon/>
+														</IconButton>
+														<Typography noWrap>
+															<Typography variant="h5" style={{color: '#FD602E', fontWeight: '500'}}>
+																Management Center
+															</Typography>
+														</Typography>
+														<section className={classes.rightToolbar}>
+															<FeedbackButton/>
+															<UpgradeButton/>
+															<BrokerSelect appBar/>
+															{/*<Tooltip title="Switch mode">*/}
+															{/*	<IconButton*/}
+															{/*		edge="end"*/}
+															{/*		aria-label="Theme Mode"*/}
+															{/*		aria-controls="theme-mode"*/}
+															{/*		aria-haspopup="true"*/}
+															{/*		onClick={() => onChangeTheme()}*/}
+															{/*		color="inherit"*/}
+															{/*		className={classes.toolbarButton}*/}
+															{/*	>*/}
+															{/*		<ThemeModeIcon fontSize="small"/>*/}
+															{/*	</IconButton>*/}
+															{/*</Tooltip>*/}
+															{/*{!hideInfoPage ? <InfoButton/> : null}*/}
+															<Tooltip title="Start tour">
+																<IconButton
+																	edge="end"
+																	aria-label="Tour"
+																	aria-controls="tour"
+																	aria-haspopup="true"
+																	onClick={() => handleStartTour()}
+																	className={classes.toolbarButton}
+																	style={{
+																			color: darkMode === 'true' ? 'white' : 'rgba(117, 117, 117)',
+																		}}
 
-														{ !hideProfileButton ? <ProfileButton /> : null }
-														{ !hideLogoutButton ? <LogoutButton /> : null }
+																>
+																	<TourIcon fontSize="small"/>
+																</IconButton>
+															</Tooltip>
+															<Tooltip title="Help">
+																<IconButton
+																	edge="end"
+																	aria-label="Tour"
+																	aria-controls="tour"
+																	aria-haspopup="true"
+																	onClick={() => window.open('https://docs.cedalo.com/management-center', '_blank')}
+																	className={classes.toolbarButton}
+																	style={{
+																			color: darkMode === 'true' ? 'white' : 'rgba(117, 117, 117)',
+																		}}
 
-														{/* <IconButton
-						  edge="end"
-						  aria-label="Notifications"
-						  aria-controls="notifications"
-						  aria-haspopup="true"
-						  // onClick={() => setDarkMode(!darkMode)}
-						  color="inherit"
-						  className={classes.toolbarButton}
-						  >
-							  <NotificationsIcon />
-						  </IconButton> */}
-													</section>
-												</Toolbar>
-											</AppBar>
-											{/* <NewsDrawer /> */}
+																>
+																	<HelpIcon fontSize="small"/>
+																</IconButton>
+															</Tooltip>
 
-											<nav>
-												{/* <Hidden xsDown implementation="css"> */}
-												<CustomDrawer hideConnections={hideConnections} open={open} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} />
-											</nav>
-											<LicenseErrorDialog />
-											<DisconnectedDialog />
+															{!hideProfileButton ? <ProfileButton/> : null}
+															{!hideLogoutButton ? <LogoutButton/> : null}
+														</section>
+													</Toolbar>
+												</AppBar>
+												{/* <NewsDrawer /> */}
 
-											<Container className={classes.container}>											
-												<AppRoutes />
-											</Container>
-										</Route>
-									</Switch>
-								</div>
-							</WebSocketProvider>
-						</Provider>
-					</Router>
-				</ConfirmProvider>
+												<nav>
+													{/* <Hidden xsDown implementation="css"> */}
+													<CustomDrawer
+														hideConnections={hideConnections}
+														hideInfoPage={hideInfoPage}
+														open={open}
+														handleDrawerOpen={handleDrawerOpen}
+														handleDrawerClose={handleDrawerClose}
+													/>
+												</nav>
+												<LicenseErrorDialog/>
+												<DisconnectedDialog/>
+
+												<Box className={classes.box}>
+													<AppRoutes onChangeTheme={(mode) => setDarkMode(mode)}/>
+												</Box>
+											</Route>
+										</Switch>
+									</div>
+								</WebSocketProvider>
+							</Provider>
+						</Router>
+					</ConfirmProvider>
 				</SnackbarProvider>
 			</ThemeProvider>
 		);

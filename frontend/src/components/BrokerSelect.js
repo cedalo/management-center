@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
 import { connect } from 'react-redux';
 import { useDispatch } from 'react-redux';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import {makeStyles, useTheme, withStyles} from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import Typography from '@material-ui/core/Typography';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputBase from '@material-ui/core/InputBase';
@@ -56,15 +56,15 @@ const useStyles = makeStyles((theme) => ({
 	root: {
 		paddingLeft: '20px',
 		backgroundColor: 'rgba(255,255,255,0.2)',
-		border: 'thin solid rgba(255,255,255,0.5)',
-		color: 'white',
+		border: theme.palette.type === 'dark' ? 'thin solid rgba(255,255,255,1)' : 'thin solid rgba(0,0,0,0.5)',
+		// color: 'white',
 		fontSize: '14px'
 	},
 	label: {
 		fontSize: '12px',
 		textTransform: 'uppercase',
 		transform: 'translate(14px, 20px) scale(1)',
-		color: 'white',
+		// color: 'white',
 	},
 	formControl: {
 		// margin: theme.spacing(1),
@@ -77,16 +77,17 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sendMessage, userProfile }) => {
+const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sendMessage, userProfile, appBar }) => {
 	const classes = useStyles();
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
+	const theme = useTheme();
 	const [connection, setConnection] = React.useState('');
 
 	React.useEffect(() => {
 		setConnection(currentConnectionName);
 	}, [currentConnectionName]);
-	
+
 	const handleConnectionChangeOuter = async (event) => {
 		const connectionID = event.target.value;
 		const { client } = context;
@@ -95,15 +96,33 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 	};
 
 	return brokerConnections ? (
-		<FormControl id="connection-select" variant="outlined" className={classes.formControl}>
-			<InputLabel
-				id="broker-select-outlined-label"
-				classes={{
-					root: classes.label
-				}}
-			>
-				Connection
-			</InputLabel>
+		<FormControl
+			id="connection-select"
+			variant="outlined"
+			className={classes.formControl}
+			style={{
+				flexDirection: appBar ? 'row' : 'column'
+			}}
+		>
+			{appBar ?
+				<Typography
+					variant="subtitle2"
+					style={{
+						color: theme.palette.type === 'dark' ? 'white' : 'rgba(117, 117, 117)',
+						margin: '5px 10px'
+					}}
+				>
+					Connection:
+				</Typography> :
+				<InputLabel
+					id="broker-select-outlined-label"
+					classes={{
+						root: classes.label
+					}}
+				>
+					Connection
+				</InputLabel>
+			}
 			<Select
 				// displayEmpty
 				defaultValue={currentConnectionName}

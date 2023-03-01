@@ -414,7 +414,7 @@ const init = async (licenseContainer) => {
 			// 	}
 			// });
 			//   });
-	
+
 			brokerClient.on('message', (topic, message, packet) => {
 				if (topic.startsWith('$SYS')) {
 					updateSystemTopics(system, topic, message, packet);
@@ -489,7 +489,7 @@ const init = async (licenseContainer) => {
 		}
 	}
 	console.log(`Starting Mosquitto proxy server at ${protocol}://${host}:${port}`);
-	
+
 
 	// TODO: move somewhere else
 	const userCanAccessAPI = (user, api, connection) => {
@@ -659,7 +659,7 @@ const init = async (licenseContainer) => {
 					const testClient = new NodeMosquittoClient({
 						/* logger: console */
 					});
-          
+
           			const filteredConnection = configManager.filterConnectionObject(connection);
 					filteredConnection.reconnectPeriod = 0; // add reconnectPeriod to MQTTjsClient so that it does not try to constantly reconnect on unsuccessful connection
 
@@ -1098,7 +1098,7 @@ const init = async (licenseContainer) => {
 		);
 	});
 
-	router.get('/*', 
+	router.get('/*',
 		(request, response, next) => {
 			if (request.path.includes('.png')) {
 				next();

@@ -1,43 +1,37 @@
-import { lightGreen, purple } from '@material-ui/core/colors';
-
-import { Alert, AlertTitle } from '@material-ui/lab';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import Chip from '@material-ui/core/Chip';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import {makeStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
+import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import DeleteIcon from '@material-ui/icons/Delete';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import {Alert, AlertTitle} from '@material-ui/lab';
 import TreeItem from '@material-ui/lab/TreeItem';
 import TreeView from '@material-ui/lab/TreeView';
-import Typography from '@material-ui/core/Typography';
-import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
-import Button  from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { WebSocketContext } from '../websockets/WebSocket';
-import DeleteIcon from '@material-ui/icons/Delete';
-
 import moment from 'moment';
+import PropTypes from 'prop-types';
+import React, {useEffect} from 'react';
+import {connect} from 'react-redux';
+import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBreadCrumbs from './ContainerBreadCrumbs';
+import ContainerHeader from './ContainerHeader';
 
 
 const useStyles = makeStyles((theme) => ({
 	root: {
 		height: '100%',
-		minHeight: '500px',
 		flexGrow: 1,
-		maxWidth: 400
 	},
 	table: {
 		'& tr:nth-child(2), & td:nth-child(2)': {
@@ -51,11 +45,13 @@ const useStyles = makeStyles((theme) => ({
 		verticalAlign: 'top'
 	},
 	paper: {
-		padding: theme.spacing(2),
+		// padding: theme.spacing(2),
 		height: '100%'
 	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+	leftBorder: {
+		borderLeft: `1px solid ${theme.palette.divider}`,
+		paddingLeft: '10px'
+	}
 }));
 
 
@@ -82,7 +78,7 @@ const isJSON = (text) => text?.startsWith('{') || text?.startsWith('[');
 
 const useTreeItemStyles = makeStyles((theme) => ({
 	root: {
-		color: theme.palette.text.secondary
+		color: theme.palette.text.primary
 		//   '&:hover > $content': {
 		// 	backgroundColor: theme.palette.action.hover,
 		//   },
@@ -92,22 +88,6 @@ const useTreeItemStyles = makeStyles((theme) => ({
 		//   },
 		//   '&:focus > $content $label, &:hover > $content $label, &$selected > $content $label': {
 		// 	backgroundColor: 'transparent',
-		//   },
-	},
-	content: {
-		//   color: theme.palette.text.secondary,
-		//   borderTopRightRadius: theme.spacing(2),
-		//   borderBottomRightRadius: theme.spacing(2),
-		//   paddingRight: theme.spacing(1),
-		//   fontWeight: theme.typography.fontWeightMedium,
-		//   '$expanded > &': {
-		// 	fontWeight: theme.typography.fontWeightRegular,
-		//   },
-	},
-	group: {
-		//   marginLeft: 0,
-		//   '& $content': {
-		// 	paddingLeft: theme.spacing(2),
 		//   },
 	},
 	expanded: {},
@@ -131,6 +111,7 @@ const useTreeItemStyles = makeStyles((theme) => ({
 		flexGrow: 1
 	}
 }));
+
 function StyledTreeItem(props) {
 	const classes = useTreeItemStyles();
 	const {
@@ -156,23 +137,25 @@ function StyledTreeItem(props) {
 					</Typography>
 					{message && (
 						<Tooltip title="Message body">
-							<Typography variant="caption" color="inherit" className={classes.label}>
-								<Chip size="small" label={shortenString(message)} color="primary" />
+							<Typography style={{minWidth: '240px'}} variant="body2" color="inherit"
+										className={classes.label}>
+								{shortenString(message)}
 							</Typography>
 						</Tooltip>
 					)}
 					{(topicsCounter || topicsCounter === 0) && (
 						<Tooltip title="Number of subtopics">
-							<Typography variant="caption" color="inherit" className={classes.label}>
-								{/* <strong>Topics:</strong><span>{topicsCounter} </span> */}
-								<Chip size="small" label={topicsCounter} style={{ backgroundColor: '#ff9800' }} />
+							<Typography style={{minWidth: '75px'}} variant="body2" color="textPrimary"
+										className={classes.label}>
+								{topicsCounter}
 							</Typography>
 						</Tooltip>
 					)}
 					{labelInfo && (
 						<Tooltip title="Number of messages">
-							<Typography variant="caption" color="inherit" className={classes.label}>
-								<Chip size="small" label={labelInfo} style={{ backgroundColor: '#f50057' }} />
+							<Typography style={{minWidth: '126px'}} variant="body2" color="inherit"
+										className={classes.label}>
+								{labelInfo}
 							</Typography>
 						</Tooltip>
 					)}
@@ -225,7 +208,7 @@ const generateTreeData = (id, name, object, index = 0) => {
 	return node;
 };
 
-const TopicTree = ({ topicTree, lastUpdated, currentConnectionName, settings, topicTreeRestFeature }) => {
+const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, topicTreeRestFeature}) => {
 	const classes = useStyles();
 	const [error, setError] = React.useState({occured: false, message: ''})
 	const [messageHistory, setMessageHistory] = React.useState([]);
@@ -233,7 +216,7 @@ const TopicTree = ({ topicTree, lastUpdated, currentConnectionName, settings, to
 	const [selectedNodeId, setSelectedNodeId] = React.useState('');
 	const [isLoading, setIsLoading] = React.useState(false);
 	const context = React.useContext(WebSocketContext);
-	const { client } = context;
+	const {client} = context;
 
 
 	useEffect(() => {
@@ -254,7 +237,7 @@ const TopicTree = ({ topicTree, lastUpdated, currentConnectionName, settings, to
 		current._received = Date.now();
 		if (current._message !== selectedNode?._message // if new message
 			&& current._messagesCounter > selectedNode?._messagesCounter) // quick fix
-			{
+		{
 			setSelectedNode(current);
 			messageHistory.unshift(current);
 			setMessageHistory(messageHistory.slice(0, 51));
@@ -300,7 +283,7 @@ const TopicTree = ({ topicTree, lastUpdated, currentConnectionName, settings, to
 		try {
 			setIsLoading(true);
 			await client.clearTopicTreeCache();
-		} catch(error) {
+		} catch (error) {
 			setError({occured: true, message: 'Something went wrong when clearing cache'})
 		}
 	};
@@ -308,146 +291,158 @@ const TopicTree = ({ topicTree, lastUpdated, currentConnectionName, settings, to
 
 	return (
 		<div>
-			<Breadcrumbs aria-label="breadcrumb">
-				<RouterLink className={classes.breadcrumbLink} to="/home">
-					Home
-				</RouterLink>
-				<RouterLink className={classes.breadcrumbLink} to="/system">
-					System
-				</RouterLink>
-				<Typography className={classes.breadcrumbItem} color="textPrimary">
-					Topic Tree
-				</Typography>
-			</Breadcrumbs>
-			{(topicTreeRestFeature?.supported) ?
-			<>
-				<Grid
-					container justify="flex-end"
-				>
-					<Button 
-						style={{backgroundColor: '#f50057'}}
-						onClick={clearTopicTreeCache}
-						startIcon={isLoading ? <CircularProgress color="white" style={{width: "20px", height: "auto"}}/> : <DeleteIcon />}
+			<ContainerBreadCrumbs title="Topic Tree"
+								  links={[{name: 'Home', route: '/home'}, {name: 'Inspect', route: '/Inspect'}]}/>
+			<div style={{height: 'calc(100% - 26px)'}}>
+				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
+					<ContainerHeader
+						title="Inspect Topic Tree"
+						subTitle="Topic tree show an overview of all topics that have been adressed by a client. If you
+						click on a topic additional information for the topic will be displayed right to the tree."
 					>
-						Clear Cache
-					</Button>
-				</Grid>
-			</> : null}
-			{(settings?.topicTreeEnabled === false) ? <><br/><Alert severity="warning">
-				<AlertTitle>Topic tree not enabled</AlertTitle>
-				The MMC is currently not collecting topic tree data. If you want to collect data, please enable the topic tree feature in the settings page.
-				Note that if you enable this setting and the MMC is collecting topic tree data, the performance of the MMC backend might decrease.
-			</Alert></> : null}
-			{(error.occured) ? <><br/><Alert severity="error">
-				<AlertTitle>An error has occured</AlertTitle>
-				{error.message}
-			</Alert></> : null}
-			<br />
+						{(topicTreeRestFeature?.supported) ?
+							<Button
+								variant="outlined"
+								color="primary"
+								onClick={clearTopicTreeCache}
+								startIcon={isLoading ?
+									<CircularProgress color="white" style={{width: "20px", height: "auto"}}/> :
+									<DeleteIcon/>}
+							>
+								Clear Cache
+							</Button> : null}
+					</ContainerHeader>
 
-			<Grid container spacing={3}>
-				<Grid item xs={6}>
-					<Paper className={classes.paper}>
-						<TreeView
-							className={classes.root}
-							defaultCollapseIcon={<ExpandMoreIcon />}
-							defaultExpandIcon={<ChevronRightIcon />}
-							// defaultExpanded={["topic-tree-root"]}
-						>
-							{renderTree(data)}
-						</TreeView>
-					</Paper>
-				</Grid>
-				<Grid item xs={6}>
-					<Paper className={classes.paper}>
-						<TableContainer component={Paper} className={classes.table}>
-							<Table size="medium">
-								<TableBody>
-									{selectedNode?._name && (
-										<TableRow>
-											<TableCell>
-												<strong>Name</strong>
-											</TableCell>
-											<TableCell>{selectedNode?._name}</TableCell>
-										</TableRow>
-									)}
-									{selectedNode?._topic && (
-										<TableRow>
-											<TableCell>
-												<strong>Topic</strong>
-											</TableCell>
-											<TableCell>{selectedNode?._topic}</TableCell>
-										</TableRow>
-									)}
-									{selectedNode?._created && (
-										<TableRow>
-											<TableCell>
-												<strong>Created</strong>
-											</TableCell>
-											<TableCell>{moment(selectedNode?._created).format('LLLL')}</TableCell>
-										</TableRow>
-									)}
-									{selectedNode?._lastModified && (
-										<TableRow>
-											<TableCell>
-												<strong>Last modified</strong>
-											</TableCell>
-											<TableCell>{moment(selectedNode?._lastModified).format('LLLL')}</TableCell>
-										</TableRow>
-									)}
-									{typeof selectedNode?._qos === 'number' && (
-										<TableRow>
-											<TableCell>
-												<strong>QoS</strong>
-											</TableCell>
-											<TableCell>{selectedNode?._qos}</TableCell>
-										</TableRow>
-									)}
-									{(selectedNode?._retain === false || selectedNode?._retain === true) && (
-										<TableRow>
-											<TableCell>
-												<strong>Retain</strong>
-											</TableCell>
-											<TableCell>{selectedNode?._retain ? 'yes' : 'no'}</TableCell>
-										</TableRow>
-									)}
-									{selectedNode?._topicsCounter >= 0 && (
-										<TableRow>
-											<TableCell>
-												<strong>Sub topics</strong>
-											</TableCell>
-											<TableCell>{selectedNode?._topicsCounter}</TableCell>
-										</TableRow>
-									)}
-									{selectedNode?._messagesCounter && (
-										<TableRow>
-											<TableCell>
-												<strong>Total messages</strong>
-											</TableCell>
-											<TableCell>{selectedNode?._messagesCounter}</TableCell>
-										</TableRow>
-									)}
-									{/* {selectedNode?._message && selectedNode?._message.startsWith('{') && ( */}
-									{selectedNode?._message && (
-										<TableRow>
-											<TableCell 
-												className={classes.payloadHistory}
-											>
-												<strong>Payload</strong>
-											</TableCell>
-											<TableCell>
-												<TextareaAutosize
-													className={classes.payloadDetail}
-													rows={5}
-													value={
-														isJSON(selectedNode?._message)
-														? prettifyJSON(selectedNode?._message)
-														: selectedNode?._message
-													}
-												/>
-											</TableCell>
-										</TableRow>
-									)}
-									{/* {selectedNode?._message && !selectedNode?._message.startsWith('{') && (
+					{(settings?.topicTreeEnabled === false) ? <><br/><Alert severity="warning">
+						<AlertTitle>Topic tree not enabled</AlertTitle>
+						The MMC is currently not collecting topic tree data. If you want to collect data, please enable
+						the topic tree feature in the settings page.
+						Note that if you enable this setting and the MMC is collecting topic tree data, the performance
+						of the MMC backend might decrease.
+					</Alert></> : null}
+					{(error.occured) ? <><br/><Alert severity="error">
+						<AlertTitle>An error has occured</AlertTitle>
+						{error.message}
+					</Alert></> : null}
+
+					<Grid container spacing={3}>
+						<Grid item xs={8}>
+							<div className={classes.paper}>
+								<div style={{display: 'grid',  gridTemplateColumns: 'auto 241px 80px 130px', marginBottom: '8px'}}>
+									<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+										Name
+									</Typography>
+									<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+										Payload
+									</Typography>
+									<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+										Subtopics
+									</Typography>
+									<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+										Messages
+									</Typography>
+								</div>
+								<TreeView
+									className={classes.root}
+									defaultCollapseIcon={<ExpandMoreIcon/>}
+									defaultExpandIcon={<ChevronRightIcon/>}
+									// defaultExpanded={["topic-tree-root"]}
+								>
+									{renderTree(data)}
+								</TreeView>
+							</div>
+						</Grid>
+						<Grid item xs={4}>
+							<Box className={classes.leftBorder}>
+								{selectedNode?._topic && (
+									<TextField
+										id="topicpath"
+										label="Topic Path"
+										value={selectedNode?._topic}
+										variant="outlined"
+										fullWidth
+										size="small"
+										margin="dense"
+										InputProps={{
+											readOnly: true,
+										}}
+									/>
+								)}
+								<TableContainer className={classes.table}>
+									<Table size="medium">
+										<TableBody>
+											{selectedNode?._created && (
+												<TableRow>
+													<TableCell>
+														<strong>Created</strong>
+													</TableCell>
+													<TableCell>{moment(selectedNode?._created).format(
+														'LLLL')}</TableCell>
+												</TableRow>
+											)}
+											{selectedNode?._lastModified && (
+												<TableRow>
+													<TableCell>
+														<strong>Last modified</strong>
+													</TableCell>
+													<TableCell>{moment(selectedNode?._lastModified).format(
+														'LLLL')}</TableCell>
+												</TableRow>
+											)}
+											{typeof selectedNode?._qos === 'number' && (
+												<TableRow>
+													<TableCell>
+														<strong>QoS</strong>
+													</TableCell>
+													<TableCell>{selectedNode?._qos}</TableCell>
+												</TableRow>
+											)}
+											{(selectedNode?._retain === false || selectedNode?._retain === true) && (
+												<TableRow>
+													<TableCell>
+														<strong>Retain</strong>
+													</TableCell>
+													<TableCell>{selectedNode?._retain ? 'yes' : 'no'}</TableCell>
+												</TableRow>
+											)}
+											{selectedNode?._topicsCounter >= 0 && (
+												<TableRow>
+													<TableCell>
+														<strong>Sub topics</strong>
+													</TableCell>
+													<TableCell>{selectedNode?._topicsCounter}</TableCell>
+												</TableRow>
+											)}
+											{selectedNode?._messagesCounter && (
+												<TableRow>
+													<TableCell>
+														<strong>Total messages</strong>
+													</TableCell>
+													<TableCell>{selectedNode?._messagesCounter}</TableCell>
+												</TableRow>
+											)}
+											{/* {selectedNode?._message && selectedNode?._message.startsWith('{') && ( */}
+											{selectedNode?._message && (
+												<TableRow>
+													<TableCell
+														className={classes.payloadHistory}
+													>
+														<strong>Payload</strong>
+													</TableCell>
+													<TableCell>
+														<TextareaAutosize
+															className={classes.payloadDetail}
+															rows={5}
+															value={
+																isJSON(selectedNode?._message)
+																	? prettifyJSON(selectedNode?._message)
+																	: selectedNode?._message
+															}
+														/>
+													</TableCell>
+												</TableRow>
+											)}
+											{/* {selectedNode?._message && !selectedNode?._message.startsWith('{') && (
 										<TableRow>
 											<TableCell>
 												<strong>Payload</strong>
@@ -455,51 +450,53 @@ const TopicTree = ({ topicTree, lastUpdated, currentConnectionName, settings, to
 											<TableCell>{selectedNode?._message}</TableCell>
 										</TableRow>
 									)} */}
-								</TableBody>
-							</Table>
-						</TableContainer>
-						<TableContainer component={Paper} className={classes.table}>
-							<Table size="medium">
-								<TableBody>
-									{/* TODO: extract as component */}
-									{messageHistory ? messageHistory.map((entry, index) => {
-										if (index > 0) {
-											// if (entry?._message && entry?._message.startsWith('{')) {
-											if (entry?._message) {
-												return <TableRow>
-													<TableCell 
-														className={classes.payloadHistory}
-													>
-														<strong>{moment(entry._received).format('HH:mm:ss:SSS')}</strong>
-													</TableCell>
-													<TableCell>
-														<TextareaAutosize
-															className={classes.payloadDetail}
-															rows={5}
-															value={
-																isJSON(entry?._message)
-																? prettifyJSON(entry?._message)
-																: entry?._message
-															}
-														/>
-													</TableCell>
-												</TableRow>
-											// } else if(entry?._message && !entry?._message.startsWith('{')) {
-											// 	return <TableRow>
-											// 		<TableCell>
-											// 			<strong>{moment(entry._received).format('HH:mm:ss:SSS')}</strong>
-											// 		</TableCell>
-											// 		<TableCell>{entry?._message}</TableCell>
-											// 	</TableRow>
-											}
-										}
-									}) : null }
-								</TableBody>
-							</Table>
-						</TableContainer>
-					</Paper>
-				</Grid>
-			</Grid>
+										</TableBody>
+									</Table>
+								</TableContainer>
+								<TableContainer component={Paper} className={classes.table}>
+									<Table size="medium">
+										<TableBody>
+											{/* TODO: extract as component */}
+											{messageHistory ? messageHistory.map((entry, index) => {
+												if (index > 0) {
+													// if (entry?._message && entry?._message.startsWith('{')) {
+													if (entry?._message) {
+														return <TableRow>
+															<TableCell
+																className={classes.payloadHistory}
+															>
+																<strong>{moment(entry._received).format(
+																	'HH:mm:ss:SSS')}</strong>
+															</TableCell>
+															<TableCell>
+																<TextareaAutosize
+																	className={classes.payloadDetail}
+																	rows={5}
+																	value={
+																		isJSON(entry?._message)
+																			? prettifyJSON(entry?._message)
+																			: entry?._message
+																	}
+																/>
+															</TableCell>
+														</TableRow>
+														// } else if(entry?._message &&
+														// !entry?._message.startsWith('{')) { return <TableRow>
+														// <TableCell>
+														// <strong>{moment(entry._received).format('HH:mm:ss:SSS')}</strong>
+														// </TableCell> <TableCell>{entry?._message}</TableCell>
+														// </TableRow>
+													}
+												}
+											}) : null}
+										</TableBody>
+									</Table>
+								</TableContainer>
+							</Box>
+						</Grid>
+					</Grid>
+				</div>
+			</div>
 			{topicTree && <div style={{
 				fontSize: '0.9em',
 				position: 'absolute',

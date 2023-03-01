@@ -18,18 +18,13 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
-const Settings = ({ settings, sendMessage }) => {
+const Settings = ({ settings, onChangeTheme, sendMessage }) => {
 	const classes = useStyles();
-	const theme = useTheme();
 	const { enqueueSnackbar } = useSnackbar();
 	const dispatch = useDispatch();
 	const context = useContext(WebSocketContext);
 	const { client: brokerClient } = context;
-	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
-
-	const onChangeTheme = () => {
-		setDarkMode(darkMode === 'true' ? 'false' : 'true');
-	};
+	const [darkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
 
 	const onChangeAllowTrackingUsageData = async (allowTrackingUsageData) => {
 		try {
@@ -70,22 +65,18 @@ const Settings = ({ settings, sendMessage }) => {
 					Settings
 				</Typography>
 			</Breadcrumbs>
-			<br />
-			{/* <FormGroup row>
+			<FormGroup>
 				<FormControlLabel
 					control={
 						<Switch
 							checked={darkMode === 'true'}
-							disabled
-							onChange={onChangeTheme}
+							onChange={(event) => onChangeTheme(event.target.checked)}
 							name="darkMode"
 							color="primary"
 						/>
 					}
 					label="Dark Mode"
 				/>
-			</FormGroup> */}
-			<FormGroup row>
 				<FormControlLabel
 					control={
 						<Switch
@@ -104,8 +95,6 @@ const Settings = ({ settings, sendMessage }) => {
 					}
 					label="Allow tracking of usage data"
 				/>
-			</FormGroup>
-			<FormGroup row>
 				<FormControlLabel
 					control={
 						<Switch

@@ -54,11 +54,11 @@ const useStyles = makeStyles((theme) => ({
 	},
 	buttons: {
 		'& > *': {
-			margin: theme.spacing(1)
+			// margin: theme.spacing(1)
 		}
 	},
 	margin: {
-		margin: theme.spacing(1)
+		// margin: theme.spacing(1)
 	},
 	breadcrumbItem: theme.palette.breadcrumbItem,
 	breadcrumbLink: theme.palette.breadcrumbLink
@@ -68,12 +68,12 @@ const getNodeIcon = (node) => {
 	if (node?.error) {
 		return <Tooltip title={node.error.message} aria-label="FailedNode">
 			<ErrorIcon style={{ color: red[500] }} />
-		</Tooltip> 
+		</Tooltip>
 	} else {
 		if (node?.leader) {
 			return <Tooltip title="Leader" aria-label="Leader">
 				<LeaderIcon style={{ color: green[500] }} />
-			</Tooltip> 
+			</Tooltip>
 		} else {
 			return <Tooltip title="Follower" aria-label="Follower">
 				<FollowerIcon />
@@ -206,10 +206,7 @@ const ClusterDetail = (props) => {
 			<RouterLink className={classes.breadcrumbLink} to="/home">
 				Home
 			</RouterLink>
-			<RouterLink className={classes.breadcrumbLink} color="inherit" to="/admin">
-				Admin
-			</RouterLink>
-			<RouterLink className={classes.breadcrumbLink} to="/admin/clusters">
+			<RouterLink className={classes.breadcrumbLink} to="/clusters">
 				Clusters
 			</RouterLink>
 			<Typography className={classes.breadcrumbItem} color="textPrimary">
@@ -223,6 +220,7 @@ const ClusterDetail = (props) => {
 					<Grid container spacing={1} alignItems="flex-end">
 						<Grid item xs={12} sm={4}>
 							<TextField
+								size="small"
 								required={editMode}
 								disabled={true}
 								id="clustername"
@@ -236,6 +234,7 @@ const ClusterDetail = (props) => {
 						</Grid>
 						<Grid item xs={12} sm={8}>
 							<TextField
+								size="small"
 								disabled={!editMode}
 								id="description"
 								label="Description"
@@ -265,10 +264,11 @@ const ClusterDetail = (props) => {
 										avatar={getNodeIcon(node)}
 										subheader={node.broker}
 									/>
-									<CardContent>
+									<CardContent style={{paddingTop: '0px'}} >
 										<Grid container spacing={1} alignItems="flex-end">
 											<Grid item xs={12}>
 												<TextField
+													size="small"
 													disabled={true}
 													id={node?.nodeId}
 													label="Node ID"
@@ -281,6 +281,7 @@ const ClusterDetail = (props) => {
 											</Grid>
 											<Grid item xs={12}>
 												<TextField
+													size="small"
 													disabled={true}
 													id={node?.address}
 													label="Address"
@@ -293,6 +294,7 @@ const ClusterDetail = (props) => {
 											</Grid>
 											<Grid item xs={12}>
 												<TextField
+													size="small"
 													disabled={true}
 													label="Port"
 													value={node?.port}
@@ -346,7 +348,7 @@ const ClusterDetail = (props) => {
 																	}}
 																/>
 															}
-															label="Use LTS" 
+															label="Use LTS"
 														/>
 													</Tooltip>
 												</Grid> */}
@@ -371,7 +373,8 @@ const ClusterDetail = (props) => {
 			{!editMode && (
 				<Grid item xs={12} className={classes.buttons}>
 					<Button
-						variant="contained"
+						variant="outlined"
+						size="small"
 						color="primary"
 						className={classes.button}
 						startIcon={<EditIcon />}
@@ -385,7 +388,8 @@ const ClusterDetail = (props) => {
 				<>
 					<Grid item xs={12} className={classes.buttons}>
 						<Button
-							variant="contained"
+							variant="outlined"
+							size="small"
 							color="primary"
 							className={classes.button}
 							startIcon={<AddIcon />}
@@ -396,7 +400,8 @@ const ClusterDetail = (props) => {
 					</Grid>
 					<Grid item xs={12} className={classes.buttons}>
 						<Button
-							variant="contained"
+							variant="outlined"
+							size="small"
 							disabled={!validate()}
 							color="primary"
 							className={classes.button}
@@ -409,7 +414,8 @@ const ClusterDetail = (props) => {
 							Save
 						</Button>
 						<Button
-							variant="contained"
+							variant="outlined"
+							size="small"
 							onClick={(event) => {
 								event.stopPropagation();
 								onCancelEdit();
@@ -433,7 +439,7 @@ const ClusterDetail = (props) => {
 			/>
 		</Paper>
 	</div>) : (
-		<Redirect to="/admin/clusters" push />
+		<Redirect to="/clusters" push />
 	);
 };
 
