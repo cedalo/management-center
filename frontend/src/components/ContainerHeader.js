@@ -14,7 +14,7 @@ export default function ConnectionHeader(props) {
 				<Typography style={{fontSize: '10pt'}}>
 					{props.subTitle}
 				</Typography>
-				<div style={{marginLeft: '15px', minWidth: '140px'}}>
+				<div style={{marginLeft: '15px', minWidth: '160px'}}>
 					{props.children}
 				</div>
 			</div>

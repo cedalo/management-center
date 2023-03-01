@@ -9,8 +9,6 @@ const theme = createTheme({
 		},
 		secondary: {
 			main: '#7c88cc'
-			//   main: '#009688',
-			//   main: '#ffcd38',
 		},
 		menuItem: {
 			color: '#FD602E',
@@ -19,7 +17,6 @@ const theme = createTheme({
 			main: red.A400
 		},
 		background: {
-			// default: 'rgb(254, 249, 248)'
 			default: 'white'
 		},
 		breadcrumbItem: {
