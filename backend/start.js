@@ -1095,6 +1095,7 @@ const init = async (licenseContainer) => {
 		} else if (fs.existsSync(mediaFilePath)) {
 			response.sendFile(mediaFilePath);
 		} else {
+			response.status(404);
 			response.sendFile(path.join(__dirname, 'public', 'index.html'));
 		}
 	});
