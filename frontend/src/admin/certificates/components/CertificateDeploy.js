@@ -36,6 +36,7 @@ import ContainerHeader from '../../../components/ContainerHeader';
 import { WebSocketContext } from '../../../websockets/WebSocket';
 import { ErrorHint } from './AlertHint';
 import ContentContainer from './ContentContainer';
+import { getConnectionInfo } from './certutils';
 
 const CustomInput = withStyles((theme) => ({
 	root: {
@@ -141,16 +142,7 @@ const ConnectionSelect = ({ connections, selected = {}, onSelect }) => {
 	);
 };
 
-const normalize = (host = '') => {
-	if (host.startsWith('//')) return host.substring(2);
-	if (host.startsWith('/')) return host.substring(1);
-	return host;
-};
-const getConnectionInfo = (connection) => {
-	const { id, name, url = '' } = connection;
-	const parts = url.split(':');
-	return { id, name, protocol: parts[0], host: normalize(parts[1]), port: parts[2] };
-};
+
 const listenerKey = (listener, host) => `${listener.host || host}:${listener.port}:${listener.tls}`;
 const markUsedListeners = (certificate, connection, listeners) => {
 	const { host } = connection;

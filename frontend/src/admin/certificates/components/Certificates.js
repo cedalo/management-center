@@ -14,6 +14,7 @@ import ChipsList from './ChipsList';
 import ContentContainer from './ContentContainer';
 import ContentTable from './ContentTable';
 import CertificateDeleteDialog from './CertificateDeleteDialog';
+import { getUsedConnections } from './certutils';
 
 const StyledTableRow = withStyles((theme) => ({
 	root: {
@@ -41,7 +42,7 @@ const CERT_TABLE_COLUMNS = [
 const hasLicenseFeature = (name) => (license) => !!license?.features.some((feature) => feature.name === name);
 const isLicensed = hasLicenseFeature('cert-management');
 
-const CustomTableRow = ({ cert, handleDelete }) => {
+const CustomTableRow = ({ cert, connections, handleDelete }) => {
 	const history = useHistory();
 
 	const onDelete = (event) => {
@@ -64,7 +65,7 @@ const CustomTableRow = ({ cert, handleDelete }) => {
 				<TableCell>{cert.filename}</TableCell>
 				<BadgesCell>
 					<ChipsList
-						values={(cert.connections || []).map((conn) => ({
+						values={(getUsedConnections(connections, cert.listeners)).map((conn) => ({
 							label: conn.name
 						}))}
 					/>
@@ -88,7 +89,7 @@ const CustomTableRow = ({ cert, handleDelete }) => {
 	);
 };
 
-const Certificates = ({ isCertSupported, doSort, sortBy, sortDirection }) => {
+const Certificates = ({ connections, isCertSupported, doSort, sortBy, sortDirection }) => {
 	// const navigate = useNavigate();
 	const history = useHistory();
 	const { enqueueSnackbar } = useSnackbar();
@@ -154,7 +155,7 @@ const Certificates = ({ isCertSupported, doSort, sortBy, sortDirection }) => {
 						</ContainerHeader>
 						<ContentTable columns={CERT_TABLE_COLUMNS}>
 							{certs.map((cert) => (
-								<CustomTableRow cert={cert} handleDelete={handleDeleteCert} />
+								<CustomTableRow cert={cert} connections={connections} handleDelete={handleDeleteCert} />
 							))}
 						</ContentTable>
 					</>
@@ -171,7 +172,8 @@ const Certificates = ({ isCertSupported, doSort, sortBy, sortDirection }) => {
 
 const mapStateToProps = (state) => {
 	return {
-		connection: state.brokerConnections?.currentConnection,
+		// connection: state.brokerConnections?.currentConnection,
+		connections: state.brokerConnections?.brokerConnections,
 		isCertSupported: isLicensed(state.license?.license)
 	};
 };
