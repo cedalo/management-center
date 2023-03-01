@@ -202,7 +202,7 @@ const Plugins = (props) => {
 										{isEnableNextStartupLoading[plugin.id] ?
 											<CircularProgress color="primary" style={{width: "25px", height: "auto"}}/>
 												:
-											<Tooltip title={plugin.type !== 'os' ? 'Whether to attempt enabling this plugin on the next MMC startup' : 'Base plugins cannot be disabled'}>
+											<Tooltip title={plugin.type !== 'os' ? 'Whether to enable this plugin on next MMC startup' : 'Base plugins cannot be disabled'}>
 												<Checkbox
 													checked={plugin.enableAtNextStartup || plugin.type === 'os'}
 													disabled={plugin.type === 'os' || isLicenseCheckFailed(plugin)}

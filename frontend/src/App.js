@@ -25,6 +25,8 @@ import InfoButton from './components/InfoButton';
 import customTheme from './theme';
 import darkTheme from './theme-dark';
 import NewsletterPopup from './components/NewsletterPopup';
+import UpgradeButton from './components/UpgradeButton';
+import FeedbackButton from './components/FeedbackButton';
 // import Login from "./components/Login";
 import store from './store';
 import WebSocketProvider from './websockets/WebSocket';
@@ -108,6 +110,7 @@ const useStyles = makeStyles((theme) => ({
 		width: 500
 	}
 }));
+
 
 export default function App(props) {
 	// const { window } = props;
@@ -266,6 +269,8 @@ export default function App(props) {
 														/>
 													</Typography>
 													<section className={classes.rightToolbar}>
+														<FeedbackButton/>
+														<UpgradeButton/>
 														<BrokerSelect />
 														<Tooltip title="Switch mode">
 															<IconButton

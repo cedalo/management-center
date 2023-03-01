@@ -50,7 +50,7 @@ import TestEdit from './components/TestEdit';
 import TestCollections from './components/TestCollections';
 import TestCollectionDetail from './components/TestCollectionDetail';
 import ApplicationTokens from './components/ApplicationTokens';
-import { atLeastAdmin, atLeastEditor, atLeastViewer } from './utils/accessUtils/access';
+import { atLeastAdmin, atLeastEditor, atLeastViewer, isGroupMember } from './utils/accessUtils/access';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -122,9 +122,12 @@ function AppRoutes(props) {
 				{atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams/new">
 					<StreamNew />
 				</Route>}
-				{atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams">
+				{/* {atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams">
+					<Streams /> //* when refreshing the page this line will always redirect to dashboard because at the time of refresh user is none and permission checks fails, then redirect happens
+				</Route>} */}
+				<Route path="/streams">
 					<Streams />
-				</Route>}
+				</Route>
 				<Route path="/system/status">
 					<Status />
 				</Route>
@@ -134,7 +137,7 @@ function AppRoutes(props) {
 				<Route path="/system">
 					<System />
 				</Route>
-				{atLeastAdmin(userProfile) && <Route path="/config/connections/new">
+				{atLeastAdmin(userProfile) && !isGroupMember(userProfile) && <Route path="/config/connections/new">
 					<ConnectionNew />
 				</Route>}
 				{atLeastAdmin(userProfile, connection?.name) && <Route path="/config/connections/detail/:connectionId">
@@ -164,13 +167,19 @@ function AppRoutes(props) {
 				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups/detail/:groupId"
 						component={UserGroupDetail}
 				/>}
-				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups">
+				<Route path="/admin/user-groups">
 					<SortableTablePage Component={UserGroups} />
-				</Route>}
+				</Route>
+				{/* {atLeastAdmin(userProfile) && <Route path="/admin/user-groups">
+					<SortableTablePage Component={UserGroups} />
+				</Route>} */}
 
-				{atLeastAdmin(userProfile) && <Route path="/admin/tokens">
+				{/* {atLeastAdmin(userProfile) && <Route path="/admin/tokens">
 					<ApplicationTokens />
-				</Route>}
+				</Route>} */}
+				<Route path="/admin/tokens">
+					<ApplicationTokens />
+				</Route>
 
 				<Route path="/admin/users/new">
 					<UserNew />
@@ -230,7 +239,7 @@ const mapStateToProps = (state) => {
 		userProfile: state.userProfile?.userProfile,
 		userManagementFeature: state.systemStatus?.features?.usermanagement,
 		selectedConnectionToEdit: state.brokerConnections?.selectedConnectionToEdit,
-		currentConnectionName: state.brokerConnections.currentConnectionName,
+		currentConnectionName: state.brokerConnections?.currentConnectionName,
 	};
 };
 

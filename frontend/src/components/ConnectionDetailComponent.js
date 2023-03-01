@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Redirect, Link as RouterLink } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import { useSnackbar } from 'notistack';
@@ -173,7 +173,7 @@ const ConnectionDetailComponent = (props) => {
 	const clientPrivateKeyFileFieldName 	= makeFileField(clientPrivateKeyFieldName);
 
 	const [connected, setConnected] = React.useState(false);
-	const { selectedConnectionToEdit: connection = {}, tlsFeature, currentConnectionName, alreadyConnected } = props;
+	const { selectedConnectionToEdit: connection = {}, tlsFeature, currentConnectionName, alreadyConnected, connected: brokerCurrentlyConnected } = props;
 	let editModeEnabledByDefault = false;
 	if (!connection.id) {
 		connection.id = 'default';
@@ -186,7 +186,10 @@ const ConnectionDetailComponent = (props) => {
 	const classes = useStyles();
 	const [value, setValue] = React.useState(0);
 	const [showPassword, setShowPassword] = React.useState(false);
-	const [externalUrl, setExternalUrl] = React.useState(connection.externalUrl || 'None');
+	const [externalEncryptedUrl, setExternalEncryptedUrl] = React.useState(connection.externalEncryptedUrl || 'None');
+	const [externalUnencryptedUrl, setExternalUnencryptedUrl] = React.useState(connection.externalUnencryptedUrl || 'None');
+	const [websocketUrl, setExternalWebsocketUrl] = React.useState(connection.websocketsUrl || 'None');
+	const [internalUrl, setInternalUrl] = React.useState(connection.internalUrl || 'None');
 	const handleClickShowPassword = () => setShowPassword(!showPassword);
 	const handleMouseDownPassword = () => setShowPassword(!showPassword);
 	const [editMode, setEditMode] = React.useState(editModeEnabledByDefault);
@@ -279,7 +282,7 @@ const ConnectionDetailComponent = (props) => {
 					await doConnect(updatedConnection);
 					await brokerClient.connectServerToBroker(connection.id);
 					if (!alreadyConnected) {
-						handleConnectionChange(dispatch, brokerClient, currentConnectionName, currentConnectionName).catch((error) => console.error('Error while pulling information from the broker on reconnect: ' + error));
+						handleConnectionChange(dispatch, brokerClient, currentConnectionName, currentConnectionName, brokerCurrentlyConnected).catch((error) => console.error('Error while pulling information from the broker on reconnect: ' + error));
 						// await brokerClient.connectToBroker(name);
 						// dispatch(updateBrokerConnected(true, name));
 					}
@@ -317,6 +320,29 @@ const ConnectionDetailComponent = (props) => {
 	};
 
 
+	const checkAndSetErrors = () => {
+		if (!updatedConnection[clientCertificateFileFieldName] && !updatedConnection[clientCertificateFileFieldName]) {
+			setErrors({...errors, [clientCertificateFieldName]: null});
+			setErrors({...errors, [clientPrivateKeyFieldName]: null});
+		}
+		// the !clientCertificateFile part means that clientCertificate was not loaded because the respective input field hasn't been set with its name yet
+		if (updatedConnection[clientPrivateKeyFieldName] && !updatedConnection[clientCertificateFileFieldName]) {
+			setErrors({...errors, [clientCertificateFieldName]: {message: 'You have provided a private key but no certificate'}});
+		}
+		else if (updatedConnection[clientCertificateFieldName] && !updatedConnection[clientPrivateKeyFileFieldName]) {
+			setErrors({...errors, [clientPrivateKeyFieldName]: {message: 'You have provided a certificate but no private key'}});
+		}
+		else if ((updatedConnection[clientCertificateFieldName] && updatedConnection[clientPrivateKeyFileFieldName]) || (!updatedConnection[clientCertificateFieldName] && !updatedConnection[clientPrivateKeyFileFieldName])) {
+			setErrors((prevState) => ({...prevState, [clientPrivateKeyFieldName]: null, [clientCertificateFieldName]: null}));
+		}
+	};
+
+
+	useEffect(() => {
+		checkAndSetErrors();
+	}, [updatedConnection]);
+
+
 	const handleFileUpload = (e) => {
         const fileReader = new FileReader();
         const name = e.target.getAttribute('name');
@@ -331,14 +357,6 @@ const ConnectionDetailComponent = (props) => {
 			console.error('No "name" (e.target.getAttribute("name") passed into handleFileUpload')
 		}
 		
-		// the !clientCertificateFile part means that clientCertificate was not loaded because the respective input field hasn't been set with its name yet
-		if (name === clientPrivateKeyFieldName && !updatedConnection[clientCertificateFileFieldName]) {
-			setErrors({...errors, [clientCertificateFieldName]: {message: 'You have provided a private key but no certificate'}});
-		}
-		else if (name === clientCertificateFieldName && !updatedConnection[clientPrivateKeyFileFieldName]) {
-			setErrors({...errors, [clientPrivateKeyFieldName]: {message: 'You have provided a certificate but no private key'}});
-		}
-
         fileReader.readAsDataURL(e.target.files[0]);
 		e.target.value = ''; // null out the value of input component to make it possible to trigger it on uploading the same file several times
 		const encoding = 'base64';
@@ -361,7 +379,6 @@ const ConnectionDetailComponent = (props) => {
 				[makeFileField(name)]: filename
 			}));
 
-			setErrors((prevState) => ({...prevState, [name]: null}));
 			setConnected(false); // ??!!
     	};
     };
@@ -455,9 +472,13 @@ const ConnectionDetailComponent = (props) => {
 									variant="outlined"
 									fullWidth
 									className={classes.textField}
+									style={{paddingBottom: '10px'}}
 									onChange={(event) => {
 										if (editMode) {
-											setExternalUrl('');
+											setExternalEncryptedUrl('');
+											setExternalUnencryptedUrl('');
+											setExternalWebsocketUrl('');
+											setInternalUrl('');
 											setUpdatedConnection({
 												...updatedConnection,
 												url: event.target.value
@@ -467,20 +488,59 @@ const ConnectionDetailComponent = (props) => {
 									}}
 								/>
 							</Grid>
-							<Grid item xs={12}>
+							{ connection.internalUrl ? <Grid item xs={12}>
 								<TextField
 									disabled
 									id="external-url"
-									label="External URL"
-									value={externalUrl}
-									helperText="This field is mainly used for docker based environments. Not editable"
+									label="Internal URL"
+									value={internalUrl}
+									// helperText="Not editable"
+									defaultValue=""
+									variant="outlined"
+									fullWidth
+									className={classes.textField}
+								/>
+							</Grid> : null}
+							{ connection.externalEncryptedUrl ? <Grid item xs={12}>
+								<TextField
+									disabled
+									id="external-url"
+									label="External MQTTS URL"
+									value={externalEncryptedUrl}
+									// helperText="Not editable"
+									defaultValue=""
+									variant="outlined"
+									fullWidth
+									className={classes.textField}
+								/>
+							</Grid> : null}
+							{ connection.externalUnencryptedUrl ? <Grid item xs={12}>
+								<TextField
+									disabled
+									id="external-url"
+									label="External MQTT URL"
+									value={externalUnencryptedUrl}
+									// helperText="Not editable"
+									defaultValue=""
+									variant="outlined"
+									fullWidth
+									className={classes.textField}
+								/>
+							</Grid> : null}
+							{ connection.websocketsUrl ? <Grid item xs={12}>
+								<TextField
+									disabled
+									id="external-url"
+									label="Websocket URL"
+									value={websocketUrl}
+									// helperText="Not editable"
 									defaultValue=""
 									variant="outlined"
 									fullWidth
 									className={classes.textField}
 									style={{paddingBottom: '10px'}}
 								/>
-							</Grid>
+							</Grid> : null}
 							<Grid item xs={12}>
 								<TextField
 									required={false}
@@ -849,7 +909,8 @@ const mapStateToProps = (state) => {
 		selectedConnectionToEdit: state.brokerConnections?.selectedConnectionToEdit,
 		tlsFeature: state.systemStatus?.features?.tls,
 		alreadyConnected: state.brokerConnections.connected,
-		currentConnectionName: state.brokerConnections.currentConnectionName,
+		currentConnectionName: state.brokerConnections?.currentConnectionName,
+		connected: state.brokerConnections?.connected,
 	};
 };
 
