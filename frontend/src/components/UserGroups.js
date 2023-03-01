@@ -302,7 +302,7 @@ const UserGroups = (props) => {
 			>
 				New User Group
 			</Button>
-			{Object.keys(userGroups).length > 0 ? (
+			{/* {Object.keys(userGroups).length > 0 ? (
 				<Tooltip title="Remove table sorting">
 					<Button size="small"
 							color="primary"
@@ -313,7 +313,7 @@ const UserGroups = (props) => {
 						Unsort
 					</Button>
 				</Tooltip>
-			) : ""}
+			) : ""} */}
 			<br />
 			<br />
 			</>}
