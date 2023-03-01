@@ -410,40 +410,6 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 												}}
 											/>
 										)}
-										<Grid container spacing={1} alignItems="flex-end">
-											<Grid item xs={6}>
-											{typeof selectedNode?._qos === 'number' && (
-												<TextField
-													id="qos"
-													label="QoS"
-													margin="normal"
-													value={selectedNode?._qos}
-													variant="outlined"
-													fullWidth
-													size="small"
-													InputProps={{
-														readOnly: true,
-													}}
-												/>
-											)}
-											</Grid>
-												<Grid item xs={6}>
-											{(selectedNode?._retain === false || selectedNode?._retain === true) && (
-												<TextField
-													id="retain"
-													label="Retain"
-													margin="normal"
-													value={selectedNode?._retain ? 'Yes' : 'No'}
-													variant="outlined"
-													fullWidth
-													size="small"
-													InputProps={{
-														readOnly: true,
-													}}
-												/>
-											)}
-										</Grid>
-										</Grid>
 										{selectedNode?._message ? [
 											<Typography
 												style={{
@@ -453,7 +419,7 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 											>
 												Payload History
 											</Typography>,
-											<Paper variant="outlined" elevation={1} style={{maxHeight: '300px'}}>
+											<Paper variant="outlined" elevation={1} style={{maxHeight: '400px'}}>
 												<Box style={{padding: '8px', maxHeight: '290px', overflowY: 'auto'}}>
 													<Box>
 														<Typography
@@ -501,6 +467,40 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 												</Box>
 											</Paper>] : null
 										}
+										<Grid container style={{marginTop: '7px'}} spacing={1} alignItems="flex-end">
+											<Grid item xs={6}>
+												{typeof selectedNode?._qos === 'number' && (
+													<TextField
+														id="qos"
+														label="QoS"
+														margin="normal"
+														value={selectedNode?._qos}
+														variant="outlined"
+														fullWidth
+														size="small"
+														InputProps={{
+															readOnly: true,
+														}}
+													/>
+												)}
+											</Grid>
+											<Grid item xs={6}>
+												{(selectedNode?._retain === false || selectedNode?._retain === true) && (
+													<TextField
+														id="retain"
+														label="Retain"
+														margin="normal"
+														value={selectedNode?._retain ? 'Yes' : 'No'}
+														variant="outlined"
+														fullWidth
+														size="small"
+														InputProps={{
+															readOnly: true,
+														}}
+													/>
+												)}
+											</Grid>
+										</Grid>
 									</FormGroup>
 								</Box>
 							</Grid>

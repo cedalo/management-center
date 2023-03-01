@@ -42,11 +42,12 @@ import {WebSocketContext} from '../../../websockets/WebSocket';
 
 
 const GROUP_TABLE_COLUMNS = [
-	{id: 'expand', key: ''},
+	{id: 'expand', key: '', width: '10px'},
 	{id: 'id', key: 'ID'},
 	{id: 'configurationName', key: 'Name'},
 	{id: 'URL', key: 'URL'},
-	{id: 'status', key: 'Status'}
+	{id: 'status', key: 'Status', width: '10px'},
+	{id: 'action', key: ' ', width: '100px'}
 ];
 
 const StyledTableRow = withStyles((theme) => ({
@@ -145,7 +146,7 @@ const CustomRow = (props) => {
 			onContextMenu={handleClick}
 			className={atLeastAdmin(userProfile, brokerConnection.name) ? props.classes.cursorPointer : ''}
 		>
-			<TableCell>
+			<TableCell style={{padding: '6px'}}>
 				<IconButton aria-label="expand row" size="small"
 					disabled={!makeCollapsible}
 					style={makeCollapsible ? {opacity: "100%"} : {opacity: "0%"}}
@@ -156,14 +157,14 @@ const CustomRow = (props) => {
 					{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
 				</IconButton>
 			</TableCell>
-			<TableCell>{brokerConnection.id}</TableCell>
-			<TableCell>{brokerConnection.name}</TableCell>
-			<TableCell>{url}</TableCell>
-			<TableCell>
+			<TableCell style={{padding: '6px'}}>{brokerConnection.id}</TableCell>
+			<TableCell style={{padding: '6px'}}>{brokerConnection.name}</TableCell>
+			<TableCell style={{padding: '6px'}}>{url}</TableCell>
+			<TableCell style={{padding: '6px'}}>
 				<BrokerStatusIcon brokerConnection={brokerConnection}/>
 				{}
 			</TableCell>
-			<TableCell align="right">
+			<TableCell  style={{padding: '6px'}} align="right">
 				<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}>
 					<Switch
 						color="primary"
@@ -261,8 +262,8 @@ const CustomRow = (props) => {
 			{oneExternalURLExists ? <MenuItem onClick={() => copyText(brokerConnection.externalUnencryptedUrl || brokerConnection.externalEncryptedUrl)}>Copy External URL</MenuItem> :
 									bothExternalURLExists ? (
 										<>
-											<MenuItem onClick={() => copyText(brokerConnection.externalUnencryptedUrl)}>Copy External MQTT URL</MenuItem> 
-											<MenuItem onClick={() => copyText(brokerConnection.externalEncryptedUrl)}>Copy External MWTTS URL</MenuItem> 
+											<MenuItem onClick={() => copyText(brokerConnection.externalUnencryptedUrl)}>Copy External MQTT URL</MenuItem>
+											<MenuItem onClick={() => copyText(brokerConnection.externalEncryptedUrl)}>Copy External MWTTS URL</MenuItem>
 										</>
 									) : null
 			}
@@ -453,6 +454,7 @@ const Connections = ({
 											<TableRow>
 												{GROUP_TABLE_COLUMNS.map((column) => (
 													<TableCell
+														style={{padding: '6px', width: column.width}}
 														key={column.id}
 														// sortDirection={sortBy === column.id ? sortDirection : false}
 													>
@@ -466,7 +468,6 @@ const Connections = ({
 														{column.key}
 													</TableCell>
 												))}
-												<TableCell/>
 											</TableRow>
 										</TableHead>
 										<TableBody>

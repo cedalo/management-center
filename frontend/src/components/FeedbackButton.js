@@ -2,7 +2,7 @@ import Button from '@material-ui/core/Button';
 import { indigo } from '@material-ui/core/colors';
 import { withStyles } from '@material-ui/core/styles';
 import FeedbackIcon from '@material-ui/icons/Feedback';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 
@@ -24,11 +24,11 @@ const FeedbackButton = ({ backendParameters }) => {
     }, [backendParameters]);
 
     const formPageAddress = 'https://majy33976q6.typeform.com/to/aeRoINk0';
-    
+
 
 	return (displayFeedback) ? (
 		<>
-            <ColorButton 
+            <ColorButton
                     style={{marginTop: '15px'}}
                     variant="contained"
                     startIcon={<FeedbackIcon  />} // style={{color: 'red'}}
