@@ -27,7 +27,7 @@ import {Alert, AlertTitle} from '@material-ui/lab';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateClient, updateClients, updateGroups} from '../actions/actions';
@@ -103,8 +103,8 @@ const Clients = (props) => {
 	const {enqueueSnackbar} = useSnackbar();
 	const {client: brokerClient} = context;
 
-	const [page, setPage] = React.useState(0);
-	const [rowsPerPage, setRowsPerPage] = React.useState(10);
+	const [page, setPage] = useState(0);
+	const [rowsPerPage, setRowsPerPage] = useState(10);
 
 	const handleChangePage = async (event, newPage) => {
 		setPage(newPage);
@@ -256,8 +256,13 @@ const Clients = (props) => {
 		clients = [],
 		onSort,
 		sortBy,
-		sortDirection
+		sortDirection,
+		filter
 	} = props;
+
+	React.useEffect(() => {
+		// setFilteredClients(clients.filter(clientL => clientL.username.startsWith(filter)));
+	}, [filter]);
 
 	const groupSuggestions = groupsAll
 		.sort()
@@ -469,21 +474,6 @@ const Clients = (props) => {
 																	{client.textname}
 																</Typography>
 																<span> — {client.textdescription} </span>
-
-																{/* <div className={classes.badges}>
-                        {client.groups.map((group) => (
-                          <Chip
-                            // icon={<FaceIcon />}
-                            size="small"
-                            label={group}
-                            onDelete={(event) => {
-                              event.stopPropagation();
-                              onRemoveClientFromGroup(client, group);
-                            }}
-                            color="secondary"
-                          />
-                        ))}
-                      </div> */}
 															</React.Fragment>
 														}
 													/>

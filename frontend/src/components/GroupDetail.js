@@ -341,7 +341,7 @@ const GroupDetail = (props) => {
 			</Paper>
 		</div>
 	) : (
-		<Redirect to="/security/groups" push />
+		<Redirect to="/groups" push />
 	);
 };
 

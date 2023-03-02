@@ -78,19 +78,19 @@ function AppRoutes(props) {
 					component={ClientDetail}
 				/>
 				<Route path="/clients">
-					<Clients />
+					<Clients filter={props.filter}/>
 				</Route>
 				<Route path="/inspect/clients">
 					<InspectClients filter={props.filter}/>
 				</Route>
 				<Route
-					path="/security/groups/detail/:groupId"
+					path="/groups/detail/:groupId"
 					component={GroupDetail}
 				/>
-				<Route path="/security/groups/new">
+				<Route path="/groups/new">
 					<GroupNew />
 				</Route>
-				<Route path="/security/groups">
+				<Route path="/groups">
 					<Groups />
 				</Route>
 				<Route

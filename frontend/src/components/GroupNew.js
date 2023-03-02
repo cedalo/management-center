@@ -88,7 +88,7 @@ const GroupNew = (props) => {
 			await client.createGroup(groupname, '', textname, textdescription);
 			const groups = await client.listGroups();
 			dispatch(updateGroups(groups));
-			history.push(`/security/groups`);
+			history.push(`/groups`);
 			enqueueSnackbar(`Group "${groupname}" successfully created.`, {
 				variant: 'success'
 			});
