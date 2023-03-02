@@ -10,14 +10,19 @@ export const getConnectionInfo = (connection) => {
 };
 
 
-const byHost = (all, { host }) => {
+const byHostAndPort = (all, { host, port }) => {
 	all.add(host);
+	all.add(`${host}:${port}`);
 	return all;
 };
+const selectByHost = (used) => (conn) => used.has(conn.host);
+const selectByHostAndPort = (used) => (conn) => used.has(`${conn.host}:${conn.port}`);
+
 export const getUsedConnections = (availableConnections, listeners) => {
-	const usedHosts = listeners.reduce(byHost, new Set());
+	const usedHosts = listeners.reduce(byHostAndPort, new Set());
 	const connections = availableConnections.map((broker) => getConnectionInfo(broker));
-	const usedConnections = connections.filter((conn) => usedHosts.has(conn.host));
+	let usedConnections = connections.filter(selectByHostAndPort(usedHosts));
+	if (!usedConnections.length) usedConnections = connections.filter(selectByHost(usedHosts));
 	return usedConnections.map(({ id, name }) => ({ id, name }));
 };
 
