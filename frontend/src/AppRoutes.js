@@ -83,13 +83,13 @@ function AppRoutes(props) {
 				<Route path="/inspect/clients">
 					<InspectClients filter={props.filter}/>
 				</Route>
-				<Route
-					path="/groups/detail/:groupId"
-					component={GroupDetail}
-				/>
 				<Route path="/groups/new">
 					<GroupNew />
 				</Route>
+				<Route
+					path="/groups/:groupId"
+					component={GroupDetail}
+				/>
 				<Route path="/groups">
 					<Groups />
 				</Route>

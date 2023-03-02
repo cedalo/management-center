@@ -315,6 +315,7 @@ const ClientDetail = (props) => {
 				<Grid item xs={12}>
 					<Button
 						variant="contained"
+						size="small"
 						color="primary"
 						style={{marginTop: '10px'}}
 						startIcon={<EditIcon/>}
@@ -329,6 +330,7 @@ const ClientDetail = (props) => {
 					<Button
 						variant="contained"
 						disabled={!validate()}
+						size="small"
 						color="primary"
 						style={{marginTop: '10px', marginRight: '10px'}}
 						startIcon={<SaveIcon/>}
@@ -341,6 +343,7 @@ const ClientDetail = (props) => {
 					</Button>
 					<Button
 						variant="contained"
+						size="small"
 						style={{marginTop: '10px'}}
 						onClick={(event) => {
 							event.stopPropagation();

@@ -61,7 +61,7 @@ const groupShape = PropTypes.shape({
 
 const GROUP_TABLE_COLUMNS = [
 	{id: 'groupname', key: 'Name'},
-	{id: 'textname', key: 'Text name'},
+	{id: 'textname', key: 'Textname'},
 	{id: 'textdescription', key: 'Description'},
 	{id: 'clients', key: 'Clients'},
 	{id: 'roles', key: 'Group Roles'}
@@ -138,7 +138,7 @@ const Groups = (props) => {
 	const onSelectGroup = async (groupname) => {
 		const group = await client.getGroup(groupname);
 		dispatch(updateGroup(group));
-		history.push(`/groups/detail/${groupname}`);
+		history.push(`/groups/${groupname}`);
 	};
 
 	const onNewGroup = () => {
@@ -201,10 +201,16 @@ const Groups = (props) => {
 
 	return (
 		<div style={{height: '100%'}}>
-			<ContainerBreadCrumbs title="Groups" links={[{name: 'Home', route: '/home'}]}/>
+			<div style={{display: 'flex', justifyContent: 'space-between'}}>
+				<ContainerBreadCrumbs title="Groups" links={[{name: 'Home', route: '/home'}]}/>
+				<AnonymousGroupSelect
+					onUpdateAnonymousGroup={onUpdateAnonymousGroup}
+				/>
+			</div>
 			<div style={{height: 'calc(100% - 26px)'}}>
 				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
 					<ContainerHeader
+						topMargin="-12px"
 						title="Groups"
 						subTitle="List of existing groups. Groups serve as a hub to gather multiple clients and roles. The more clients are added to your broker the harder it gets to administer them. Groups can help you structure and quickly adjust your current setup."
 					>
@@ -213,7 +219,6 @@ const Groups = (props) => {
 								variant="outlined"
 								color="primary"
 								size="small"
-								className={classes.button}
 								startIcon={<AddIcon/>}
 								onClick={(event) => {
 									event.stopPropagation();
@@ -225,15 +230,18 @@ const Groups = (props) => {
 						</>}
 					</ContainerHeader>
 					{/* TODO: Quick hack to detect whether feature is supported */}
-					{dynamicsecurityFeature?.supported === false ? <><br/><Alert severity="warning">
-						<AlertTitle>Feature not available</AlertTitle>
-						Make sure that the broker connected has the dynamic security enabled.
-					</Alert></> : null}
+					{dynamicsecurityFeature?.supported === false ? <>
+						<br/>
+							<Alert severity="warning">
+								<AlertTitle>Feature not available</AlertTitle>
+								Make sure that the broker connected has the dynamic security enabled.
+							</Alert>
+					</> : null}
 					{dynamicsecurityFeature?.supported !== false && groups?.groups?.length > 0 ? (
-						<div>
+						<div style={{height: '100%', overflowY: 'auto'}}>
 							<Hidden xsDown implementation="css">
-								<TableContainer component={Paper} className={classes.tableContainer}>
-									<Table>
+								<TableContainer>
+									<Table stickyHeader size="small" aria-label="sticky table">
 										<TableHead>
 											<TableRow>
 												{GROUP_TABLE_COLUMNS.map((column) => (
@@ -382,9 +390,6 @@ const Groups = (props) => {
 									</List>
 								</Paper>
 							</Hidden>
-							<AnonymousGroupSelect
-								onUpdateAnonymousGroup={onUpdateAnonymousGroup}
-							/>
 						</div>
 					) : (
 						<div>No groups found</div>

@@ -309,6 +309,7 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 						{(topicTreeRestFeature?.supported) ?
 							<Button
 								variant="outlined"
+								size="small"
 								color="primary"
 								onClick={clearTopicTreeCache}
 								startIcon={isLoading ?
