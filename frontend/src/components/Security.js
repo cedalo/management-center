@@ -38,7 +38,7 @@ function Security() {
 					/>
 				</Grid>
 				<Grid item lg={4} sm={4} xl={4} xs={12}>
-					<HomeCard title="Groups" description="Manage groups" image={'groups.png'} link="/security/groups" />
+					<HomeCard title="Groups" description="Manage groups" image={'groups.png'} link="/groups" />
 				</Grid>
 				<Grid item lg={4} sm={4} xl={4} xs={12}>
 					<HomeCard title="Roles" description="Manage roles" image={'roles.png'} link="/security/roles" />

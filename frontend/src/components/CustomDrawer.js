@@ -164,6 +164,7 @@ const CustomDrawer = ({
 	const [adminOpen, setAdminOpen] = useState(false);
 
 	setShowFilter('/inspect/clients' === location.pathname);
+		// '/clients' === location.pathname);
 
 	return <Drawer
 		variant="permanent"
@@ -244,7 +245,7 @@ const CustomDrawer = ({
 					<ListItemLink
 						id="menu-item-groups"
 						classes={classes}
-						to="/security/groups"
+						to="/groups"
 						primary="Groups"
 						icon={<GroupIcon fontSize="small"/>}
 					/>

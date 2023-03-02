@@ -208,7 +208,6 @@ const Clients = (props) => {
 		setFilteredClients(clients);
 	}, [clients]);
 
-
 	console.log('clients:', filteredClients);
 
 	return (

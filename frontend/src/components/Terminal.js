@@ -531,56 +531,56 @@ Topic:      ${acl.topic}
 		<div style={{height: '100%'}}>
 			<ContainerBreadCrumbs title="Terminal" links={[{name: 'Home', route: '/home'}]}/>
 			<div style={{height: 'calc(100% - 26px)'}}>
-			<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
-				<ContainerHeader
-					title="Terminal"
-					subTitle="Type 'help' for a list of available commands and type '<command> --help' for information on a specific command."
-				/>
+				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
+					<ContainerHeader
+						title="Terminal"
+						subTitle="The terminal window allows you to exeecute commands on the current connection. Type 'help' for a list of available commands and type '<command> --help' for information on a specific command."
+					/>
 
-				<Terminal
-					startState="maximised"
-					// className={classes.terminal}
-					showActions={false}
-					hideTopBar={true}
-					allowTabs={false}
-					prompt={darkMode === 'true' ? 'yellow' : 'darkgrey'}
-					color={darkMode === 'true' ? 'yellow' : 'darkgrey'}
-					style={{fontWeight: 'light', fontSize: '1.25em', width: '100%', border: '1px solid'}}
-					backgroundColor={darkMode === 'true' ? 'black' : 'white'}
-					barColor="black"
-					outputColor={darkMode === 'true' ? 'yellow' : 'grey'}
-					commands={commands}
-					descriptions={{
-						addGroupClient: 'Add a client to a group',
-						addGroupRole: 'Add a role to a group',
-						addRoleACL: 'Add ACL to role',
-						createClient: 'Create a new client',
-						createGroup: 'Create a new group',
-						createRole: 'Create a new role',
-						deleteClient: 'Delete a client',
-						deleteGroup: 'Delete a client',
-						deleteRole: 'Delete a role',
-						disableClient: 'Disable a client',
-						enableClient: 'Enable a client',
-						getAnonymousGroup: 'Get anonymous group',
-						getClient: 'Get the details for a client',
-						getDefaultACLAccess: 'Get the default ACL access',
-						getGroup: 'Get the details for a group',
-						getRole: 'Get the details for a role',
-						listClients: 'List all clients',
-						listGroups: 'List all groups',
-						listRoles: 'List all roles',
-						modifyClient: 'Modify a client',
-						modifyGroup: 'Modify a group',
-						modifyRole: 'Modify a role',
-						removeGroupClient: 'Remove a client from a group',
-						removeGroupRole: 'Remove a role from a group',
-						removeRoleACL: 'Remove an ACL from a role',
-						setAnonymousGroup: 'Set anonymous group',
-						setDefaultACLAccess: 'Set the default ACL access'
-					}}
-				/>
-			</div>
+					<Terminal
+						startState="maximised"
+						// className={classes.terminal}
+						showActions={false}
+						hideTopBar={true}
+						allowTabs={false}
+						prompt={darkMode === 'true' ? 'yellow' : 'black'}
+						color={darkMode === 'true' ? 'yellow' : 'black'}
+						style={{fontWeight: 'light', fontSize: '1.25em', width: '100%', border: '1px solid'}}
+						backgroundColor={darkMode === 'true' ? 'black' : 'white'}
+						barColor="black"
+						outputColor={darkMode === 'true' ? 'yellow' : 'black'}
+						commands={commands}
+						descriptions={{
+							addGroupClient: 'Add a client to a group',
+							addGroupRole: 'Add a role to a group',
+							addRoleACL: 'Add ACL to role',
+							createClient: 'Create a new client',
+							createGroup: 'Create a new group',
+							createRole: 'Create a new role',
+							deleteClient: 'Delete a client',
+							deleteGroup: 'Delete a client',
+							deleteRole: 'Delete a role',
+							disableClient: 'Disable a client',
+							enableClient: 'Enable a client',
+							getAnonymousGroup: 'Get anonymous group',
+							getClient: 'Get the details for a client',
+							getDefaultACLAccess: 'Get the default ACL access',
+							getGroup: 'Get the details for a group',
+							getRole: 'Get the details for a role',
+							listClients: 'List all clients',
+							listGroups: 'List all groups',
+							listRoles: 'List all roles',
+							modifyClient: 'Modify a client',
+							modifyGroup: 'Modify a group',
+							modifyRole: 'Modify a role',
+							removeGroupClient: 'Remove a client from a group',
+							removeGroupRole: 'Remove a role from a group',
+							removeRoleACL: 'Remove an ACL from a role',
+							setAnonymousGroup: 'Set anonymous group',
+							setDefaultACLAccess: 'Set the default ACL access'
+						}}
+					/>
+				</div>
 			</div>
 		</div>
 	);

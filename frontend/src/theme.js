@@ -17,7 +17,7 @@ const theme = createTheme({
 			main: red.A400
 		},
 		background: {
-			default: 'white'
+			default: '#FFFFFF'
 		},
 		breadcrumbItem: {
 			fontSize: '0.7rem',
