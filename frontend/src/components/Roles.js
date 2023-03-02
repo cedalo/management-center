@@ -77,7 +77,7 @@ const rolesShape = PropTypes.shape({
 
 const ROLE_TABLE_COLUMNS = [
 	{ id: 'rolename', key: 'Name' },
-	{ id: 'textname', key: 'Text name' },
+	{ id: 'textname', key: 'Text Name' },
 	{ id: 'textdescription', key: 'Description' }
 	//   { id: "acls", key: "ACLs" },
 ];

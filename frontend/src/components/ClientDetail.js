@@ -278,7 +278,7 @@ const ClientDetail = (props) => {
 							}
 						}}
 						id="textname"
-						label="Textname"
+						label="Text Name"
 						value={updatedClient.textname}
 						//   onChange={(event) => setTextName(event.target.value)}
 						defaultValue=""

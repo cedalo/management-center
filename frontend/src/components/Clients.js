@@ -78,7 +78,7 @@ const clientShape = PropTypes.shape({
 const USER_TABLE_COLUMNS = [
 	{id: 'username', key: 'Username'},
 	{id: 'clientid', key: 'Client ID'},
-	{id: 'textname', key: 'Textname'},
+	{id: 'textname', key: 'Text Name'},
 	{id: 'textdescription', key: 'Description'},
 	{id: 'groups', key: 'Groups'},
 	{id: 'roles', key: 'Roles'},

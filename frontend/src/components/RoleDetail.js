@@ -345,7 +345,7 @@ const RoleDetail = (props) => {
 											}
 										}}
 										id="textname"
-										label="Text name"
+										label="Text Name"
 										value={updatedRole.textname}
 										defaultValue=""
 										variant="outlined"

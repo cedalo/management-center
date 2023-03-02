@@ -61,7 +61,7 @@ const groupShape = PropTypes.shape({
 
 const GROUP_TABLE_COLUMNS = [
 	{id: 'groupname', key: 'Name'},
-	{id: 'textname', key: 'Textname'},
+	{id: 'textname', key: 'Text Name'},
 	{id: 'textdescription', key: 'Description'},
 	{id: 'clients', key: 'Clients'},
 	{id: 'roles', key: 'Group Roles'}

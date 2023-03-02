@@ -30,8 +30,7 @@ const GroupNew = (props) => {
 	});
 
 	const validate = () => {
-		const valid = groupname !== '';
-		return valid;
+		return groupname !== '';
 	};
 
 	const onSaveGroup = async () => {
@@ -82,7 +81,7 @@ const GroupNew = (props) => {
 						helperText={groupnameExists && 'A group with this name already exists.'}
 						required
 						id="groupname"
-						label="Groupname"
+						label="Name"
 						onChange={(event) => setGroupname(event.target.value)}
 						defaultValue=""
 						variant="outlined"
@@ -101,7 +100,7 @@ const GroupNew = (props) => {
 				<Grid item xs={12}>
 					<TextField
 						id="textname"
-						label="Text name"
+						label="Text Name"
 						onChange={(event) => setTextname(event.target.value)}
 						defaultValue=""
 						size="small"
@@ -113,7 +112,7 @@ const GroupNew = (props) => {
 				<Grid item xs={12}>
 					<TextField
 						id="textdescription"
-						label="Text description"
+						label="Description"
 						onChange={(event) => setTextdescription(event.target.value)}
 						defaultValue=""
 						size="small"

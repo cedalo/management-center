@@ -108,7 +108,7 @@ const GroupDetail = (props) => {
 						size="small"
 						margin="dense"
 						value={updatedGroup.groupname}
-						label="Groupname"
+						label="Name"
 						defaultValue=""
 						variant="outlined"
 						fullWidth
@@ -133,7 +133,7 @@ const GroupDetail = (props) => {
 							}
 						}}
 						id="textname"
-						label="Text name"
+						label="Text Name"
 						size="small"
 						margin="dense"
 						value={updatedGroup.textname}
@@ -155,7 +155,7 @@ const GroupDetail = (props) => {
 							}
 						}}
 						id="textdescription"
-						label="Text description"
+						label="Description"
 						size="small"
 						margin="dense"
 						value={updatedGroup.textdescription}

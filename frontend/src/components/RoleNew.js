@@ -153,7 +153,7 @@ const RoleNew = (props) => {
 								<Grid item xs={12}>
 									<TextField
 										id="textname"
-										label="Text name"
+										label="Text Name"
 										onChange={(event) => setTextname(event.target.value)}
 										defaultValue=""
 										variant="outlined"
