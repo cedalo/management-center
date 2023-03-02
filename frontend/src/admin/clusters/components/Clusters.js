@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CLUSTER_TABLE_COLUMNS = [
-	{ id: 'clustername', key: 'Clustername' },
+	{ id: 'clustername', key: 'Name' },
 	{ id: 'description', key: 'Description' },
 	{ id: 'numberOfNodes', key: 'Nodes' },
 ];
@@ -77,8 +77,8 @@ const createClusterTable = (clusters, classes, props, onCheckHealthStatus, onDel
 	if (!clusterManagementFeature?.error && clusterManagementFeature?.supported !== false && clusters && clusters.length > 0) {
 		return <div>
 			<Hidden xsDown implementation="css">
-				<TableContainer component={Paper} className={classes.tableContainer}>
-					<Table size="medium">
+				<TableContainer>
+					<Table stickyHeader size="small" aria-label="sticky table">
 						<TableHead>
 							<TableRow>
 								{CLUSTER_TABLE_COLUMNS.map((column) => (
@@ -229,7 +229,7 @@ const Clusters = (props) => {
 			const cluster = await brokerClient.getCluster(clustername, numberOfNodes);
 			dispatch(updateCluster(cluster));
 			setProgressDialogOpen(false);
-			history.push(`/clusters/detail/${clustername}`);
+			history.push(`/clusters/${clustername}`);
 		} catch(error) {
 			enqueueSnackbar(`Cluster loading failed. Reason: ${error.message || error}`, {
 				variant: 'error'
@@ -317,7 +317,6 @@ const Clusters = (props) => {
 				<AlertTitle>{clusterManagementFeature.error.title || 'An error has occured'}</AlertTitle>
 				{clusterManagementFeature.error.message || clusterManagementFeature.error}
 			</Alert></> : null}
-			<br />
 				{!clusterManagementFeature?.error && clusterManagementFeature?.supported !== false && <>
 			<WaitDialog
 				title='Loading cluster details'

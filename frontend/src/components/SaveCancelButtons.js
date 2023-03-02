@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
 		alignItems: 'center',
 	},
 	wrapper: {
-		margin: theme.spacing(0.5),
+		marginTop: '10px',
 		position: 'relative',
 		'& > *': {
 			marginRight: theme.spacing(1)

@@ -202,13 +202,13 @@ function AppRoutes(props) {
 				<Route path="/admin/users">
 					<Users />
 				</Route>
-				<Route
-					path="/clusters/detail/:clusterId"
-					component={ClusterDetail}
-				/>
 				<Route path="/clusters/new">
 					<ClusterNew />
 				</Route>
+				<Route
+					path="/clusters/:clusterId"
+					component={ClusterDetail}
+				/>
 				<Route path="/clusters">
 					<Clusters />
 				</Route>

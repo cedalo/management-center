@@ -57,7 +57,7 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 
 	return (
 		<Grid container spacing={1} alignItems="flex-end">
-			<Grid item xs={2} sm={2} align="center">
+			<Grid item xs={12} align="center">
 				<TextField
 					type="number"
 					required={true}
@@ -81,7 +81,7 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 					className={classes.textField}
 				/>
 			</Grid>
-			<Grid item xs={10} sm={4} align="center">
+			<Grid item xs={12} align="center">
 				<TextField
 					required={true}
 					size="small"
@@ -94,7 +94,7 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 					className={classes.textField}
 				/>
 			</Grid>
-			<Grid item xs={12} sm={6} align="center">
+			<Grid item xs={12} align="center">
 					<TextField
 						select
 						label="Broker"

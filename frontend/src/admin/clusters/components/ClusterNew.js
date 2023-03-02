@@ -102,7 +102,7 @@ const ClusterNew = (props) => {
 		const valid = !clusternameExists && clustername !== ''
 					&& arePrivateAddressesPresent()
 					&& areBrokersPresent()
-					&& areNodeIdsUnique(); 
+					&& areNodeIdsUnique();
 		return valid;
 	};
 
@@ -201,7 +201,10 @@ const ClusterNew = (props) => {
 									fullWidth
 								/>
 							</Grid>
-							<Grid item xs={12}>
+						</Grid>
+						<br/>
+						<Grid container spacing={2} alignItems="flex-end">
+							<Grid item xs={12} sm={4}>
 								<Card variant="outlined">
 									<CardHeader
 										subheader="Node 1"
@@ -216,7 +219,7 @@ const ClusterNew = (props) => {
 									</CardContent>
 								</Card>
 							</Grid>
-							<Grid item xs={12}>
+							<Grid item xs={12} sm={4}>
 								<Card variant="outlined">
 									<CardHeader
 										subheader="Node 2"
@@ -231,7 +234,7 @@ const ClusterNew = (props) => {
 									</CardContent>
 								</Card>
 							</Grid>
-							<Grid item xs={12}>
+							<Grid item xs={12} sm={4}>
 								<Card variant="outlined">
 									<CardHeader
 										subheader="Node 3"
@@ -246,13 +249,15 @@ const ClusterNew = (props) => {
 									</CardContent>
 								</Card>
 							</Grid>
-								<Grid item xs={12} >
-									<SaveCancelButtons
-										onSave={onSaveCluster}
-										saveDisabled={!validate()}
-										onCancel={onCancel}
-									/>
-								</Grid>
+						</Grid>
+						<Grid container xs={12} alignItems="flex-start">
+							<Grid item xs={12} >
+								<SaveCancelButtons
+									onSave={onSaveCluster}
+									saveDisabled={!validate()}
+									onCancel={onCancel}
+								/>
+							</Grid>
 						</Grid>
 					</div>
 				</div>

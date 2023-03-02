@@ -20,11 +20,6 @@ import ContainerHeader from './ContainerHeader';
 import SaveCancelButtons from './SaveCancelButtons';
 
 const useStyles = makeStyles((theme) => ({
-	buttons: {
-		'& > *': {
-			margin: theme.spacing(1)
-		}
-	},
 }));
 
 const ClientNew = (props) => {
@@ -105,7 +100,7 @@ const ClientNew = (props) => {
 						helperText={usernameExists && 'A client with this username already exists.'}
 						required
 						id="username"
-						label="Username"
+						label="Name"
 						onChange={(event) => setUsername(event.target.value)}
 						defaultValue=""
 						variant="outlined"
@@ -194,17 +189,16 @@ const ClientNew = (props) => {
 						size="small"
 						margin="dense"
 						fullWidth
-						className={classes.textField}
 					/>
 				</Grid>
-				<Grid container xs={12} alignItems="flex-start">
-					<Grid item xs={12} >
-						<SaveCancelButtons
-							onSave={onSaveClient}
-							saveDisabled={!validate()}
-							onCancel={onCancel}
-						/>
-					</Grid>
+			</Grid>
+			<Grid container xs={12} alignItems="flex-start">
+				<Grid item xs={12} >
+					<SaveCancelButtons
+						onSave={onSaveClient}
+						saveDisabled={!validate()}
+						onCancel={onCancel}
+					/>
 				</Grid>
 			</Grid>
 		</div>

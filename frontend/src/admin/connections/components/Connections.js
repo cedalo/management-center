@@ -43,8 +43,8 @@ import {WebSocketContext} from '../../../websockets/WebSocket';
 
 const GROUP_TABLE_COLUMNS = [
 	{id: 'expand', key: '', width: '10px'},
-	{id: 'id', key: 'ID'},
 	{id: 'configurationName', key: 'Name'},
+	{id: 'id', key: 'ID'},
 	{id: 'URL', key: 'URL'},
 	{id: 'status', key: 'Status', width: '10px'},
 	{id: 'action', key: ' ', width: '100px'}
@@ -157,8 +157,8 @@ const CustomRow = (props) => {
 					{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
 				</IconButton>
 			</TableCell>
-			<TableCell style={{padding: '6px'}}>{brokerConnection.id}</TableCell>
 			<TableCell style={{padding: '6px'}}>{brokerConnection.name}</TableCell>
+			<TableCell style={{padding: '6px'}}>{brokerConnection.id}</TableCell>
 			<TableCell style={{padding: '6px'}}>{url}</TableCell>
 			<TableCell style={{padding: '6px'}}>
 				<BrokerStatusIcon brokerConnection={brokerConnection}/>

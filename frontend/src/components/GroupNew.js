@@ -121,14 +121,14 @@ const GroupNew = (props) => {
 						fullWidth
 					/>
 				</Grid>
-				<Grid container xs={12} alignItems="flex-start">
-					<Grid item xs={12}>
-						<SaveCancelButtons
-							onSave={onSaveGroup}
-							saveDisabled={!validate()}
-							onCancel={onCancel}
-						/>
-					</Grid>
+			</Grid>
+			<Grid container xs={12} alignItems="flex-start">
+				<Grid item xs={12}>
+					<SaveCancelButtons
+						onSave={onSaveGroup}
+						saveDisabled={!validate()}
+						onCancel={onCancel}
+					/>
 				</Grid>
 			</Grid>
 		</div>

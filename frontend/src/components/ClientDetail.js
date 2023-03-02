@@ -168,7 +168,7 @@ const ClientDetail = (props) => {
 							}
 						}}
 						id="username"
-						label="Username"
+						label="Name"
 						value={updatedClient.username}
 						defaultValue=""
 						variant="outlined"
