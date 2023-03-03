@@ -1,8 +1,10 @@
-import React, { useContext } from 'react';
-import { useSnackbar } from 'notistack';
-import { connect, useDispatch } from 'react-redux';
-import { Link as RouterLink } from 'react-router-dom';
-import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
+import AddIcon from '@material-ui/icons/Add';
+import EditIcon from '@material-ui/icons/Edit';
+import React, {useContext} from 'react';
+import {useSnackbar} from 'notistack';
+import {connect, useDispatch} from 'react-redux';
+import {Link as RouterLink} from 'react-router-dom';
+import {makeStyles, useTheme, withStyles} from '@material-ui/core/styles';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -30,13 +32,14 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { WebSocketContext } from '../websockets/WebSocket';
-import { updateDefaultACLAccess } from '../actions/actions';
+import {WebSocketContext} from '../websockets/WebSocket';
+import {updateDefaultACLAccess} from '../actions/actions';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
+import ContainerHeader from './ContainerHeader';
 
 const ACL_TABLE_COLUMNS = [
-	{ id: 'type', key: 'Type' },
-	{ id: 'allow', key: 'Allow / Deny' }
+	{id: 'type', key: 'Type'},
+	{id: 'allow', key: 'Allow / Deny'}
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -56,12 +59,12 @@ const useStyles = makeStyles((theme) => ({
 	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
-const DefaultACLAccess = ({ defaultACLAccess }) => {
+const DefaultACLAccess = ({defaultACLAccess}) => {
 	const classes = useStyles();
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
-	const { enqueueSnackbar } = useSnackbar();
-	const { client } = context;
+	const {enqueueSnackbar} = useSnackbar();
+	const {client} = context;
 
 	const handleChangeDefaultACLAccess = async (acl, allow) => {
 		await client.setDefaultACLAccess([{
@@ -76,85 +79,96 @@ const DefaultACLAccess = ({ defaultACLAccess }) => {
 	}
 
 	return (
-		<div>
-			<ContainerBreadCrumbs title="Default ACL Access" links={[{name: 'Home', route: '/home'}, {name: 'Roles', route: '/roles'}]}/>
-			<Paper className={classes.paper}>
-				<Hidden xsDown implementation="css">
-					<TableContainer component={Paper}>
-						<Table>
-							<TableHead>
-								<TableRow>
-									{ACL_TABLE_COLUMNS.map((column) => (
-										<TableCell
-											key={column.id}
-										>
-											{column.key}
-										</TableCell>
-									))}
-								</TableRow>
-							</TableHead>
-							<TableBody>
-								{defaultACLAccess &&
-									defaultACLAccess?.acls.map((acl) => (
-										<TableRow
-											hover
-											// TODO: add key
-											// key={role.rolename}
-										>
-											<TableCell>{acl.acltype}</TableCell>
-
-											<TableCell>
-												<Select
-													value={acl.allow ? 'allow' : 'deny'}
-													onChange={(event) => {
-														handleChangeDefaultACLAccess(acl, event.target.value === 'allow');
-													}}
-												>
-													<MenuItem value="allow">allow</MenuItem>
-													<MenuItem value="deny">deny</MenuItem>
-												</Select>
+		<div style={{height: '100%'}}>
+			<ContainerBreadCrumbs title="Default ACL Access"
+								  links={[{name: 'Home', route: '/home'}, {name: 'Roles', route: '/roles'}]}/>
+			<div style={{height: 'calc(100% - 26px)'}}>
+				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
+					<ContainerHeader
+						title="Default ACL Access"
+						buttonsWidth="350px"
+						subTitle="TODO"
+					/>
+					<div style={{height: '100%', overflowY: 'auto'}}>
+					<Hidden xsDown implementation="css">
+						<TableContainer>
+							<Table stickyHeader size="small" aria-label="sticky table">
+								<TableHead>
+									<TableRow>
+										{ACL_TABLE_COLUMNS.map((column) => (
+											<TableCell
+												key={column.id}
+											>
+												{column.key}
 											</TableCell>
-										</TableRow>
+										))}
+									</TableRow>
+								</TableHead>
+								<TableBody>
+									{defaultACLAccess &&
+										defaultACLAccess?.acls.map((acl) => (
+											<TableRow
+												hover
+												// TODO: add key
+												// key={role.rolename}
+											>
+												<TableCell>{acl.acltype}</TableCell>
+
+												<TableCell>
+													<Select
+														value={acl.allow ? 'allow' : 'deny'}
+														onChange={(event) => {
+															handleChangeDefaultACLAccess(acl,
+																event.target.value === 'allow');
+														}}
+													>
+														<MenuItem value="allow">allow</MenuItem>
+														<MenuItem value="deny">deny</MenuItem>
+													</Select>
+												</TableCell>
+											</TableRow>
+										))}
+								</TableBody>
+							</Table>
+						</TableContainer>
+					</Hidden>
+					<Hidden smUp implementation="css">
+						<Paper>
+							<List className={classes.root}>
+								{defaultACLAccess &&
+									defaultACLAccess?.acls?.map((acl) => (
+										<React.Fragment>
+											<ListItem button>
+												<ListItemText
+													primary={acl.acltype}
+													secondary={
+														<React.Fragment>
+															<Typography
+																component="span"
+																variant="body2"
+																className={classes.inline}
+																color="textPrimary"
+															>
+																Allow: <Checkbox checked={acl.allow} disabled/>
+															</Typography>
+														</React.Fragment>
+													}
+												/>
+												<ListItemSecondaryAction>
+													<IconButton edge="end" aria-label="delete">
+														<DeleteIcon/>
+													</IconButton>
+												</ListItemSecondaryAction>
+											</ListItem>
+											<Divider variant="inset" component="li"/>
+										</React.Fragment>
 									))}
-							</TableBody>
-						</Table>
-					</TableContainer>
-				</Hidden>
-				<Hidden smUp implementation="css">
-					<Paper>
-						<List className={classes.root}>
-							{defaultACLAccess &&
-								defaultACLAccess?.acls?.map((acl) => (
-									<React.Fragment>
-										<ListItem button>
-											<ListItemText
-												primary={acl.acltype}
-												secondary={
-													<React.Fragment>
-														<Typography
-															component="span"
-															variant="body2"
-															className={classes.inline}
-															color="textPrimary"
-														>
-															Allow: <Checkbox checked={acl.allow} disabled />
-														</Typography>
-													</React.Fragment>
-												}
-											/>
-											<ListItemSecondaryAction>
-												<IconButton edge="end" aria-label="delete">
-													<DeleteIcon />
-												</IconButton>
-											</ListItemSecondaryAction>
-										</ListItem>
-										<Divider variant="inset" component="li" />
-									</React.Fragment>
-								))}
-						</List>
-					</Paper>
-				</Hidden>
-			</Paper>
+							</List>
+						</Paper>
+					</Hidden>
+				</div>
+				</div>
+			</div>
 		</div>
 	);
 };

@@ -157,7 +157,7 @@ const Roles = (props) => {
 	const onSelectRole = async (rolename) => {
 		const role = await client.getRole(rolename);
 		dispatch(updateRole(role));
-		history.push(`/roles/detail/${rolename}`);
+		history.push(`/roles/${rolename}`);
 	};
 
 	const {dynamicsecurityFeature, defaultACLAccess, roles = [], onSort, sortBy, sortDirection} = props;

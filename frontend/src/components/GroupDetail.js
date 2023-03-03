@@ -89,7 +89,7 @@ const GroupDetail = (props) => {
 			]}/>
 			<ContainerHeader
 				title={`Edit Group: ${updatedGroup.groupname}`}
-				subTitle="Here you can modify the properties of a client. The user name can not be changed."
+				subTitle="Here you can modify the properties of a group. The group name can not be changed."
 			/>
 			<Grid container spacing={1} alignItems="flex-end">
 				<Grid item xs={12}>
