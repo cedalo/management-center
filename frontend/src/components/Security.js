@@ -41,7 +41,7 @@ function Security() {
 					<HomeCard title="Groups" description="Manage groups" image={'groups.png'} link="/groups" />
 				</Grid>
 				<Grid item lg={4} sm={4} xl={4} xs={12}>
-					<HomeCard title="Roles" description="Manage roles" image={'roles.png'} link="/security/roles" />
+					<HomeCard title="Roles" description="Manage roles" image={'roles.png'} link="/roles" />
 				</Grid>
 			</Grid>
 		</div>

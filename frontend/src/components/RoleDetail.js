@@ -56,6 +56,7 @@ import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
+import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 
 const ACL_TABLE_COLUMNS = [
 	{ id: 'type', key: 'Type' },
@@ -265,21 +266,7 @@ const RoleDetail = (props) => {
 	return role.rolename ? (
 		<div>
 			<ACLTypesHelpDialog open={aclTypesHelpDialogOpen} handleClose={handleCloseACLTypesHelpDialog} />
-			<Breadcrumbs maxItems={2} aria-label="breadcrumb">
-				<RouterLink className={classes.breadcrumbLink} to="/home">
-					Home
-				</RouterLink>
-				<RouterLink className={classes.breadcrumbLink} to="/security">
-					Security
-				</RouterLink>
-				<RouterLink className={classes.breadcrumbLink} to="/security/roles">
-					Roles
-				</RouterLink>
-				<Typography className={classes.breadcrumbItem} color="textPrimary">
-					{role.rolename}
-				</Typography>
-			</Breadcrumbs>
-			<br />
+			<ContainerBreadCrumbs title={role.rolename} links={[{name: 'Home', route: '/home'}, {name: 'Roles', route: '/roles'}]}/>
 			<Paper className={classes.paper}>
 				<Tabs
 					value={selectedTab}
@@ -687,7 +674,7 @@ const RoleDetail = (props) => {
 			</Paper>
 		</div>
 	) : (
-		<Redirect to="/security/roles" push />
+		<Redirect to="/roles" push />
 	);
 };
 

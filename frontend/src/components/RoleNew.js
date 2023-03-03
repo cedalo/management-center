@@ -28,6 +28,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { updateRoles } from '../actions/actions';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
+import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import SaveCancelButtons from './SaveCancelButtons';
 
 const useStyles = makeStyles((theme) => ({
@@ -85,7 +86,7 @@ const RoleNew = (props) => {
 			await client.createRole(rolename, textname, textdescription);
 			const roles = await client.listRoles();
 			dispatch(updateRoles(roles));
-			history.push(`/security/roles`);
+			history.push(`/roles`);
 			enqueueSnackbar(`Role "${rolename}" successfully created.`, {
 				variant: 'success'
 			});
@@ -114,18 +115,7 @@ const RoleNew = (props) => {
 
 	return (
 		<div>
-			<Breadcrumbs aria-label="breadcrumb">
-				<RouterLink className={classes.breadcrumbLink} to="/home">
-					Home
-				</RouterLink>
-				<RouterLink className={classes.breadcrumbLink} to="/security">
-					Security
-				</RouterLink>
-				<Typography className={classes.breadcrumbItem} color="textPrimary">
-					Roles
-				</Typography>
-			</Breadcrumbs>
-			<br />
+			<ContainerBreadCrumbs title="New" links={[{name: 'Home', route: '/home'}, {name: 'Roles', route: '/roles'}]}/>
 			<div className={classes.root}>
 				<Paper>
 					<form className={classes.form} noValidate autoComplete="off">

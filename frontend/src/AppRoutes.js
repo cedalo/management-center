@@ -93,17 +93,17 @@ function AppRoutes(props) {
 				<Route path="/groups">
 					<Groups />
 				</Route>
-				<Route
-					path="/security/roles/detail/:roleId"
-					component={RoleDetail}
-				/>
-				<Route path="/security/acl">
-					<DefaultACLAccess />
-				</Route>
-				<Route path="/security/roles/new">
+				<Route path="/roles/new">
 					<RoleNew />
 				</Route>
-				<Route path="/security/roles">
+				<Route path="/roles/acl">
+					<DefaultACLAccess />
+				</Route>
+				<Route
+					path="/roles/:roleId"
+					component={RoleDetail}
+				/>
+				<Route path="/roles">
 					<Roles />
 				</Route>
 				<Route path="/security">

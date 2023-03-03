@@ -32,6 +32,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { updateDefaultACLAccess } from '../actions/actions';
+import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 
 const ACL_TABLE_COLUMNS = [
 	{ id: 'type', key: 'Type' },
@@ -76,21 +77,7 @@ const DefaultACLAccess = ({ defaultACLAccess }) => {
 
 	return (
 		<div>
-			<Breadcrumbs maxItems={2} aria-label="breadcrumb">
-				<RouterLink className={classes.breadcrumbLink} to="/home">
-					Home
-				</RouterLink>
-				<RouterLink className={classes.breadcrumbLink} to="/security">
-					Security
-				</RouterLink>
-				<RouterLink className={classes.breadcrumbLink} to="/security/roles">
-					Roles
-				</RouterLink>
-				<Typography className={classes.breadcrumbItem} color="textPrimary">
-					Default ACL Access
-				</Typography>
-			</Breadcrumbs>
-			<br />
+			<ContainerBreadCrumbs title="Default ACL Access" links={[{name: 'Home', route: '/home'}, {name: 'Roles', route: '/roles'}]}/>
 			<Paper className={classes.paper}>
 				<Hidden xsDown implementation="css">
 					<TableContainer component={Paper}>

@@ -253,7 +253,7 @@ const CustomDrawer = ({
 					<ListItemLink
 						id="menu-item-roles"
 						classes={classes}
-						to="/security/roles"
+						to="/roles"
 						primary="Roles"
 						icon={<RoleIcon fontSize="small"/>}
 					/>
