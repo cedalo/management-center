@@ -208,7 +208,7 @@ const Clients = (props) => {
 		setFilteredClients(clients);
 	}, [clients]);
 
-	console.log('clients:', filteredClients);
+	// console.log('clients:', filteredClients);
 
 	return (
 		<div style={{height: '100%'}}>

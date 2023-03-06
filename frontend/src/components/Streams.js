@@ -33,7 +33,6 @@ import {updateStream, updateStreams} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
-
 import ReplayStreamDialog from './streams/ReplayStreamDialog';
 
 const StyledTableRow = withStyles((theme) => ({

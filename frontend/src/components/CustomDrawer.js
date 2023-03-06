@@ -317,14 +317,14 @@ const CustomDrawer = ({
                         />}
 						{adminOpen && atLeastAdmin(userProfile) ? <ListItemLink
 							classes={classes}
-							to="/admin/tokens"
+							to="/tokens"
 							primary="App Tokens"
 							icon={<SecurityIcon fontSize="small"/>}
 						/> : null}
 						{adminOpen && atLeastAdmin(userProfile) &&
 							<ListItemLink
 								classes={classes}
-								to="/config/settings"
+								to="/settings"
 								primary="Settings"
 								icon={<SettingsIcon fontSize="small"/>}
 							/>}

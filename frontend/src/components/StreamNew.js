@@ -1,43 +1,28 @@
-import React, { useContext, useState } from 'react';
-import { JsonEditor as Editor } from 'jsoneditor-react';
-import 'jsoneditor-react/es/editor.min.css';
-import './jsoneditor-fix.css';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import {makeStyles} from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import SaveIcon from '@material-ui/icons/Save';
+import Ajv from 'ajv';
 import ace from 'brace';
 import 'brace/mode/json';
 import 'brace/theme/github'
 import 'brace/theme/monokai'
-import Ajv from 'ajv';
-import { useSnackbar } from 'notistack';
-import { connect, useDispatch } from 'react-redux';
-import { updateStreams } from '../actions/actions';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import Box from '@material-ui/core/Box';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
-import ClientIDIcon from '@material-ui/icons/Fingerprint';
-import ClientIcon from '@material-ui/icons/Person';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
-import PasswordIcon from '@material-ui/icons/VpnKey';
-import PropTypes from 'prop-types';
-import { Link as RouterLink } from 'react-router-dom';
-import SaveIcon from '@material-ui/icons/Save';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import { WebSocketContext } from '../websockets/WebSocket';
-import { makeStyles } from '@material-ui/core/styles';
-import { useConfirm } from 'material-ui-confirm';
-import { useHistory } from 'react-router-dom';
+import {JsonEditor as Editor} from 'jsoneditor-react';
+import 'jsoneditor-react/es/editor.min.css';
+import {useConfirm} from 'material-ui-confirm';
+import {useSnackbar} from 'notistack';
+import React, {useContext, useState} from 'react';
+import {connect, useDispatch} from 'react-redux';
+import {useHistory} from 'react-router-dom';
+import {updateStreams} from '../actions/actions';
 import useLocalStorage from '../helpers/useLocalStorage';
+import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import './jsoneditor-fix.css';
 
 const ajv = new Ajv({
 	allErrors: true,

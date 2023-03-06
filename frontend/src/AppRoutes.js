@@ -161,7 +161,7 @@ function AppRoutes(props) {
 						<SortableTablePage Component={Certificates} />
 					</Route>
 				)}
-				{atLeastAdmin(userProfile) && <Route path="/config/settings">
+				{atLeastAdmin(userProfile) && <Route path="/settings">
 					<Settings onChangeTheme={props.onChangeTheme}/>
 				</Route>}
 				<Route path="/config">
@@ -192,7 +192,7 @@ function AppRoutes(props) {
 				{/* {atLeastAdmin(userProfile) && <Route path="/admin/tokens">
 					<ApplicationTokens />
 				</Route>} */}
-				<Route path="/admin/tokens">
+				<Route path="/tokens">
 					<ApplicationTokens />
 				</Route>
 
