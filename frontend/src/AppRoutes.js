@@ -115,13 +115,13 @@ function AppRoutes(props) {
 				<Route path="/terminal">
 					<Terminal />
 				</Route>
-				{atLeastAdmin(userProfile, currentConnectionName) && <Route
-					path="/streams/detail/:streamId"
-					component={StreamDetail}
-				/>}
 				{atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams/new">
 					<StreamNew />
 				</Route>}
+				{atLeastAdmin(userProfile, currentConnectionName) && <Route
+					path="/streams/:streamId"
+					component={StreamDetail}
+				/>}
 				{/* {atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams">
 					<Streams /> //* when refreshing the page this line will always redirect to dashboard because at the time of refresh user is none and permission checks fails, then redirect happens
 				</Route>} */}

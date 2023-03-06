@@ -8,10 +8,8 @@ import 'brace/theme/github'
 import 'brace/theme/monokai'
 import Ajv from 'ajv';
 import { useSnackbar } from 'notistack';
-
 import { connect, useDispatch } from 'react-redux';
 import { updateStreams } from '../actions/actions';
-
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
@@ -38,6 +36,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
 import useLocalStorage from '../helpers/useLocalStorage';
+import ContainerBreadCrumbs from './ContainerBreadCrumbs';
+import ContainerHeader from './ContainerHeader';
 
 const ajv = new Ajv({
 	allErrors: true,
@@ -57,36 +57,15 @@ const useStyles = makeStyles((theme) => ({
 		'& > *': {
 			margin: theme.spacing(1)
 		},
-		'& .MuiTextField-root': {
-			margin: theme.spacing(1),
-			width: '75ch'
-		}
-	},
-	buttons: {
-		'& > *': {
-			margin: theme.spacing(1)
-		}
-	},
-	form: {
-		display: 'flex',
-		flexWrap: 'wrap'
-	},
-	textField: {
-		// marginLeft: theme.spacing(1),
-		// marginRight: theme.spacing(1),
-		// width: 200,
 	},
 	margin: {
 		margin: theme.spacing(2)
 	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
 const StreamNew = (props) => {
 	const classes = useStyles();
 	const { enqueueSnackbar } = useSnackbar();
-
 	const [streamname, setStreamname] = useState('');
 	const [textdescription, setTextdescription] = useState('');
 	const [sourceTopic, setSourceTopic] = useState('');
@@ -117,9 +96,9 @@ const StreamNew = (props) => {
 	const onSaveStream = async () => {
 		try {
 			await client.createStream({
-				streamname, 
+				streamname,
 				textdescription,
-				sourceTopic, 
+				sourceTopic,
 				targetTopic,
 				targetQoS,
 				ttl,
@@ -156,157 +135,155 @@ const StreamNew = (props) => {
 
 	return (
 		<div>
-			<Breadcrumbs aria-label="breadcrumb">
-				<RouterLink className={classes.breadcrumbLink} to="/home">
-					Home
-				</RouterLink>
-				<Typography className={classes.breadcrumbItem} color="textPrimary">
-					Streams
-				</Typography>
-			</Breadcrumbs>
-			<br />
-			<div className={classes.root}>
-				<Paper>
-					<form className={classes.form} noValidate autoComplete="off">
-						<div className={classes.margin}>
-							<Grid container spacing={1} alignItems="flex-end">
-								<Grid item xs={12}>
-									<TextField
-										error={streamnameExists}
-										helperText={streamnameExists && 'A stream with this name already exists.'}
-										required
-										id="streamname"
-										label="Stream name"
-										onChange={(event) => setStreamname(event.target.value)}
-										defaultValue=""
-										variant="outlined"
-										fullWidth
-										className={classes.textField}
-										InputProps={{
-											startAdornment: (
-												<InputAdornment position="start">
-													<AccountCircle />
-												</InputAdornment>
-											)
-										}}
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<TextField
-										id="description"
-										label="Description"
-										onChange={(event) => setTextdescription(event.target.value)}
-										defaultValue=""
-										variant="outlined"
-										fullWidth
-										className={classes.textField}
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<TextField
-										required
-										id="sourcetopic"
-										label="Source Topic"
-										onChange={(event) => setSourceTopic(event.target.value)}
-										defaultValue=""
-										variant="outlined"
-										fullWidth
-										className={classes.textField}
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<TextField
-										id="targettopic"
-										label="Target topic"
-										onChange={(event) => setTargetTopic(event.target.value)}
-										defaultValue=""
-										variant="outlined"
-										fullWidth
-										className={classes.textField}
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<TextField
-										id="targetqos"
-										label="Target QoS"
-										onChange={(event) => setTargetQoS(event.target.value)}
-										defaultValue={-1}
-										type="number"
-										InputProps={{ inputProps: { min: -1, max: 2 } }}
-										variant="outlined"
-										fullWidth
-										className={classes.textField}
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<TextField
-										id="ttl"
-										label="TTL"
-										onChange={(event) => setTTL(event.target.value)}
-										defaultValue=""
-										variant="outlined"
-										fullWidth
-										className={classes.textField}
-									/>
-								</Grid>
-								{/* <Grid item xs={12}>
-									<TextField
-										id="key"
-										label="Key"
-										onChange={(event) => setKey(event.target.value)}
-										defaultValue=""
-										variant="outlined"
-										fullWidth
-										className={classes.textField}
-									/>
-								</Grid> */}
-								<Grid item xs={12}>
-									<Editor
-										className={classes.editor}
-										// value={}
-										ace={ace}
-										// onChange={this.handleChange}
-										ajv={ajv}
-										value={query}
-										theme={darkMode === 'true' ? "ace/theme/monokai" : "ace/theme/github"}
-										onChange={(json) => setQuery(json)}
-										mode="code"
-										navigationBar={false}
-										search={false}
-										allowedModes={[ 'code', 'view', 'form', 'tree']}
-									/>
-								</Grid>
-								<Grid container xs={12} alignItems="flex-start">
-									<Grid item xs={12} className={classes.buttons}>
-										<Button
-											variant="contained"
-											disabled={!validate()}
-											color="primary"
-											className={classes.button}
-											startIcon={<SaveIcon />}
-											onClick={(event) => {
-												event.stopPropagation();
-												onSaveStream();
-											}}
-										>
-											Save
-										</Button>
-										<Button
-											variant="contained"
-											onClick={(event) => {
-												event.stopPropagation();
-												onCancel();
-											}}
-										>
-											Cancel
-										</Button>
-									</Grid>
-								</Grid>
-							</Grid>
-						</div>
-					</form>
-				</Paper>
-			</div>
+			<ContainerBreadCrumbs title="New Stream" links={[{name: 'Home', route: '/home'},{name: 'Streams', route: '/streams'}]}/>
+			<ContainerHeader
+				title="New Stream"
+				subTitle="Create a new Stream. The Stream name has to be unique."
+			/>
+				<Grid container spacing={1} alignItems="flex-end">
+					<Grid item xs={12}>
+						<TextField
+							error={streamnameExists}
+							helperText={streamnameExists && 'A stream with this name already exists.'}
+							required
+							id="streamname"
+							label="Stream name"
+							onChange={(event) => setStreamname(event.target.value)}
+							defaultValue=""
+							variant="outlined"
+							fullWidth
+							size="small"
+							margin="dense"
+							InputProps={{
+								startAdornment: (
+									<InputAdornment position="start">
+										<AccountCircle />
+									</InputAdornment>
+								)
+							}}
+						/>
+					</Grid>
+					<Grid item xs={12}>
+						<TextField
+							id="description"
+							label="Description"
+							onChange={(event) => setTextdescription(event.target.value)}
+							defaultValue=""
+							variant="outlined"
+							fullWidth
+							size="small"
+							margin="dense"
+						/>
+					</Grid>
+					<Grid item xs={12}>
+						<TextField
+							required
+							id="sourcetopic"
+							label="Source Topic"
+							onChange={(event) => setSourceTopic(event.target.value)}
+							defaultValue=""
+							variant="outlined"
+							fullWidth
+							size="small"
+							margin="dense"
+						/>
+					</Grid>
+					<Grid item xs={12}>
+						<TextField
+							id="targettopic"
+							label="Target topic"
+							onChange={(event) => setTargetTopic(event.target.value)}
+							defaultValue=""
+							variant="outlined"
+							fullWidth
+							size="small"
+							margin="dense"
+						/>
+					</Grid>
+					<Grid item xs={12}>
+						<TextField
+							id="targetqos"
+							label="Target QoS"
+							onChange={(event) => setTargetQoS(event.target.value)}
+							defaultValue={-1}
+							type="number"
+							InputProps={{ inputProps: { min: -1, max: 2 } }}
+							variant="outlined"
+							fullWidth
+							size="small"
+							margin="dense"
+						/>
+					</Grid>
+					<Grid item xs={12}>
+						<TextField
+							id="ttl"
+							label="TTL"
+							onChange={(event) => setTTL(event.target.value)}
+							defaultValue=""
+							variant="outlined"
+							fullWidth
+							size="small"
+							margin="dense"
+						/>
+					</Grid>
+					{/* <Grid item xs={12}>
+						<TextField
+							id="key"
+							label="Key"
+							onChange={(event) => setKey(event.target.value)}
+							defaultValue=""
+							variant="outlined"
+							fullWidth
+							className={classes.textField}
+						/>
+					</Grid> */}
+					<Grid item xs={12}>
+						<Editor
+							className={classes.editor}
+							// value={}
+							ace={ace}
+							// onChange={this.handleChange}
+							ajv={ajv}
+							value={query}
+							theme={darkMode === 'true' ? "ace/theme/monokai" : "ace/theme/github"}
+							onChange={(json) => setQuery(json)}
+							mode="code"
+							navigationBar={false}
+							search={false}
+							allowedModes={[ 'code', 'view', 'form', 'tree']}
+						/>
+					</Grid>
+					<Grid container xs={12} alignItems="flex-start">
+						<Grid item xs={12}>
+							<Button
+								variant="contained"
+								style={{marginRight: '10px', marginTop: '10px'}}
+								size="small"
+								disabled={!validate()}
+								color="primary"
+								className={classes.button}
+								startIcon={<SaveIcon />}
+								onClick={(event) => {
+									event.stopPropagation();
+									onSaveStream();
+								}}
+							>
+								Save
+							</Button>
+							<Button
+								variant="contained"
+								size="small"
+								style={{marginTop: '10px'}}
+								onClick={(event) => {
+									event.stopPropagation();
+									onCancel();
+								}}
+							>
+								Cancel
+							</Button>
+						</Grid>
+					</Grid>
+				</Grid>
 		</div>
 	);
 };
