@@ -80,7 +80,7 @@ function AppRoutes(props) {
 				<Route path="/clients">
 					<Clients filter={props.filter}/>
 				</Route>
-				<Route path="/inspect/clients">
+				<Route path="/clientinspection">
 					<InspectClients filter={props.filter}/>
 				</Route>
 				<Route path="/groups/new">
@@ -128,10 +128,10 @@ function AppRoutes(props) {
 				<Route path="/streams">
 					<Streams />
 				</Route>
-				<Route path="/system/status">
+				<Route path="/home">
 					<Status />
 				</Route>
-				<Route path="/inspect/topics">
+				<Route path="/topics">
 					<TopicTree />
 				</Route>
 				<Route path="/system">
@@ -237,7 +237,7 @@ function AppRoutes(props) {
 					component={TestCollections}
 				/>
 				<Route path="/">
-					<Redirect to="/system/status" />
+					<Redirect to="/home" />
 				</Route>
 			</Switch>
 		);

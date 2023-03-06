@@ -197,7 +197,7 @@ const Clients = (props) => {
 	const onSelectClient = async (username) => {
 		const client = await brokerClient.inspectGetClient(username);
 		dispatch(updateInspectClient(client));
-		history.push(`/inspect/clients/${username}`);
+		history.push(`/clientinspection/${username}`);
 	};
 
 	React.useEffect(() => {
@@ -212,7 +212,7 @@ const Clients = (props) => {
 
 	return (
 		<div style={{height: '100%'}}>
-			<ContainerBreadCrumbs title="Clients" links={[{name: 'Home', route: '/home'}, {name: 'Inspect', route: '/Inspect'}]}/>
+			<ContainerBreadCrumbs title="Client Inspection" links={[{name: 'Home', route: '/home'}]}/>
 			<div style={{height: 'calc(100% - 26px)'}}>
 				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
 					<ContainerHeader

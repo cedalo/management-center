@@ -298,7 +298,7 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 	return (
 		<div style={{height: '100%'}}>
 			<ContainerBreadCrumbs title="Topic Tree"
-								  links={[{name: 'Home', route: '/home'}, {name: 'Inspect', route: '/Inspect'}]}/>
+								  links={[{name: 'Home', route: '/home'}]}/>
 			<div style={{height: 'calc(100% - 26px)'}}>
 				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
 					<ContainerHeader

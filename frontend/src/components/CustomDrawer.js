@@ -28,7 +28,7 @@ import UsersIcon from '@material-ui/icons/People';
 import MoreIcon from '@material-ui/icons/MoreHoriz';
 import ClusterIcon from '@material-ui/icons/Storage';
 import InspectClientsIcon from '@material-ui/icons/RecordVoiceOver';
-import EqualizerIcon from '@material-ui/icons/Equalizer';
+import HomeIcon from '@material-ui/icons/Home';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StreamsheetsIcon from '@material-ui/icons/TableChart';
 import StreamsIcon from '@material-ui/icons/Timeline';
@@ -164,7 +164,7 @@ const CustomDrawer = ({
 	const theme = useTheme();
 	const [adminOpen, setAdminOpen] = useState(false);
 
-	setShowFilter('/inspect/clients' === location.pathname);
+	setShowFilter('/clientinspection' === location.pathname);
 		// '/clients' === location.pathname);
 
 	return <Drawer
@@ -190,13 +190,33 @@ const CustomDrawer = ({
 			</IconButton>
 		</div>
 		<div>
-			{/* <Divider />
-	<List>
-		<ListItemLink id="menu-item-home" classes={classes} to="/home" primary="Home" icon={<HomeIcon />} />
-	</List> */}
 			<Box style={{overflow: 'hidden', height: '100%'}}>
+				{open ? <ListSubheader className={classes.menuSubHeader}>Inspection</ListSubheader> : null}
 				<List>
-					{open ? <ListSubheader className={classes.menuSubHeader}>Monitoring</ListSubheader> : null}
+					<ListItemLink
+						id="menu-item-status"
+						classes={classes}
+						to="/home"
+						primary="Home"
+						icon={<HomeIcon fontSize="small"/>}
+					/>
+					<ListItemLink
+						id="menu-item-topics"
+						classes={classes}
+						to="/topics"
+						primary="Topic Tree"
+						icon={<TopicTreeIcon fontSize="small"/>}
+					/>
+					{<ListItemLink
+						classes={classes}
+						to="/clientinspection"
+						primary="Clients"
+						icon={<InspectClientsIcon fontSize="small"/>}
+					/>}
+				</List>
+				<Divider />
+				<List>
+					{open ? <ListSubheader className={classes.menuSubHeader}>Configuration</ListSubheader> : null}
 					{atLeastAdmin(userProfile) && <ListItemLink
 						classes={classes}
 						to="/clusters"
@@ -209,31 +229,10 @@ const CustomDrawer = ({
 						primary="Connections"
 						icon={<ConnectionsIcon fontSize="small"/>}
 					/> : null}
+					{atLeastAdmin(userProfile, currentConnectionName) &&
+						<ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon fontSize="small"/>}/>}
 				</List>
-				<Divider/>
-				<List>
-					<ListItemLink
-						id="menu-item-status"
-						classes={classes}
-						to="/system/status"
-						primary="System Status"
-						icon={<EqualizerIcon fontSize="small"/>}
-					/>
-					<ListItemLink
-						id="menu-item-topics"
-						classes={classes}
-						to="/inspect/topics"
-						primary="Topic Tree"
-						icon={<TopicTreeIcon fontSize="small"/>}
-					/>
-					{<ListItemLink
-						classes={classes}
-						to="/inspect/clients"
-						primary="Clients"
-						icon={<InspectClientsIcon fontSize="small"/>}
-					/>}
-				</List>
-				<Divider/>
+				<Divider />
 				{atLeastEditor(userProfile, currentConnectionName) && <><List>
 					{open ? <ListSubheader className={classes.menuSubHeader}>Dynamic Security</ListSubheader> : null}
 					<ListItemLink
@@ -261,8 +260,6 @@ const CustomDrawer = ({
 					<Divider/></>}
 				<List id="menu-items-tools">
 					{open ? <ListSubheader className={classes.menuSubHeader}>Tools</ListSubheader> : null}
-					{atLeastAdmin(userProfile, currentConnectionName) &&
-						<ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon fontSize="small"/>}/>}
 					{atLeastAdmin(userProfile, currentConnectionName) &&
 						<ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon fontSize="small"/>}/>}
 					<ListItemLink

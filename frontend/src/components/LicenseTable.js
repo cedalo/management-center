@@ -1,4 +1,4 @@
-import { green, red } from '@material-ui/core/colors';
+import {green, red} from '@material-ui/core/colors';
 
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -13,18 +13,18 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
-import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
+import {connect} from 'react-redux';
+import {makeStyles} from '@material-ui/core/styles';
 import moment from 'moment';
 import useFetch from '../helpers/useFetch';
-import { TableHead } from '@material-ui/core';
+import {TableHead} from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
-import { Alert, AlertTitle } from '@material-ui/lab';
+import {Alert, AlertTitle} from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
 	tableContainer: {
 		'& td:first-child': {
-			width: '30%'
+			width: '15%'
 		}
 	},
 	updateButton: {
@@ -41,9 +41,9 @@ const useStyles = makeStyles((theme) => ({
 
 const createFeatureIcon = (feature, license) =>
 	license.features && license.features.includes(feature) ? (
-		<FeatureEnabledIcon fontSize="small" style={{ color: green[500] }} />
+		<FeatureEnabledIcon fontSize="small" style={{color: green[500]}}/>
 	) : (
-		<FeatureDisabledIcon fontSize="small" style={{ color: red[500] }} />
+		<FeatureDisabledIcon fontSize="small" style={{color: red[500]}}/>
 	);
 
 const isPremiumLicense = (license) => license && license.edition === 'pro';
@@ -51,19 +51,19 @@ const isPremiumLicense = (license) => license && license.edition === 'pro';
 const getPremium = () => {
 	return (
 		<span>
-			<PremiumVersionIcon fontSize="small" style={{ color: '#ffc107', verticalAlign: 'middle' }} /> Premium
+			<PremiumVersionIcon fontSize="small" style={{color: '#ffc107', verticalAlign: 'middle'}}/> Premium
 		</span>
 	);
 };
 
 const LicenseTable = (props) => {
 	const classes = useStyles();
-	const { license } = props;
+	const {license} = props;
 
 	return (
 		<div>
 			{
-				!license && 
+				!license &&
 				<Alert severity="info">
 					<AlertTitle>No license information available</AlertTitle>
 					This broker does not provide any license information.
@@ -75,24 +75,13 @@ const LicenseTable = (props) => {
 						<TableBody>
 							<TableRow>
 								<TableCell>
-									<b>Edition</b>
+									<b>License</b>
 								</TableCell>
-								<TableCell>{license.edition === 'pro' ? getPremium() : license.edition}</TableCell>
-							</TableRow>
-							<TableRow>
 								<TableCell>
-									<b>Issued by</b>
+									{license.edition === 'pro' ? getPremium() : license.edition}
+									{` edition issued by ${license.issuedBy} to ${license.issuedTo}`}
 								</TableCell>
-								<TableCell>{license.issuedBy}</TableCell>
 							</TableRow>
-							{isPremiumLicense(license) && (
-								<TableRow>
-									<TableCell>
-										<b>Issued to</b>
-									</TableCell>
-									<TableCell>{license.issuedTo}</TableCell>
-								</TableRow>
-							)}
 							{isPremiumLicense(license) && (
 								<TableRow>
 									<TableCell>
@@ -148,8 +137,8 @@ const LicenseTable = (props) => {
 				</TableContainer>
 			)}
 
-			<br />
-			{license?.features &&
+			<br/>
+			{/* license?.features &&
 				<TableContainer component={Paper} className={classes.tableContainer}>
 					<Table size="medium">
 						<TableHead>
@@ -160,12 +149,6 @@ const LicenseTable = (props) => {
 								<TableCell>
 									<b>Version</b>
 								</TableCell>
-								{/* <TableCell>
-									<b>Valid until</b>
-								</TableCell>
-								<TableCell>
-									<b>Valid since</b>
-								</TableCell> */}
 							</TableRow>
 							</TableHead>
 						<TableBody>
@@ -177,25 +160,18 @@ const LicenseTable = (props) => {
 								<TableCell>
 									{feature.version}
 								</TableCell>
-								{/* <TableCell>
-									{moment(feature.validSince).format('LLLL')}
-								</TableCell>
-								<TableCell>
-									{moment(feature.validUntil).format('LLLL')}
-								</TableCell> */}
 							</TableRow>
 						))}
 						</TableBody>
 					</Table>
 				</TableContainer>
-			}
+			*/}
 		</div>
 	);
 };
 
 const mapStateToProps = (state) => {
-	return {
-	};
+	return {};
 };
 
 export default connect(mapStateToProps)(LicenseTable);

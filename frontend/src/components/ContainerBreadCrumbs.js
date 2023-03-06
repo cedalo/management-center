@@ -15,7 +15,7 @@ export default function ConnectionBreadCrumbs({links, title}) {
 	return (
 		<div>
 			<Breadcrumbs aria-label="breadcrumb">
-				{links.map(link => (
+				{links && links.map(link => (
 					<RouterLink className={classes.breadcrumbLink} to={link.route}>
 						{link.name}
 					</RouterLink>
