@@ -586,20 +586,21 @@ const createTokenTable = (tokens, classes, props, onDeleteToken) => {
 											new Date(token.lastUsed)) : ''}</TableCell>
 										<TableCell className={classes.badges}>
 											<Tooltip title={token.hash}>
-												<TextField
+												<InputBase
 													id="token-hash"
 													className={classes.copyField}
 													value={token.hash}
-													InputProps={{
-														endAdornment: <IconButton
-															size="small"
-															className={classes.iconButton}
-															aria-label="copy token hash"
-															onClick={() => copyText(token.hash, enqueueSnackbar)}
-														>
-															<FileCopy fontSize="small"/>
-														</IconButton>
-													}}
+													endAdornment={<InputAdornment position="end">
+															<IconButton
+																size="small"
+																className={classes.iconButton}
+																aria-label="copy token hash"
+																onClick={() => copyText(token.hash, enqueueSnackbar)}
+															>
+																<FileCopy fontSize="small"/>
+															</IconButton>
+													</InputAdornment>
+													}
 												/>
 												{/* <AutoSuggest
                                                     disabled={user.editable === false}
