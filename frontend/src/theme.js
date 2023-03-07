@@ -39,6 +39,27 @@ const theme = createTheme({
 			colorPrimary: {
 				backgroundColor: '#F7F9FC',
 			},
+		},
+		MuiAutocomplete: {
+			tagSizeSmall: {
+				backgroundColor: '#FD602E',
+				color: '#FFFFFF',
+			},
+			hasClearIcon: {
+				color: 'color: rgba(255, 255, 255, 0.7)',
+			},
+			inputRoot: {
+				'& .MuiAutocomplete-input': {
+					minWidth: '5px'
+				},
+				minWidth: '5px'
+			},
+			option: {
+				paddingTop: '0px',
+				paddingLeft: '0px',
+				paddingBottom: '0px',
+				paddingRight: '0px'
+			}
 		}
 	}
 });

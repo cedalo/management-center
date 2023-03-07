@@ -35,6 +35,62 @@ import {WebSocketContext} from '../websockets/WebSocket';
 import AutoSuggest from './AutoSuggest';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+
+const MCAutoComplete = ({values, onChange, disabled, suggestions, getValue}) => {
+	const [inputValueClients, setInputValueClients] = useState('');
+
+	return (
+		<Autocomplete
+			multiple
+			size="small"
+			disabled={disabled}
+			limitTags={3}
+			ChipProps={{ color: "primary" }}
+			options={suggestions}
+			disableCloseOnSelect
+			getOptionLabel={(option) =>
+				option ? option.label : ''
+			}
+			getOptionSelected={(option, value) =>
+				values.find(() => option.value === value.value)
+			}
+			value={values.map((value) => ({
+				label: getValue(value),
+				value: getValue(value)
+			}))}
+			onChange={onChange}
+			inputValue={inputValueClients}
+			onInputChange={(event, newInputValue, reason) => {
+				if (reason !== 'reset') {
+					setInputValueClients(newInputValue);
+				}
+			}}
+			renderOption={(option, { selected }) => (
+				<React.Fragment >
+					<Checkbox
+						icon={icon}
+						color="primary"
+						checkedIcon={checkedIcon}
+						style={{ marginRight: 8, padding: '2px' }}
+						checked={values.find((value) => option.value === getValue(value))}
+					/>
+					{option.label}
+				</React.Fragment>
+			)}
+			renderInput={(params) => (
+				<TextField
+					{...params} variant="standard" size="small" placeholder=""
+				/>
+			)}
+		/>);
+};
 
 const StyledTableRow = withStyles((theme) => ({
 	root: {
@@ -59,13 +115,6 @@ const useStyles = makeStyles((theme) => ({
 	disabled: {
 		opacity: '45%',
 	},
-	// fab: {
-	// 	position: 'absolute',
-	// 	bottom: theme.spacing(2),
-	// 	right: theme.spacing(2)
-	// },
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
 const clientShape = PropTypes.shape({
@@ -371,30 +420,26 @@ const Clients = (props) => {
 																client)}>{client.textdescription}</TableCell>
 															<TableCell className={`${classes.badges} ${getClassForCell(
 																client)}`}>
-																<AutoSuggest
-																	disabled={defaultClient?.username === client.username}
-																	suggestions={groupSuggestions}
-																	values={client.groups.map((group) => ({
-																		label: group.groupname,
-																		value: group.groupname
-																	}))}
-																	handleChange={(value) => {
+																<MCAutoComplete
+																	values={client.groups}
+																	getValue={value => value.groupname}
+																	onChange={(event, value) => {
 																		onUpdateClientGroups(client, value);
 																	}}
+																	disabled={defaultClient?.username === client.username}
+																	suggestions={groupSuggestions}
 																/>
 															</TableCell>
 															<TableCell className={`${classes.badges} ${getClassForCell(
 																client)}`}>
-																<AutoSuggest
-																	disabled={defaultClient?.username === client.username}
-																	suggestions={roleSuggestions}
-																	values={client.roles.map((role) => ({
-																		label: role.rolename,
-																		value: role.rolename
-																	}))}
-																	handleChange={(value) => {
+																<MCAutoComplete
+																	values={client.roles}
+																	getValue={value => value.rolename}
+																	onChange={(event, value) => {
 																		onUpdateClientRoles(client, value);
 																	}}
+																	disabled={defaultClient?.username === client.username}
+																	suggestions={roleSuggestions}
 																/>
 															</TableCell>
 															<TableCell style={{padding: '0px', width: '20px'}}>
