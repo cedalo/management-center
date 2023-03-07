@@ -654,9 +654,9 @@ const init = async (licenseContainer) => {
 			}
 			default: {
 				if (context.security.acl.noRestrictedRoles(user)) {
-					const handler = context.requestHandlers.get(request);
-					if (handler) {
-						const result = await handler[request](message, user);
+					const actionName = context.requestHandlers.get(request);
+					if (actionName) {
+						const result = await context.runAction(user, actionName, data);
 						return result;
 					} else {
 						throw new Error(`Unsupported request: ${request}`);
@@ -898,22 +898,25 @@ const init = async (licenseContainer) => {
 			context.actions[type] = { fn, filter };
 		},
 		runAction: (user, type, data) => {
-			const action = context.actions[type];
-			if (!action) {
-				throw new Error(`Unknown action: "${type}"`);
-			}
+			try {
+				const action = context.actions[type];
+				if (!action) {
+					throw new Error(`Unknown action: "${type}"`);
+				}
 
-			context.actionEmitter.emit(type, { type, user, data: action.filter(data) });
-			return action.fn({ ...context, user }, data);
+				context.actionEmitter.emit(type, { type, user, data: action.filter(data) });
+				return action.fn({ ...context, user }, data);
+			} catch (error) {
+				console.error(error);
+			}
 		},
 		broadcastWebSocketMessage,
 		sendTopicTreeUpdate,
 		sendSystemStatusUpdate,
 		loadConfig,
-		actions: {
-			handleConnectServerToBroker,
-			handleDisconnectServerFromBroker,
-		},
+		handleConnectServerToBroker,
+		handleDisconnectServerFromBroker,
+		actions: {},
 		middleware: {
 			isPluginLoaded: (plugin) => (request, response, next) => {
 				if (plugin.isLoaded()) {
@@ -1101,7 +1104,7 @@ const init = async (licenseContainer) => {
 				case 'SOMETHING_WRONG':
 					return response.status(500).send({ code: error.code, message: error.message });
 				default: {
-					console.error(error.stack);
+					console.error(error);
 					return response
 						.status(500)
 						.send({ code: 'INTERNAL_ERROR', message: 'An internal server error occurred' });
