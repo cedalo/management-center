@@ -1131,6 +1131,10 @@ const init = async (licenseContainer) => {
 					return response.status(400).send({ code: error.code, message: error.message });
 				case 'NOT_ALLOWED':
 					return response.status(403).send({ code: error.code, message: error.message });
+				case 'GONE':
+					return response.status(409).send({ code: error.code, message: error.message });
+				case 'SOMETHING_WRONG':
+					return response.status(500).send({ code: error.code, message: error.message });
 				default: {
 					console.error(error.stack);
 					return response
