@@ -919,8 +919,8 @@ const init = async (licenseContainer) => {
 		globalSystem,
 		globalTopicTree,
 		licenseContainer,
-		registerAction: ({ type, fn, filter = (x) => x }) => {
-			context.actions[type] = { fn, filter };
+		registerAction: ({ type, isModifying, fn, filter = (x) => x }) => {
+			context.actions[type] = { fn, filter, isModifying };
 		},
 		runAction: (user, type, data) => {
 			try {
@@ -928,9 +928,39 @@ const init = async (licenseContainer) => {
 				if (!action) {
 					throw new Error(`Unknown action: "${type}"`);
 				}
+				const { isModifying } = action;
+				const eventName = `${isModifying ? 'w' : 'r'}/${type}`;
 
-				context.actionEmitter.emit(type, { type, user, data: action.filter(data) });
-				return action.fn({ ...context, user }, data);
+				let error;
+				let pendingResult;
+				let result;
+				try {
+					pendingResult = action.fn({ ...context, user }, data);
+					return pendingResult;
+				} catch (error) {
+					error = error.message || 'Unknown error!';
+					throw error;
+				} finally {
+					Promise.resolve(pendingResult)
+						.catch((e) => {
+							error = e.message || 'Unknown error!';
+						})
+						.then((r) => {
+							result = r;
+						})
+						.finally(() => {
+							const eventData = {
+								type,
+								isModifying,
+								user,
+								data: action.filter(data),
+								error,
+								// TODO: should this be here? should we filter it? Currently only required for user/login
+								result
+							};
+							context.actionEmitter.emit(eventName, eventData);
+						});
+				}
 			} catch (error) {
 				console.error(error);
 			}
