@@ -964,9 +964,8 @@ const init = async (licenseContainer) => {
 		preprocessUserFunctions: []
 	};
 
-	const pluginManager = new PluginManager();
-	pluginManager.init(config.plugins, context, swaggerDocument);
-	context.config.parameters.ssoUsed = !!pluginManager.plugins.find(
+	context.pluginManager.init(config.plugins, context, swaggerDocument);
+	context.config.parameters.ssoUsed = !!context.pluginManager.plugins.find(
 		(plugin) => plugin._meta.id.includes('_sso') && plugin._status.type === 'loaded'
 	);
 	context.registerAction(unloadPluginAction);
@@ -976,8 +975,6 @@ const init = async (licenseContainer) => {
 	context.registerAction(createConnectionAction);
 	context.registerAction(modifyConnectionAction);
 	context.registerAction(deleteConnectionAction);
-
-	context.pluginManager.init(config.plugins, context, swaggerDocument);
 
 	if (context.server instanceof Error) {
 		// https plugin tried to be loaded but failed
