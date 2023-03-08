@@ -8,6 +8,7 @@ import SaveCancelButtons from '../../../components/SaveCancelButtons';
 import { WebSocketContext } from '../../../websockets/WebSocket';
 import ContentContainer from './ContentContainer';
 import UploadButton from './UploadButton';
+import CertificateInfo from './CertificateInfo';
 
 const useStyles = makeStyles((theme) => ({
 	buttons: {
@@ -154,6 +155,9 @@ const CertificateDetail = () => {
 									)
 								}}
 							/>
+						</Grid>
+						<Grid item xs={12}>
+							<CertificateInfo certificate={cert} />
 						</Grid>
 						<Grid container xs={12} alignItems="flex-start">
 							<Grid item xs={12} className={classes.buttons}>

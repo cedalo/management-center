@@ -1,11 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { Button, IconButton, TableCell, TableRow, Tooltip } from '@material-ui/core';
+import { Box, Button, Collapse, IconButton, TableCell, TableRow, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import UploadIcon from '@material-ui/icons/CloudUploadOutlined';
+import ExpandIcon from '@material-ui/icons/KeyboardArrowDown';
+import CollapseIcon from '@material-ui/icons/KeyboardArrowUp';
 import { useSnackbar } from 'notistack';
 import ContainerHeader from '../../../components/ContainerHeader';
 import { WebSocketContext } from '../../../websockets/WebSocket';
@@ -15,6 +17,7 @@ import ContentContainer from './ContentContainer';
 import ContentTable from './ContentTable';
 import CertificateDeleteDialog from './CertificateDeleteDialog';
 import { getUsedConnections } from './certutils';
+import CertificateInfo from './CertificateInfo';
 
 const StyledTableRow = withStyles((theme) => ({
 	root: {
@@ -32,6 +35,7 @@ const BadgesCell = withStyles((theme) => ({
 }))(TableCell);
 
 const CERT_TABLE_COLUMNS = [
+	{ id: 'info', key: '', sortable: false },
 	{ id: 'name', key: 'Descriptive Name', sortable: true },
 	{ id: 'filename', key: 'Filename', sortable: true },
 	{ id: 'broker', key: 'Used by', sortable: false },
@@ -44,7 +48,12 @@ const isLicensed = hasLicenseFeature('cert-management');
 
 const CustomTableRow = ({ cert, connections, handleDelete }) => {
 	const history = useHistory();
+	const [isExpanded, setIsExpanded] = useState(false);
 
+	const onExpand = (event) => {
+		event.stopPropagation();
+		setIsExpanded(!isExpanded)
+	}
 	const onDelete = (event) => {
 		event.stopPropagation();
 		handleDelete(cert);
@@ -61,11 +70,16 @@ const CustomTableRow = ({ cert, connections, handleDelete }) => {
 	return (
 		<>
 			<StyledTableRow hover key={cert.name} onClick={onSelect} style={{ cursor: 'pointer' }}>
+				<TableCell>
+					<IconButton aria-label="expand row" size="small" onClick={onExpand}>
+						{isExpanded ? <CollapseIcon /> : <ExpandIcon />}
+					</IconButton>
+				</TableCell>
 				<TableCell>{cert.name}</TableCell>
 				<TableCell>{cert.filename}</TableCell>
 				<BadgesCell>
 					<ChipsList
-						values={(getUsedConnections(connections, cert.listeners)).map((conn) => ({
+						values={getUsedConnections(connections, cert.listeners).map((conn) => ({
 							label: conn.name
 						}))}
 					/>
@@ -83,6 +97,15 @@ const CustomTableRow = ({ cert, connections, handleDelete }) => {
 							<DeleteIcon fontSize="small" />
 						</IconButton>
 					</Tooltip>
+				</TableCell>
+			</StyledTableRow>
+			<StyledTableRow>
+				<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+					<Collapse in={isExpanded} timeout="auto" unmountOnExit>
+						<Box margin={1} display="flex" flexDirection="row">
+							<CertificateInfo certificate={cert} variant="summary" />
+						</Box>
+					</Collapse>
 				</TableCell>
 			</StyledTableRow>
 		</>
