@@ -1,4 +1,3 @@
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Hidden from '@material-ui/core/Hidden';
@@ -33,9 +32,10 @@ import {Link as RouterLink, useHistory} from 'react-router-dom';
 import {updateAnonymousGroup, updateClients, updateGroup, updateGroups} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
 import AnonymousGroupSelect from './AnonymousGroupSelect';
-import AutoSuggest from './AutoSuggest';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import SelectList from './SelectList';
+
 
 const useStyles = makeStyles((theme) => ({
 	tableContainer: {
@@ -278,27 +278,25 @@ const Groups = (props) => {
 														<TableCell>{group.textname}</TableCell>
 														<TableCell>{group.textdescription}</TableCell>
 														<TableCell className={classes.badges}>
-															<AutoSuggest
-																suggestions={clientSuggestions}
-																values={group.clients.map((client) => ({
-																	label: client.username,
-																	value: client.username
-																}))}
-																handleChange={(value) => {
+															<SelectList
+																values={group.clients}
+																getValue={value => value.username}
+																onChange={(event, value) => {
 																	onUpdateGroupClients(group, value);
 																}}
+																disabled={false}
+																suggestions={clientSuggestions}
 															/>
 														</TableCell>
 														<TableCell className={classes.badges}>
-															<AutoSuggest
-																suggestions={roleSuggestions}
-																values={group.roles.map((role) => ({
-																	label: role.rolename,
-																	value: role.rolename
-																}))}
-																handleChange={(value) => {
+															<SelectList
+																values={group.roles}
+																getValue={value => value.rolename}
+																onChange={(event, value) => {
 																	onUpdateGroupRoles(group, value);
 																}}
+																disabled={false}
+																suggestions={roleSuggestions}
 															/>
 														</TableCell>
 														<TableCell align="right">

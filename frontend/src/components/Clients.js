@@ -22,7 +22,6 @@ import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-// import Fab from '@material-ui/core/Fab';
 import {Alert, AlertTitle} from '@material-ui/lab';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
@@ -32,65 +31,9 @@ import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateClient, updateClients, updateGroups} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
-import AutoSuggest from './AutoSuggest';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-
-const MCAutoComplete = ({values, onChange, disabled, suggestions, getValue}) => {
-	const [inputValueClients, setInputValueClients] = useState('');
-
-	return (
-		<Autocomplete
-			multiple
-			size="small"
-			disabled={disabled}
-			limitTags={3}
-			ChipProps={{ color: "primary" }}
-			options={suggestions}
-			disableCloseOnSelect
-			getOptionLabel={(option) =>
-				option ? option.label : ''
-			}
-			getOptionSelected={(option, value) =>
-				values.find(() => option.value === value.value)
-			}
-			value={values.map((value) => ({
-				label: getValue(value),
-				value: getValue(value)
-			}))}
-			onChange={onChange}
-			inputValue={inputValueClients}
-			onInputChange={(event, newInputValue, reason) => {
-				if (reason !== 'reset') {
-					setInputValueClients(newInputValue);
-				}
-			}}
-			renderOption={(option, { selected }) => (
-				<React.Fragment >
-					<Checkbox
-						icon={icon}
-						color="primary"
-						checkedIcon={checkedIcon}
-						style={{ marginRight: 8, padding: '2px' }}
-						checked={values.find((value) => option.value === getValue(value))}
-					/>
-					{option.label}
-				</React.Fragment>
-			)}
-			renderInput={(params) => (
-				<TextField
-					{...params} variant="standard" size="small" placeholder=""
-				/>
-			)}
-		/>);
-};
+import SelectList from './SelectList';
 
 const StyledTableRow = withStyles((theme) => ({
 	root: {
@@ -420,7 +363,7 @@ const Clients = (props) => {
 																client)}>{client.textdescription}</TableCell>
 															<TableCell className={`${classes.badges} ${getClassForCell(
 																client)}`}>
-																<MCAutoComplete
+																<SelectList
 																	values={client.groups}
 																	getValue={value => value.groupname}
 																	onChange={(event, value) => {
@@ -432,7 +375,7 @@ const Clients = (props) => {
 															</TableCell>
 															<TableCell className={`${classes.badges} ${getClassForCell(
 																client)}`}>
-																<MCAutoComplete
+																<SelectList
 																	values={client.roles}
 																	getValue={value => value.rolename}
 																	onChange={(event, value) => {
