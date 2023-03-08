@@ -334,7 +334,7 @@ const ConnectionDetailComponent = (props) => {
 		if (!name) {
 			console.error('No "name" (e.target.getAttribute("name") passed into handleFileUpload')
 		}
-		
+
         fileReader.readAsDataURL(e.target.files[0]);
 		e.target.value = ''; // null out the value of input component to make it possible to trigger it on uploading the same file several times
 		const encoding = 'base64';
@@ -613,6 +613,7 @@ const ConnectionDetailComponent = (props) => {
 									<FormControlLabel
 										control={
 											<Switch
+												color="primary"
 												size="small"
 												disabled={!editMode || !tlsFeature?.supported}
 												checked={updatedConnection[verifyServerCertificateFieldName]}
@@ -646,7 +647,7 @@ const ConnectionDetailComponent = (props) => {
 										onChange={handleFileUpload}
 										variant="contained"
 										className={`${classes.button} ${classes.restrictButtonHeight}`}
-										color="secondary"
+										color="primary"
 										startIcon={<CloudUpload/>}
 										component="label"
 									>
@@ -713,7 +714,7 @@ const ConnectionDetailComponent = (props) => {
 										size="small"
 										onChange={handleFileUpload}
 										variant="contained"
-										color="secondary"
+										color="primary"
 										className={`${classes.button} ${classes.restrictButtonHeight}`}
 										startIcon={<CloudUpload/>}
 										component="label"
@@ -772,7 +773,7 @@ const ConnectionDetailComponent = (props) => {
 										size="small"
 										onChange={handleFileUpload}
 										variant="contained"
-										color="secondary"
+										color="primary"
 										className={`${classes.button} ${classes.restrictButtonHeight}`}
 										startIcon={<CloudUpload/>}
 										component="label"
@@ -843,6 +844,7 @@ const ConnectionDetailComponent = (props) => {
 				{!editMode && (
 					<Button
 						variant="contained"
+						size="small"
 						color="primary"
 						startIcon={<EditIcon/>}
 						onClick={() => setEditMode(true)}
@@ -855,6 +857,7 @@ const ConnectionDetailComponent = (props) => {
 						<Button
 							variant="contained"
 							disabled={!validate()}
+							size="small"
 							color="primary"
 							style={{marginRight: '10px'}}
 							startIcon={<SaveIcon/>}
@@ -869,6 +872,7 @@ const ConnectionDetailComponent = (props) => {
 							variant="contained"
 							disabled={!validate()}
 							color="primary"
+							size="small"
 							style={{marginRight: '10px'}}
 							startIcon={<SaveIcon/>}
 							onClick={(event) => {
@@ -880,6 +884,7 @@ const ConnectionDetailComponent = (props) => {
 						</Button>
 						<Button
 							variant="contained"
+							size="small"
 							onClick={(event) => {
 								event.stopPropagation();
 								onCancelEdit();

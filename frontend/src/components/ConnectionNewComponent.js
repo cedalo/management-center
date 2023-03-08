@@ -539,7 +539,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 										onChange={handleFileUpload}
 										variant="contained"
 										className={`${classes.button} ${classes.restrictButtonHeight}`}
-										color="secondary"
+										color="primary"
 										startIcon={<CloudUpload/>}
 										component="label"
 										disabled={!tlsFeature?.supported}
@@ -595,7 +595,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 										size="small"
 										onChange={handleFileUpload}
 										variant="contained"
-										color="secondary"
+										color="primary"
 										className={`${classes.button} ${classes.restrictButtonHeight}`}
 										startIcon={<CloudUpload/>}
 										component="label"
@@ -643,7 +643,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 										size="small"
 										onChange={handleFileUpload}
 										variant="contained"
-										color="secondary"
+										color="primary"
 										className={`${classes.button} ${classes.restrictButtonHeight}`}
 										startIcon={<CloudUpload/>}
 										component="label"
@@ -704,6 +704,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 					variant="contained"
 					disabled={!validate()}
 					color="primary"
+					size="small"
 					style={{marginRight: '10px'}}
 					startIcon={<SaveIcon/>}
 					onClick={(event) => {
@@ -717,6 +718,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 					variant="contained"
 					disabled={!validate()}
 					color="primary"
+					size="small"
 					style={{marginRight: '10px'}}
 					startIcon={<SaveIcon/>}
 					onClick={(event) => {
@@ -728,6 +730,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 				</Button>
 				<Button
 					variant="contained"
+					size="small"
 					onClick={(event) => {
 						event.stopPropagation();
 						onCancel();
