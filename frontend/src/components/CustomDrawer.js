@@ -299,13 +299,13 @@ const CustomDrawer = ({
 						{adminOpen && atLeastAdmin(userProfile) && userManagementAccess(userManagementFeature) ?
 							<ListItemLink
 								classes={classes}
-								to="/admin/users"
+								to="/users"
 								primary="User Management"
 								icon={<UsersIcon fontSize="small"/>}
 							/> : null}
 						{adminOpen && atLeastAdmin(userProfile) && <ListItemLink
 							classes={classes}
-							to="/admin/user-groups"
+							to="/user-groups"
 							primary="User Groups"
 							icon={<UserGroupsIcon fontSize="small"/>}
 						/>}

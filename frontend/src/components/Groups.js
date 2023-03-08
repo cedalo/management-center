@@ -64,7 +64,7 @@ const GROUP_TABLE_COLUMNS = [
 	{id: 'textname', key: 'Text Name'},
 	{id: 'textdescription', key: 'Description'},
 	{id: 'clients', key: 'Clients'},
-	{id: 'roles', key: 'Group Roles'}
+	{id: 'roles', key: 'Roles'}
 ];
 
 const FormattedGroupType = (props) => {

@@ -8,7 +8,7 @@ import React, {useState} from 'react';
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 
-export default function SelectList({values, onChange, disabled, suggestions, getValue}) {
+export default function SelectList({values, onChange, disabled, suggestions, getValue, getLabel, variant, label}) {
 	const [inputValueClients, setInputValueClients] = useState('');
 
 	return (
@@ -27,7 +27,7 @@ export default function SelectList({values, onChange, disabled, suggestions, get
 				values.find(() => option.value === value.value)
 			}
 			value={values.map((value) => ({
-				label: getValue(value),
+				label: getLabel ? getLabel(value) : getValue(value),
 				value: getValue(value)
 			}))}
 			onChange={onChange}
@@ -51,7 +51,7 @@ export default function SelectList({values, onChange, disabled, suggestions, get
 			)}
 			renderInput={(params) => (
 				<TextField
-					{...params} variant="standard" size="small" placeholder=""
+					{...params} variant={variant || 'standard'} label={label} size="small" placeholder=""
 				/>
 			)}
 		/>);
