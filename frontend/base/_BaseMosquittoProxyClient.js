@@ -587,6 +587,10 @@ module.exports = class BaseMosquittoProxyClient {
 		const url = `${this._httpEndpointURL}/api/cert-management/certs`;
 		return this.doApiRequest(axios.get, url);
 	}
+	async getCertificateInfo(cert) {
+		const url = `${this._httpEndpointURL}/api/cert-management/info/${cert.id}`;
+		return this.doApiRequest(axios.post, url, { cert });
+	}
 	async addCertificate(cert) {
 		const url = `${this._httpEndpointURL}/api/cert-management/certs`;
 		return this.doApiRequest(axios.post, url, { cert });
