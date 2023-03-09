@@ -14,9 +14,11 @@ export default function ConnectionHeader(props) {
 				<Typography style={{fontSize: '10pt'}}>
 					{props.subTitle}
 				</Typography>
-				<div style={{marginLeft: '15px', minWidth: `${props.buttonsWidth || '160px'}`, display: 'flex', justifyContent: 'flex-end'}}>
-					{props.children}
-				</div>
+				{props.children ?
+					<div style={{marginLeft: '15px', minWidth: `${props.buttonsWidth || '160px'}`, display: 'flex', justifyContent: 'flex-end'}}>
+						{props.children}
+					</div> : null
+				}
 			</div>
 		</div>
 	);

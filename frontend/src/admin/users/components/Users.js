@@ -1,21 +1,5 @@
-import React, { useContext } from 'react';
-import { connect, useDispatch } from 'react-redux';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { updateUser, updateUsers } from '../actions/actions';
-import { useSnackbar } from 'notistack';
-
-import AddIcon from '@material-ui/icons/Add';
-import { Alert, AlertTitle } from '@material-ui/lab';
-import AutoSuggest from '../../../components/AutoSuggest';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
-import ClientIcon from '@material-ui/icons/Person';
-import DeleteIcon from '@material-ui/icons/Delete';
 import Divider from '@material-ui/core/Divider';
-import EditIcon from '@material-ui/icons/Edit';
-// import Fab from '@material-ui/core/Fab';
-import GroupIcon from '@material-ui/icons/Group';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
@@ -23,21 +7,30 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
-import PropTypes from 'prop-types';
-import { Link as RouterLink } from 'react-router-dom';
-import Switch from '@material-ui/core/Switch';
+import {makeStyles, withStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import { WebSocketContext } from '../../../websockets/WebSocket';
-import { useConfirm } from 'material-ui-confirm';
-import { useHistory } from 'react-router-dom';
+import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import {Alert, AlertTitle} from '@material-ui/lab';
+import {useConfirm} from 'material-ui-confirm';
+import {useSnackbar} from 'notistack';
+import PropTypes from 'prop-types';
+import React, {useContext} from 'react';
+import {connect, useDispatch} from 'react-redux';
+import {useHistory} from 'react-router-dom';
+import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
+import ContainerHeader from '../../../components/ContainerHeader';
+import SelectList from '../../../components/SelectList';
+import {WebSocketContext} from '../../../websockets/WebSocket';
+import {updateUser, updateUsers} from '../actions/actions';
 
 const StyledTableRow = withStyles((theme) => ({
 	root: {
@@ -48,29 +41,16 @@ const StyledTableRow = withStyles((theme) => ({
 }))(TableRow);
 
 const useStyles = makeStyles((theme) => ({
-	tableContainer: {
-		minHeight: '500px',
-		'& td:nth-child(2)': {
-			minWidth: '100px'
-		}
-	},
 	badges: {
 		'& > *': {
 			margin: theme.spacing(0.3)
 		}
 	},
-	// fab: {
-	// 	position: 'absolute',
-	// 	bottom: theme.spacing(2),
-	// 	right: theme.spacing(2)
-	// },
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
 const USER_TABLE_COLUMNS = [
-	{ id: 'username', key: 'Username' },
-	{ id: 'roles', key: 'User Roles' }
+	{id: 'username', key: 'Name'},
+	{id: 'roles', key: 'Roles'}
 ];
 
 const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles, onSelectUser) => {
@@ -84,10 +64,10 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 		}));
 
 	if (!userManagementFeature?.error && userManagementFeature?.supported !== false && users && users.length > 0) {
-		return <div>
+		return (<div style={{height: '100%', overflowY: 'auto'}}>
 			<Hidden xsDown implementation="css">
-				<TableContainer component={Paper} className={classes.tableContainer}>
-					<Table size="medium">
+				<TableContainer>
+					<Table stickyHeader size="small" aria-label="sticky table">
 						<TableHead>
 							<TableRow>
 								{USER_TABLE_COLUMNS.map((column) => (
@@ -98,7 +78,7 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 										{column.key}
 									</TableCell>
 								))}
-								<TableCell />
+								<TableCell/>
 							</TableRow>
 						</TableHead>
 						<TableBody>
@@ -113,20 +93,18 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 												onSelectUser(user.username);
 											}
 										}}
-										style={{ cursor: 'pointer' }}
+										style={{cursor: 'pointer'}}
 									>
 										<TableCell>{user.username}</TableCell>
 										<TableCell className={classes.badges}>
-											<AutoSuggest
-												disabled={user.editable === false}
-												suggestions={roleSuggestions}
-												values={user.roles?.map((role) => ({
-													label: role,
-													value: role
-												}))}
-												handleChange={(value) => {
+											<SelectList
+												values={user.roles}
+												getValue={value => value}
+												onChange={(event, value) => {
 													onUpdateUserRoles(user, value);
 												}}
+												disabled={user.editable === false}
+												suggestions={roleSuggestions}
 											/>
 										</TableCell>
 										<TableCell align="right">
@@ -139,7 +117,7 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 														onDeleteUser(user.username);
 													}}
 												>
-													<DeleteIcon fontSize="small" />
+													<DeleteIcon fontSize="small"/>
 												</IconButton>
 											</Tooltip>
 										</TableCell>
@@ -151,7 +129,7 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 			</Hidden>
 			<Hidden smUp implementation="css">
 				<Paper>
-					<List className={classes.root}>
+					<List>
 						{users.map((user) => (
 							<React.Fragment>
 								<ListItem
@@ -165,7 +143,6 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 												<Typography
 													component="span"
 													variant="body2"
-													className={classes.inline}
 													color="textPrimary"
 												>
 													{user.textname}
@@ -184,7 +161,7 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 											}}
 											aria-label="edit"
 										>
-											<EditIcon fontSize="small" />
+											<EditIcon fontSize="small"/>
 										</IconButton>
 
 										<IconButton
@@ -196,21 +173,21 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 											}}
 											aria-label="delete"
 										>
-											<DeleteIcon fontSize="small" />
+											<DeleteIcon fontSize="small"/>
 										</IconButton>
 									</ListItemSecondaryAction>
 								</ListItem>
-								<Divider />
+								<Divider/>
 							</React.Fragment>
 						))}
 					</List>
 				</Paper>
 			</Hidden>
-		</div>
+		</div>)
 	} else if (userManagementFeature?.error) {
 		return null;
 	} else {
-		return <div>No users found</div>
+		return <div>No Users found</div>
 	}
 }
 
@@ -220,10 +197,10 @@ const Users = (props) => {
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const confirm = useConfirm();
-	const { enqueueSnackbar } = useSnackbar();
-	const { client: brokerClient } = context;
+	const {enqueueSnackbar} = useSnackbar();
+	const {client: brokerClient} = context;
 
-	const { userManagementFeature, userProfile, roles = [], users = [], onSort, sortBy, sortDirection } = props;
+	const {userManagementFeature, userProfile, roles = [], users = [], onSort, sortBy, sortDirection} = props;
 
 	const onUpdateUserRoles = async (user, roles = []) => {
 		if (!roles) {
@@ -232,7 +209,7 @@ const Users = (props) => {
 		const rolenames = roles.map((role) => role.value);
 		try {
 			await brokerClient.updateUserRoles(user, rolenames);
-		} catch(error) {
+		} catch (error) {
 			enqueueSnackbar(`Error updating the user "${user.username}". Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
@@ -248,11 +225,11 @@ const Users = (props) => {
 	const onSelectUser = async (username) => {
 		const user = await brokerClient.getUser(username);
 		dispatch(updateUser(user));
-		history.push(`/admin/users/detail/${username}`);
+		history.push(`/users/${username}`);
 	};
 
 	const onNewUser = () => {
-		history.push('/admin/users/new');
+		history.push('/users/new');
 	};
 
 	const onDeleteUser = async (username) => {
@@ -283,7 +260,7 @@ const Users = (props) => {
 		}
 		try {
 			await brokerClient.deleteUser(username);
-		} catch(error) {
+		} catch (error) {
 			enqueueSnackbar(`Error deleting the user "${username}". Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
@@ -297,46 +274,41 @@ const Users = (props) => {
 	};
 
 	return (
-		<div>
-			<Breadcrumbs aria-label="breadcrumb">
-				<RouterLink className={classes.breadcrumbLink} to="/home">
-					Home
-				</RouterLink>
-				<RouterLink className={classes.breadcrumbLink} color="inherit" to="/admin">
-					Admin
-				</RouterLink>
-				<Typography className={classes.breadcrumbItem} color="textPrimary">
-					Users
-				</Typography>
-			</Breadcrumbs>
-			{/* TODO: Quick hack to detect whether feature is supported */}
-			{userManagementFeature?.error ? <><br/><Alert severity="warning">
-				<AlertTitle>{userManagementFeature.error.title}</AlertTitle>
-				{userManagementFeature.error.message}
-			</Alert></> : null}
-			{!userManagementFeature?.error && userManagementFeature?.supported === false ? <><br/><Alert severity="warning">
-				<AlertTitle>Feature not available</AlertTitle>
-				Make sure that this feature is included in your MMC license.
-			</Alert></> : null}
-			<br />
-			{!userManagementFeature?.error && userManagementFeature?.supported !== false && <><Button
-				variant="outlined"
-				color="default"
-				size="small"
-				className={classes.button}
-				startIcon={<AddIcon />}
-				onClick={(event) => {
-					event.stopPropagation();
-					onNewUser();
-				}}
-			>
-				New User
-			</Button>
-			<br />
-			<br />
-			</>}
-			
-			{ createUserTable(users, classes, props, onDeleteUser, onUpdateUserRoles, onSelectUser) }
+		<div style={{height: '100%'}}>
+			<ContainerBreadCrumbs title="Users" links={[{name: 'Home', route: '/home'}]}/>
+			<div style={{height: 'calc(100% - 26px)'}}>
+				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
+					<ContainerHeader
+						title="Users"
+						subTitle="List of users. You can configure different users and assign roles like 'admin', 'editor and 'viewer' to restrict or give access to specific features."
+					>
+						{!userManagementFeature?.error && userManagementFeature?.supported !== false && <><Button
+							variant="outlined"
+							color="primary"
+							size="small"
+							startIcon={<AddIcon/>}
+							onClick={(event) => {
+								event.stopPropagation();
+								onNewUser();
+							}}
+						>
+							New User
+						</Button>
+						</>}
+					</ContainerHeader>
+					{/* TODO: Quick hack to detect whether feature is supported */}
+					{userManagementFeature?.error ? <><br/><Alert severity="warning">
+						<AlertTitle>{userManagementFeature.error.title}</AlertTitle>
+						{userManagementFeature.error.message}
+					</Alert></> : null}
+					{!userManagementFeature?.error && userManagementFeature?.supported === false ? <><br/><Alert
+						severity="warning">
+						<AlertTitle>Feature not available</AlertTitle>
+						Make sure that this feature is included in your MMC license.
+					</Alert></> : null}
+					{createUserTable(users, classes, props, onDeleteUser, onUpdateUserRoles, onSelectUser)}
+				</div>
+			</div>
 		</div>
 	);
 };

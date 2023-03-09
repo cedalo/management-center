@@ -46,7 +46,7 @@ const theme = createTheme({
 				color: '#FFFFFF',
 			},
 			hasClearIcon: {
-				color: 'color: rgba(255, 255, 255, 0.7)',
+				color: 'rgba(255, 255, 255, 0.7)',
 			},
 			inputRoot: {
 				'& .MuiAutocomplete-input': {

@@ -543,12 +543,12 @@ Topic:      ${acl.topic}
 						showActions={false}
 						hideTopBar={true}
 						allowTabs={false}
-						prompt={darkMode === 'true' ? 'yellow' : 'black'}
-						color={darkMode === 'true' ? 'yellow' : 'black'}
+						prompt={darkMode === 'true' ? '#FD602E' : 'black'}
+						color={darkMode === 'true' ? 'white' : 'black'}
 						style={{fontWeight: 'light', fontSize: '1.25em', width: '100%', border: '1px solid'}}
 						backgroundColor={darkMode === 'true' ? 'black' : 'white'}
 						barColor="black"
-						outputColor={darkMode === 'true' ? 'yellow' : 'black'}
+						outputColor={darkMode === 'true' ? 'white' : 'black'}
 						commands={commands}
 						descriptions={{
 							addGroupClient: 'Add a client to a group',
