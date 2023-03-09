@@ -6,7 +6,7 @@ import SelfSignedIcon from '@material-ui/icons/Cancel';
 
 import { useSnackbar } from 'notistack';
 import { WebSocketContext } from '../../../websockets/WebSocket';
-import { parseSubjectInfo } from './certutils';
+import { mapSubjectKey, parseSubjectInfo } from './certutils';
 
 const styles = {
 	colValue: { maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis' }
@@ -106,7 +106,7 @@ const getDetailTable = (info = {}) => {
 					{borderlessCell()}
 					<TableCell align="left">Subject</TableCell>
 				</TableRow>
-				{subject && Object.entries(parseSubjectInfo(subject)).map(nestedRow)}
+				{subject && Object.entries(parseSubjectInfo(subject, mapSubjectKey)).map(nestedRow)}
 				<TableRow>
 					{borderlessCell()}
 					<TableCell align="left">Subject Alternative Name</TableCell>
@@ -118,7 +118,7 @@ const getDetailTable = (info = {}) => {
 					{borderlessCell()}
 					<TableCell align="left">Issuer</TableCell>
 				</TableRow>
-				{issuer && Object.entries(parseSubjectInfo(issuer)).map(nestedRow)}
+				{issuer && Object.entries(parseSubjectInfo(issuer, mapSubjectKey)).map(nestedRow)}
 				<TableRow>
 					{borderlessCell()}
 					<TableCell align="left">Authority Information Access</TableCell>
@@ -168,7 +168,7 @@ const getDetailTable = (info = {}) => {
 };
 
 const showInfoTable = (info, variant) => (variant === 'summary' ? getSummaryTable(info) : getDetailTable(info));
-const isValid = ({ cert, filename }) => filename && cert;
+const isValid = ({ cert, id, filename }) => cert || (id && filename);
 
 const CertificateInfo = ({ certificate, variant }) => {
 	const [certInfo, setCertInfo] = useState({});

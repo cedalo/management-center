@@ -44,5 +44,6 @@ const toObj = (delimiter, mapKey) => (obj, str) => {
 	obj[mapKey(key)] = value;
 	return obj;
 };
-const mapSubjectKey = (key) => mapSubjectKeys[key] || key;
-export const parseSubjectInfo = (str) => (str ? str.split('\n').reduce(toObj('=', mapSubjectKey), {}) : {});
+const identity = (v) => v;
+export const mapSubjectKey = (key) => mapSubjectKeys[key] || key;
+export const parseSubjectInfo = (str, mapKey = identity) => (str ? str.split('\n').reduce(toObj('=', mapKey), {}) : {});
