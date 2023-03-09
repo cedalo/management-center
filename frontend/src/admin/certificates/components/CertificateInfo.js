@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core';
+import { CircularProgress, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import { green, red } from '@material-ui/core/colors';
 import CASignedIcon from '@material-ui/icons/Check';
 import SelfSignedIcon from '@material-ui/icons/Cancel';
 
 import { useSnackbar } from 'notistack';
 import { WebSocketContext } from '../../../websockets/WebSocket';
+import { InfoHint } from './AlertHint';
 import { mapSubjectKey, parseSubjectInfo } from './certutils';
 
 const styles = {
@@ -168,16 +169,23 @@ const getDetailTable = (info = {}) => {
 };
 
 const showInfoTable = (info, variant) => (variant === 'summary' ? getSummaryTable(info) : getDetailTable(info));
+const showLoadingHint = () =>
+	InfoHint({
+		title: 'Fetching certificate information...',
+		message: <CircularProgress color="secondary" size="1.5rem" />
+	});
 const isValid = ({ cert, id, filename }) => cert || (id && filename);
 
 const CertificateInfo = ({ certificate, variant }) => {
 	const [certInfo, setCertInfo] = useState({});
+	const [isLoadingInfo, setIsLoadingInfo] = useState(false);
 	const { enqueueSnackbar } = useSnackbar();
 	const context = useContext(WebSocketContext);
 	const { client } = context;
 
 	const loadCertInfo = async () => {
-		let info;
+		let info = {};
+		setIsLoadingInfo(true);
 		if (isValid(certificate)) {
 			try {
 				const { data } = await client.getCertificateInfo(certificate);
@@ -189,13 +197,13 @@ const CertificateInfo = ({ certificate, variant }) => {
 			}
 		}
 		setCertInfo(info);
+		setIsLoadingInfo(false);
 	};
-
 	useEffect(() => {
 		loadCertInfo();
 	}, [certificate]);
 
-	return showInfoTable(certInfo, variant);
+	return isLoadingInfo ? showLoadingHint() : showInfoTable(certInfo, variant);
 };
 
 export default CertificateInfo;
