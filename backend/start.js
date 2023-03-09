@@ -929,21 +929,20 @@ const init = async (licenseContainer) => {
 					throw new Error(`Unknown action: "${type}"`);
 				}
 				const { isModifying } = action;
-				const eventName = `${isModifying ? 'w' : 'r'}/${type}`;
 
-				let error;
+				let errorMessage;
 				let pendingResult;
 				let result;
 				try {
 					pendingResult = action.fn({ ...context, user }, data);
 					return pendingResult;
 				} catch (error) {
-					error = error.message || 'Unknown error!';
+					errorMessage = error.message || 'Unknown error!';
 					throw error;
 				} finally {
 					Promise.resolve(pendingResult)
-						.catch((e) => {
-							error = e.message || 'Unknown error!';
+						.catch((error) => {
+							errorMessage = error.message || 'Unknown error!';
 						})
 						.then((r) => {
 							result = r;
@@ -954,10 +953,11 @@ const init = async (licenseContainer) => {
 								isModifying,
 								user,
 								data: action.filter(data),
-								error,
+								error: errorMessage,
 								// TODO: should this be here? should we filter it? Currently only required for user/login
 								result
 							};
+							const eventName = `${errorMessage ? 'e' : isModifying ? 'w' : 'r'}/${type}`;
 							context.actionEmitter.emit(eventName, eventData);
 						});
 				}
