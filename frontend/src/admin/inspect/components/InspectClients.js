@@ -17,8 +17,6 @@ import Typography from '@material-ui/core/Typography';
 import DisabledIcon from '@material-ui/icons/Cancel';
 import EnabledIcon from '@material-ui/icons/CheckCircle';
 import {Alert, AlertTitle} from '@material-ui/lab';
-import {useConfirm} from 'material-ui-confirm';
-import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
@@ -52,13 +50,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CLIENTS_TABLE_COLUMNS = [
-	{ id: 'username', key: 'Username' },
-	{ id: 'clientid', key: 'Client ID' },
-	{ id: 'protocol', key: 'Protocol' },
-	{ id: 'address', key: 'IP Address' },
-	{ id: 'last_connected', key: 'Last Connect Time' },
-	{ id: 'last_disconnected', key: 'Last Disconnect Time' },
-	{ id: 'status', key: 'Status' },
+	{ id: 'username', key: 'Name', align: 'left', width: '25%' },
+	{ id: 'clientid', key: 'Client ID', align: 'left', width: '20%' },
+	{ id: 'protocol', key: 'Protocol', align: 'left', width: '15%' },
+	{ id: 'address', key: 'IP Address', align: 'left', width: '15%' },
+	{ id: 'last_connected', key: 'Queue Usage', align: 'center', width: '15%' },
+	{ id: 'status', key: 'Connected', align: 'center', width: '10%' },
 ];
 
 
@@ -91,18 +88,19 @@ const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelect
 							<TableRow>
 								{CLIENTS_TABLE_COLUMNS.map((column) => (
 									<TableCell
+										align={column.align}
+										style={{width: column.width}}
 										key={column.id}
 										sortDirection={sortBy === column.id ? sortDirection : false}
 									>
 										{column.key}
 									</TableCell>
 								))}
-								<TableCell />
 							</TableRow>
 						</TableHead>
 						<TableBody>
 							{clients &&
-								clients.map((client) => (
+								clients.map((client, index) => (
 									<StyledTableRow
 										hover
 										// key={client.username}
@@ -112,22 +110,36 @@ const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelect
 										style={{ cursor: 'pointer' }}
 										key={`filter${String(Math.random())}`}
 									>
-										<TableCell>{client.username}</TableCell>
-										<TableCell>{client.clientid}</TableCell>
-										<TableCell>{`${client.protocol} ${client.protocolVersion}`}</TableCell>
-										<TableCell>{client.address}</TableCell>
-										<TableCell>{dateToString(unixTimestampToDate(client.lastConnect))}</TableCell>
-										<TableCell>{dateToString(unixTimestampToDate(client.lastDisconnect))}</TableCell>
-										<TableCell align="center">
-											{client.connected ?
-												<Tooltip title={"Client connected"}>
+										<TableCell align={CLIENTS_TABLE_COLUMNS[0].align}>{client.username}</TableCell>
+										<TableCell align={CLIENTS_TABLE_COLUMNS[1].align}>{client.clientid}</TableCell>
+										<TableCell align={CLIENTS_TABLE_COLUMNS[2].align}>{`${client.protocol} ${client.protocolVersion}`}</TableCell>
+										<TableCell align={CLIENTS_TABLE_COLUMNS[3].align}>{client.address}</TableCell>
+										<TableCell align={CLIENTS_TABLE_COLUMNS[4].align}>
+											{`${client.queues?.messagesOut} / ${client.queues?.messagesMax}`}
+										</TableCell>
+										{/*<TableCell>{dateToString(unixTimestampToDate(client.lastConnect))}</TableCell>*/}
+										{/*<TableCell>{dateToString(unixTimestampToDate(client.lastDisconnect))}</TableCell>*/}
+										<TableCell align={CLIENTS_TABLE_COLUMNS[5].align}>
+											<Tooltip title={
+												<>
+													{
+														client.lastConnect ? [
+															<span>Last Connected: {dateToString(unixTimestampToDate(client.lastConnect))}</span>,
+															<br />
+														] : null
+													}
+													{
+														client.lastDisconnect ?
+														<span>Last Disconnected: {dateToString(unixTimestampToDate(client.lastDisconnect))}</span> : null
+													}
+												</>
+											}>
+												{client.connected ?
 													<EnabledIcon fontSize="small" style={{ color: green[500] }} />
-												</Tooltip>
-												:
-												<Tooltip title={"Client disconnected"}>
+													:
 													<DisabledIcon fontSize="small" style={{ color: red[500] }} />
-												</Tooltip>
-											}
+												}
+											</Tooltip>
 										</TableCell>
 									</StyledTableRow>
 								))}
