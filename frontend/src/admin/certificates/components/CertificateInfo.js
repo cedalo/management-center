@@ -8,10 +8,13 @@ import { useSnackbar } from 'notistack';
 import { WebSocketContext } from '../../../websockets/WebSocket';
 import { parseSubjectInfo } from './certutils';
 
+const styles = {
+	colValue: { maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis' }
+};
 const getDate = (str) => {
 	return str ? new Date(Date.parse(str)).toLocaleString() : 'n.a.';
 };
-const borderlessCell = (text = '') => <TableCell style={{ borderBottom: 'none' }}>{text}</TableCell>;
+const borderlessCell = (text = '', width) => <TableCell style={{ borderBottom: 'none', width }}>{text}</TableCell>;
 const getSummaryTable = (info = {}) => {
 	const isSelfSigned = !info.ca;
 	const subject = parseSubjectInfo(info.subject);
@@ -63,39 +66,35 @@ const getSummaryTable = (info = {}) => {
 		</Table>
 	);
 };
-const getFingerprints = ({ sha1, sha256, sha512 } = {}) => (
-	<Table aria-label="fingerprints">
-		<TableRow>
-			<TableCell>SHA1</TableCell>
-			<TableCell>{sha1}</TableCell>
-		</TableRow>
-		<TableRow>
-			<TableCell>SHA256</TableCell>
-			<TableCell>{sha256}</TableCell>
-		</TableRow>
-		<TableRow>
-			<TableCell>SHA512</TableCell>
-			<TableCell>{sha512}</TableCell>
-		</TableRow>
-	</Table>
-);
 
+const nestRow =
+	(mapKey) =>
+	([key, value]) =>
+		(
+			<TableRow>
+				{borderlessCell()}
+				{borderlessCell()}
+				<TableCell align="left">{mapKey(key)}</TableCell>
+				<TableCell style={styles.colValue}>{value}</TableCell>
+			</TableRow>
+		);
+const nestedRow = nestRow((key) => key);
+const nestedRowUpperCased = nestRow((key) => key.toUpperCase());
 const getDetailTable = (info = {}) => {
 	const { ca, fingerprints, infoAccess, issuer, keyUsage, serialNumber, subject, subjectAltName, valid } = info;
 	return (
 		<Table aria-label="certinfo-detail">
-			<TableHead>
-				<TableRow>
-					<TableCell>Details</TableCell>
-					<TableCell></TableCell>
-					<TableCell></TableCell>
-				</TableRow>
-			</TableHead>
+			<colgroup>
+				<col style={{ width: '5%' }} />
+				<col style={{ width: '15%' }} />
+				<col style={{ width: '15%' }} />
+				<col style={{ width: '65%' }} />
+			</colgroup>
 			<TableBody>
 				<TableRow>
 					{borderlessCell()}
 					<TableCell align="left">CA certificate</TableCell>
-					<TableCell align="left">
+					<TableCell colSpan={2}>
 						{!ca ? (
 							<SelfSignedIcon fontSize="small" style={{ color: red[500] }} />
 						) : (
@@ -105,55 +104,71 @@ const getDetailTable = (info = {}) => {
 				</TableRow>
 				<TableRow>
 					{borderlessCell()}
-					<TableCell align="left">Fingerprint SHA 256</TableCell>
-					<TableCell align="left">{fingerprints?.sha256}</TableCell>
-					{/* {getFingerprints(fingerprints)} */}
-				</TableRow>
-				<TableRow>
-					{borderlessCell()}
 					<TableCell align="left">Subject</TableCell>
-					<TableCell align="left">{subject}</TableCell>
 				</TableRow>
+				{subject && Object.entries(parseSubjectInfo(subject)).map(nestedRow)}
 				<TableRow>
 					{borderlessCell()}
 					<TableCell align="left">Subject Alternative Name</TableCell>
-					<TableCell align="left">{subjectAltName}</TableCell>
-				</TableRow>
-				<TableRow>
-					{borderlessCell()}
-					<TableCell align="left">Key Usage</TableCell>
-					<TableCell align="left">{keyUsage}</TableCell>
-				</TableRow>
-				<TableRow>
-					{borderlessCell()}
-					<TableCell align="left">Serial Number</TableCell>
-					<TableCell align="left">{serialNumber}</TableCell>
+					<TableCell align="left" colSpan={2} style={styles.colValue}>
+						{subjectAltName}
+					</TableCell>
 				</TableRow>
 				<TableRow>
 					{borderlessCell()}
 					<TableCell align="left">Issuer</TableCell>
-					<TableCell align="left">{issuer}</TableCell>
 				</TableRow>
+				{issuer && Object.entries(parseSubjectInfo(issuer)).map(nestedRow)}
 				<TableRow>
 					{borderlessCell()}
 					<TableCell align="left">Authority Information Access</TableCell>
-					<TableCell align="left">{infoAccess}</TableCell>
+					<TableCell align="left" colSpan={2} style={styles.colValue}>
+						{infoAccess}
+					</TableCell>
+				</TableRow>
+
+				<TableRow>
+					{borderlessCell()}
+					<TableCell align="left">Key Usage</TableCell>
+					<TableCell align="left" colSpan={2} style={styles.colValue}>
+						{keyUsage}
+					</TableCell>
 				</TableRow>
 				<TableRow>
 					{borderlessCell()}
-					<TableCell align="left">Valid From</TableCell>
+					<TableCell align="left">Serial Number</TableCell>
+					<TableCell align="left" colSpan={2} style={styles.colValue}>
+						{serialNumber}
+					</TableCell>
+				</TableRow>
+				<TableRow>
+					{borderlessCell()}
+					<TableCell align="left">Fingerprints</TableCell>
+				</TableRow>
+				{fingerprints && Object.entries(fingerprints).map(nestedRowUpperCased)}
+				<TableRow>
+					{borderlessCell()}
+					<TableCell align="left">Valid</TableCell>
+				</TableRow>
+				<TableRow>
+					{borderlessCell()}
+					{borderlessCell()}
+					<TableCell align="left">From</TableCell>
 					<TableCell align="left">{getDate(valid?.from)}</TableCell>
 				</TableRow>
 				<TableRow>
 					{borderlessCell()}
-					{borderlessCell('Valid To')}
+					{borderlessCell()}
+					{borderlessCell('To')}
 					{borderlessCell(getDate(valid?.to))}
 				</TableRow>
 			</TableBody>
 		</Table>
 	);
 };
+
 const showInfoTable = (info, variant) => (variant === 'summary' ? getSummaryTable(info) : getDetailTable(info));
+const isValid = ({ cert, filename }) => filename && cert;
 
 const CertificateInfo = ({ certificate, variant }) => {
 	const [certInfo, setCertInfo] = useState({});
@@ -162,19 +177,23 @@ const CertificateInfo = ({ certificate, variant }) => {
 	const { client } = context;
 
 	const loadCertInfo = async () => {
-		try {
-			const { data } = await client.getCertificateInfo(certificate);
-			setCertInfo(data);
-		} catch (error) {
-			enqueueSnackbar(`Error loading certificate info from server. Reason: ${error.message || error}`, {
-				variant: 'error'
-			});
+		let info;
+		if (isValid(certificate)) {
+			try {
+				const { data } = await client.getCertificateInfo(certificate);
+				info = data;
+			} catch (error) {
+				enqueueSnackbar(`Error loading certificate info from server. Reason: ${error.message || error}`, {
+					variant: 'error'
+				});
+			}
 		}
+		setCertInfo(info);
 	};
 
 	useEffect(() => {
 		loadCertInfo();
-	}, []);
+	}, [certificate]);
 
 	return showInfoTable(certInfo, variant);
 };

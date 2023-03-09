@@ -26,9 +26,23 @@ export const getUsedConnections = (availableConnections, listeners) => {
 	return usedConnections.map(({ id, name }) => ({ id, name }));
 };
 
-const toObj = (delimiter) => (obj, str) => {
+
+const mapSubjectKeys = {
+	CN: 'Common Name',
+	L: 'Locality',
+	ST: 'State Or Province',
+	O: 'Organization',
+	OU: 'Organization Unit',
+	C: 'Country Code',
+	STREET: 'Street',
+	emailAddress: 'E-Mail'
+	// DC: 'Domain'
+	// UID: 'User ID'
+};
+const toObj = (delimiter, mapKey) => (obj, str) => {
 	const [key, value] = str.split(delimiter);
-	obj[key] = value;
+	obj[mapKey(key)] = value;
 	return obj;
 };
-export const parseSubjectInfo = (str) => (str ? str.split('\n').reduce(toObj('='), {}) : {});
+const mapSubjectKey = (key) => mapSubjectKeys[key] || key;
+export const parseSubjectInfo = (str) => (str ? str.split('\n').reduce(toObj('=', mapSubjectKey), {}) : {});
