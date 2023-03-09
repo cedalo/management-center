@@ -10,9 +10,10 @@ export const getConnectionInfo = (connection) => {
 };
 
 
-const byHostAndPort = (all, { host, port }) => {
+const byHostAndPort = (all, { host, port, bind_address }) => {
 	all.add(host);
 	all.add(`${host}:${port}`);
+	if (bind_address) all.add(`${bind_address}:${port}`);
 	return all;
 };
 const selectByHost = (used) => (conn) => used.has(conn.host);
