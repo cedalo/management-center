@@ -13,6 +13,7 @@ import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import SaveCancelButtons from './SaveCancelButtons';
+import {useFormStyles} from '../styles';
 
 const UserGroupNew = (props) => {
 	const [groupname, setGroupname] = useState('');
@@ -25,6 +26,7 @@ const UserGroupNew = (props) => {
 	const history = useHistory();
 	const confirm = useConfirm();
 	const {client} = context;
+	const formClasses = useFormStyles();
 
 	const validate = () => {
 		return (groupname !== '' && role !== '');
@@ -81,6 +83,7 @@ const UserGroupNew = (props) => {
 						defaultValue=""
 						variant="outlined"
 						fullWidth
+						className={formClasses.textField}
 						size="small"
 						margin="dense"
 						InputProps={{
@@ -94,6 +97,19 @@ const UserGroupNew = (props) => {
 				</Grid>
 				<Grid item xs={12}>
 					<TextField
+						id="textdescription"
+						label="Description"
+						onChange={(event) => setTextdescription(event.target.value)}
+						defaultValue=""
+						variant="outlined"
+						fullWidth
+						className={formClasses.textField}
+						size="small"
+						margin="dense"
+					/>
+				</Grid>
+				<Grid item xs={12}>
+					<TextField
 						select
 						fullWidth
 						name="role-select"
@@ -102,6 +118,7 @@ const UserGroupNew = (props) => {
 						variant="outlined"
 						label="Role of the users in the group"
 						onChange={(event) => setRole(event.target.value)}
+						className={formClasses.textField}
 						size="small"
 						margin="dense"
 					>
@@ -114,18 +131,6 @@ const UserGroupNew = (props) => {
 							</MenuItem>
 						))}
 					</TextField>
-				</Grid>
-				<Grid item xs={12}>
-					<TextField
-						id="textdescription"
-						label="Description"
-						onChange={(event) => setTextdescription(event.target.value)}
-						defaultValue=""
-						variant="outlined"
-						fullWidth
-						size="small"
-						margin="dense"
-					/>
 				</Grid>
 			</Grid>
 			<Grid container xs={12} alignItems="flex-start">

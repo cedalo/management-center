@@ -8,7 +8,7 @@ import React, {useState} from 'react';
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 
-export default function SelectList({values, onChange, disabled, suggestions, getValue, getLabel, variant, label}) {
+export default function SelectList({values, onChange, disabled, suggestions, getValue, getLabel, variant, label, className}) {
 	const [inputValueClients, setInputValueClients] = useState('');
 
 	return (
@@ -19,6 +19,7 @@ export default function SelectList({values, onChange, disabled, suggestions, get
 			limitTags={3}
 			ChipProps={{ color: "primary" }}
 			options={suggestions}
+			className={className}
 			disableCloseOnSelect
 			getOptionLabel={(option) =>
 				option ? option.label : ''
@@ -51,7 +52,7 @@ export default function SelectList({values, onChange, disabled, suggestions, get
 			)}
 			renderInput={(params) => (
 				<TextField
-					{...params} variant={variant || 'standard'} label={label} size="small" placeholder=""
+					{...params} variant={variant || 'standard'} label={label} margin={variant ? 'dense' : 'none'} size="small" placeholder=""
 				/>
 			)}
 		/>);

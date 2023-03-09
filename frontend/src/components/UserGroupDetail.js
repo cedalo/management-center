@@ -15,6 +15,7 @@ import {updateUserGroup, updateUserGroups} from '../admin/users/actions/actions'
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import {useFormStyles} from '../styles';
 
 const UserGroupDetail = (props) => {
 	const context = useContext(WebSocketContext);
@@ -26,6 +27,7 @@ const UserGroupDetail = (props) => {
 	const group = props.userGroup || {};
 	const [editMode, setEditMode] = React.useState(false);
 	const [updatedGroup, setUpdatedGroup] = React.useState({});
+	const formClasses = useFormStyles();
 
 	React.useEffect(() => {
 		setUpdatedGroup({...props.userGroup});
@@ -93,6 +95,7 @@ const UserGroupDetail = (props) => {
 						defaultValue=""
 						variant="outlined"
 						fullWidth
+						className={formClasses.textField}
 						size="small"
 						margin="dense"
 						InputProps={{
@@ -102,6 +105,29 @@ const UserGroupDetail = (props) => {
 								</InputAdornment>
 							)
 						}}
+					/>
+				</Grid>
+				<Grid item xs={12}>
+					<TextField
+						disabled={!editMode}
+						onChange={(event) => {
+							if (editMode) {
+								setUpdatedGroup({
+									...updatedGroup,
+									description: event.target.value
+								});
+							}
+						}}
+						id="textdescription"
+						label="Description"
+						value={updatedGroup.description}
+						//   onChange={(event) => setTextDescription(event.target.value)}
+						defaultValue=""
+						variant="outlined"
+						fullWidth
+						className={formClasses.textField}
+						size="small"
+						margin="dense"
 					/>
 				</Grid>
 				<Grid item xs={12}>
@@ -122,6 +148,7 @@ const UserGroupDetail = (props) => {
 								});
 							}
 						}}
+						className={formClasses.textField}
 						size="small"
 						margin="dense"
 					>
@@ -135,28 +162,6 @@ const UserGroupDetail = (props) => {
 						))}
 					</TextField>
 				</Grid>
-				<Grid item xs={12}>
-					<TextField
-						disabled={!editMode}
-						onChange={(event) => {
-							if (editMode) {
-								setUpdatedGroup({
-									...updatedGroup,
-									description: event.target.value
-								});
-							}
-						}}
-						id="textdescription"
-						label="Description"
-						value={updatedGroup.description}
-						//   onChange={(event) => setTextDescription(event.target.value)}
-						defaultValue=""
-						variant="outlined"
-						fullWidth
-						size="small"
-						margin="dense"
-					/>
-				</Grid>
 			</Grid>
 			{!editMode && (
 				<Grid item xs={12}>
@@ -164,7 +169,7 @@ const UserGroupDetail = (props) => {
 						variant="contained"
 						color="primary"
 						size="small"
-						style={{marginTop: '10px'}}
+						className={formClasses.buttonTop}
 						startIcon={<EditIcon/>}
 						onClick={() => setEditMode(true)}
 					>
@@ -180,7 +185,7 @@ const UserGroupDetail = (props) => {
 						color="primary"
 						size="small"
 						startIcon={<SaveIcon/>}
-						style={{marginTop: '10px', marginRight: '10px'}}
+						className={formClasses.buttonTopRight}
 						onClick={(event) => {
 							event.stopPropagation();
 							onUpdateGroup();
@@ -190,7 +195,7 @@ const UserGroupDetail = (props) => {
 					</Button>
 					<Button
 						variant="contained"
-						style={{marginTop: '10px'}}
+						className={formClasses.buttonTop}
 						size="small"
 						onClick={(event) => {
 							event.stopPropagation();

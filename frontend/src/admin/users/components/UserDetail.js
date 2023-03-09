@@ -13,6 +13,7 @@ import {connect, useDispatch} from 'react-redux';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
 import SelectList from '../../../components/SelectList';
+import {useFormStyles} from '../../../styles';
 import {WebSocketContext} from '../../../websockets/WebSocket';
 import {updateUser, updateUsers} from '../actions/actions';
 
@@ -30,6 +31,7 @@ const UserDetail = (props) => {
 	const {enqueueSnackbar} = useSnackbar();
 	const ref = React.useRef();
 	const [passwordError, setPasswordError] = React.useState(null);
+	const formClasses = useFormStyles();
 
 	React.useEffect(() => {
 		if (document.hasFocus() && ref.current?.contains(document.activeElement)) {
@@ -133,6 +135,7 @@ const UserDetail = (props) => {
 					fullWidth
 					size="small"
 					margin="dense"
+					className={formClasses.textField}
 					InputProps={{
 						startAdornment: (
 							<InputAdornment position="start">
@@ -158,6 +161,7 @@ const UserDetail = (props) => {
 							variant="outlined"
 							fullWidth
 							type="password"
+							className={formClasses.textField}
 							size="small"
 							margin="dense"
 							onChange={(event) => {
@@ -191,6 +195,7 @@ const UserDetail = (props) => {
 				<SelectList
 					variant="outlined"
 					label="Roles"
+					className={formClasses.autoComplete}
 					values={updatedUser?.roles}
 					getValue={value => value}
 					onChange={(event, value) => {
