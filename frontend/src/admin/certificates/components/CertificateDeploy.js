@@ -191,7 +191,7 @@ const CertificateDeploy = ({ connections = [] }) => {
 		loadListeners();
 	}, [connection]);
 
-	onCancel = () => {
+	const onCancel = () => {
 		history.goBack();
 	};
 
