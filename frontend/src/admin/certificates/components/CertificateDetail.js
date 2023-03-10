@@ -95,8 +95,7 @@ const CertificateDetail = () => {
 		<ContentContainer
 			path={[
 				{ link: 'home' },
-				{ link: 'admin' },
-				{ link: 'admin/certs', title: 'Certificates' },
+				{ link: 'certs', title: 'Certificates' },
 				{ title: 'CA Certificate' }
 			]}
 		>

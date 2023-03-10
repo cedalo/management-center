@@ -60,11 +60,11 @@ const CustomTableRow = ({ cert, connections, handleDelete }) => {
 	}
 	const onSelect = (event) => {
 		event.stopPropagation();
-		history.push(`/admin/certs/detail/${cert.id}`, cert);
+		history.push(`/certs/detail/${cert.id}`, cert);
 	};
 	const onDeploy = (event) => {
 		event.stopPropagation();
-		history.push(`/admin/certs/deploy/${cert.id}`, cert);
+		history.push(`/certs/deploy/${cert.id}`, cert);
 	}
 
 	return (
@@ -142,8 +142,8 @@ const Certificates = ({ connections, isCertSupported, doSort, sortBy, sortDirect
 	};
 	const onAddNewCertificate = (event) => {
 		event.stopPropagation();
-		// navigate('/admin/certs/detail/new');
-		history.push('/admin/certs/detail/new', { name: '', filename: '', connections: [] });
+		// navigate('/certs/detail/new');
+		history.push('/certs/detail/new', { name: '', filename: '', connections: [] });
 	};
 
 	useEffect(() => {
@@ -162,7 +162,7 @@ const Certificates = ({ connections, isCertSupported, doSort, sortBy, sortDirect
 				cert={deleteOptions.cert}
 				open={deleteOptions.open}
 			/>
-			<ContentContainer path={[{ link: 'home' }, { link: 'admin' }, { title: 'Certificates' }]}>
+			<ContentContainer path={[{ link: 'home' }, { title: 'Certificates' }]}>
 				{isCertSupported ? (
 					<>
 						<ContainerHeader

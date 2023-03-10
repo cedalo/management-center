@@ -144,17 +144,17 @@ function AppRoutes(props) {
 					<Connections/>
 				</Route> : null}
 				{atLeastAdmin(userProfile) && (
-					<Route path="/admin/certs/detail/:certId">
+					<Route path="/certs/detail/:certId">
 						<CertificateDetail/>
 					</Route>
 				)}
 				{atLeastAdmin(userProfile) && (
-					<Route path="/admin/certs/deploy/:certId">
+					<Route path="/certs/deploy/:certId">
 						<CertificateDeploy/>
 					</Route>
 				)}
 				{atLeastAdmin(userProfile) && (
-					<Route path="/admin/certs">
+					<Route path="/certs">
 						<SortableTablePage Component={Certificates}/>
 					</Route>
 				)}

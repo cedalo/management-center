@@ -240,8 +240,7 @@ const CertificateDeploy = ({ connections = [] }) => {
 		<ContentContainer
 			path={[
 				{ link: 'home' },
-				{ link: 'admin' },
-				{ link: 'admin/certs', title: 'Certificates' },
+				{ link: 'certs', title: 'Certificates' },
 				{ title: 'Deploy' }
 			]}
 		>
