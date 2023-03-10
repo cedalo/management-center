@@ -153,11 +153,9 @@ function AppRoutes(props) {
 						<CertificateDeploy/>
 					</Route>
 				)}
-				{atLeastAdmin(userProfile) && (
-					<Route path="/certs">
-						<SortableTablePage Component={Certificates}/>
-					</Route>
-				)}
+				<Route path="/certs">
+					<SortableTablePage Component={Certificates}/>
+				</Route>				
 				{atLeastAdmin(userProfile) && <Route path="/settings">
 					<Settings onChangeTheme={props.onChangeTheme}/>
 				</Route>}
