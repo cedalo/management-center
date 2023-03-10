@@ -3,9 +3,27 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
+const crypto = require('crypto');
 
-const adapter = new FileSync(path.join(process.env.CEDALO_MC_DIRECTORY_SETTINGS || __dirname, 'db.json'));
+const getBaseDirectory = (dirname) => {
+	// if (process.env.CEDALO_MC_SINGLE_BACKUP_DIRECTORY) {
+	// 	return process.env.CEDALO_MC_SINGLE_BACKUP_DIRECTORY;
+	// }
+	
+	// if (dirname.includes('snapshot')) { // for packaged executables
+	// 	if (process.env.CEDALO_MC_DIRECTORY_SETTINGS) {
+	// 		return process.env.CEDALO_MC_DIRECTORY_SETTINGS; // will be trying to save everything in this directory in case of packaged executables
+	// 	} else {
+	// 		return process.cwd();
+	// 	}
+	// }
+	return dirname;
+};
+
+
+const adapter = new FileSync(path.join(process.env.CEDALO_MC_DIRECTORY_SETTINGS || getBaseDirectory(__dirname), 'db.json'));
 const db = low(adapter);
+
 
 const initId = () => {
 	const id = 	uuidv4();
@@ -13,7 +31,8 @@ const initId = () => {
 		id,
 		created: Date.now()
 	} 
-}
+};
+
 
 const loadInstallation = () => {
 	db.defaults({
@@ -21,23 +40,22 @@ const loadInstallation = () => {
 	}).write();
 	const installation = db.get('install').value();
 	return installation;
-}
-
-
-const reverseMap = (map) => {
-	const reversedMap = new Map();
-
-	for (const [key, value] of map) {
-		reversedMap.set(value, key);
-	}
-
-	return reversedMap;
 };
 
 
 
-
-
+const stripConnectionsCredentials = (connections, user, context, customAuthorizationFunction) => {
+    return connections.map(connection => {
+        const authorizationFunction = customAuthorizationFunction || context.security.acl.atLeastAdmin;
+        if (context.security.acl.isConnectionAuthorized(user, authorizationFunction, connection.name)) {
+            return connection;
+        } else {
+            const connectionCopy = Object.assign({}, connection);
+            delete connectionCopy.credentials;
+            return connectionCopy;
+        }
+    });
+};
 
 
 const getCircularReplacer = () => {
@@ -52,7 +70,8 @@ const getCircularReplacer = () => {
             return property; // ensured it's an object
         }
     }
-}
+};
+
 
 const iterateObject = (key, object, processor) => {
     if (typeof object !== 'object' || object === null) {
@@ -73,7 +92,7 @@ const iterateObject = (key, object, processor) => {
     }
 
     return object;
-}
+};
 
 
 const removeCircular = (object) => {
@@ -82,13 +101,25 @@ const removeCircular = (object) => {
     object = iterateObject('root', object, circularReplacer);
 
     return object;
-}
+};
 
+
+const stringToBool = (string) => {
+    return (string === 'true');
+};
+
+
+const generateSecret = () => { // TODO: change the location of this fucntion, also use it in plugins' secret generator, or transfer secretGenerator code here
+    return crypto.randomBytes(64).toString('hex');
+};
 
 
 
 module.exports = {
 	loadInstallation,
-	reverseMap,
 	removeCircular,
+    stringToBool,
+    getBaseDirectory,
+    stripConnectionsCredentials,
+    generateSecret
 };

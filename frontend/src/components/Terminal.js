@@ -1,26 +1,32 @@
-import React, { useContext } from 'react';
-import { connect, useDispatch } from 'react-redux';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { updateAnonymousGroup, updateDefaultACLAccess, updateClient, updateClients, updateGroups, updateRoles } from '../actions/actions';
-
+import React, {useContext} from 'react';
+import {connect, useDispatch} from 'react-redux';
+import {makeStyles, useTheme} from '@material-ui/core/styles';
+import {
+	updateAnonymousGroup,
+	updateDefaultACLAccess,
+	updateClient,
+	updateClients,
+	updateGroups,
+	updateRoles
+} from '../actions/actions';
+import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import Terminal from 'terminal-in-react';
-import { WebSocketContext } from '../websockets/WebSocket';
+import {WebSocketContext} from '../websockets/WebSocket';
 import useLocalStorage from '../helpers/useLocalStorage';
-
+import ContainerHeader from './ContainerHeader';
 
 
 const useStyles = makeStyles((theme) => ({
 	terminal: {
 		fontWeight: 'bold',
-		fontSize: '2em'
+		fontSize: '2em',
+		minHeight: '100%',
 	},
 	badges: {
 		'& > *': {
 			margin: theme.spacing(0.3)
 		}
 	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
 const isHelpParameter = (parameter) => parameter === '--help';
@@ -31,24 +37,20 @@ const Plugins = (props) => {
 	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
 	const theme = useTheme();
 	const context = useContext(WebSocketContext);
-	const { client: brokerClient } = context;
-
+	const {client: brokerClient} = context;
 	const classes = useStyles();
 
-	const message = `Welcome to the Management Center Terminal.
-💡 Type 'help' for a list of available commands and type '<command> --help' for information on a specific command.`
-
-	const updateAndDispatchClients = () => 
+	const updateAndDispatchClients = () =>
 		brokerClient
 			.listClients()
 			.then((clients) => dispatch(updateClients(clients)))
 
-	const updateAndDispatchGroups = () => 
+	const updateAndDispatchGroups = () =>
 		brokerClient
 			.listGroups()
 			.then((groups) => dispatch(updateGroups(groups)))
 
-	const updateAndDispatchRoles = () => 
+	const updateAndDispatchRoles = () =>
 		brokerClient
 			.listRoles()
 			.then((roles) => dispatch(updateRples(roles)))
@@ -103,7 +105,7 @@ const Plugins = (props) => {
 					return;
 				}
 				brokerClient
-					.addRoleACL(rolename, { acltype, priority: parsedPriority, topic, allow })
+					.addRoleACL(rolename, {acltype, priority: parsedPriority, topic, allow})
 					.then(() => {
 						print(`ACL successfully added to role "${rolename}"!`);
 					})
@@ -259,7 +261,7 @@ const Plugins = (props) => {
 				brokerClient.getClient(clientname)
 					.then((client) => {
 						print(
-`Name:        ${client.username}
+							`Name:        ${client.username}
 Textname:    ${client.textname}
 Description: ${client.textdescription}
 Client ID:   ${client.clientid}
@@ -279,7 +281,7 @@ Groups:      ${client.groups.map(group => group.groupname).join(', ')}
 				brokerClient.getDefaultACLAccess()
 					.then((defaultAccess) => {
 						print(
-`${defaultAccess.acls.map(acl => `${acl.acltype}: ${acl.allow}`).join('\n')}`);
+							`${defaultAccess.acls.map(acl => `${acl.acltype}: ${acl.allow}`).join('\n')}`);
 					})
 					.catch((error) => {
 						print(toErrorMessage(error));
@@ -292,8 +294,9 @@ Groups:      ${client.groups.map(group => group.groupname).join(', ')}
 			} else {
 				const [, groupname] = args;
 				brokerClient.getGroup(groupname)
-					.then((group) => {print(
-`Name:        ${group.groupname}
+					.then((group) => {
+						print(
+							`Name:        ${group.groupname}
 Textname:    ${group.textname}
 Description: ${group.textdescription}
 Roles:       ${group.roles.map(role => role.rolename).join(', ')}
@@ -313,7 +316,7 @@ Clients:     ${group.clients.map(client => client.username).join(', ')}
 				brokerClient.getRole(rolename)
 					.then((client) => {
 						print(
-`Name:        ${client.rolename}
+							`Name:        ${client.rolename}
 Textname:    ${client.textname}
 Description: ${client.textdescription}
 
@@ -394,8 +397,8 @@ Topic:      ${acl.topic}
 				// TODO: add support for groups and roles
 				print(`modifyClient <username> <password> <clientid> <textname> <textdescription>`);
 			} else {
-				const [, username, password, clientid, textname, textdescription ] = args;
-				brokerClient.modifyClient({ username, password, clientid, textname, textdescription })
+				const [, username, password, clientid, textname, textdescription] = args;
+				brokerClient.modifyClient({username, password, clientid, textname, textdescription})
 					.then(() => {
 						print('Done');
 					})
@@ -410,8 +413,8 @@ Topic:      ${acl.topic}
 				// TODO: add support for clients and roles
 				print(`modifyGroup <groupname> <textname> <textdescription>`);
 			} else {
-				const [, groupname, textname, textdescription ] = args;
-				brokerClient.modifyGroup({ groupname, textname, textdescription })
+				const [, groupname, textname, textdescription] = args;
+				brokerClient.modifyGroup({groupname, textname, textdescription})
 					.then(() => {
 						print('Done');
 					})
@@ -426,7 +429,7 @@ Topic:      ${acl.topic}
 				print(`modifyRole <rolename> <textname> <textdescription>`);
 			} else {
 				const [, rolename, textname, textdescription] = args;
-				brokerClient.modifyRole({ rolename, textname, textdescription })
+				brokerClient.modifyRole({rolename, textname, textdescription})
 					.then(() => {
 						print('Done');
 					})
@@ -476,7 +479,7 @@ Topic:      ${acl.topic}
 			} else {
 				const [, rolename, acltype, topic] = args;
 				brokerClient
-					.removeRoleACL(rolename, { acltype, topic })
+					.removeRoleACL(rolename, {acltype, topic})
 					.then(() => {
 						print(`ACL successfully removed from role "${rolename}"!`);
 					})
@@ -508,68 +511,78 @@ Topic:      ${acl.topic}
 			} else {
 				const [, acltype, allow] = args;
 				brokerClient
-					.setDefaultACLAccess([{ acltype, allow: allow === 'true' ? true : false }])
+					.setDefaultACLAccess([{acltype, allow: allow === 'true' ? true : false}])
 					.then(() => {
 						brokerClient.getDefaultACLAccess()
-						.then((defaultAccess) => {
-							dispatch(updateDefaultACLAccess(defaultACLAccess));
-							print(
-`${defaultAccess.acls.map(acl => `${acl.acltype}: ${acl.allow}`).join('\n')}`);
-						})
-						.catch((error) => {
-							print(toErrorMessage(error));
-						});
+							.then((defaultAccess) => {
+								dispatch(updateDefaultACLAccess(defaultACLAccess));
+								print(
+									`${defaultAccess.acls.map(acl => `${acl.acltype}: ${acl.allow}`).join('\n')}`);
+							})
+							.catch((error) => {
+								print(toErrorMessage(error));
+							});
 					})
 			}
 		}
 	}
-	
-	return (
-		<Terminal
-			startState="maximised"
-			className={classes.terminal}
-			showActions={false}
-			hideTopBar={true}
-			allowTabs={false}
-			prompt={darkMode === 'true' ? 'yellow' : 'darkgrey'}
-			color={darkMode === 'true' ? 'yellow' : 'darkgrey'}
-			style={{ fontWeight: 'light', fontSize: '1.25em', width: '100%' }}
-			backgroundColor={darkMode === 'true' ? 'black' : 'white'}
-			barColor="black"
-			outputColor={darkMode === 'true' ? 'yellow' : 'grey'}
-			commands={commands}
-			descriptions={{
-				addGroupClient: 'Add a client to a group',
-				addGroupRole: 'Add a role to a group',
-				addRoleACL: 'Add ACL to role',
-				createClient: 'Create a new client',
-				createGroup: 'Create a new group',
-				createRole: 'Create a new role',
-				deleteClient: 'Delete a client',
-				deleteGroup: 'Delete a client',
-				deleteRole: 'Delete a role',
-				disableClient: 'Disable a client',
-				enableClient: 'Enable a client',
-				getAnonymousGroup: 'Get anonymous group',
-				getClient: 'Get the details for a client',
-				getDefaultACLAccess: 'Get the default ACL access',
-				getGroup: 'Get the details for a group',
-				getRole: 'Get the details for a role',
-				listClients: 'List all clients',
-				listGroups: 'List all groups',
-				listRoles: 'List all roles',
-				modifyClient: 'Modify a client',
-				modifyGroup: 'Modify a group',
-				modifyRole: 'Modify a role',
-				removeGroupClient: 'Remove a client from a group',
-				removeGroupRole: 'Remove a role from a group',
-				removeRoleACL: 'Remove an ACL from a role',
-				setAnonymousGroup: 'Set anonymous group',
-				setDefaultACLAccess: 'Set the default ACL access'
-			}}
 
-			msg={message}
-		/>
+	return (
+		<div style={{height: '100%'}}>
+			<ContainerBreadCrumbs title="Terminal" links={[{name: 'Home', route: '/home'}]}/>
+			<div style={{height: 'calc(100% - 26px)'}}>
+				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
+					<ContainerHeader
+						title="Terminal"
+						subTitle="The terminal window allows you to exeecute commands on the current connection. Type 'help' for a list of available commands and type '<command> --help' for information on a specific command."
+					/>
+
+					<Terminal
+						startState="maximised"
+						// className={classes.terminal}
+						showActions={false}
+						hideTopBar={true}
+						allowTabs={false}
+						prompt={darkMode === 'true' ? 'yellow' : 'black'}
+						color={darkMode === 'true' ? 'yellow' : 'black'}
+						style={{fontWeight: 'light', fontSize: '1.25em', width: '100%', border: '1px solid'}}
+						backgroundColor={darkMode === 'true' ? 'black' : 'white'}
+						barColor="black"
+						outputColor={darkMode === 'true' ? 'yellow' : 'black'}
+						commands={commands}
+						descriptions={{
+							addGroupClient: 'Add a client to a group',
+							addGroupRole: 'Add a role to a group',
+							addRoleACL: 'Add ACL to role',
+							createClient: 'Create a new client',
+							createGroup: 'Create a new group',
+							createRole: 'Create a new role',
+							deleteClient: 'Delete a client',
+							deleteGroup: 'Delete a client',
+							deleteRole: 'Delete a role',
+							disableClient: 'Disable a client',
+							enableClient: 'Enable a client',
+							getAnonymousGroup: 'Get anonymous group',
+							getClient: 'Get the details for a client',
+							getDefaultACLAccess: 'Get the default ACL access',
+							getGroup: 'Get the details for a group',
+							getRole: 'Get the details for a role',
+							listClients: 'List all clients',
+							listGroups: 'List all groups',
+							listRoles: 'List all roles',
+							modifyClient: 'Modify a client',
+							modifyGroup: 'Modify a group',
+							modifyRole: 'Modify a role',
+							removeGroupClient: 'Remove a client from a group',
+							removeGroupRole: 'Remove a role from a group',
+							removeRoleACL: 'Remove an ACL from a role',
+							setAnonymousGroup: 'Set anonymous group',
+							setDefaultACLAccess: 'Set the default ACL access'
+						}}
+					/>
+				</div>
+			</div>
+		</div>
 	);
 };
 

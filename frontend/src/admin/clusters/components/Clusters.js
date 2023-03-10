@@ -1,22 +1,6 @@
-import React, { useContext } from 'react';
-import { connect, useDispatch } from 'react-redux';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { updateCluster, updateClusters } from '../actions/actions';
-import { useSnackbar } from 'notistack';
-
-import AddIcon from '@material-ui/icons/Add';
-import { Alert, AlertTitle } from '@material-ui/lab';
-import AutoSuggest from '../../../components/AutoSuggest';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
-import ClientIcon from '@material-ui/icons/Person';
-import DeleteIcon from '@material-ui/icons/Delete';
-import CheckHealthStatusIcon from '@material-ui/icons/Favorite';
 import Divider from '@material-ui/core/Divider';
-import EditIcon from '@material-ui/icons/Edit';
-// import Fab from '@material-ui/core/Fab';
-import GroupIcon from '@material-ui/icons/Group';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
@@ -24,22 +8,33 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
-import PropTypes from 'prop-types';
-import { Link as RouterLink } from 'react-router-dom';
-import Switch from '@material-ui/core/Switch';
+import {makeStyles, withStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import { WebSocketContext } from '../../../websockets/WebSocket';
+
+import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import CheckHealthStatusIcon from '@material-ui/icons/Favorite';
+// import Fab from '@material-ui/core/Fab';
+import {Alert, AlertTitle} from '@material-ui/lab';
+import {useConfirm} from 'material-ui-confirm';
+import {useSnackbar} from 'notistack';
+import PropTypes from 'prop-types';
+import React, {useContext} from 'react';
+import {connect, useDispatch} from 'react-redux';
+import {Link as RouterLink, useHistory} from 'react-router-dom';
+import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
+import ContainerHeader from '../../../components/ContainerHeader';
 import WaitDialog from '../../../components/WaitDialog';
-import { useConfirm } from 'material-ui-confirm';
-import { useHistory } from 'react-router-dom';
+import {WebSocketContext} from '../../../websockets/WebSocket';
+import {updateCluster, updateClusters} from '../actions/actions';
 
 const StyledTableRow = withStyles((theme) => ({
 	root: {
@@ -71,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CLUSTER_TABLE_COLUMNS = [
-	{ id: 'clustername', key: 'Clustername' },
+	{ id: 'clustername', key: 'Name' },
 	{ id: 'description', key: 'Description' },
 	{ id: 'numberOfNodes', key: 'Nodes' },
 ];
@@ -82,8 +77,8 @@ const createClusterTable = (clusters, classes, props, onCheckHealthStatus, onDel
 	if (!clusterManagementFeature?.error && clusterManagementFeature?.supported !== false && clusters && clusters.length > 0) {
 		return <div>
 			<Hidden xsDown implementation="css">
-				<TableContainer component={Paper} className={classes.tableContainer}>
-					<Table size="medium">
+				<TableContainer>
+					<Table stickyHeader size="small" aria-label="sticky table">
 						<TableHead>
 							<TableRow>
 								{CLUSTER_TABLE_COLUMNS.map((column) => (
@@ -234,7 +229,7 @@ const Clusters = (props) => {
 			const cluster = await brokerClient.getCluster(clustername, numberOfNodes);
 			dispatch(updateCluster(cluster));
 			setProgressDialogOpen(false);
-			history.push(`/admin/clusters/detail/${clustername}`);
+			history.push(`/clusters/${clustername}`);
 		} catch(error) {
 			enqueueSnackbar(`Cluster loading failed. Reason: ${error.message || error}`, {
 				variant: 'error'
@@ -243,7 +238,7 @@ const Clusters = (props) => {
 	};
 
 	const onNewCluster = () => {
-		history.push('/admin/clusters/new');
+		history.push('/clusters/new');
 	};
 
 	const onCheckHealthStatus = async (clustername) => {
@@ -294,17 +289,25 @@ const Clusters = (props) => {
 
 	return (
 		<div>
-			<Breadcrumbs aria-label="breadcrumb">
-				<RouterLink className={classes.breadcrumbLink} to="/home">
-					Home
-				</RouterLink>
-				<RouterLink className={classes.breadcrumbLink} color="inherit" to="/admin">
-					Admin
-				</RouterLink>
-				<Typography className={classes.breadcrumbItem} color="textPrimary">
-					Clusters
-				</Typography>
-			</Breadcrumbs>
+			<ContainerBreadCrumbs title="Clusters" links={[{name: 'Home', route: '/home'}]}/>
+			<ContainerHeader
+				title="Clusters"
+				subTitle="Clusters enable Mosquitto High Availabiliy. Here you can and modify the cluster setup by creating or deleting a cluster, adding or deleting a node in a cluster and more."
+			>
+				{!clusterManagementFeature?.error && clusterManagementFeature?.supported !== false &&
+				<Button
+					variant="outlined"
+					color="primary"
+					size="small"
+					startIcon={<AddIcon />}
+					onClick={(event) => {
+						event.stopPropagation();
+						onNewCluster();
+					}}
+				>
+					New&nbsp;Cluster
+				</Button>}
+			</ContainerHeader>
 			{/* TODO: Quick hack to detect whether feature is supported */}
 			{clusterManagementFeature?.supported === false ? <><br/><Alert severity="warning">
 				<AlertTitle>Feature not available</AlertTitle>
@@ -314,22 +317,7 @@ const Clusters = (props) => {
 				<AlertTitle>{clusterManagementFeature.error.title || 'An error has occured'}</AlertTitle>
 				{clusterManagementFeature.error.message || clusterManagementFeature.error}
 			</Alert></> : null}
-			<br />
-			{!clusterManagementFeature?.error && clusterManagementFeature?.supported !== false && <><Button
-				variant="outlined"
-				color="default"
-				size="small"
-				className={classes.button}
-				startIcon={<AddIcon />}
-				onClick={(event) => {
-					event.stopPropagation();
-					onNewCluster();
-				}}
-			>
-				New Cluster
-			</Button>
-			<br />
-			<br />
+				{!clusterManagementFeature?.error && clusterManagementFeature?.supported !== false && <>
 			<WaitDialog
 				title='Loading cluster details'
 				message='Note that this can take a while depending on the size and status of your cluster.'
@@ -337,7 +325,7 @@ const Clusters = (props) => {
 				handleClose={() => setProgressDialogOpen(false)}
 			/>
 			</>}
-			
+
 			{ createClusterTable(clusters, classes, props, onCheckHealthStatus, onDeleteCluster, onSelectCluster) }
 		</div>
 	);

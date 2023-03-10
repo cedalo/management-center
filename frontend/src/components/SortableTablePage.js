@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 
 const SortableTablePage = ({Component}) => {
@@ -6,10 +6,23 @@ const SortableTablePage = ({Component}) => {
 	const [sortDirection, setSortDirection] = useState('asc');
 	const [sortBy, setSortBy] = useState('');
 
-	const onSort = (property) => {
-		const isAsc = sortBy === property && sortDirection === 'asc';
-		setSortDirection(isAsc ? 'desc' : 'asc');
-		setSortBy(property);
+	// const onSort = (property) => {
+	// 	const isAsc = sortBy === property && sortDirection === 'asc';
+	// 	setSortDirection(isAsc ? 'desc' : 'asc');
+	// 	setSortBy(property);
+	// };
+	const onSort = (columnId) => {
+		if (sortBy === columnId) {
+		  if (sortDirection === 'asc') {
+			setSortDirection('desc');
+		  } else {
+			setSortBy('');
+			setSortDirection('asc');
+		  }
+		} else {
+		  setSortBy(columnId);
+		  setSortDirection('asc');
+		}
 	};
 
 	const descendingComparator = (a, b, orderByFunc) => {

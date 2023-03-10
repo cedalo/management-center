@@ -71,7 +71,7 @@ const testConnectionAction = {
 const createConnectionAction = {
 	type: 'connection/create',
 	fn: async ({ user, security, configManager, licenseContainer }, { connection }) => {
-		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin)) {
+		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, null, 'createConnection')) {
 			throw new NotAuthorizedError();
 		}
 
@@ -104,13 +104,16 @@ const deleteConnectionAction = {
 	type: 'connection/delete',
 	fn: async ({ user, security, configManager }, { id }) => {
 		try {
-			console.log('deleting connection==============:', id);
 			if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, id)) {
 				throw new NotAuthorizedError();
 			}
-			console.log('before deleteConnection:');
-			configManager.deleteConnection(id, user);
-			console.log('after deleteConnection:');
+			const connection = configManager.getConnection(id);
+			if (connection.cluster) {
+				throw new Error(
+					`Could not delete "${id}" because it's part of the cluster "${connection.cluster}". Delete cluster first`
+				);
+			}
+			configManager.deleteConnection(id);
 			return configManager.connections;
 		} catch (error) {
 			console.log('error when deleting:', error);

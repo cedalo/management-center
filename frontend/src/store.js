@@ -17,6 +17,7 @@ import webSocketConnectionsReducer from './reducers/webSocketConnectionsReducer'
 import brokerLicenseReducer from './reducers/brokerLicenseReducer';
 import testsReducer from './reducers/testsReducer';
 import applicationTokensReducer from './reducers/applicationTokensReducer';
+import backendParametersReducer from './reducers/backendParametersReducer';
 import loadingReducer from './reducers/loadingReducer';
 
 import userGroupsReducer from './admin/users/reducers/userGroupsReducer';
@@ -51,6 +52,7 @@ const store = createStore(
 		tests: testsReducer,
 		tokens: applicationTokensReducer,
 		loading: loadingReducer,
+		backendParameters: backendParametersReducer,
 		// bridges: bridgesReducer
 	})
 );

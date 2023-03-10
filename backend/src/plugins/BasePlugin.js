@@ -1,8 +1,11 @@
+const path = require('path');
 const winston = require('winston');
 
 const STATUS_ERROR = 'error';
 const STATUS_UNLOADED = 'unloaded';
 const STATUS_LOADED = 'loaded';
+
+const LOG_DIR = process.env.CEDALO_MC_LOG_DIR || '';
 
 module.exports = class BasePlugin {
 	constructor(meta, options) {
@@ -13,10 +16,8 @@ module.exports = class BasePlugin {
 			level: 'info',
 			format: winston.format.json(),
 			defaultMeta: { service: meta?.name },
-			transports: [
-			  new winston.transports.File({ filename: `plugin-${meta?.id}.log` }),
-			],
-		  });
+			transports: [new winston.transports.File({ filename: path.join(LOG_DIR, `plugin-${meta?.id}.log`) })]
+		});
 		this._logger = logger;
 		this._swagger = {};
 		this.options = {};

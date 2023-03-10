@@ -7,6 +7,7 @@ const EventEmitter2 = require('eventemitter2');
 const { v4: uuidv4 } = require('uuid');
 const express = require('express');
 const session = require('express-session');
+const ejs = require('ejs'); //! don't remove this line, it's used for pkg to compile ejs into the executable
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const WebSocket = require('ws');
@@ -20,7 +21,7 @@ const UsageTracker = require('./src/usage/UsageTracker');
 const InstallationManager = require('./src/usage/InstallationManager');
 const ConfigManager = require('./src/config/ConfigManager');
 const SettingsManager = require('./src/settings/SettingsManager');
-const { loadInstallation } = require('./src/utils/utils');
+const { loadInstallation, stripConnectionsCredentials, generateSecret } = require('./src/utils/utils');
 const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
 const swaggerDocument = require('./swagger.js');
 const Logger = require('./src/utils/Logger');
@@ -43,16 +44,27 @@ const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
-const CEDALO_MC_ENABLE_FULL_LOG = !!process.env.CEDALO_MC_ENABLE_FULL_LOG;
+const CEDALO_MC_ENABLE_FULL_LOG = !!((process.env.CEDALO_MC_ENABLE_FULL_LOG &&
+	process.env.CEDALO_MC_ENABLE_FULL_LOG.toLowerCase()) === 'false'
+	? false
+	: process.env.CEDALO_MC_ENABLE_FULL_LOG);
+const CEDALO_MC_SHOW_FEEDBACK_FORM = !!((process.env.CEDALO_MC_SHOW_FEEDBACK_FORM &&
+	process.env.CEDALO_MC_SHOW_FEEDBACK_FORM.toLowerCase()) === 'false'
+	? false
+	: process.env.CEDALO_MC_SHOW_FEEDBACK_FORM);
+const CEDALO_MC_USERNAME = process.env.CEDALO_MC_USERNAME;
 
 const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
+
+console.log(`Mosquitto Management Center version ${version.version || 'unknown'}`);
 console.log(`MMC is starting in the ${process.env.CEDALO_MC_MODE === 'offline' ? 'offline' : 'online'} mode`);
 
 // const LicenseManager = require("../src/LicenseManager");
 const LicenseChecker = require('./src/license/LicenseChecker');
 const acl = require('./src/security/acl');
 const TopicTreeManager = require('./src/topictree/TopicTreeManager');
+const licenseContainer = require('./src/license/LicenseContainer');
 // const NodeMosquittoProxyClient = require('../frontend/src/client/NodeMosquittoProxyClient');
 // const licenseManager = new LicenseManager();
 // await licenseManager.loadLicense();
@@ -186,10 +198,10 @@ const addStreamsheetsConfig = (config) => {
 
 const stopFunctions = [];
 
-const eventify = function (arr, callback) {
-	arr.push = function (e) {
-		Array.prototype.push.call(arr, e);
-		callback(arr, e);
+const eventify = function (array, callback) {
+	array.push = function (element) {
+		Array.prototype.push.call(array, element);
+		callback(array, element);
 	};
 };
 
@@ -208,12 +220,13 @@ const stop = async () => {
 };
 controlElements.stop = stop;
 
-eventify(stopFunctions, async function (updatedArr, element) {
+eventify(stopFunctions, async function (array, element) {
 	// add callback to stopFunctions array, will be called on every push
 	if (controlElements.stopSignalSent) {
-		await element();
-	}
-});
+		// user can send a stop signal while some async operations are still being handled and
+		await element(); // and some stop fuinctions have not been added to the array.for example stop signal is sent while connecting a broker.
+	} // in this case as soon as the broker connected, it's stop functions which disconnects it is added to the stopFunctions array
+}); // and due to the callback it checks if stop signal has already been issued and gets executed immediately.
 
 const createOptions = (connection) => {
 	// remove unwanted parameters
@@ -242,7 +255,7 @@ const init = async (licenseContainer) => {
 	const usageTracker = new UsageTracker({ license: licenseContainer, version, installation });
 	const installationManager = new InstallationManager({ license: licenseContainer, version, installation });
 	await installationManager.verifyLicense();
-	const settingsManager = new SettingsManager();
+	const settingsManager = new SettingsManager(context);
 	const maxBrokerConnections = licenseContainer?.license?.maxBrokerConnections
 		? parseInt(licenseContainer.license.maxBrokerConnections)
 		: 1;
@@ -261,7 +274,7 @@ const init = async (licenseContainer) => {
 	app.set('views', path.join(__dirname, 'views'));
 
 	const sessionParser = session({
-		secret: process.env.CEDALO_MC_SESSION_SECRET || 'secret',
+		secret: process.env.CEDALO_MC_SESSION_SECRET || generateSecret(),
 		cookie: process.env.CEDALO_MC_SESSION_MAXAGE
 			? parseInt(process.env.CEDALO_MC_SESSION_MAXAGE) === -1
 				? undefined
@@ -278,11 +291,16 @@ const init = async (licenseContainer) => {
 	// TODO: add error handling
 	const config = loadConfig();
 	addStreamsheetsConfig(config);
+	config.parameters = {
+		showFeedbackForm: CEDALO_MC_SHOW_FEEDBACK_FORM,
+		rootUsername: CEDALO_MC_USERNAME,
+		ssoUsed: false
+	};
 
 	let server;
 	const host = CEDALO_MC_PROXY_HOST;
 	const port = CEDALO_MC_PROXY_PORT;
-	let protocol = config.plugins.find((plugin) => plugin.name === 'https') ? 'https' : 'http';
+	let protocol = config.plugins?.find((plugin) => plugin.name === 'https') ? 'https' : 'http';
 
 	const wss = new WebSocket.Server({
 		//   port: CEDALO_MC_PROXY_PORT,
@@ -308,7 +326,7 @@ const init = async (licenseContainer) => {
 		const brokerClient = new NodeMosquittoClient({
 			/* logger: console */
 		});
-		const topicTreeManager = new TopicTreeManager(brokerClient, connection, settingsManager);
+		const topicTreeManager = new TopicTreeManager(brokerClient, connection, settingsManager, context);
 		topicTreeManager.addListener((topicTree, brokerClient, connection) => {
 			sendTopicTreeUpdate(topicTree, brokerClient, connection);
 		});
@@ -328,18 +346,21 @@ const init = async (licenseContainer) => {
 				connected: false,
 				timestamp: Date.now()
 			};
+			configManager.updateConnection(connection.id, connectionConfiguration);
 		}
 		try {
 			await brokerClient.connect({
 				mqttEndpointURL: connection.url,
 				options: createOptions(connection)
 			});
+			context.eventEmitter.emit('connect', connectionConfiguration);
 
 			topicTreeManager.start();
 
 			connectionConfiguration.status.connected = true;
 			connectionConfiguration.status.timestamp = Date.now();
 			console.log(`Connected to '${connection.name}' at ${connection.url}`);
+
 			brokerClient.on('close', () => {
 				context.eventEmitter.emit('close', connectionConfiguration);
 				connectionConfiguration.status = {
@@ -348,30 +369,39 @@ const init = async (licenseContainer) => {
 					error: {
 						errno: 1,
 						code: 'ECONNCLOSED',
-						syscall: 'on'
+						syscall: 'on',
+						interrupted: brokerClient.disconnectedByUser ? false : true
 					}
 				};
+				if (brokerClient.disconnectedByUser) {
+					brokerClient.disconnectedByUser = false;
+				}
 				sendConnectionsUpdate(brokerClient, user);
+				configManager.updateConnection(connection.id, connectionConfiguration);
 			});
-			// TODO: this listener is not applied
+			// this listener is applied only on reconnect (at the time we apply this listener the conenction had already been established and the first connect event alrady fired)
 			brokerClient.on('connect', () => {
-				context.eventEmitter.emit('connect', connectionConfiguration);
+				context.eventEmitter.emit('reconnect', connectionConfiguration);
 				connectionConfiguration.status = {
 					connected: true,
-					timestamp: Date.now()
+					timestamp: Date.now(),
+					reconnect: true
 				};
 				sendConnectionsUpdate(brokerClient, user);
+				configManager.updateConnection(connection.id, connectionConfiguration);
 			});
 		} catch (error) {
-			//  //!! disconnect broker client
+			// disconnect broker client
+			console.error(`Error when connecting "${connectionConfiguration.id}":`);
 			console.error(error);
 			connectionConfiguration.status = {
 				connected: false,
 				timestamp: Date.now(),
-				error: error
+				error: error?.message || error
 			};
 
 			sendConnectionsUpdate(brokerClient, user);
+			configManager.updateConnection(connection.id, connectionConfiguration);
 		} finally {
 			stopFunctions.push(async () => {
 				await brokerClient.disconnect();
@@ -382,24 +412,25 @@ const init = async (licenseContainer) => {
 		let error;
 
 		if (!connectionConfiguration.status.error) {
-			brokerClient.subscribe('$SYS/#', (error) => {
-				console.log(`Subscribed to system topics for '${connection.name}'`);
-				if (error) {
-					console.error(error);
-				}
-			});
-			brokerClient.subscribe('#', (error) => {
-				console.log(`Subscribed to all topics for '${connection.name}'`);
-				if (error) {
-					console.error(error);
-				}
-			});
-			brokerClient.subscribe('$CONTROL/dynamic-security/v1/#', (error) => {
-				console.log(`Subscribed to all topics for '${connection.name}'`);
-				if (error) {
-					console.error(error);
-				}
-			});
+			// means we have connected successfully
+			connectionConfiguration.status = {
+				connected: true,
+				timestamp: Date.now()
+			};
+			sendConnectionsUpdate(brokerClient, user);
+			configManager.updateConnection(connection.id, connectionConfiguration);
+			// brokerClient.subscribe('$SYS/#', (error) => {
+			// 	console.log(`Subscribed to system topics for '${connection.name}'`);
+			// 	if (error) {
+			// 		console.error(error);
+			// 	}
+			// });
+			// brokerClient.subscribe('$CONTROL/dynamic-security/v1/#', (error) => {
+			// 	console.log(`Subscribed to dynamic-security topics for '${connection.name}'`);
+			// 	if (error) {
+			// 		console.error(error);
+			// 	}
+			// });
 			//   });
 
 			brokerClient.on('message', (topic, message, packet) => {
@@ -411,9 +442,11 @@ const init = async (licenseContainer) => {
 					topic.startsWith('$CONTROL/dynamic-security/v1/response')
 				) {
 					// TODO: this is already handle by the Mosquitto client
-					console.log('topic');
-					console.log(topic);
-					console.log(message.toString());
+					if (CEDALO_MC_ENABLE_FULL_LOG) {
+						console.log('topic');
+						console.log(topic);
+						console.log(message.toString());
+					}
 				} else if (topic.startsWith('$CONTROL')) {
 					// Nothing to do
 				}
@@ -435,7 +468,7 @@ const init = async (licenseContainer) => {
 			system,
 			topicTreeManager /*, proxyClient */
 		);
-		configManager.updateConnection(connection.id, connection);
+		// configManager.updateConnection(connection.id, connectionConfiguration);
 
 		// try {
 		// 	await proxyClient.connect({ socketEndpointURL: 'ws://localhost:8088' });
@@ -454,14 +487,14 @@ const init = async (licenseContainer) => {
 		}
 		context.brokerManager.handleDeleteBrokerConnection(connection);
 
-		if (!connection.status) {
-			connection.status = {};
-		}
+		// if (!connection.status) {
+		// 	connection.status = {};
+		// }
 
-		connection.status.connected = false;
-		connection.status.timestamp = Date.now();
+		// connection.status.connected = false;
+		// connection.status.timestamp = Date.now();
 
-		configManager.updateConnection(connection.id, connection);
+		// configManager.updateConnection(connection.id, connection);
 	};
 
 	const connectServerToAllBrokers = () => {
@@ -469,7 +502,13 @@ const init = async (licenseContainer) => {
 			if (i < maxBrokerConnections) {
 				const connection = connections[i];
 				const wasConnected = connection.status && connection.status.connected;
-				const hadError = connection.status && connection.status.error;
+				const closedByUser =
+					connection.status &&
+					connection.status.error &&
+					typeof connection.status.error === 'object' &&
+					connection.status.error.code === 'ECONNCLOSED' &&
+					!connection.status.error.interrupted;
+				const hadError = connection.status && connection.status.error && !closedByUser;
 				if (wasConnected || hadError || connection.status === undefined) {
 					// Note that we don't connect in case broker was manually disconnected. We connect only in the three cases descirbed in if
 					handleConnectServerToBroker(connections[i]);
@@ -505,7 +544,7 @@ const init = async (licenseContainer) => {
 		}
 		if (broker) {
 			const result = await broker.sendCommandMessage(api, command);
-			console.log(JSON.stringify(result));
+			// console.log(JSON.stringify(result));
 			const response = {
 				// TODO: remove users and groups properties when Mosquitto supports that API
 				// data: result.data || result.users || result.groups,
@@ -583,21 +622,7 @@ const init = async (licenseContainer) => {
 					connections,
 					user.connections
 				);
-				const result = filteredConnections.map((connection) => {
-					if (
-						context.security.acl.isConnectionAuthorized(
-							user,
-							context.security.acl.atLeastAdmin,
-							connection.name
-						)
-					) {
-						return connection;
-					} else {
-						const connectionCopy = Object.assign({}, connection);
-						delete connectionCopy.credentials;
-						return connectionCopy;
-					}
-				});
+				const result = stripConnectionsCredentials(filteredConnections, user, context);
 				return result;
 			}
 			case 'getBrokerConfigurations': {
@@ -736,8 +761,8 @@ const init = async (licenseContainer) => {
 	};
 
 	const sendConnectionsUpdate = (brokerClient, user) => {
-		const connections = context.brokerManager.getBrokerConnections();
-		let payload;
+		const connections = context.configManager.connections; // context.brokerManager.getBrokerConnections(); brokerManager does not include connections that have been disconnected by the user before the start of the MMC
+		let payload = connections;
 
 		if (user) {
 			payload = context.security.acl.filterAllowedConnections(connections, user.connections);
@@ -894,8 +919,8 @@ const init = async (licenseContainer) => {
 		globalSystem,
 		globalTopicTree,
 		licenseContainer,
-		registerAction: ({ type, fn, filter = (x) => x }) => {
-			context.actions[type] = { fn, filter };
+		registerAction: ({ type, isModifying, fn, filter = (x) => x }) => {
+			context.actions[type] = { fn, filter, isModifying };
 		},
 		runAction: (user, type, data) => {
 			try {
@@ -903,9 +928,39 @@ const init = async (licenseContainer) => {
 				if (!action) {
 					throw new Error(`Unknown action: "${type}"`);
 				}
+				const { isModifying } = action;
 
-				context.actionEmitter.emit(type, { type, user, data: action.filter(data) });
-				return action.fn({ ...context, user }, data);
+				let errorMessage;
+				let pendingResult;
+				let result;
+				try {
+					pendingResult = action.fn({ ...context, user }, data);
+					return pendingResult;
+				} catch (error) {
+					errorMessage = error.message || 'Unknown error!';
+					throw error;
+				} finally {
+					Promise.resolve(pendingResult)
+						.catch((error) => {
+							errorMessage = error.message || 'Unknown error!';
+						})
+						.then((r) => {
+							result = r;
+						})
+						.finally(() => {
+							const eventData = {
+								type,
+								isModifying,
+								user,
+								data: action.filter(data),
+								error: errorMessage,
+								// TODO: should this be here? should we filter it? Currently only required for user/login
+								result
+							};
+							const eventName = `${errorMessage ? 'e' : isModifying ? 'w' : 'r'}/${type}`;
+							context.actionEmitter.emit(eventName, eventData);
+						});
+				}
 			} catch (error) {
 				console.error(error);
 			}
@@ -939,6 +994,10 @@ const init = async (licenseContainer) => {
 		preprocessUserFunctions: []
 	};
 
+	context.pluginManager.init(config.plugins, context, swaggerDocument);
+	context.config.parameters.ssoUsed = !!context.pluginManager.plugins.find(
+		(plugin) => plugin._meta.id.includes('_sso') && plugin._status.type === 'loaded'
+	);
 	context.registerAction(unloadPluginAction);
 	context.registerAction(loadPluginAction);
 	context.registerAction(setPluginStatusAtNextStartupAction);
@@ -946,8 +1005,6 @@ const init = async (licenseContainer) => {
 	context.registerAction(createConnectionAction);
 	context.registerAction(modifyConnectionAction);
 	context.registerAction(deleteConnectionAction);
-
-	context.pluginManager.init(config.plugins, context, swaggerDocument);
 
 	if (context.server instanceof Error) {
 		// https plugin tried to be loaded but failed
@@ -1002,6 +1059,10 @@ const init = async (licenseContainer) => {
 
 	router.get('/api/settings', context.security.isLoggedIn, (request, response) => {
 		response.json(settingsManager.settings);
+	});
+
+	router.get('/api/backend-parameters', context.security.isLoggedIn, (request, response) => {
+		response.json(config.parameters);
 	});
 
 	if (!CEDALO_MC_OFFLINE) {
@@ -1084,6 +1145,7 @@ const init = async (licenseContainer) => {
 			} else if (fs.existsSync(mediaFilePath)) {
 				response.sendFile(mediaFilePath);
 			} else {
+				response.status(404);
 				response.sendFile(path.join(__dirname, 'public', 'index.html'));
 			}
 		}
@@ -1099,6 +1161,8 @@ const init = async (licenseContainer) => {
 					return response.status(400).send({ code: error.code, message: error.message });
 				case 'NOT_ALLOWED':
 					return response.status(403).send({ code: error.code, message: error.message });
+				case 'NOT_FOUND':
+					return response.status(404).send({ code: error.code, message: error.message });
 				case 'GONE':
 					return response.status(409).send({ code: error.code, message: error.message });
 				case 'SOMETHING_WRONG':
@@ -1200,7 +1264,6 @@ const init = async (licenseContainer) => {
 	stopFunctions.push(() => wss.close());
 };
 
-const licenseContainer = {};
 (async () => {
 	await checker.check(async (error, license) => {
 		if (error) {
@@ -1219,7 +1282,6 @@ const licenseContainer = {};
 			if (error.message === 'Exit') {
 			} else {
 				console.error(error);
-				console.trace();
 			}
 		}
 	});

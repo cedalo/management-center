@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
-import { amber, green, red } from '@material-ui/core/colors';
-import { connect, useDispatch } from 'react-redux';
+import React, {useContext} from 'react';
+import {amber, green, red} from '@material-ui/core/colors';
+import {connect, useDispatch} from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
@@ -11,6 +11,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DownloadIcon from '@material-ui/icons/GetApp';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
+import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import MessagePage from './MessagePage';
 import OpenSourcePluginIcon from '@material-ui/icons/Code';
 import OpenStreamsheetsIcon from '@material-ui/icons/Navigation';
@@ -19,7 +20,7 @@ import PluginDisabledIcon from '@material-ui/icons/Cancel';
 import PluginEnabledIcon from '@material-ui/icons/CheckCircle';
 import PremiumPluginIcon from '@material-ui/icons/Stars';
 import PreviewStreamsheetsIcon from '@material-ui/icons/Visibility';
-import { Link as RouterLink } from 'react-router-dom';
+import {Link as RouterLink} from 'react-router-dom';
 import Switch from '@material-ui/core/Switch';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -29,11 +30,12 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import { WebSocketContext } from '../websockets/WebSocket';
-import { makeStyles } from '@material-ui/core/styles';
+import {WebSocketContext} from '../websockets/WebSocket';
+import {makeStyles} from '@material-ui/core/styles';
 import moment from 'moment';
-import { useConfirm } from 'material-ui-confirm';
+import {useConfirm} from 'material-ui-confirm';
 import useFetch from '../helpers/useFetch';
+import ContainerHeader from './ContainerHeader';
 
 const useStyles = makeStyles((theme) => ({
 	button: {
@@ -53,8 +55,6 @@ const useStyles = makeStyles((theme) => ({
 		top: theme.spacing(1),
 		color: theme.palette.grey[500]
 	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
 const Streamsheets = (props) => {
@@ -65,7 +65,7 @@ const Streamsheets = (props) => {
 	const [previewOpen, setPreviewOpen] = React.useState(false);
 	const [selectedInstance, setSelectedInstance] = React.useState({});
 
-	const { client } = context;
+	const {client} = context;
 	const [response, loading, hasError] = useFetch(
 		`${process.env.PUBLIC_URL}/api/config/tools/streamsheets`
 	);
@@ -106,7 +106,7 @@ const Streamsheets = (props) => {
 							variant="contained"
 							color="primary"
 							className={classes.button}
-							startIcon={<OpenStreamsheetsIcon />}
+							startIcon={<OpenStreamsheetsIcon/>}
 							onClick={(event) => {
 								event.stopPropagation();
 								onSelectInstance(selectedInstance);
@@ -126,7 +126,7 @@ const Streamsheets = (props) => {
 							<OpenStreamsheetsIcon fontSize="small" />
 						</IconButton> */}
 						<IconButton aria-label="close" className={classes.closeButton} onClick={onClosePreviewInstance}>
-							<CloseIcon />
+							<CloseIcon/>
 						</IconButton>
 					</DialogTitle>
 					<iframe
@@ -136,115 +136,117 @@ const Streamsheets = (props) => {
 						title={selectedInstance?.name}
 					></iframe>
 				</Dialog>
-				<Breadcrumbs aria-label="breadcrumb">
-					<RouterLink className={classes.breadcrumbLink} to="/home">
-						Home
-					</RouterLink>
-					<Typography className={classes.breadcrumbItem} color="textPrimary">
-						Streamsheets
-					</Typography>
-				</Breadcrumbs>
-				<br />
-				{response?.instances && response?.instances?.length > 0 ? (
-					<TableContainer component={Paper} className={classes.tableContainer}>
-						<Table size="medium">
-							<TableHead>
-								<TableRow>
-									<TableCell>Type</TableCell>
-									<TableCell>ID</TableCell>
-									<TableCell>Version</TableCell>
-									<TableCell>Name</TableCell>
-									<TableCell>Description</TableCell>
-									<TableCell>Actions</TableCell>
-								</TableRow>
-							</TableHead>
-							<TableBody>
-								{response?.instances?.map((streamsheets) => (
-									<TableRow
-									// hover
-									// onClick={(event) => {
-									// 	onSelectInstance(streamsheets);
-									// }}
-									// style={{ cursor: 'pointer' }}
-									>
-										<TableCell>
-											{streamsheets.type === 'premium' ? (
-												<PremiumPluginIcon style={{ color: amber[500] }} fontSize="small" />
-											) : (
-												<OpenSourcePluginIcon fontSize="small" />
-											)}
-										</TableCell>
-										<TableCell>{streamsheets.id}</TableCell>
-										<TableCell>{streamsheets.version}</TableCell>
-										<TableCell>{streamsheets.name}</TableCell>
-										<TableCell>{streamsheets.description}</TableCell>
-										<TableCell align="right">
-											<Tooltip title="Open Streamsheets instance">
-												<Button
-													variant="contained"
-													color="primary"
-													className={classes.button}
-													startIcon={<PreviewStreamsheetsIcon />}
-													onClick={(event) => {
-														event.stopPropagation();
-														onPreviewInstance(streamsheets);
-													}}
-													size="small"
+				<ContainerBreadCrumbs title="Streamsheets" links={[{name: 'Home', route: '/home'}]}/>
+				<div style={{height: 'calc(100% - 26px)'}}>
+					<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
+						<ContainerHeader
+							title="Streamsheets"
+							subTitle="Available Streamsheet Installations. If you click on open, the Streamsheets App will be opened. Streamsheets offer a spreadsheet like user interface to analyze, transform and monitor MQTT data."
+						/>
+						{response?.instances && response?.instances?.length > 0 ? (
+							<div style={{height: '100%', overflowY: 'auto'}}>
+								<TableContainer>
+									<Table size="small">
+										<TableHead>
+											<TableRow>
+												<TableCell>Type</TableCell>
+												<TableCell>ID</TableCell>
+												<TableCell>Version</TableCell>
+												<TableCell>Name</TableCell>
+												<TableCell>Description</TableCell>
+												<TableCell>Actions</TableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{response?.instances?.map((streamsheets) => (
+												<TableRow
+													// hover
+													// onClick={(event) => {
+													// 	onSelectInstance(streamsheets);
+													// }}
+													// style={{ cursor: 'pointer' }}
 												>
-													Open
-												</Button>
-												{/* <IconButton
-													size="small"
-													aria-label="Preview Streamsheets instance"
-													onClick={(event) => {
-														event.stopPropagation();
-														onPreviewInstance(streamsheets);
-													}}
-													size="small"
-													variant="contained"
-												>
-													<PreviewStreamsheetsIcon fontSize="small" />
-												</IconButton> */}
-											</Tooltip>
-											{/* <Tooltip title="Open Streamsheets instance">
-												<Button
-													variant="contained"
-													color="primary"
-													className={classes.button}
-													startIcon={<OpenStreamsheetsIcon />}
-													onClick={(event) => {
-														event.stopPropagation();
-														onSelectInstance(streamsheets);
-													}}
-													size="small"
-												>
-													Open
-												</Button> */}
-											{/* <IconButton
-													size="small"
-													aria-label="Open Streamsheets instance"
-													onClick={(event) => {
-														event.stopPropagation();
-														onSelectInstance(streamsheets);
-													}}
-												>
-													<OpenStreamsheetsIcon fontSize="small" />
-												</IconButton> */}
-											{/* </Tooltip> */}
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-					</TableContainer>
-				) : (
-					<MessagePage
-						message="We could not find any Streamsheets installation."
-						buttonIcon={<DownloadIcon />}
-						buttonText="Get Streamsheets now!"
-						callToAction={onDownloadStreamsheets}
-					/>
-				)}
+													<TableCell>
+														{streamsheets.type === 'premium' ? (
+															<PremiumPluginIcon style={{color: amber[500]}}
+																			   fontSize="small"/>
+														) : (
+															<OpenSourcePluginIcon fontSize="small"/>
+														)}
+													</TableCell>
+													<TableCell>{streamsheets.id}</TableCell>
+													<TableCell>{streamsheets.version}</TableCell>
+													<TableCell>{streamsheets.name}</TableCell>
+													<TableCell>{streamsheets.description}</TableCell>
+													<TableCell>
+														<Tooltip title="Open Streamsheets instance">
+															<Button
+																variant="contained"
+																color="primary"
+																startIcon={<PreviewStreamsheetsIcon/>}
+																onClick={(event) => {
+																	event.stopPropagation();
+																	onPreviewInstance(streamsheets);
+																}}
+																size="small"
+															>
+																Open
+															</Button>
+															{/* <IconButton
+																size="small"
+																aria-label="Preview Streamsheets instance"
+																onClick={(event) => {
+																	event.stopPropagation();
+																	onPreviewInstance(streamsheets);
+																}}
+																size="small"
+																variant="contained"
+															>
+																<PreviewStreamsheetsIcon fontSize="small" />
+															</IconButton> */}
+														</Tooltip>
+														{/* <Tooltip title="Open Streamsheets instance">
+															<Button
+																variant="contained"
+																color="primary"
+																className={classes.button}
+																startIcon={<OpenStreamsheetsIcon />}
+																onClick={(event) => {
+																	event.stopPropagation();
+																	onSelectInstance(streamsheets);
+																}}
+																size="small"
+															>
+																Open
+															</Button> */}
+														{/* <IconButton
+																size="small"
+																aria-label="Open Streamsheets instance"
+																onClick={(event) => {
+																	event.stopPropagation();
+																	onSelectInstance(streamsheets);
+																}}
+															>
+																<OpenStreamsheetsIcon fontSize="small" />
+															</IconButton> */}
+														{/* </Tooltip> */}
+													</TableCell>
+												</TableRow>
+											))}
+										</TableBody>
+									</Table>
+								</TableContainer>
+							</div>
+						) : (
+							<MessagePage
+								message="We could not find any Streamsheets installation."
+								buttonIcon={<DownloadIcon/>}
+								buttonText="Get Streamsheets now!"
+								callToAction={onDownloadStreamsheets}
+							/>
+						)}
+					</div>
+				</div>
 			</div>
 		);
 	} else {

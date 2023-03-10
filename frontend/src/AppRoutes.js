@@ -43,6 +43,9 @@ import ClusterNew from './admin/clusters/components/ClusterNew';
 import Clusters from './admin/clusters/components/Clusters';
 import ClusterDetail from './admin/clusters/components/ClusterDetail';
 import InspectClients from './admin/inspect/components/InspectClients';
+import Certificates from './admin/certificates/components/Certificates';
+import CertificateDeploy from './admin/certificates/components/CertificateDeploy';
+import CertificateDetail from './admin/certificates/components/CertificateDetail';
 
 import { Switch, Route, Redirect } from 'react-router-dom';
 import DefaultACLAccess from './components/DefaultACLAccess';
@@ -50,12 +53,7 @@ import TestEdit from './components/TestEdit';
 import TestCollections from './components/TestCollections';
 import TestCollectionDetail from './components/TestCollectionDetail';
 import ApplicationTokens from './components/ApplicationTokens';
-import { atLeastAdmin, atLeastEditor, atLeastViewer } from './utils/accessUtils/access';
-
-
-const useStyles = makeStyles((theme) => ({
-	
-}));
+import { atLeastAdmin, atLeastEditor, atLeastViewer, isGroupMember } from './utils/accessUtils/access';
 
 function AppRoutes(props) {
 
@@ -67,43 +65,45 @@ function AppRoutes(props) {
 	if ((hasError || response) && (hasErrorConfig || responseConfig)) {
 		let hideConnections = (typeof responseConfig?.hideConnections === 'boolean') ? responseConfig?.hideConnections : false;
 		let hideInfoPage = (typeof responseConfig?.hideInfoPage === 'boolean') ? responseConfig?.hideInfoPage : false;
-	
 
 		//   const container = window !== undefined ? () => window().document.body : undefined;
 
 		return (
 			<Switch>
-				<Route
-					path="/security/clients/detail/:clientId"
-					component={ClientDetail}
-				/>
-				<Route path="/security/clients/new">
+				<Route path="/clients/new">
 					<ClientNew />
 				</Route>
-				<Route path="/security/clients">
-					<Clients />
-				</Route>
 				<Route
-					path="/security/groups/detail/:groupId"
-					component={GroupDetail}
+					path="/clients/:clientId"
+					component={ClientDetail}
 				/>
-				<Route path="/security/groups/new">
+				<Route path="/clients">
+					<Clients filter={props.filter}/>
+				</Route>
+				<Route path="/clientinspection">
+					<InspectClients filter={props.filter}/>
+				</Route>
+				<Route path="/groups/new">
 					<GroupNew />
 				</Route>
-				<Route path="/security/groups">
+				<Route
+					path="/groups/:groupId"
+					component={GroupDetail}
+				/>
+				<Route path="/groups">
 					<Groups />
 				</Route>
-				<Route
-					path="/security/roles/detail/:roleId"
-					component={RoleDetail}
-				/>
-				<Route path="/security/acl">
-					<DefaultACLAccess />
-				</Route>
-				<Route path="/security/roles/new">
+				<Route path="/roles/new">
 					<RoleNew />
 				</Route>
-				<Route path="/security/roles">
+				<Route path="/roles/acl">
+					<DefaultACLAccess />
+				</Route>
+				<Route
+					path="/roles/:roleId"
+					component={RoleDetail}
+				/>
+				<Route path="/roles">
 					<Roles />
 				</Route>
 				<Route path="/security">
@@ -115,36 +115,54 @@ function AppRoutes(props) {
 				<Route path="/terminal">
 					<Terminal />
 				</Route>
-				{atLeastAdmin(userProfile, currentConnectionName) && <Route
-					path="/streams/detail/:streamId"
-					component={StreamDetail}
-				/>}
 				{atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams/new">
 					<StreamNew />
 				</Route>}
-				{atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams">
+				{atLeastAdmin(userProfile, currentConnectionName) && <Route
+					path="/streams/:streamId"
+					component={StreamDetail}
+				/>}
+				{/* {atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams">
+					<Streams /> //* when refreshing the page this line will always redirect to dashboard because at the time of refresh user is none and permission checks fails, then redirect happens
+				</Route>} */}
+				<Route path="/streams">
 					<Streams />
-				</Route>}
-				<Route path="/system/status">
+				</Route>
+				<Route path="/home">
 					<Status />
 				</Route>
-				<Route path="/system/topics">
+				<Route path="/topics">
 					<TopicTree />
 				</Route>
 				<Route path="/system">
 					<System />
 				</Route>
-				{atLeastAdmin(userProfile) && <Route path="/config/connections/new">
+				{atLeastAdmin(userProfile) && !isGroupMember(userProfile) && <Route path="/connections/new">
 					<ConnectionNew />
 				</Route>}
-				{atLeastAdmin(userProfile, connection?.name) && <Route path="/config/connections/detail/:connectionId">
+				{atLeastAdmin(userProfile, connection?.name) && <Route path="/connections/:connectionId">
 					<ConnectionDetail />
 				</Route>}
-				{ !hideConnections ? <Route path="/config/connections">
+				{ !hideConnections ? <Route path="/connections">
 					<Connections />
 				</Route> : null }
-				{atLeastAdmin(userProfile) && <Route path="/config/settings">
-					<Settings />
+				{atLeastAdmin(userProfile) && (
+					<Route path="/admin/certs/detail/:certId">
+						<CertificateDetail />
+					</Route>
+				)}
+				{atLeastAdmin(userProfile) && (
+					<Route path="/admin/certs/deploy/:certId">
+						<CertificateDeploy />
+					</Route>
+				)}
+				{atLeastAdmin(userProfile) && (
+					<Route path="/admin/certs">
+						<SortableTablePage Component={Certificates} />
+					</Route>
+				)}
+				{atLeastAdmin(userProfile) && <Route path="/settings">
+					<Settings onChangeTheme={props.onChangeTheme}/>
 				</Route>}
 				<Route path="/config">
 					<Config />
@@ -156,7 +174,7 @@ function AppRoutes(props) {
 					path="/admin/users/detail/:userId"
 					component={UserDetail}
 				/>
-	
+
 
 				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups/new">
 					<UserGroupNew />
@@ -164,13 +182,19 @@ function AppRoutes(props) {
 				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups/detail/:groupId"
 						component={UserGroupDetail}
 				/>}
-				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups">
+				<Route path="/admin/user-groups">
 					<SortableTablePage Component={UserGroups} />
-				</Route>}
+				</Route>
+				{/* {atLeastAdmin(userProfile) && <Route path="/admin/user-groups">
+					<SortableTablePage Component={UserGroups} />
+				</Route>} */}
 
-				{atLeastAdmin(userProfile) && <Route path="/admin/tokens">
+				{/* {atLeastAdmin(userProfile) && <Route path="/admin/tokens">
 					<ApplicationTokens />
-				</Route>}
+				</Route>} */}
+				<Route path="/tokens">
+					<ApplicationTokens />
+				</Route>
 
 				<Route path="/admin/users/new">
 					<UserNew />
@@ -178,18 +202,15 @@ function AppRoutes(props) {
 				<Route path="/admin/users">
 					<Users />
 				</Route>
-				<Route
-					path="/admin/clusters/detail/:clusterId"
-					component={ClusterDetail}
-				/>
-				<Route path="/admin/clusters/new">
+				<Route path="/clusters/new">
 					<ClusterNew />
 				</Route>
-				<Route path="/admin/clusters">
+				<Route
+					path="/clusters/:clusterId"
+					component={ClusterDetail}
+				/>
+				<Route path="/clusters">
 					<Clusters />
-				</Route>
-				<Route path="/admin/inspect/clients">
-					<InspectClients />
 				</Route>
 				<Route path="/tools/streamsheets">
 					<Streamsheets />
@@ -216,7 +237,7 @@ function AppRoutes(props) {
 					component={TestCollections}
 				/>
 				<Route path="/">
-					<Redirect to="/system/status" />
+					<Redirect to="/home" />
 				</Route>
 			</Switch>
 		);
@@ -230,7 +251,7 @@ const mapStateToProps = (state) => {
 		userProfile: state.userProfile?.userProfile,
 		userManagementFeature: state.systemStatus?.features?.usermanagement,
 		selectedConnectionToEdit: state.brokerConnections?.selectedConnectionToEdit,
-		currentConnectionName: state.brokerConnections.currentConnectionName,
+		currentConnectionName: state.brokerConnections?.currentConnectionName,
 	};
 };
 

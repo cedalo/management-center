@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
-const BaseMosquittoClient = require('base-mc-classes').BaseMosquittoProxyClient;
+const BaseMosquittoProxyClient = require('base-mc-classes').BaseMosquittoProxyClient;
 
-module.exports = class NodeMosquittoProxyClient extends BaseMosquittoClient {
+module.exports = class NodeMosquittoProxyClient extends BaseMosquittoProxyClient {
 	constructor({ name = 'Node Mosquitto Proxy Client', logger } = {}, { socketEndpointURL, httpEndpointURL } = {}, headers=undefined) {
 		super({ name, logger: logger }, { socketEndpointURL, httpEndpointURL }, headers);
 	}

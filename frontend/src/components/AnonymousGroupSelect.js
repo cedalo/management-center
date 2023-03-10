@@ -4,44 +4,11 @@ import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import TextField from '@material-ui/core/TextField';
 import InputBase from '@material-ui/core/InputBase';
 
-// import {
-// 	colors,
-//   } from '@material-ui/core';
-
-import { WebSocketContext } from '../websockets/WebSocket';
-
-const CustomInput = withStyles((theme) => ({
-	root: {
-		'label + &': {
-			marginTop: theme.spacing(1)
-		}
-	}
-}))(InputBase);
-
-const useStyles = makeStyles((theme) => ({
-	root: {
-		backgroundColor: 'rgba(255,255,255,0.2)',
-		border: 'thin solid rgba(255,255,255,0.5)'
-	},
-	label: {
-		fontSize: '12px',
-		textTransform: 'uppercase',
-		transform: 'translate(14px, 20px) scale(1)'
-	},
-	formControl: {
-		// margin: theme.spacing(1),
-		// height: "25px",
-		margin: theme.spacing(1),
-		minWidth: 200
-		// color: colors.white,
-	}
-}));
 
 const AnonymousGroupSelect = ({ anonymousGroup, groupsAll = [], onUpdateAnonymousGroup }) => {
-	const classes = useStyles();
 
 	const groupSuggestions = groupsAll
 		.sort()
@@ -50,21 +17,14 @@ const AnonymousGroupSelect = ({ anonymousGroup, groupsAll = [], onUpdateAnonymou
 			value: groupname
 		}));
 
-	return <FormControl id="anonymous-group-select" variant="outlined" className={classes.formControl}>
-			<InputLabel
-				id="anonymous-group-label"
-				classes={{
-					root: classes.label
-				}}
-			>
-				Anonymous group
-			</InputLabel>
-			<Select
+	return <FormControl id="anonymous-group-select" variant="outlined">
+			<TextField
 				label="Anonymous group"
-				classes={{
-					root: classes.select
-				}}
+				variant="outlined"
+				select
+				size="small"
 				placeholder="Select anonymous group"
+				style={{width: '200px', marginTop: '5px'}}
 				options={groupSuggestions}
 				value={anonymousGroup?.groupname || ''}
 				onChange={(event) => {
@@ -72,11 +32,11 @@ const AnonymousGroupSelect = ({ anonymousGroup, groupsAll = [], onUpdateAnonymou
 				}}
 			>
 				{
-					groupSuggestions.map(group => 
+					groupSuggestions.map(group =>
 						<MenuItem key={group.value} value={group.value} primaryText={group.label}>{group.label}</MenuItem>
 					)
 				}
-			</Select>
+			</TextField>
 		</FormControl>
 };
 

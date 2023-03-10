@@ -5,24 +5,19 @@ const theme = createTheme({
 	palette: {
 		type: 'dark',
 		primary: {
-			main: '#556cd6'
-			//   main: '#00695f',
-			//   main: '#ffc107',
-			//   main: 'rgb(44, 19, 56)',
+			main: '#FD602E'
 		},
 		secondary: {
 			main: '#7c88cc'
-			//   main: '#009688',
-			//   main: '#ffcd38',
 		},
 		menuItem: {
-			color: '#2697ed',
+			color: '#FD602E',
 		},
 		error: {
 			main: red.A400
 		},
 		breadcrumbItem: {
-			fontSize: '12px',
+			fontSize: '0.7rem',
 			fontWeight: '500',
 			textTransform: 'uppercase'
 		},
@@ -30,10 +25,17 @@ const theme = createTheme({
 			color: 'inherit',
 			textDecoration: 'none',
 			textTransform: 'uppercase',
-			fontSize: '12px',
+			fontSize: '0.7rem',
 			'&:hover': {
 				textDecoration: 'underline'
 			}
+		}
+	},
+	overrides: {
+		MuiAppBar: {
+			colorPrimary: {
+				backgroundColor: '#212121',
+			},
 		}
 	}
 });

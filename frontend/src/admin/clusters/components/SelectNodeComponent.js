@@ -1,12 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -14,7 +8,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import { connect } from 'react-redux';
-import ConnectionNewComponent from '../../../components/ConnectionNewComponent';
 import { trimString } from '../../../utils/utils';
 
 
@@ -46,7 +39,7 @@ const validNodeIdRange = (nodeId) => {
 	return nodeId >= 1 && nodeId <= 1023;
 };
 
-const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, defaultNode = {} }) => {
+const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, defaultNode = {}, setNode, checkAllNodeIds }) => {
 
 	const classes = useStyles();
 	const [validNodeId, setValidNodeId] = useState(true);
@@ -55,16 +48,21 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 		.filter((brokerConnection) => brokerConnection.status ? brokerConnection.status.connected : false) || [];
 
 	const handleSelectBroker = (broker) => {
-		defaultNode.broker = broker;
+		setNode({...defaultNode, broker});
 	}
+
+	useEffect(() => {
+		setValidNodeId(checkAllNodeIds()); // check nodeids after setting. This checks their uniqueness
+	}, [defaultNode]);
 
 	return (
 		<Grid container spacing={1} alignItems="flex-end">
-			<Grid item xs={2} sm={2} align="center">
+			<Grid item xs={12} align="center">
 				<TextField
 					type="number"
 					required={true}
 					id="node-id"
+					size="small"
 					label="Node ID"
 					InputProps={{ inputProps: { min: 1, max: 1023 } }}
 					onChange={(event) => {
@@ -72,39 +70,41 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 						const valid = validNodeIdRange(nodeId);
 						setValidNodeId(valid);
 						if (valid) {
-							defaultNode.nodeId = parseInt(event.target.value);
+							setNode({...defaultNode, nodeId: parseInt(event.target.value)});
 						}
 					}}
 					error={!validNodeId}
-					helperText={!validNodeId && 'Node ID must be a number in the range of 1 to 1023.'}
+					helperText={!validNodeId && 'Node ID must be a unique number from 1 to 1023.'}
 					defaultValue={defaultNode.nodeId}
 					variant="outlined"
 					fullWidth
 					className={classes.textField}
 				/>
 			</Grid>
-			<Grid item xs={10} sm={4} align="center">
+			<Grid item xs={12} align="center">
 				<TextField
 					required={true}
+					size="small"
 					id="private-ip-address"
 					label="Private IP address"
-					onChange={(event) => defaultNode.address = trimString(event.target.value)}
+					onChange={(event) => setNode({...defaultNode, address: trimString(event.target.value)})}
 					defaultValue={defaultNode.address}
 					variant="outlined"
 					fullWidth
 					className={classes.textField}
 				/>
 			</Grid>
-			<Grid item xs={12} sm={6} align="center">
-				<FormControl variant="outlined" className={classes.formControl}>
-					<InputLabel htmlFor="broker">Broker</InputLabel>
-					<Select
-						autoFocus
+			<Grid item xs={12} align="center">
+					<TextField
+						select
+						label="Broker"
+						size="small"
+						variant="outlined"
 						defaultValue=""
+						fullWidth
 						placeholder='Please select an instance'
 						value={defaultNode.broker}
 						onChange={(event) => handleSelectBroker(event.target.value)}
-						label="Instance"
 					>
 						{
 							availableBrokerConnections.map(brokerConnection =>
@@ -118,8 +118,7 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 								</MenuItem>
 							)
 						}
-					</Select>
-				</FormControl>
+					</TextField>
 			</Grid>
 		</Grid>
 	);

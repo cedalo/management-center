@@ -275,3 +275,11 @@ export function updateApplicationTokens(update) {
 		update
 	};
 }
+
+
+export function updateBackendParameters(update) {
+	return {
+		type: ActionTypes.UPDATE_BACKEND_PARAMETERS,
+		update
+	};
+}
