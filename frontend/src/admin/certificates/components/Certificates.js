@@ -165,7 +165,10 @@ const Certificates = ({ connections, isCertSupported, doSort, sortBy, sortDirect
 			<ContentContainer path={[{ link: 'home' }, { link: 'admin' }, { title: 'Certificates' }]}>
 				{isCertSupported ? (
 					<>
-						<ContainerHeader title="Certificates" subTitle="List of currently maintained certificates.">
+						<ContainerHeader
+							title="Client certificates management"
+							subTitle="List of currently maintained client certificates. Upload Client certificate authorities and deploy them on your broker. "
+						>
 							<Button
 								variant="outlined"
 								color="primary"
