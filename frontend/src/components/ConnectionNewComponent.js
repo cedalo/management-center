@@ -22,6 +22,7 @@ import {connect, useDispatch} from 'react-redux';
 import {Redirect, useHistory} from 'react-router-dom';
 import {updateBrokerConfigurations, updateBrokerConnections} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
+import {useFormStyles} from '../styles';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -128,22 +129,19 @@ const makeFileField = (fieldName) => {
 
 const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) => {
 	const [errors, setErrors] = React.useState({});
-
-
 	const customCACertificateFieldName = 'ca';
 	const clientCertificateFieldName = 'cert';
 	const clientPrivateKeyFieldName = 'key';
 	const verifyServerCertificateFieldName = 'rejectUnauthorized';
-
 	const customCACertificateFileFieldName = makeFileField(customCACertificateFieldName);
 	const clientCertificateFileFieldName = makeFileField(clientCertificateFieldName);
 	const clientPrivateKeyFileFieldName = makeFileField(clientPrivateKeyFieldName);
-
 	const [showPassword, setShowPassword] = React.useState(false);
 	const handleClickShowPassword = () => setShowPassword(!showPassword);
 	const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
 	const classes = useStyles();
+	const formClasses = useFormStyles();
 	const [connection, setConnection] = React.useState({
 		id: 'mosquitto',
 		name: 'My Mosquitto broker',
@@ -362,6 +360,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 							required={true}
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 							onChange={(event) => {
 								setConnection({
 									...connection,
@@ -389,6 +388,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 							helperText={connectionWithNameExists && 'A connection with this name already exists.'}
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 							required={true}
 							id="name"
 							label="Name"
@@ -415,6 +415,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 							fullWidth
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 							onChange={(event) => {
 								setConnection({
 									...connection,
@@ -434,6 +435,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 							fullWidth
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 							onChange={(event) => {
 								setConnection({
 									...connection,
@@ -457,6 +459,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 							fullWidth
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 							onChange={(event) => {
 								setConnection({
 									...connection,
@@ -699,13 +702,13 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 						Test connection
 					</Button>
 				</Grid> */}
-			<Grid item xs={12} spacing={0} style={{paddingTop: '15px'}}>
+			<Grid item xs={12} spacing={0} >
 				<Button
 					variant="contained"
 					disabled={!validate()}
 					color="primary"
 					size="small"
-					style={{marginRight: '10px'}}
+					className={formClasses.buttonTopRight}
 					startIcon={<SaveIcon/>}
 					onClick={(event) => {
 						event.stopPropagation();
@@ -719,7 +722,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 					disabled={!validate()}
 					color="primary"
 					size="small"
-					style={{marginRight: '10px'}}
+					className={formClasses.buttonTopRight}
 					startIcon={<SaveIcon/>}
 					onClick={(event) => {
 						event.stopPropagation();
@@ -730,6 +733,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 				</Button>
 				<Button
 					variant="contained"
+					className={formClasses.buttonTop}
 					size="small"
 					onClick={(event) => {
 						event.stopPropagation();
