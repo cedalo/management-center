@@ -311,7 +311,7 @@ const CustomDrawer = ({
 						/>}
                         {adminOpen && atLeastAdmin(userProfile) && <ListItemLink
                             classes={classes}
-                            to="/admin/certs"
+                            to="/certs"
                             primary="Certificates Management"
                             icon={<CertificateIcon fontSize="small" />}
                         />}

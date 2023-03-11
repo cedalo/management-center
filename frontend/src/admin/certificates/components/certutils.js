@@ -19,7 +19,7 @@ const byHostAndPort = (all, { host, port, bind_address }) => {
 const selectByHost = (used) => (conn) => used.has(conn.host);
 const selectByHostAndPort = (used) => (conn) => used.has(`${conn.host}:${conn.port}`);
 
-export const getUsedConnections = (availableConnections, listeners) => {
+export const getUsedConnections = (availableConnections = [], listeners = []) => {
 	const usedHosts = listeners.reduce(byHostAndPort, new Set());
 	const connections = availableConnections.map((broker) => getConnectionInfo(broker));
 	let usedConnections = connections.filter(selectByHostAndPort(usedHosts));

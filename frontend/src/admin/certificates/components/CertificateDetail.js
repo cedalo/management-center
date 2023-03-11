@@ -95,15 +95,14 @@ const CertificateDetail = () => {
 		<ContentContainer
 			path={[
 				{ link: 'home' },
-				{ link: 'admin' },
-				{ link: 'admin/certs', title: 'Certificates' },
+				{ link: 'certs', title: 'Certificates' },
 				{ title: 'CA Certificate' }
 			]}
 		>
 			<form className={classes.form} noValidate autoComplete="off">
 				<div className={classes.margin}>
 					<Grid container spacing={1} alignItems="flex-end">
-						<Grid item xs={12}>
+						{/* <Grid item xs={12}>
 							<TextField
 								id="caid"
 								label="ID"
@@ -115,7 +114,7 @@ const CertificateDetail = () => {
 								defaultValue=""
 								disabled
 							/>
-						</Grid>
+						</Grid> */}
 						<Grid item xs={12}>
 							<TextField
 								id="caname"
