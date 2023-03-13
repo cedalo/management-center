@@ -138,14 +138,14 @@ module.exports = class ConfigManager {
 		const externalMqttsPort = CEDALO_MC_BROKER_CONNECTION_MQTTS_PORT || 8883;
 		const externalMqttPort = internalMqttPort
 		const hostname = new URL(connection.url).hostname;
-		const externalHostname = this.toExternalHostnamesMap.get(hostname) || null;
-		const allowUnencrypted = this.allowUnencryptedMap.get(hostname) || null;
-		const allowEncrypted = this.allowEncryptedMap.get(hostname) || null;
-		const allowWebsockets = this.allowWebsocketsMap.get(hostname) || null;
+		const externalHostname = this.toExternalHostnamesMap?.get(hostname) || null;
+		const allowUnencrypted = this.allowUnencryptedMap?.get(hostname) || null;
+		const allowEncrypted = this.allowEncryptedMap?.get(hostname) || null;
+		const allowWebsockets = this.allowWebsocketsMap?.get(hostname) || null;
 
-		let externalWebsocketsUrl;
-		let externalEncryptedUrl;
-		let externalUnencryptedUrl;
+		let externalWebsocketsUrl = null;
+		let externalEncryptedUrl = null;
+		let externalUnencryptedUrl = null;
 
 		if (externalHostname) {
 			if (allowEncrypted) {
@@ -157,12 +157,7 @@ module.exports = class ConfigManager {
 			if (allowWebsockets) {
 				externalWebsocketsUrl = 'wss://' + externalHostname + CEDALO_MC_BROKER_CONNECTION_WEBSOCKET_PATH || '/mqtt'; // TODO use URL object to safely concat to url
 			}
-		} else {
-			externalEncryptedUrl = null;
-			externalUnencryptedUrl = null;
-			externalWebsocketsUrl = null;
 		}
-
 
 		const resultingConnection = {
 			...connection,
