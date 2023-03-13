@@ -18,6 +18,7 @@ import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import SaveCancelButtons from './SaveCancelButtons';
+import {useFormStyles} from '../styles';
 
 const useStyles = makeStyles((theme) => ({
 }));
@@ -30,6 +31,7 @@ const ClientNew = (props) => {
 	const [textname, setTextname] = useState('');
 	const [textdescription, setTextdescription] = useState('');
 	const [showPassword, setShowPassword] = useState(false);
+	const formClasses = useFormStyles();
 
 	const handleClickShowPassword = () => setShowPassword(!showPassword);
 	const handleMouseDownPassword = () => setShowPassword(!showPassword);
@@ -107,6 +109,7 @@ const ClientNew = (props) => {
 						fullWidth
 						size="small"
 						margin="dense"
+						className={formClasses.textField}
 						InputProps={{
 							startAdornment: (
 								<InputAdornment position="start">
@@ -128,6 +131,7 @@ const ClientNew = (props) => {
 						type={showPassword ? "text" : "password"}
 						size="small"
 						margin="dense"
+						className={formClasses.textField}
 						InputProps={{
 							startAdornment: (
 								<InputAdornment position="start">
@@ -158,6 +162,7 @@ const ClientNew = (props) => {
 						fullWidth
 						size="small"
 						margin="dense"
+						className={formClasses.textField}
 						InputProps={{
 							startAdornment: (
 								<InputAdornment position="start">
@@ -177,6 +182,7 @@ const ClientNew = (props) => {
 						fullWidth
 						size="small"
 						margin="dense"
+						className={formClasses.textField}
 					/>
 				</Grid>
 				<Grid item xs={12}>
@@ -189,6 +195,7 @@ const ClientNew = (props) => {
 						size="small"
 						margin="dense"
 						fullWidth
+						className={formClasses.textField}
 					/>
 				</Grid>
 			</Grid>

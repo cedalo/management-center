@@ -2,7 +2,7 @@ import {makeStyles} from '@material-ui/core/styles';
 
 export const useFormStyles = makeStyles((theme) => ({
 	textField: {
-		maxWidth: '50ch',
+		maxWidth: '75ch',
 	},
 	autoComplete: {
 		maxWidth: '75ch',

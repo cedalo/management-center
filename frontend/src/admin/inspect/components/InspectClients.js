@@ -115,7 +115,7 @@ const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelect
 										<TableCell align={CLIENTS_TABLE_COLUMNS[2].align}>{`${client.protocol} ${client.protocolVersion}`}</TableCell>
 										<TableCell align={CLIENTS_TABLE_COLUMNS[3].align}>{client.address}</TableCell>
 										<TableCell align={CLIENTS_TABLE_COLUMNS[4].align}>
-											{`${client.queues?.messagesOut} / ${client.queues?.messagesMax}`}
+											{client.queues?.messagesOut === undefined ? '' : `${client.queues?.messagesOut} / ${client.queues?.messagesMax}`}
 										</TableCell>
 										{/*<TableCell>{dateToString(unixTimestampToDate(client.lastConnect))}</TableCell>*/}
 										{/*<TableCell>{dateToString(unixTimestampToDate(client.lastDisconnect))}</TableCell>*/}

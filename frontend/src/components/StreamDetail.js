@@ -3,6 +3,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import {makeStyles} from '@material-ui/core/styles';
+import {useFormStyles} from '../styles';
 import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -52,7 +53,7 @@ const StreamDetail = (props) => {
 	const [editMode, setEditMode] = React.useState(false);
 	const { enqueueSnackbar } = useSnackbar();
 	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
-
+	const formClasses = useFormStyles();
 	const { stream = {}, defaultStream } = props;
 	const [updatedStream, setUpdatedStream] = React.useState({
 		...stream
@@ -175,6 +176,7 @@ const StreamDetail = (props) => {
 							fullWidth
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 							InputProps={{
 								startAdornment: (
 									<InputAdornment position="start">
@@ -195,6 +197,7 @@ const StreamDetail = (props) => {
 							fullWidth
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 							onChange={(event) => {
 								if (editMode) {
 									setUpdatedStream({
@@ -217,6 +220,7 @@ const StreamDetail = (props) => {
 							fullWidth
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 							onChange={(event) => {
 								if (editMode) {
 									setUpdatedStream({
@@ -238,6 +242,7 @@ const StreamDetail = (props) => {
 							fullWidth
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 							onChange={(event) => {
 								if (editMode) {
 									setUpdatedStream({
@@ -261,6 +266,7 @@ const StreamDetail = (props) => {
 							InputProps={{ inputProps: { min: 0, max: 2 } }}
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 							onChange={(event) => {
 								if (editMode) {
 									setUpdatedStream({
@@ -284,6 +290,7 @@ const StreamDetail = (props) => {
 							InputProps={{ inputProps: { min: 0 } }}
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 							onChange={(event) => {
 								if (editMode) {
 									setUpdatedStream({

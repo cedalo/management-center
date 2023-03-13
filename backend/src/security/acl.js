@@ -22,8 +22,13 @@ module.exports = {
         allowConditions() {
             return (request, response, next) => {
                 return next();
-            }
-        }
+            };
+        },
+        checkConnectionAuthorized() {
+            return (request, response, next) => {
+                return next();
+            };
+        },
     },
     isAdmin(user) {
         return true;

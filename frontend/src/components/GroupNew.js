@@ -12,18 +12,19 @@ import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import SaveCancelButtons from './SaveCancelButtons';
+import {useFormStyles} from '../styles';
 
 const GroupNew = (props) => {
 	const [groupname, setGroupname] = useState('');
 	const [textname, setTextname] = useState('');
 	const [textdescription, setTextdescription] = useState('');
-
 	const {enqueueSnackbar} = useSnackbar();
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const confirm = useConfirm();
 	const {client} = context;
+	const formClasses = useFormStyles();
 
 	const groupnameExists = props?.groups?.groups?.find((searchGroup) => {
 		return searchGroup.groupname === groupname;
@@ -88,6 +89,7 @@ const GroupNew = (props) => {
 						fullWidth
 						size="small"
 						margin="dense"
+						className={formClasses.textField}
 						InputProps={{
 							startAdornment: (
 								<InputAdornment position="start">
@@ -105,6 +107,7 @@ const GroupNew = (props) => {
 						defaultValue=""
 						size="small"
 						margin="dense"
+						className={formClasses.textField}
 						variant="outlined"
 						fullWidth
 					/>
@@ -118,6 +121,7 @@ const GroupNew = (props) => {
 						size="small"
 						margin="dense"
 						variant="outlined"
+						className={formClasses.textField}
 						fullWidth
 					/>
 				</Grid>

@@ -28,6 +28,28 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		this._disconnectedByUser = false;
 	}
 
+	static createOptions(connection) {
+		// remove unwanted parameters
+		const { name: _name, id: _id, status: _status, url: _url, credentials, ...restOfConnection } = connection;
+
+		// decode all base64 encoded fields
+		for (const property in restOfConnection) {
+			if (restOfConnection[property]?.encoding === 'base64' && restOfConnection[property]?.data) {
+				restOfConnection[property] = Buffer.from(restOfConnection[property].data, 'base64');
+			} else {
+				restOfConnection[property] =
+					(restOfConnection[property] && restOfConnection[property].data) || restOfConnection[property];
+			}
+		}
+
+		// compose the result together by adding credentials, the rest of the connection and connectTimeout into one options object
+		return {
+			...credentials,
+			...restOfConnection,
+			connectTimeout: process.env.CEDALO_MC_TIMOUT_MOSQUITTO_CONNECT || 5000
+		};
+	}
+
 	_connectBroker(url, options) {
 		return new Promise((resolve, reject) => {
 			if (options) {

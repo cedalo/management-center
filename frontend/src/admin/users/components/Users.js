@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const USER_TABLE_COLUMNS = [
-	{id: 'username', key: 'Name'},
+	// {id: 'username', key: 'Name'},
 	{id: 'roles', key: 'Roles'}
 ];
 
