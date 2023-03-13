@@ -95,7 +95,7 @@ const ListenerSelect = ({ listeners, onSelect }) => {
 						</TableCell>
 						<TableCell style={rowStyle(index)}>{listener.protocol}</TableCell>
 						<TableCell style={rowStyle(index)}>{listener.port}</TableCell>
-						<TableCell style={rowStyle(index)}>{listener.bindAddress || ''}</TableCell>
+						<TableCell style={rowStyle(index)}>{listener.bindAddress || 'not configured'}</TableCell>
 						<TableCell style={rowStyle(index)}>
 							{listener.requireCertificate ? (
 								<EnabledIcon fontSize="small" style={{ color: green[500] }} />
