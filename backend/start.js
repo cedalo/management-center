@@ -1112,15 +1112,17 @@ const init = async (licenseContainer) => {
 		context.security.acl.middleware.isAdmin,
 		(request, response) => {
 			response.json(
-				context.pluginManager.plugins.map((plugin) => {
-					const removeProp = 'context';
-					const { [removeProp]: removedPropFromOptions, ...restOptions } = plugin.options;
-					return {
-						...plugin.meta,
-						...restOptions,
-						status: plugin.status
-					};
-				})
+				context.pluginManager.plugins
+					.filter((plugin) => !plugin.options.hidden)
+					.map((plugin) => {
+						const removeProp = 'context';
+						const { [removeProp]: removedPropFromOptions, ...restOptions } = plugin.options;
+						return {
+							...plugin.meta,
+							...restOptions,
+							status: plugin.status
+						};
+					})
 			);
 		}
 	);
