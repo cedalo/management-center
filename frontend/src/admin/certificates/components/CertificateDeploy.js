@@ -160,9 +160,9 @@ const markUsedListeners = (certificate, connection, listeners) => {
 		return listener;
 	});
 };
-const deployMessage = (cert) => ({
+const deployMessage = (cert, { deployed, undeployed }) => ({
 	error: `'Failed to deploy certificate "${cert.name}"`,
-	success: `Certificate "${cert.name}" successfully deployed.`,
+	success: `Certificate "${cert.name}" successfully deployed to ${deployed} listeners and undeployed from ${undeployed} listeners.`,
 	warning: `Problems while deploying certificate "${cert.name}"!`
 });
 
@@ -212,10 +212,10 @@ const CertificateDeploy = ({ connections = [] }) => {
 	const onDeploy = async () => {
 		const selectedListeners = listeners.filter((listener) => listener.isUsed);
 		try {
-			const { status } = await client.deployCertificate(certificate, connection, selectedListeners);
+			const { status, data = {} } = await client.deployCertificate(certificate, connection, selectedListeners);
 			switch (status) {
 				case 200:
-					enqueueSnackbar(deployMessage(certificate).success, { variant: 'success' });
+					enqueueSnackbar(deployMessage(certificate, data).success, { variant: 'success' });
 					setCanUpdate(false);
 					break;
 				case 207:
