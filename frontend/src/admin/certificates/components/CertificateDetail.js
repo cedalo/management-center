@@ -1,13 +1,16 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import {Grid, IconButton, TextField } from '@material-ui/core';
+import {Box, Collapse, Grid, IconButton, Table, TableCell, TableRow, TextField } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
+import CollapseIcon from '@material-ui/icons/KeyboardArrowUp';
+import ExpandIcon from '@material-ui/icons/KeyboardArrowDown';
 import { useSnackbar } from 'notistack';
 import SaveCancelButtons from '../../../components/SaveCancelButtons';
 import { WebSocketContext } from '../../../websockets/WebSocket';
 import ContentContainer from './ContentContainer';
 import UploadButton from './UploadButton';
+import CertificateInfo from './CertificateInfo';
 
 const useStyles = makeStyles((theme) => ({
 	buttons: {
@@ -50,6 +53,7 @@ const CertificateDetail = () => {
 	const history = useHistory();
 	const { enqueueSnackbar } = useSnackbar();
 	const [canSave, setCanSave] = useState(false);
+	const [isExpanded, setIsExpanded] = useState(false);
 	const [cert, setCert] = useState(history.location.state);
 	const context = useContext(WebSocketContext);
 	const { client } = context;
@@ -91,15 +95,14 @@ const CertificateDetail = () => {
 		<ContentContainer
 			path={[
 				{ link: 'home' },
-				{ link: 'admin' },
-				{ link: 'admin/certs', title: 'Certificates' },
+				{ link: 'certs', title: 'Certificates' },
 				{ title: 'CA Certificate' }
 			]}
 		>
 			<form className={classes.form} noValidate autoComplete="off">
 				<div className={classes.margin}>
 					<Grid container spacing={1} alignItems="flex-end">
-						<Grid item xs={12}>
+						{/* <Grid item xs={12}>
 							<TextField
 								id="caid"
 								label="ID"
@@ -111,7 +114,7 @@ const CertificateDetail = () => {
 								defaultValue=""
 								disabled
 							/>
-						</Grid>
+						</Grid> */}
 						<Grid item xs={12}>
 							<TextField
 								id="caname"
@@ -154,6 +157,33 @@ const CertificateDetail = () => {
 									)
 								}}
 							/>
+						</Grid>
+						<Grid item xs={12}>
+							{/* <CertificateInfo certificate={cert} variant="detailed" /> */}
+							<Table aria-label="certinfo-detail">
+								<TableRow>
+									<TableCell width="2%">
+										<IconButton
+											aria-label="expand row"
+											size="small"
+											onClick={() => setIsExpanded(!isExpanded)}
+										>
+											{isExpanded ? <CollapseIcon /> : <ExpandIcon />}
+										</IconButton>
+									</TableCell>
+									<TableCell width="10%" align="left">
+										Certificate Details
+									</TableCell>
+									<TableCell width="88%"></TableCell>
+								</TableRow>
+								<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+									<Collapse in={isExpanded} timeout="auto" unmountOnExit>
+										<Box margin={1} display="flex" flexDirection="row">
+											<CertificateInfo certificate={cert} variant="detailed" />
+										</Box>
+									</Collapse>
+								</TableCell>
+							</Table>
 						</Grid>
 						<Grid container xs={12} alignItems="flex-start">
 							<Grid item xs={12} className={classes.buttons}>

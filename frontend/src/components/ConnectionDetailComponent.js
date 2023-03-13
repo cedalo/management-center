@@ -26,7 +26,7 @@ import {Redirect, useHistory} from 'react-router-dom';
 import {updateBrokerConfigurations, updateBrokerConnections} from '../actions/actions';
 import {handleConnectionChange} from '../utils/connectionUtils/connections';
 import {WebSocketContext} from '../websockets/WebSocket';
-
+import {useFormStyles} from '../styles';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -137,16 +137,13 @@ const makeFileField = (fieldName) => {
 
 const ConnectionDetailComponent = (props) => {
 	const [errors, setErrors] = React.useState({});
-
 	const customCACertificateFieldName = 'ca';
 	const clientCertificateFieldName = 'cert';
 	const clientPrivateKeyFieldName = 'key';
 	const verifyServerCertificateFieldName = 'rejectUnauthorized';
-
 	const customCACertificateFileFieldName = makeFileField(customCACertificateFieldName);
 	const clientCertificateFileFieldName = makeFileField(clientCertificateFieldName);
 	const clientPrivateKeyFileFieldName = makeFileField(clientPrivateKeyFieldName);
-
 	const [connected, setConnected] = React.useState(false);
 	const { selectedConnectionToEdit: connection = {}, tlsFeature, currentConnectionName, alreadyConnected, connected: brokerCurrentlyConnected } = props;
 	let editModeEnabledByDefault = false;
@@ -159,6 +156,7 @@ const ConnectionDetailComponent = (props) => {
 	}
 
 	const classes = useStyles();
+	const formClasses = useFormStyles();
 	const [value, setValue] = React.useState(0);
 	const [showPassword, setShowPassword] = React.useState(false);
 	const [externalEncryptedUrl, setExternalEncryptedUrl] = React.useState(connection.externalEncryptedUrl || 'None');
@@ -334,7 +332,7 @@ const ConnectionDetailComponent = (props) => {
 		if (!name) {
 			console.error('No "name" (e.target.getAttribute("name") passed into handleFileUpload')
 		}
-		
+
         fileReader.readAsDataURL(e.target.files[0]);
 		e.target.value = ''; // null out the value of input component to make it possible to trigger it on uploading the same file several times
 		const encoding = 'base64';
@@ -394,6 +392,7 @@ const ConnectionDetailComponent = (props) => {
 							disabled
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 							onChange={(event) => {
 								if (editMode) {
 									setUpdatedConnection({
@@ -424,6 +423,7 @@ const ConnectionDetailComponent = (props) => {
 							id="name"
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 							label="Name"
 							value={updatedConnection.name}
 							defaultValue=""
@@ -448,6 +448,7 @@ const ConnectionDetailComponent = (props) => {
 							value={updatedConnection.url}
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 							defaultValue=""
 							variant="outlined"
 							fullWidth
@@ -474,9 +475,11 @@ const ConnectionDetailComponent = (props) => {
 							value={internalUrl}
 							// helperText="Not editable"
 							defaultValue=""
+							size="small"
+							margin="dense"
 							variant="outlined"
 							fullWidth
-							className={classes.textField}
+							className={formClasses.textField}
 						/>
 					</Grid> : null}
 					{ connection.externalEncryptedUrl ? <Grid item xs={12}>
@@ -489,7 +492,9 @@ const ConnectionDetailComponent = (props) => {
 							defaultValue=""
 							variant="outlined"
 							fullWidth
-							className={classes.textField}
+							size="small"
+							margin="dense"
+							className={formClasses.textField}
 						/>
 					</Grid> : null}
 					{ connection.externalUnencryptedUrl ? <Grid item xs={12}>
@@ -502,7 +507,9 @@ const ConnectionDetailComponent = (props) => {
 							defaultValue=""
 							variant="outlined"
 							fullWidth
-							className={classes.textField}
+							size="small"
+							margin="dense"
+							className={formClasses.textField}
 						/>
 					</Grid> : null}
 					{ connection.websocketsUrl ? <Grid item xs={12}>
@@ -515,7 +522,9 @@ const ConnectionDetailComponent = (props) => {
 							defaultValue=""
 							variant="outlined"
 							fullWidth
-							className={classes.textField}
+							size="small"
+							margin="dense"
+							className={formClasses.textField}
 							style={{paddingBottom: '10px'}}
 						/>
 					</Grid> : null}
@@ -528,6 +537,7 @@ const ConnectionDetailComponent = (props) => {
 							value={updatedConnection.credentials?.username}
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 							defaultValue=""
 							variant="outlined"
 							fullWidth
@@ -554,6 +564,7 @@ const ConnectionDetailComponent = (props) => {
 							label="Password"
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 							value={updatedConnection.credentials?.password}
 							defaultValue=""
 							variant="outlined"
@@ -613,6 +624,7 @@ const ConnectionDetailComponent = (props) => {
 									<FormControlLabel
 										control={
 											<Switch
+												color="primary"
 												size="small"
 												disabled={!editMode || !tlsFeature?.supported}
 												checked={updatedConnection[verifyServerCertificateFieldName]}
@@ -646,7 +658,7 @@ const ConnectionDetailComponent = (props) => {
 										onChange={handleFileUpload}
 										variant="contained"
 										className={`${classes.button} ${classes.restrictButtonHeight}`}
-										color="secondary"
+										color="primary"
 										startIcon={<CloudUpload/>}
 										component="label"
 									>
@@ -713,7 +725,7 @@ const ConnectionDetailComponent = (props) => {
 										size="small"
 										onChange={handleFileUpload}
 										variant="contained"
-										color="secondary"
+										color="primary"
 										className={`${classes.button} ${classes.restrictButtonHeight}`}
 										startIcon={<CloudUpload/>}
 										component="label"
@@ -772,7 +784,7 @@ const ConnectionDetailComponent = (props) => {
 										size="small"
 										onChange={handleFileUpload}
 										variant="contained"
-										color="secondary"
+										color="primary"
 										className={`${classes.button} ${classes.restrictButtonHeight}`}
 										startIcon={<CloudUpload/>}
 										component="label"
@@ -843,6 +855,7 @@ const ConnectionDetailComponent = (props) => {
 				{!editMode && (
 					<Button
 						variant="contained"
+						size="small"
 						color="primary"
 						startIcon={<EditIcon/>}
 						onClick={() => setEditMode(true)}
@@ -855,6 +868,7 @@ const ConnectionDetailComponent = (props) => {
 						<Button
 							variant="contained"
 							disabled={!validate()}
+							size="small"
 							color="primary"
 							style={{marginRight: '10px'}}
 							startIcon={<SaveIcon/>}
@@ -869,6 +883,7 @@ const ConnectionDetailComponent = (props) => {
 							variant="contained"
 							disabled={!validate()}
 							color="primary"
+							size="small"
 							style={{marginRight: '10px'}}
 							startIcon={<SaveIcon/>}
 							onClick={(event) => {
@@ -880,6 +895,7 @@ const ConnectionDetailComponent = (props) => {
 						</Button>
 						<Button
 							variant="contained"
+							size="small"
 							onClick={(event) => {
 								event.stopPropagation();
 								onCancelEdit();

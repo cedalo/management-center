@@ -569,11 +569,14 @@ module.exports = class BaseMosquittoProxyClient {
 			const { data, status } = await request(...args, this._headers);
 			return { data, status };
 		} catch (error) {
+			this.logger.error(error);
 			switch (error.response?.status) {
 				case 400:
 					throw new APIError('400', error.response.data || 'Invalid request');
 				case 404:
 					throw new APINotFoundError();
+				case 500:
+					throw new APIError('500', 'Server failed to handle request!');
 				default:
 					throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
 			}
@@ -586,6 +589,10 @@ module.exports = class BaseMosquittoProxyClient {
 	async getCertificates() {
 		const url = `${this._httpEndpointURL}/api/cert-management/certs`;
 		return this.doApiRequest(axios.get, url);
+	}
+	async getCertificateInfo(cert) {
+		const url = `${this._httpEndpointURL}/api/cert-management/info/${cert.id}`;
+		return this.doApiRequest(axios.post, url, { cert });
 	}
 	async addCertificate(cert) {
 		const url = `${this._httpEndpointURL}/api/cert-management/certs`;

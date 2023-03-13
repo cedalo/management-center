@@ -72,7 +72,7 @@ const ListenerSelect = ({ listeners, onSelect }) => {
 		<Table size="small" aria-label="listeners">
 			<TableHead>
 				<TableRow>
-					<TableCell padding="checkbox" />
+					<TableCell padding="checkbox">Deploy</TableCell>
 					<TableCell>Protocol</TableCell>
 					<TableCell>Port</TableCell>
 					<TableCell>Address</TableCell>
@@ -184,14 +184,14 @@ const CertificateDeploy = ({ connections = [] }) => {
 			enqueueSnackbar(`Cannot deploy because listeners could not be loaded. Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
-			history.goBack();
+			// history.goBack();
 		}
 	};
 	useEffect(() => {
 		loadListeners();
 	}, [connection]);
 
-	onCancel = () => {
+	const onCancel = () => {
 		history.goBack();
 	};
 
@@ -240,12 +240,13 @@ const CertificateDeploy = ({ connections = [] }) => {
 		<ContentContainer
 			path={[
 				{ link: 'home' },
-				{ link: 'admin' },
-				{ link: 'admin/certs', title: 'Certificates' },
+				{ link: 'certs', title: 'Certificates' },
 				{ title: 'Deploy' }
 			]}
 		>
-			<ContainerHeader title={`Deploy Certificate ${certificate.name}`}></ContainerHeader>
+			<ContainerHeader 
+				title={`Deploy client CA certificate: ${certificate.name}`} 
+				subTitle="Client certificate authorization is only possible, if the connected broker has set the right configuration. The broker configuration must define a certfile and set require_certificate to true."/>
 			{hasConnectedConnection ? (
 				<Table size="small" aria-label="listeners">
 					<TableHead>
@@ -276,7 +277,7 @@ const CertificateDeploy = ({ connections = [] }) => {
 						<TableRow>
 							<TableCell style={{ borderBottom: 'none' }}>
 								<SaveCancelButtons
-									saveCaption="Deploy"
+									saveCaption="Apply"
 									onSave={onDeploy}
 									saveDisabled={!canUpdate}
 									onCancel={onCancel}

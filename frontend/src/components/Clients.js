@@ -22,7 +22,6 @@ import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-// import Fab from '@material-ui/core/Fab';
 import {Alert, AlertTitle} from '@material-ui/lab';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
@@ -32,9 +31,9 @@ import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateClient, updateClients, updateGroups} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
-import AutoSuggest from './AutoSuggest';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import SelectList from './SelectList';
 
 const StyledTableRow = withStyles((theme) => ({
 	root: {
@@ -59,13 +58,6 @@ const useStyles = makeStyles((theme) => ({
 	disabled: {
 		opacity: '45%',
 	},
-	// fab: {
-	// 	position: 'absolute',
-	// 	bottom: theme.spacing(2),
-	// 	right: theme.spacing(2)
-	// },
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
 const clientShape = PropTypes.shape({
@@ -371,30 +363,26 @@ const Clients = (props) => {
 																client)}>{client.textdescription}</TableCell>
 															<TableCell className={`${classes.badges} ${getClassForCell(
 																client)}`}>
-																<AutoSuggest
-																	disabled={defaultClient?.username === client.username}
-																	suggestions={groupSuggestions}
-																	values={client.groups.map((group) => ({
-																		label: group.groupname,
-																		value: group.groupname
-																	}))}
-																	handleChange={(value) => {
+																<SelectList
+																	values={client.groups}
+																	getValue={value => value.groupname}
+																	onChange={(event, value) => {
 																		onUpdateClientGroups(client, value);
 																	}}
+																	disabled={defaultClient?.username === client.username}
+																	suggestions={groupSuggestions}
 																/>
 															</TableCell>
 															<TableCell className={`${classes.badges} ${getClassForCell(
 																client)}`}>
-																<AutoSuggest
-																	disabled={defaultClient?.username === client.username}
-																	suggestions={roleSuggestions}
-																	values={client.roles.map((role) => ({
-																		label: role.rolename,
-																		value: role.rolename
-																	}))}
-																	handleChange={(value) => {
+																<SelectList
+																	values={client.roles}
+																	getValue={value => value.rolename}
+																	onChange={(event, value) => {
 																		onUpdateClientRoles(client, value);
 																	}}
+																	disabled={defaultClient?.username === client.username}
+																	suggestions={roleSuggestions}
 																/>
 															</TableCell>
 															<TableCell style={{padding: '0px', width: '20px'}}>
