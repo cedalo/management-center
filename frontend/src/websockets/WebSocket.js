@@ -75,6 +75,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 	dispatch(updateStreams([]));
 	dispatch(updateSystemStatus({}));
 	dispatch(updateBackendParameters({}));
+	dispatch(updateApplicationTokens([]));
 
 
 	// TODO: merge with code from BrokerSelect

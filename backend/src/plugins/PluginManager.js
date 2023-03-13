@@ -91,8 +91,8 @@ module.exports = class PluginManager {
 					const enableAtNextStartup = (pluginConfiguration.enableAtNextStartup !== undefined) ? pluginConfiguration.enableAtNextStartup : true;
 
 					const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
-					const plugin = new Plugin({enableAtNextStartup, context});
 					if (licenseContainer.license.features &&
+					const plugin = new Plugin({enableAtNextStartup, context, hidden: !!pluginConfiguration.hidden});
 						licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
 					) {
 						if (!enableAtNextStartup) {
