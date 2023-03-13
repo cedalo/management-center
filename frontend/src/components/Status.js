@@ -59,9 +59,18 @@ const Status = ({
 	const publishMessages = (parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent) / totalMessages) * 100;
 	const otherMessages =
 		((totalMessages - parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent)) / totalMessages) * 100;
-
 	const timerRef = React.useRef();
 	const [waitingForSysTopic, setWaitingForSysTopic] = React.useState(true);
+	const [maxClients, setMaxClients] = React.useState(1);
+
+	const getMaxClients = () => {
+		const feature = brokerLicense?.features?.find(feature => 'mosquitto-clients' === feature.name);
+		return feature ? feature.count : 1;
+	}
+
+	useEffect(() => {
+		setMaxClients(getMaxClients());
+	}, [brokerLicense]);
 
 	const cleanRef = () => {
 		if (timerRef.current) {
@@ -339,19 +348,20 @@ const Status = ({
 											chart={
 												<div style={{width: '250px', margin: 'auto'}}>
 													<Speedometer
-														maxValue={1000}
+														maxValue={maxClients}
+														forceRender={true}
 														value={systemStatus?.$SYS?.broker?.clients?.total}
 														startColor="green"
 														height={250}
 														textColor={theme.palette.text.secondary}
 														valueTextFontWeight="normal"
-														valueTextFontSize="9pt"
-														labelFontSize="12pt"
+														valueTextFontSize="11pt"
+														labelFontSize="9pt"
 														width={250}
 														ringWidth={30}
 														segments={50}
 														needleColor="#FD602E"
-														maxSegmentLabels={5}
+														maxSegmentLabels={maxClients === 1 ? 1 : 5}
 														endColor="red"
 													/>
 												</div>
