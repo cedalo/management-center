@@ -12,6 +12,7 @@ import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import SaveCancelButtons from './SaveCancelButtons';
+import {useFormStyles} from '../styles';
 
 const RoleNew = () => {
 	const [rolename, setRolename] = useState('');
@@ -23,6 +24,7 @@ const RoleNew = () => {
 	const history = useHistory();
 	const confirm = useConfirm();
 	const { client } = context;
+	const formClasses = useFormStyles();
 
 	const validate = () => {
 		return rolename !== '';
@@ -79,6 +81,7 @@ const RoleNew = () => {
 						fullWidth
 						size="small"
 						margin="dense"
+						className={formClasses.textField}
 						InputProps={{
 							startAdornment: (
 								<InputAdornment position="start">
@@ -98,6 +101,7 @@ const RoleNew = () => {
 						fullWidth
 						size="small"
 						margin="dense"
+						className={formClasses.textField}
 					/>
 				</Grid>
 				<Grid item xs={12}>
@@ -110,6 +114,7 @@ const RoleNew = () => {
 						fullWidth
 						size="small"
 						margin="dense"
+						className={formClasses.textField}
 					/>
 				</Grid>
 			</Grid>

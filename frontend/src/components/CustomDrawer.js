@@ -1,6 +1,6 @@
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
-import React, {useContext, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {connect} from 'react-redux';
 import clsx from 'clsx';
 import List from '@material-ui/core/List';
@@ -164,8 +164,20 @@ const CustomDrawer = ({
 	const theme = useTheme();
 	const [adminOpen, setAdminOpen] = useState(false);
 
+
+	useEffect(() => {
+		setAdminOpen(
+			location.pathname.startsWith('/user-groups') ||
+			location.pathname.startsWith('/tokens') ||
+			location.pathname.startsWith('/info') ||
+			location.pathname.startsWith('/users') ||
+			location.pathname.startsWith('/certs') ||
+			location.pathname.startsWith('/tokens') ||
+			location.pathname.startsWith('/settings'));
+	}, [location.pathname]);
+
 	setShowFilter('/clientinspection' === location.pathname);
-		// '/clients' === location.pathname);
+	// '/clients' === location.pathname);
 
 	return <Drawer
 		variant="permanent"
@@ -214,7 +226,7 @@ const CustomDrawer = ({
 						icon={<InspectClientsIcon fontSize="small"/>}
 					/>}
 				</List>
-				<Divider />
+				<Divider/>
 				<List>
 					{open ? <ListSubheader className={classes.menuSubHeader}>Configuration</ListSubheader> : null}
 					{atLeastAdmin(userProfile) && <ListItemLink
@@ -230,9 +242,10 @@ const CustomDrawer = ({
 						icon={<ConnectionsIcon fontSize="small"/>}
 					/> : null}
 					{atLeastAdmin(userProfile, currentConnectionName) &&
-						<ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon fontSize="small"/>}/>}
+						<ListItemLink classes={classes} to="/streams" primary="Streams"
+									  icon={<StreamsIcon fontSize="small"/>}/>}
 				</List>
-				<Divider />
+				<Divider/>
 				{atLeastEditor(userProfile, currentConnectionName) && <><List>
 					{open ? <ListSubheader className={classes.menuSubHeader}>Dynamic Security</ListSubheader> : null}
 					<ListItemLink
@@ -261,7 +274,8 @@ const CustomDrawer = ({
 				<List id="menu-items-tools">
 					{open ? <ListSubheader className={classes.menuSubHeader}>Tools</ListSubheader> : null}
 					{atLeastAdmin(userProfile, currentConnectionName) &&
-						<ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon fontSize="small"/>}/>}
+						<ListItemLink classes={classes} to="/terminal" primary="Terminal"
+									  icon={<TerminalIcon fontSize="small"/>}/>}
 					<ListItemLink
 						classes={classes}
 						to="/tools/streamsheets"
@@ -288,14 +302,14 @@ const CustomDrawer = ({
 								primary="Info"
 								icon={<InfoIcon fontSize="small"/>}
 							/> : null}
-						{!hideInfoPage && adminOpen && atLeastAdmin(userProfile) &&
-							<ListItemLink
-								id="menu-item-plugins"
-								classes={classes}
-								to="/plugins"
-								primary="Plugins"
-								icon={<PluginsIcon fontSize="small"/>}
-							/>}
+						{/*{!hideInfoPage && adminOpen && atLeastAdmin(userProfile) &&*/}
+						{/*	<ListItemLink*/}
+						{/*		id="menu-item-plugins"*/}
+						{/*		classes={classes}*/}
+						{/*		to="/plugins"*/}
+						{/*		primary="Plugins"*/}
+						{/*		icon={<PluginsIcon fontSize="small"/>}*/}
+						{/*	/>}*/}
 						{adminOpen && atLeastAdmin(userProfile) && userManagementAccess(userManagementFeature) ?
 							<ListItemLink
 								classes={classes}
@@ -309,12 +323,12 @@ const CustomDrawer = ({
 							primary="User Groups"
 							icon={<UserGroupsIcon fontSize="small"/>}
 						/>}
-                        {adminOpen && atLeastAdmin(userProfile) && <ListItemLink
-                            classes={classes}
-                            to="/certs"
-                            primary="Certificates Management"
-                            icon={<CertificateIcon fontSize="small" />}
-                        />}
+						{adminOpen && atLeastAdmin(userProfile) && <ListItemLink
+							classes={classes}
+							to="/certs"
+							primary="Certificates Management"
+							icon={<CertificateIcon fontSize="small"/>}
+						/>}
 						{adminOpen && atLeastAdmin(userProfile) ? <ListItemLink
 							classes={classes}
 							to="/tokens"

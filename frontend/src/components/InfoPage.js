@@ -201,12 +201,12 @@ const InfoPage = (props) => {
 										const plugIn = responsePlugIns.find(plug => (feature.name === plug.featureId));
 										if (plugIn) {
 											return {
-												label: `${plugIn.name} ${feature.version}`,
+												label: `${plugIn.name}`,
 												value: plugIn.description
 											}
 										}
 										return {
-											label: `${feature.name} ${feature.version}`,
+											label: `${feature.name}`,
 											value: ''
 										}
 									})}

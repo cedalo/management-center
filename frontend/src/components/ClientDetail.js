@@ -20,10 +20,9 @@ import {updateClient, updateClients} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
-
+import {useFormStyles} from '../styles';
 
 const PASSWORD_ERROR_MESSAGE = 'Password should not be empty';
-
 
 function TabPanel(props) {
 	const {children, value, index, ...other} = props;
@@ -72,6 +71,7 @@ const ClientDetail = (props) => {
 	const {enqueueSnackbar} = useSnackbar();
 	const ref = React.useRef();
 	const [passwordError, setPasswordError] = React.useState(null);
+	const formClasses = useFormStyles();
 
 	React.useEffect(() => {
 		if (document.hasFocus() && ref.current.contains(document.activeElement)) {
@@ -175,6 +175,7 @@ const ClientDetail = (props) => {
 						fullWidth
 						size="small"
 						margin="dense"
+						className={formClasses.textField}
 						InputProps={{
 							startAdornment: (
 								<InputAdornment position="start">
@@ -220,6 +221,7 @@ const ClientDetail = (props) => {
 						type={showPassword ? 'text' : 'password'}
 						size="small"
 						margin="dense"
+						className={formClasses.textField}
 						InputProps={{
 							startAdornment: (
 								<InputAdornment position="start">
@@ -249,6 +251,7 @@ const ClientDetail = (props) => {
 						fullWidth
 						size="small"
 						margin="dense"
+						className={formClasses.textField}
 						onChange={(event) => {
 							if (editMode) {
 								setUpdatedClient({
@@ -286,6 +289,7 @@ const ClientDetail = (props) => {
 						fullWidth
 						size="small"
 						margin="dense"
+						className={formClasses.textField}
 					/>
 				</Grid>
 				<Grid item xs={12}>
@@ -308,6 +312,7 @@ const ClientDetail = (props) => {
 						fullWidth
 						size="small"
 						margin="dense"
+						className={formClasses.textField}
 					/>
 				</Grid>
 			</Grid>
