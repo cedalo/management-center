@@ -245,16 +245,17 @@ const CertificateDeploy = ({ connections = [] }) => {
 	};
 
 	return (
-		<ContentContainer
-			path={[
-				{ link: 'home' },
-				{ link: 'certs', title: 'Certificates' },
-				{ title: 'Deploy' }
-			]}
-		>
-			<ContainerHeader 
-				title={`Deploy client CA certificate: ${certificate.name}`} 
-				subTitle="Client certificate authorization is only possible, if the connected broker has set the right configuration. The broker configuration must define a certfile and set require_certificate to true."/>
+		<ContentContainer path={[{ link: 'home' }, { link: 'certs', title: 'Certificates' }, { title: 'Deploy' }]}>
+			<ContainerHeader
+				title={`Deploy client CA certificate: ${certificate.name}`}
+				subTitle={
+					<Typography variant='inherit' display='inline'>
+						Client certificate authorization is only possible, if the connected broker has set the right
+						configuration. The broker configuration must define a <i>certfile</i> and set{' '}
+						<i>require_certificate</i> to true.
+					</Typography>
+				}
+			/>
 			{hasConnectedConnection ? (
 				<Table size="small" aria-label="listeners">
 					<TableHead>
