@@ -1,41 +1,29 @@
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import ClientIcon from '@material-ui/icons/RecordVoiceOver';
-import Container from '@material-ui/core/Container';
-import DataReceivedIcon from '@material-ui/icons/CallReceived';
-import DataSentIcon from '@material-ui/icons/CallMade';
+import {colors, makeStyles} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import RestartIcon from '@material-ui/icons/Replay';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
-import Info from './Info';
+import DataSentIcon from '@material-ui/icons/RssFeed';
+import InfoIcon from '@material-ui/icons/Info';
 import MessageIcon from '@material-ui/icons/Email';
+import BrokerIcon from '@material-ui/icons/LeakAdd';
+import ClientIcon from '@material-ui/icons/Person';
+import RestartIcon from '@material-ui/icons/Replay';
+import LicenseIcon from '@material-ui/icons/VerifiedUser';
+import {Alert, AlertTitle} from '@material-ui/lab';
+import {useConfirm} from 'material-ui-confirm';
 import moment from 'moment';
-import Paper from '@material-ui/core/Paper';
-import React, { useContext, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import SubscriptionIcon from '@material-ui/icons/PhonelinkRing';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
-import { colors } from '@material-ui/core';
-import { connect, useDispatch } from 'react-redux';
-import { makeStyles } from '@material-ui/core';
-import { Alert, AlertTitle } from '@material-ui/lab';
-import { useSnackbar } from 'notistack';
-import { useConfirm } from 'material-ui-confirm';
-import Chart from './Chart';
-import LicenseTable from './LicenseTable';
-import { WebSocketContext } from '../websockets/WebSocket';
-
+import {useSnackbar} from 'notistack';
+import React, {useContext, useEffect} from 'react';
+import Speedometer from 'react-d3-speedometer'
+import {connect} from 'react-redux';
 import Delayed from '../utils/Delayed';
-
-
-const formatAsNumber = (metric) => new Intl.NumberFormat().format(metric);
+import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBreadCrumbs from './ContainerBreadCrumbs';
+import ContainerHeader from './ContainerHeader';
+import Info from './Info';
+import { useTheme } from '@material-ui/core/styles';
+import {useHistory} from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -44,24 +32,46 @@ const useStyles = makeStyles((theme) => ({
 		paddingBottom: theme.spacing(3),
 		paddingTop: theme.spacing(3)
 	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+	container: {
+		paddingLeft: '0px',
+		paddingRight: '0px'
+	}
 }));
 
-const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus, defaultClient, currentConnection, currentConnectionName, connected }) => {
+const Status = ({
+					brokerLicense,
+					brokerLicenseLoading,
+					lastUpdated,
+					systemStatus,
+					defaultClient,
+					currentConnection,
+					currentConnectionName,
+					connected
+				}) => {
 	const classes = useStyles();
+	const theme = useTheme();
 	const confirm = useConfirm();
-	const { enqueueSnackbar } = useSnackbar();
+	const history = useHistory();
+	const {enqueueSnackbar} = useSnackbar();
 	const context = useContext(WebSocketContext);
-	const { client: brokerClient } = context;
+	const {client: brokerClient} = context;
 	const totalMessages = parseInt(systemStatus?.$SYS?.broker?.messages?.sent);
 	const publishMessages = (parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent) / totalMessages) * 100;
 	const otherMessages =
-	((totalMessages - parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent)) / totalMessages) * 100;
-	
+		((totalMessages - parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent)) / totalMessages) * 100;
 	const timerRef = React.useRef();
 	const [waitingForSysTopic, setWaitingForSysTopic] = React.useState(true);
-	
+	const [maxClients, setMaxClients] = React.useState(1);
+
+	const getMaxClients = () => {
+		const feature = brokerLicense?.features?.find(feature => 'mosquitto-clients' === feature.name);
+		return feature ? feature.count : 1;
+	}
+
+	useEffect(() => {
+		setMaxClients(getMaxClients());
+	}, [brokerLicense]);
+
 	const cleanRef = () => {
 		if (timerRef.current) {
 			clearTimeout(timerRef.current);
@@ -73,17 +83,19 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 		// timerRef.current = window.setTimeout(() => {
 		// 	setWaitingForSysTopic(false);
 		// }, 16000);
-		
+
 		return () => {
 			cleanRef();
 		}
 	}, []);
 
+
 	if (connected && !systemStatus?.$SYS) {
-		cleanRef();
-		timerRef.current = window.setTimeout(() => {
-			setWaitingForSysTopic(false);
-		}, 16000);
+		if (!timerRef.current) {
+			timerRef.current = window.setTimeout(() => {
+				setWaitingForSysTopic(false);
+			}, 16000);
+		}
 	}
 
 	const onRestart = async (brokerConnectionName, serviceName) => {
@@ -103,13 +115,13 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 			enqueueSnackbar(`Broker "${brokerConnectionName}" successfully restarted.`, {
 				variant: 'success'
 			});
-		} catch(error) {
+		} catch (error) {
 			enqueueSnackbar(`Error restarting broker "${brokerConnectionName}". Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
 		}
 	}
-	
+
 	const data = {
 		datasets: [
 			{
@@ -138,246 +150,256 @@ const Status = ({ brokerLicense, brokerLicenseLoading, lastUpdated, systemStatus
 		}
 	];
 
+	const secondsToDhms = (seconds) => {
+		seconds = parseInt(seconds);
+		const d = Math.floor(seconds / (3600 * 24));
+		const h = Math.floor(seconds % (3600 * 24) / 3600);
+		const m = Math.floor(seconds % 3600 / 60);
+		const s = Math.floor(seconds % 60);
+
+		const dDisplay = d > 0 ? d + "d " : "";
+		const hDisplay = h > 0 ? h + "h " : "";
+		const mDisplay = m > 0 ? m + "m " : "";
+		const sDisplay = s > 0 ? s + "s" : "";
+		return dDisplay + hDisplay + mDisplay + sDisplay;
+	}
+
+	const toNumber = (number) => new Intl.NumberFormat().format(number);
+	const formatBytes = (bytes, decimals = 2) => {
+		if (!+bytes) return '0 Bytes'
+
+		const k = 1024
+		const dm = decimals < 0 ? 0 : decimals
+		const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+		const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+		return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+	}
+
 	return (
-		<div>
-			<Breadcrumbs aria-label="breadcrumb">
-				<RouterLink className={classes.breadcrumbLink} to="/home">
-					Home
-				</RouterLink>
-				<RouterLink className={classes.breadcrumbLink} to="/system">
-					System
-				</RouterLink>
-				<Typography className={classes.breadcrumbItem} color="textPrimary">
-					Status
-				</Typography>
-			</Breadcrumbs>
-			<br />
-			{!connected ? <>
-					<Delayed waitBeforeShow={1000}>
-						<Alert severity="warning">
-							<AlertTitle>System status information not accessible</AlertTitle>
-							The selected broker connection is not active
-						</Alert>
-					</Delayed> 
-				</> : <></>
-			}
-			{systemStatus?.$SYS && connected ? <Container maxWidth={false}>
-				<Grid container spacing={3}>
-					<Grid item xs={10}>
-						<Typography variant="h5" component="div" gutterBottom>
-							{currentConnectionName}
-						</Typography>
-					</Grid>
-					{currentConnection?.supportsRestart === true && <Grid item xs={2}>
-						<Button
-							variant="contained"
-							color="primary"
-							size="small"
-							onClick={(event) => {
-								event.stopPropagation();
-								onRestart(currentConnectionName, currentConnection?.serviceName);
-							}}
-							className={classes.button}
-							startIcon={<RestartIcon />}
-						>
-							Restart
-						</Button>
-					</Grid>}
-					<Grid item lg={3} sm={6} xl={3} xs={12}>
-						<Info
-							label="Clients total"
-							value={systemStatus?.$SYS?.broker?.clients?.total}
-							icon={<ClientIcon />}
-						/>
-					</Grid>
-					<Grid item lg={3} sm={6} xl={3} xs={12}>
-						<Info
-							label="Subscriptions"
-							value={formatAsNumber(systemStatus?.$SYS?.broker?.subscriptions?.count)}
-							icon={<SubscriptionIcon />}
-						/>
-					</Grid>
-					<Grid item lg={3} sm={6} xl={3} xs={12}>
-						<Info
-							label="PUBLISH received"
-							value={formatAsNumber(systemStatus?.$SYS?.broker?.publish?.messages?.received)}
-							icon={<MessageIcon />}
-						/>
-					</Grid>
-					<Grid item lg={3} sm={6} xl={3} xs={12}>
-						<Info
-							label="PUBLISH sent"
-							value={formatAsNumber(systemStatus?.$SYS?.broker?.publish?.messages?.sent)}
-							icon={<MessageIcon />}
-						/>
-					</Grid>
-					<Grid item lg={3} sm={6} xl={3} xs={12}>
-						<Info
-							label="Bytes received"
-							value={formatAsNumber(systemStatus?.$SYS?.broker?.bytes?.received)}
-							icon={<DataReceivedIcon />}
-						/>
-					</Grid>
-					<Grid item lg={3} sm={6} xl={3} xs={12}>
-						<Info
-							label="Bytes sent"
-							value={formatAsNumber(systemStatus?.$SYS?.broker?.bytes?.sent)}
-							icon={<DataSentIcon />}
-						/>
-					</Grid>
-					<Grid item lg={3} sm={6} xl={3} xs={12}>
-						<Info
-							label="Total messages received"
-							value={formatAsNumber(systemStatus?.$SYS?.broker?.messages?.received)}
-							icon={<MessageIcon />}
-						/>
-					</Grid>
-					<Grid item lg={3} sm={6} xl={3} xs={12}>
-						<Info
-							label="Total messages sent"
-							value={formatAsNumber(systemStatus?.$SYS?.broker?.messages?.sent)}
-							icon={<MessageIcon />}
-						/>
-					</Grid>
-					<Grid item lg={4} sm={4} xl={4} xs={12}>
-						<TableContainer component={Paper}>
-							<Table className={classes.table}>
-								<TableHead>
-									<TableCell colSpan={2}>Broker</TableCell>
-								</TableHead>
-								<TableBody>
-									<TableRow key="version">
-										<TableCell component="th" scope="row">
-											Broker version
-										</TableCell>
-										<TableCell align="right">{systemStatus?.$SYS?.broker?.version}</TableCell>
-									</TableRow>
-									<TableRow key="uptime">
-										<TableCell component="th" scope="row">
-											Uptime
-										</TableCell>
-										<TableCell align="right">{systemStatus?.$SYS?.broker?.uptime}</TableCell>
-									</TableRow>
-									<TableRow key="url">
-										<TableCell component="th" scope="row">
-											URL
-										</TableCell>
-										<TableCell align="right">{currentConnection?.url}</TableCell>
-									</TableRow>
-								</TableBody>
-							</Table>
-						</TableContainer>
-					</Grid>
-					<Grid item lg={4} sm={4} xl={4} xs={12}>
-						<TableContainer component={Paper}>
-							<Table className={classes.table}>
-								<TableHead>
-									<TableCell colSpan={2}>Clients</TableCell>
-								</TableHead>
-								<TableBody>
-									<TableRow key="clients-total">
-										<TableCell component="th" scope="row">
-											Total clients
-										</TableCell>
-										<TableCell align="right">
-											{formatAsNumber(systemStatus?.$SYS?.broker?.clients?.total)}
-										</TableCell>
-									</TableRow>
-									<TableRow key="clients-active">
-										<TableCell component="th" scope="row">
-											Active clients
-										</TableCell>
-										<TableCell align="right">
-											{formatAsNumber(systemStatus?.$SYS?.broker?.clients?.active)}
-										</TableCell>
-									</TableRow>
-									<TableRow key="clients-connected">
-										<TableCell component="th" scope="row">
-											Connected clients
-										</TableCell>
-										<TableCell align="right">
-											{systemStatus?.$SYS?.broker?.clients?.connected}
-										</TableCell>
-									</TableRow>
-								</TableBody>
-							</Table>
-						</TableContainer>
-					</Grid>
-					<Grid item lg={4} sm={4} xl={4} xs={12}>
-						<TableContainer component={Paper}>
-							<Table className={classes.table}>
-								<TableHead>
-									<TableCell colSpan={2}>Messages</TableCell>
-								</TableHead>
-								<TableBody>
-									<TableRow key="messsages-received">
-										<TableCell component="th" scope="row">
-											Received messages
-										</TableCell>
-										<TableCell align="right">
-											{formatAsNumber(systemStatus?.$SYS?.broker?.messages?.received)}
-										</TableCell>
-									</TableRow>
-									<TableRow key="messsages-sent">
-										<TableCell component="th" scope="row">
-											Sent messages
-										</TableCell>
-										<TableCell align="right">
-											{formatAsNumber(systemStatus?.$SYS?.broker?.messages?.sent)}
-										</TableCell>
-									</TableRow>
-									<TableRow key="messsages-stored">
-										<TableCell component="th" scope="row">
-											Stored messages
-										</TableCell>
-										<TableCell align="right">
-											{formatAsNumber(systemStatus?.$SYS?.broker?.messages?.stored)}
-										</TableCell>
-									</TableRow>
-								</TableBody>
-							</Table>
-						</TableContainer>
-					</Grid>
-					{/* <Grid item lg={3} sm={3} xl={3} xs={12}>
-						<Chart
-							title="Sent messages by type"
-							data={data}
-							dataDescriptions={dataDescriptions}
-						/>
-					</Grid> */}
-					<Grid item lg={12} sm={12} xl={12} xs={12}>
-						{brokerLicenseLoading ? 
-						<Alert severity="info">
-							<AlertTitle>Loading license information</AlertTitle>
-							<CircularProgress color="secondary" />
-						</Alert> : null}
-
-						{brokerLicense ? <LicenseTable license={brokerLicense} /> : null}
-
-					</Grid>
-				</Grid>
-				</Container> : (connected ? (
-				(waitingForSysTopic ?
-					<Alert severity="info">
-						<AlertTitle>Loading system status information</AlertTitle>
-						<CircularProgress color="secondary" size="1.5rem" />
-					</Alert> :
-					<Alert severity="warning">
-						<AlertTitle>System status information could not be fetched</AlertTitle>
-						We couldn't retrieve the system status information in the given time window.
-						Please make sure that the user "{defaultClient?.username}" has the rights to read the "$SYS" topic on the selected broker.
-						In rare cases, you may wait a bit longer until system information is finally sent
-					</Alert>)
-			) : <></>)
-			}
-			{systemStatus?.$SYS && <div style={{
-				fontSize: '0.9em',
-				position: 'absolute',
-				right: '15px',
-				top: '70px'
-			}}>
-				Dashboard last updated at: {moment(lastUpdated).format('hh:mm:ss a')}
-			</div>}
+		<div style={{height: '100%'}}>
+			<ContainerBreadCrumbs title="Home"/>
+			<div style={{height: 'calc(100% - 26px)'}}>
+				<div>
+					<ContainerHeader
+						title={`Status: ${currentConnectionName}`}
+						subTitle="Display the status and license info of the currenty selected broker. Hover over the info icon to get more information about the meaning of the values"
+					>
+						{systemStatus?.$SYS && connected && currentConnection?.supportsRestart === true &&
+							<Button
+								variant="outlined"
+								color="primary"
+								size="small"
+								onClick={(event) => {
+									event.stopPropagation();
+									onRestart(currentConnectionName, currentConnection?.serviceName);
+								}}
+								startIcon={<RestartIcon/>}
+							>
+								Restart
+							</Button>
+						}
+					</ContainerHeader>
+					{!connected ? <>
+						<Delayed waitBeforeShow={1000}>
+							<Alert severity="warning">
+								<AlertTitle>System status information not accessible</AlertTitle>
+								The selected broker connection is not active
+							</Alert>
+						</Delayed>
+					</> : <></>
+					}
+					{systemStatus?.$SYS && connected ?
+						<Container classes={{root: classes.container}} maxWidth={false}>
+							<Grid
+								container
+								classes={{root: classes.container}}
+								spacing={3}
+							>
+								<Grid container item lg={4} xl={4} sm={6} xs={12}>
+									<Grid item xs={12}>
+										<Info
+											label="Broker Traffic"
+											infoIcon
+											infos={[{
+												label: "Messages Sent",
+												value: toNumber(systemStatus?.$SYS?.broker?.messages?.sent)
+											}, {
+												label: "Messages Received",
+												value: toNumber(systemStatus?.$SYS?.broker?.messages?.received)
+											}, {
+												label: "Messages Stored",
+												value: toNumber(systemStatus?.$SYS?.broker?.messages?.stored)
+											}, {
+												label: "Messages Retained",
+												value: toNumber(
+													systemStatus?.$SYS?.broker?.['retained messages']?.count)
+											}, {
+												label: "Bytes Sent",
+												value: formatBytes(systemStatus?.$SYS?.broker?.bytes?.sent),
+												space: true
+											}, {
+												label: "Bytes Received",
+												value: formatBytes(systemStatus?.$SYS?.broker?.bytes?.received)
+											}, {
+												label: "Subscriptions",
+												value: toNumber(systemStatus?.$SYS?.broker?.subscriptions?.count),
+												space: true
+											}
+											]}
+											icon={<BrokerIcon/>}
+										/>
+									</Grid>
+									<Grid item xs={12} style={{paddingTop: '24px'}}>
+										<Info
+											label="Broker Info"
+											infos={[{
+												label: "Uptime",
+												value: secondsToDhms(systemStatus?.$SYS?.broker?.uptime),
+											}, {
+												label: "Version",
+												value: systemStatus?.$SYS?.broker?.version,
+											}, {
+												label: "URL",
+												value: currentConnection?.externalEncryptedUrl || currentConnection?.externalUnencryptedUrl || currentConnection?.internalUrl || currentConnection?.url,
+											}]}
+											icon={<InfoIcon/>}
+										/>
+									</Grid>
+								</Grid>
+								<Grid container item lg={4} xl={4} sm={6} xs={12}>
+									<Grid item xs={12}>
+										<Info style={{cursor: 'pointer'}}
+											onClick={(event) => {
+												event.stopPropagation();
+												history.push(`/clients/`);
+											}
+											}
+											label="Client Sessions"
+											infoIcon
+											infos={[{
+												label: "Total",
+												value: toNumber(systemStatus?.$SYS?.broker?.clients?.total)
+											}, {
+												label: "Connected",
+												value: toNumber(systemStatus?.$SYS?.broker?.clients?.connected)
+											}, {
+												label: "Disconnected",
+												value: systemStatus?.$SYS?.broker?.clients?.disconnected === undefined ? '' : toNumber(systemStatus?.$SYS?.broker?.clients?.disconnected)
+											}]}
+											icon={<ClientIcon/>}
+										/>
+									</Grid>
+									<Grid item xs={12} style={{paddingTop: '24px'}}>
+										<Info
+											label="Publish"
+											infoIcon
+											infos={[{
+												label: "Messages Sent",
+												value: toNumber(systemStatus?.$SYS?.broker?.publish?.messages?.sent)
+											}, {
+												label: "Messages Received",
+												value: toNumber(systemStatus?.$SYS?.broker?.publish?.messages?.received)
+											}, {
+												label: "Bytes Sent",
+												value: formatBytes(systemStatus?.$SYS?.broker?.publish?.bytes?.sent),
+												space: true
+											}, {
+												label: "Bytes Received",
+												value: formatBytes(systemStatus?.$SYS?.broker?.publish?.bytes?.received)
+											}]}
+											icon={<DataSentIcon/>}
+										/>
+									</Grid>
+								</Grid>
+								<Grid container item lg={4} xl={4} sm={6} xs={12}>
+									<Grid item xs={12}>
+										{brokerLicenseLoading ?
+											<Alert severity="info">
+												<AlertTitle>Loading license information</AlertTitle>
+												<CircularProgress color="secondary"/>
+											</Alert> :
+											<Info
+												label="License"
+												infos={[{
+													label: "Edition",
+													value: brokerLicense.edition === 'pro' ? 'Premium' : brokerLicense.edition
+												}, {
+													label: "Issued by",
+													value: brokerLicense.issuedBy
+												}, {
+													label: "Issued to",
+													value: brokerLicense.issuedTo
+												}, {
+													label: "Valid since",
+													value: moment(brokerLicense.validSince).format('LLLL')
+												}, {
+													label: "Valid until",
+													value: brokerLicense.issuedTo
+												}]}
+												icon={<LicenseIcon/>}
+											/>}
+									</Grid>
+									<Grid item xs={12} style={{paddingTop: '24px'}}>
+										<Info
+											styl
+											label="Client Usage"
+											infos={[]}
+											chart={
+												<div style={{width: '250px', margin: 'auto'}}>
+													<Speedometer
+														maxValue={maxClients}
+														forceRender={true}
+														value={systemStatus?.$SYS?.broker?.clients?.total}
+														startColor="green"
+														height={250}
+														textColor={theme.palette.text.secondary}
+														valueTextFontWeight="normal"
+														valueTextFontSize="11pt"
+														labelFontSize="9pt"
+														width={250}
+														ringWidth={30}
+														segments={50}
+														needleColor="#FD602E"
+														maxSegmentLabels={maxClients === 1 ? 1 : 5}
+														endColor="red"
+													/>
+												</div>
+											}
+											icon={<ClientIcon/>}
+										/>
+									</Grid>
+								</Grid>
+							</Grid>
+						</Container> :
+						(connected ? (
+							(waitingForSysTopic ?
+								<Alert severity="info">
+									<AlertTitle>Loading system status information</AlertTitle>
+									<CircularProgress color="secondary" size="1.5rem"/>
+								</Alert> :
+								<Alert severity="warning">
+									<AlertTitle>System status information could not be fetched</AlertTitle>
+									We couldn't retrieve the system status information in the given time window.
+									Please make sure that the user "{defaultClient?.username}" has the rights to
+									read
+									the
+									"$SYS" topic on the selected broker.
+									In rare cases, you may wait a bit longer until system information is finally
+									sent
+								</Alert>)
+						) : <></>)
+					}
+					{systemStatus?.$SYS && <div style={{
+						fontSize: '0.9em',
+						position: 'absolute',
+						right: '15px',
+						top: '70px'
+					}}>
+						Dashboard last updated at: {moment(lastUpdated).format('hh:mm:ss a')}
+					</div>}
+				</div>
+			</div>
 		</div>
 	);
 };
@@ -389,8 +411,8 @@ const mapStateToProps = (state) => {
 		lastUpdated: state.systemStatus.lastUpdated,
 		systemStatus: state.systemStatus.systemStatus,
 		defaultClient: state.brokerConnections?.defaultClient,
-		currentConnection: state.brokerConnections.currentConnection,
-		currentConnectionName: state.brokerConnections.currentConnectionName,
+		currentConnection: state.brokerConnections?.currentConnection,
+		currentConnectionName: state.brokerConnections?.currentConnectionName,
 		connected: state.brokerConnections?.connected,
 	};
 };

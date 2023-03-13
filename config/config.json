@@ -1,8 +1,8 @@
 {
 	"connections": [
 		{
-			"id": "mosquitto-2-preview-2",
-			"name": "Mosquitto 2.0 Instance 2",
+			"id": "mosquitto-2-preview",
+			"name": "Mosquitto 2.0 Instance",
 			"url": "mqtt://localhost:1883",
 			"credentials": {
 				"username": "cedalo",
@@ -14,8 +14,8 @@
 		"streamsheets": {
 			"instances": [
 				{
-					"id": "streamsheets-1",
-					"name": "Streamsheets 1",
+					"id": "streamsheets",
+					"name": "Streamsheets",
 					"description": "Streamsheets running locally",
 					"url": "http://localhost:9000"
 				}

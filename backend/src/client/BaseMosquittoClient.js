@@ -172,10 +172,12 @@ module.exports = class BaseMosquittoClient {
 
 	_isResponse(topic, message) {
 		if (topic === '$CONTROL/dynamic-security/v1/response'
+			|| topic === '$CONTROL/broker/v1/response'
 			|| topic === '$CONTROL/stream-processing/v1/response'
 			|| topic === '$CONTROL/cedalo/ha/v1/response'
 			|| topic === '$CONTROL/cedalo/inspect/v1/response'
 			|| topic === '$CONTROL/cedalo/license/v1/response'
+			|| topic === '$CONTROL/certificate-management/v1/response'
 		) {
 			return true;
 		}
@@ -198,10 +200,11 @@ module.exports = class BaseMosquittoClient {
 					const request = deletePendingRequest(response.correlationData, this._requests);
 					if (request) {
 						this.logger.debug('Got response from Mosquitto', response);
+						delete response.correlationData;
+						// WHY NOT REJECT?
 						// if (response.error) {
 						// 	request.reject(response);
 						// }
-						delete response.correlationData;
 						request.resolve(response);
 					}
 				});
@@ -220,5 +223,10 @@ module.exports = class BaseMosquittoClient {
 
 	get connected() {
 		return this._isConnected;
+	}
+
+
+	set connected(value) {
+		this._isConnected = value;
 	}
 };

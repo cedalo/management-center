@@ -1,50 +1,41 @@
-import React, { useContext } from 'react';
-import { connect, useDispatch } from 'react-redux';
-import { updateAnonymousGroup, updateClients, updateGroup, updateGroups } from '../actions/actions';
-import { useSnackbar } from 'notistack';
-
-import AddIcon from '@material-ui/icons/Add';
-import { Alert, AlertTitle } from '@material-ui/lab';
-import AnonymousGroupSelect from './AnonymousGroupSelect';
-import AutoSuggest from './AutoSuggest';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
-import ClientIcon from '@material-ui/icons/Person';
-import DeleteIcon from '@material-ui/icons/Delete';
 import Divider from '@material-ui/core/Divider';
-import EditIcon from '@material-ui/icons/Edit';
-// import Fab from '@material-ui/core/Fab';
-import FormControl from '@material-ui/core/FormControl';
-import GroupIcon from '@material-ui/icons/Group';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
-import PropTypes from 'prop-types';
-import { Link as RouterLink } from 'react-router-dom';
-import Select from '@material-ui/core/Select';
+import {makeStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
+import TableFooter from '@material-ui/core/TableFooter';
 import TableHead from '@material-ui/core/TableHead';
+import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import { WebSocketContext } from '../websockets/WebSocket';
-import { makeStyles } from '@material-ui/core/styles';
-import moment from 'moment';
-import { useConfirm } from 'material-ui-confirm';
-import { useHistory } from 'react-router-dom';
+import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import {Alert, AlertTitle} from '@material-ui/lab';
+import {useConfirm} from 'material-ui-confirm';
+import {useSnackbar} from 'notistack';
+import PropTypes from 'prop-types';
+import React, {useContext} from 'react';
+import {connect, useDispatch} from 'react-redux';
+import {Link as RouterLink, useHistory} from 'react-router-dom';
+import {updateAnonymousGroup, updateClients, updateGroup, updateGroups} from '../actions/actions';
+import {WebSocketContext} from '../websockets/WebSocket';
+import AnonymousGroupSelect from './AnonymousGroupSelect';
+import ContainerBreadCrumbs from './ContainerBreadCrumbs';
+import ContainerHeader from './ContainerHeader';
+import SelectList from './SelectList';
+
 
 const useStyles = makeStyles((theme) => ({
 	tableContainer: {
@@ -62,13 +53,6 @@ const useStyles = makeStyles((theme) => ({
 			margin: theme.spacing(0.5)
 		}
 	},
-	// fab: {
-	// 	position: 'absolute',
-	// 	bottom: theme.spacing(2),
-	// 	right: theme.spacing(2)
-	// },
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
 const groupShape = PropTypes.shape({
@@ -76,19 +60,19 @@ const groupShape = PropTypes.shape({
 });
 
 const GROUP_TABLE_COLUMNS = [
-	{ id: 'groupname', key: 'Name' },
-	{ id: 'textname', key: 'Text name' },
-	{ id: 'textdescription', key: 'Description' },
-	{ id: 'clients', key: 'Clients' },
-	{ id: 'roles', key: 'Group Roles' }
+	{id: 'groupname', key: 'Name'},
+	{id: 'textname', key: 'Text Name'},
+	{id: 'textdescription', key: 'Description'},
+	{id: 'clients', key: 'Clients'},
+	{id: 'roles', key: 'Roles'}
 ];
 
 const FormattedGroupType = (props) => {
 	switch (props.provider) {
-		case 'local':
-			return 'Local';
-		default:
-			return props.provider || '';
+	case 'local':
+		return 'Local';
+	default:
+		return props.provider || '';
 	}
 };
 
@@ -98,8 +82,8 @@ const Groups = (props) => {
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const confirm = useConfirm();
-	const { enqueueSnackbar } = useSnackbar();
-	const { client } = context;
+	const {enqueueSnackbar} = useSnackbar();
+	const {client} = context;
 
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -154,11 +138,11 @@ const Groups = (props) => {
 	const onSelectGroup = async (groupname) => {
 		const group = await client.getGroup(groupname);
 		dispatch(updateGroup(group));
-		history.push(`/security/groups/detail/${groupname}`);
+		history.push(`/groups/${groupname}`);
 	};
 
 	const onNewGroup = () => {
-		history.push('/security/groups/new');
+		history.push('/groups/new');
 	};
 
 	const onDeleteGroup = async (groupname) => {
@@ -189,7 +173,16 @@ const Groups = (props) => {
 		dispatch(updateGroups(groups));
 	};
 
-	const { dynamicsecurityFeature, anonymousGroup, groups = [], rolesAll = [], clientsAll = [], onSort, sortBy, sortDirection } = props;
+	const {
+		dynamicsecurityFeature,
+		anonymousGroup,
+		groups = [],
+		rolesAll = [],
+		clientsAll = [],
+		onSort,
+		sortBy,
+		sortDirection
+	} = props;
 
 	// TODO: probably extract into reducer
 	const clientSuggestions = clientsAll
@@ -207,221 +200,200 @@ const Groups = (props) => {
 		}));
 
 	return (
-		<div>
-			<Breadcrumbs aria-label="breadcrumb">
-				<RouterLink className={classes.breadcrumbLink} to="/home">
-					Home
-				</RouterLink>
-				<RouterLink className={classes.breadcrumbLink} to="/security">
-					Security
-				</RouterLink>
-				<Typography className={classes.breadcrumbItem} color="textPrimary">
-					Groups
-				</Typography>
-			</Breadcrumbs>
-			{/* TODO: Quick hack to detect whether feature is supported */}
-			{dynamicsecurityFeature?.supported === false ? <><br/><Alert severity="warning">
-				<AlertTitle>Feature not available</AlertTitle>
-				Make sure that the broker connected has the dynamic security enabled.
-			</Alert></> : null}
-			<br />
-			{dynamicsecurityFeature?.supported !== false && <><Button
-				variant="outlined"
-				color="default"
-				size="small"
-				className={classes.button}
-				startIcon={<AddIcon />}
-				onClick={(event) => {
-					event.stopPropagation();
-					onNewGroup();
-				}}
-			>
-				New Group
-			</Button>
-			<br />
-			<br />
-			</>}
-			{dynamicsecurityFeature?.supported !== false && groups?.groups?.length > 0 ? (
-				<div>
-					<Hidden xsDown implementation="css">
-						<TableContainer component={Paper} className={classes.tableContainer}>
-							<Table>
-								<TableHead>
-									<TableRow>
-										{GROUP_TABLE_COLUMNS.map((column) => (
-											<TableCell
-												key={column.id}
-												sortDirection={sortBy === column.id ? sortDirection : false}
-											>
-												<TableSortLabel
-													active={sortBy === column.id}
-													direction={sortDirection}
-													onClick={() => onSort(column.id)}
+		<div style={{height: '100%'}}>
+			<div style={{display: 'flex', justifyContent: 'space-between'}}>
+				<ContainerBreadCrumbs title="Groups" links={[{name: 'Home', route: '/home'}]}/>
+				<AnonymousGroupSelect
+					onUpdateAnonymousGroup={onUpdateAnonymousGroup}
+				/>
+			</div>
+			<div style={{height: 'calc(100% - 26px)'}}>
+				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
+					<ContainerHeader
+						topMargin="-12px"
+						title="Groups"
+						subTitle="List of existing groups. Groups serve as a hub to gather multiple clients and roles. The more clients are added to your broker the harder it gets to administer them. Groups can help you structure and quickly adjust your current setup."
+					>
+						{dynamicsecurityFeature?.supported !== false && <>
+							<Button
+								variant="outlined"
+								color="primary"
+								size="small"
+								startIcon={<AddIcon/>}
+								onClick={(event) => {
+									event.stopPropagation();
+									onNewGroup();
+								}}
+							>
+								New Group
+							</Button>
+						</>}
+					</ContainerHeader>
+					{/* TODO: Quick hack to detect whether feature is supported */}
+					{dynamicsecurityFeature?.supported === false ? <>
+						<br/>
+							<Alert severity="warning">
+								<AlertTitle>Feature not available</AlertTitle>
+								Make sure that the broker connected has the dynamic security enabled.
+							</Alert>
+					</> : null}
+					{dynamicsecurityFeature?.supported !== false && groups?.groups?.length > 0 ? (
+						<div style={{height: '100%', overflowY: 'auto'}}>
+							<Hidden xsDown implementation="css">
+								<TableContainer>
+									<Table stickyHeader size="small" aria-label="sticky table">
+										<TableHead>
+											<TableRow>
+												{GROUP_TABLE_COLUMNS.map((column) => (
+													<TableCell
+														key={column.id}
+														sortDirection={sortBy === column.id ? sortDirection : false}
+													>
+														<TableSortLabel
+															active={sortBy === column.id}
+															direction={sortDirection}
+															onClick={() => onSort(column.id)}
+														>
+															{column.key}
+														</TableSortLabel>
+													</TableCell>
+												))}
+												<TableCell/>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{groups &&
+												groups.groups.map((group) => (
+													<TableRow
+														hover
+														key={group.groupname}
+														onClick={(event) => {
+															if (event.target.nodeName?.toLowerCase() === 'td') {
+																onSelectGroup(group.groupname);
+															}
+														}}
+														style={{cursor: 'pointer'}}
+													>
+														<TableCell>{group.groupname}</TableCell>
+														<TableCell>{group.textname}</TableCell>
+														<TableCell>{group.textdescription}</TableCell>
+														<TableCell className={classes.badges}>
+															<SelectList
+																values={group.clients}
+																getValue={value => value.username}
+																onChange={(event, value) => {
+																	onUpdateGroupClients(group, value);
+																}}
+																disabled={false}
+																suggestions={clientSuggestions}
+															/>
+														</TableCell>
+														<TableCell className={classes.badges}>
+															<SelectList
+																values={group.roles}
+																getValue={value => value.rolename}
+																onChange={(event, value) => {
+																	onUpdateGroupRoles(group, value);
+																}}
+																disabled={false}
+																suggestions={roleSuggestions}
+															/>
+														</TableCell>
+														<TableCell align="right">
+															<Tooltip title="Delete group">
+																<IconButton
+																	size="small"
+																	onClick={(event) => {
+																		event.stopPropagation();
+																		onDeleteGroup(group.groupname);
+																	}}
+																>
+																	<DeleteIcon fontSize="small"/>
+																</IconButton>
+															</Tooltip>
+														</TableCell>
+													</TableRow>
+												))}
+										</TableBody>
+										<TableFooter>
+											<TableRow>
+												<TablePagination
+													rowsPerPageOptions={[5, 10, 25]}
+													colSpan={8}
+													count={groups?.totalCount}
+													rowsPerPage={rowsPerPage}
+													page={page}
+													onChangePage={handleChangePage}
+													onChangeRowsPerPage={handleChangeRowsPerPage}
+												/>
+											</TableRow>
+										</TableFooter>
+									</Table>
+								</TableContainer>
+							</Hidden>
+							<Hidden smUp implementation="css">
+								<Paper>
+									<List className={classes.root}>
+										{groups.groups.map((group) => (
+											<React.Fragment>
+												<ListItem
+													alignItems="flex-start"
+													onClick={(event) => onSelectGroup(group.groupname)}
 												>
-													{column.key}
-												</TableSortLabel>
-											</TableCell>
-										))}
-										<TableCell />
-									</TableRow>
-								</TableHead>
-								<TableBody>
-									{groups &&
-										groups.groups.map((group) => (
-											<TableRow
-												hover
-												key={group.groupname}
-												onClick={(event) => {
-													if (event.target.nodeName?.toLowerCase() === 'td') {
-														onSelectGroup(group.groupname);
-													}
-												}}
-												style={{ cursor: 'pointer' }}
-											>
-												<TableCell>{group.groupname}</TableCell>
-												<TableCell>{group.textname}</TableCell>
-												<TableCell>{group.textdescription}</TableCell>
-												<TableCell className={classes.badges}>
-													<AutoSuggest
-														suggestions={clientSuggestions}
-														values={group.clients.map((client) => ({
-															label: client.username,
-															value: client.username
-														}))}
-														handleChange={(value) => {
-															onUpdateGroupClients(group, value);
-														}}
+													<ListItemText
+														primary={<span>{group.groupname}</span>}
+														secondary={
+															<React.Fragment>
+																<Typography
+																	component="span"
+																	variant="body2"
+																	className={classes.inline}
+																	color="textPrimary"
+																>
+																	{group.textname}
+																</Typography>
+																<span> — {group.textdescription} </span>
+															</React.Fragment>
+														}
 													/>
-												</TableCell>
-												<TableCell className={classes.badges}>
-													<AutoSuggest
-														suggestions={roleSuggestions}
-														values={group.roles.map((role) => ({
-															label: role.rolename,
-															value: role.rolename
-														}))}
-														handleChange={(value) => {
-															onUpdateGroupRoles(group, value);
-														}}
-													/>
-												</TableCell>
-												<TableCell align="right">
-													{/* <IconButton
-						  size="small"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            onSelectGroup(group.groupname);
-                          }}
-                        >
-                          <EditIcon fontSize="small" />
-                        </IconButton> */}
-
-													<Tooltip title="Delete group">
+													<ListItemSecondaryAction>
 														<IconButton
+															edge="end"
+															size="small"
+															onClick={(event) => {
+																event.stopPropagation();
+																onSelectGroup(group.groupname);
+															}}
+															aria-label="edit"
+														>
+															<EditIcon fontSize="small"/>
+														</IconButton>
+
+														<IconButton
+															edge="end"
 															size="small"
 															onClick={(event) => {
 																event.stopPropagation();
 																onDeleteGroup(group.groupname);
 															}}
+															aria-label="delete"
 														>
-															<DeleteIcon fontSize="small" />
+															<DeleteIcon fontSize="small"/>
 														</IconButton>
-													</Tooltip>
-												</TableCell>
-											</TableRow>
+													</ListItemSecondaryAction>
+												</ListItem>
+												<Divider/>
+											</React.Fragment>
 										))}
-								</TableBody>
-								<TableFooter>
-									<TableRow>
-										<TablePagination
-											rowsPerPageOptions={[5, 10, 25]}
-											colSpan={8}
-											count={groups?.totalCount}
-											rowsPerPage={rowsPerPage}
-											page={page}
-											onChangePage={handleChangePage}
-											onChangeRowsPerPage={handleChangeRowsPerPage}
-										/>
-									</TableRow>
-								</TableFooter>
-							</Table>
-						</TableContainer>
-					</Hidden>
-					<Hidden smUp implementation="css">
-						<Paper>
-							<List className={classes.root}>
-								{groups.groups.map((group) => (
-									<React.Fragment>
-										<ListItem
-											alignItems="flex-start"
-											onClick={(event) => onSelectGroup(group.groupname)}
-										>
-											<ListItemText
-												primary={<span>{group.groupname}</span>}
-												secondary={
-													<React.Fragment>
-														<Typography
-															component="span"
-															variant="body2"
-															className={classes.inline}
-															color="textPrimary"
-														>
-															{group.textname}
-														</Typography>
-														<span> — {group.textdescription} </span>
-													</React.Fragment>
-												}
-											/>
-											<ListItemSecondaryAction>
-												<IconButton
-													edge="end"
-													size="small"
-													onClick={(event) => {
-														event.stopPropagation();
-														onSelectGroup(group.groupname);
-													}}
-													aria-label="edit"
-												>
-													<EditIcon fontSize="small" />
-												</IconButton>
-
-												<IconButton
-													edge="end"
-													size="small"
-													onClick={(event) => {
-														event.stopPropagation();
-														onDeleteGroup(group.groupname);
-													}}
-													aria-label="delete"
-												>
-													<DeleteIcon fontSize="small" />
-												</IconButton>
-											</ListItemSecondaryAction>
-										</ListItem>
-										<Divider />
-									</React.Fragment>
-								))}
-							</List>
-						</Paper>
-					</Hidden>
-					<AnonymousGroupSelect
-						onUpdateAnonymousGroup={onUpdateAnonymousGroup}
-					/>
+									</List>
+								</Paper>
+							</Hidden>
+						</div>
+					) : (
+						<div>No groups found</div>
+					)}
 				</div>
-			) : (
-				<div>No groups found</div>
-			)}
-			{/* <Fab
-				color="primary"
-				aria-label="add"
-				className={classes.fab}
-				onClick={(event) => {
-					event.stopPropagation();
-					onNewGroup();
-				}}
-			>
-				<AddIcon />
-			</Fab> */}
+			</div>
 		</div>
 	);
 };

@@ -188,6 +188,22 @@ module.exports = class BaseMosquittoProxyClient {
 		});
 	}
 
+
+	async getBackendParameters() {
+		try {
+			const url = `${this._httpEndpointURL}/api/backend-parameters`;
+			const response = await axios.get(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
+			}
+		}
+	}
+
+
 	/**
 	 * ******************************************************************************************
 	 * Methods for user management
@@ -277,6 +293,8 @@ module.exports = class BaseMosquittoProxyClient {
 		} catch (error) {
 			if (error?.response?.status === 404) {
 				throw new APINotFoundError();
+			} else if (error?.response?.status === 400) {
+				throw new APIError('Bad request', error.response.data || error.message);
 			} else {
 				throw new NotAuthorizedError();
 			}
@@ -541,7 +559,57 @@ module.exports = class BaseMosquittoProxyClient {
 		}
 	}
 
-
+	/**
+	 * ******************************************************************************************
+	 * Methods for certificate management
+	 * ******************************************************************************************
+	 */
+	async doApiRequest(request, ...args) {
+		try {
+			const { data, status } = await request(...args, this._headers);
+			return { data, status };
+		} catch (error) {
+			this.logger.error(error);
+			switch (error.response?.status) {
+				case 400:
+					throw new APIError('400', error.response.data || 'Invalid request');
+				case 404:
+					throw new APINotFoundError();
+				case 500:
+					throw new APIError('500', 'Server failed to handle request!');
+				default:
+					throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
+			}
+		}
+	}
+	async getListeners(brokerId) {
+		const url = `${this._httpEndpointURL}/api/cert-management/listeners/${brokerId}`;
+		return this.doApiRequest(axios.get, url);
+	}
+	async getCertificates() {
+		const url = `${this._httpEndpointURL}/api/cert-management/certs`;
+		return this.doApiRequest(axios.get, url);
+	}
+	async getCertificateInfo(cert) {
+		const url = `${this._httpEndpointURL}/api/cert-management/info/${cert.id}`;
+		return this.doApiRequest(axios.post, url, { cert });
+	}
+	async addCertificate(cert) {
+		const url = `${this._httpEndpointURL}/api/cert-management/certs`;
+		return this.doApiRequest(axios.post, url, { cert });
+	}
+	async updateCertificate(cert) {
+		const url = `${this._httpEndpointURL}/api/cert-management/certs/${cert.id}`;
+		return this.doApiRequest(axios.put, url, { cert });
+	}
+	async deleteCertificate(id, force) {
+		const url = `${this._httpEndpointURL}/api/cert-management/certs/${id}`;
+		return this.doApiRequest(axios.delete, url, { data: { force } });
+	}
+	async deployCertificate(cert, connection, listeners) {
+		const url = `${this._httpEndpointURL}/api/cert-management/deploy/${cert.id}`;
+		return this.doApiRequest(axios.put, url, { connection, listeners });
+	}
 
 	/**
 	 * ******************************************************************************************

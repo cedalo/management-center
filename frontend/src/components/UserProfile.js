@@ -35,8 +35,6 @@ import Alert from '@material-ui/lab/Alert';
    
 // import AutoSuggest from './AutoSuggest';
 
-const ROOT_USERNAME = 'cedalo';
-
 
 const userShape = PropTypes.shape({
 	username: PropTypes.string,
@@ -77,6 +75,7 @@ const UserProfile = (props) => {
 	const { enqueueSnackbar } = useSnackbar();
 
 	const { userProfile } = props;
+	const { backendParameters } = props;
 	const [password, setPassword] = useState('');
 	const [passwordConfirm, setPasswordConfirm] = useState('');
 	const [updatedUser, setUpdatedUser] = React.useState({
@@ -89,6 +88,8 @@ const UserProfile = (props) => {
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
 	const { client: brokerClient } = context;
+
+	const ROOT_USERNAME = backendParameters.rootUsername;
 
 	const validate = () => {
 		if (editMode) {
@@ -155,6 +156,7 @@ const UserProfile = (props) => {
 			<form className={classes.form} noValidate autoComplete="off">
 				<div className={classes.margin}>
 					{(userProfile?.username === ROOT_USERNAME) ? <Alert style={{marginBottom: '12px'}} severity="info">Note that you cannot edit a root user</Alert> : <></>}
+					{backendParameters.ssoUsed ? <Alert style={{marginBottom: '12px'}} severity="info">Note that you cannot edit password of the SSO users</Alert>:<></>}
 					<Grid container spacing={1} alignItems="flex-end">
 						<Grid item xs={12}>
 							<TextField
@@ -176,52 +178,59 @@ const UserProfile = (props) => {
 								}}
 							/>
 						</Grid>
-						<Grid item xs={12}>
-							<TextField
-								required
-								disabled={!editMode}
-								id="password"
-								label="Password Change"
-								error={!passwordsMatch}
-								helperText={!passwordsMatch && 'Passwords must match.'}
-								onChange={(event) => setPassword(event.target.value)}
-								defaultValue=""
-								variant="outlined"
-								fullWidth
-								type="password"
-								className={classes.textField}
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position="start">
-											<PasswordIcon />
-										</InputAdornment>
-									)
-								}}
-							/>
-						</Grid>
-						<Grid item xs={12}>
-							<TextField
-								required
-								disabled={!editMode}
-								id="password-confirm"
-								label="Password Confirm"
-								error={!passwordsMatch}
-								helperText={!passwordsMatch && 'Passwords must match.'}
-								onChange={(event) => setPasswordConfirm(event.target.value)}
-								defaultValue=""
-								variant="outlined"
-								fullWidth
-								type="password"
-								className={classes.textField}
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position="start">
-											<PasswordIcon />
-										</InputAdornment>
-									)
-								}}
-							/>
-						</Grid>
+
+						{backendParameters.ssoUsed ?
+							null
+						:
+							<>
+								<Grid item xs={12}>
+									<TextField
+										required
+										disabled={!editMode}
+										id="password"
+										label="Password Change"
+										error={!passwordsMatch}
+										helperText={!passwordsMatch && 'Passwords must match.'}
+										onChange={(event) => setPassword(event.target.value)}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										type="password"
+										className={classes.textField}
+										InputProps={{
+											startAdornment: (
+												<InputAdornment position="start">
+													<PasswordIcon />
+												</InputAdornment>
+											)
+										}}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										required
+										disabled={!editMode}
+										id="password-confirm"
+										label="Password Confirm"
+										error={!passwordsMatch}
+										helperText={!passwordsMatch && 'Passwords must match.'}
+										onChange={(event) => setPasswordConfirm(event.target.value)}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										type="password"
+										className={classes.textField}
+										InputProps={{
+											startAdornment: (
+												<InputAdornment position="start">
+													<PasswordIcon />
+												</InputAdornment>
+											)
+										}}
+									/>
+								</Grid>
+							</>
+						}
 						{/* <Grid item xs={12}>
 							<AutoSuggest
 								disabled
@@ -236,7 +245,7 @@ const UserProfile = (props) => {
 				</div>
 			</form>
 
-			{(!editMode && userProfile?.username !== ROOT_USERNAME) && (
+			{(!editMode && userProfile?.username !== ROOT_USERNAME && !backendParameters.ssoUsed) && (
 				<Grid item xs={12} className={classes.buttons}>
 					<Button
 						variant="contained"
@@ -370,6 +379,7 @@ UserProfile.propTypes = {
 const mapStateToProps = (state) => {
 	return {
 		userProfile: state.userProfile?.userProfile,
+		backendParameters: state.backendParameters?.backendParameters,
 	};
 };
 

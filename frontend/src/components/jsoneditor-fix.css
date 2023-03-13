@@ -1,3 +1,9 @@
 .jsoneditor {
 	height: 500px;
+    border: 1px solid grey;
+}
+
+.jsoneditor-menu {
+    background-color: grey;
+    border-bottom: 1px solid grey;
 }

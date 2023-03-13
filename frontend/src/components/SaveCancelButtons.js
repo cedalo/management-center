@@ -1,8 +1,8 @@
 import React from 'react';
 import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { green } from '@material-ui/core/colors';
+import {green} from '@material-ui/core/colors';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import CheckIcon from '@material-ui/icons/Check';
@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
 		alignItems: 'center',
 	},
 	wrapper: {
-		margin: theme.spacing(0.5),
+		marginTop: '15px',
 		position: 'relative',
 		'& > *': {
 			marginRight: theme.spacing(1)
@@ -41,7 +41,7 @@ const SaveButton = (props) => {
 	const [loading, setLoading] = React.useState(false);
 	const [success, setSuccess] = React.useState(false);
 	const timer = React.useRef();
-	const { onSave, saveDisabled, onCancel } = props; 
+	const {onSave, saveDisabled, onCancel, saveCaption = 'Save'} = props;
 
 	const buttonClassname = clsx({
 		[classes.buttonSuccess]: success,
@@ -74,16 +74,19 @@ const SaveButton = (props) => {
 			<div className={classes.wrapper}>
 				<Button
 					variant="contained"
+					size="small"
 					color="primary"
 					className={buttonClassname}
 					disabled={loading || saveDisabled}
 					onClick={handleButtonClick}
-					startIcon={<SaveIcon />}
+					startIcon={<SaveIcon/>}
 				>
-					Save
-		  </Button>
-		  <Button
+					{/* Save */}
+					{saveCaption}
+				</Button>
+				<Button
 					variant="contained"
+					size="small"
 					onClick={(event) => {
 						event.stopPropagation();
 						onCancel();
@@ -91,7 +94,7 @@ const SaveButton = (props) => {
 				>
 					Cancel
 				</Button>
-				{loading && <CircularProgress size={24} className={classes.buttonProgress} />}
+				{loading && <CircularProgress size={24} className={classes.buttonProgress}/>}
 			</div>
 		</div>
 	);

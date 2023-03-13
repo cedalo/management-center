@@ -1,6 +1,6 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
+import {connect} from 'react-redux';
+import {makeStyles} from '@material-ui/core/styles';
 import Groups from './components/Groups';
 import Home from './components/Home';
 import Security from './components/Security';
@@ -43,166 +43,169 @@ import ClusterNew from './admin/clusters/components/ClusterNew';
 import Clusters from './admin/clusters/components/Clusters';
 import ClusterDetail from './admin/clusters/components/ClusterDetail';
 import InspectClients from './admin/inspect/components/InspectClients';
+import Certificates from './admin/certificates/components/Certificates';
+import CertificateDeploy from './admin/certificates/components/CertificateDeploy';
+import CertificateDetail from './admin/certificates/components/CertificateDetail';
 
-import { Switch, Route, Redirect } from 'react-router-dom';
+import {Switch, Route, Redirect} from 'react-router-dom';
 import DefaultACLAccess from './components/DefaultACLAccess';
 import TestEdit from './components/TestEdit';
 import TestCollections from './components/TestCollections';
 import TestCollectionDetail from './components/TestCollectionDetail';
 import ApplicationTokens from './components/ApplicationTokens';
-import { atLeastAdmin, atLeastEditor, atLeastViewer } from './utils/accessUtils/access';
-
-
-const useStyles = makeStyles((theme) => ({
-	
-}));
+import {atLeastAdmin, atLeastEditor, atLeastViewer, isGroupMember} from './utils/accessUtils/access';
 
 function AppRoutes(props) {
 
-	const { selectedConnectionToEdit: connection } = props;
-	const { userProfile, userManagementFeature, currentConnectionName } = props;
+	const {selectedConnectionToEdit: connection} = props;
+	const {userProfile, userManagementFeature, currentConnectionName} = props;
 	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/theme`);
 	const [responseConfig, loadingConfig, hasErrorConfig] = useFetch(`${process.env.PUBLIC_URL}/api/config`);
 
 	if ((hasError || response) && (hasErrorConfig || responseConfig)) {
 		let hideConnections = (typeof responseConfig?.hideConnections === 'boolean') ? responseConfig?.hideConnections : false;
 		let hideInfoPage = (typeof responseConfig?.hideInfoPage === 'boolean') ? responseConfig?.hideInfoPage : false;
-	
 
 		//   const container = window !== undefined ? () => window().document.body : undefined;
 
 		return (
 			<Switch>
+				<Route path="/clients/new">
+					<ClientNew/>
+				</Route>
 				<Route
-					path="/security/clients/detail/:clientId"
+					path="/clients/:clientId"
 					component={ClientDetail}
 				/>
-				<Route path="/security/clients/new">
-					<ClientNew />
+				<Route path="/clients">
+					<Clients filter={props.filter}/>
 				</Route>
-				<Route path="/security/clients">
-					<Clients />
+				<Route path="/clientinspection">
+					<InspectClients filter={props.filter}/>
+				</Route>
+				<Route path="/groups/new">
+					<GroupNew/>
 				</Route>
 				<Route
-					path="/security/groups/detail/:groupId"
+					path="/groups/:groupId"
 					component={GroupDetail}
 				/>
-				<Route path="/security/groups/new">
-					<GroupNew />
+				<Route path="/groups">
+					<Groups/>
 				</Route>
-				<Route path="/security/groups">
-					<Groups />
+				<Route path="/roles/new">
+					<RoleNew/>
+				</Route>
+				<Route path="/roles/acl">
+					<DefaultACLAccess/>
 				</Route>
 				<Route
-					path="/security/roles/detail/:roleId"
+					path="/roles/:roleId"
 					component={RoleDetail}
 				/>
-				<Route path="/security/acl">
-					<DefaultACLAccess />
-				</Route>
-				<Route path="/security/roles/new">
-					<RoleNew />
-				</Route>
-				<Route path="/security/roles">
-					<Roles />
+				<Route path="/roles">
+					<Roles/>
 				</Route>
 				<Route path="/security">
-					<Security />
+					<Security/>
 				</Route>
 				<Route path="/plugins">
-					<Plugins />
+					<Plugins/>
 				</Route>
 				<Route path="/terminal">
-					<Terminal />
+					<Terminal/>
 				</Route>
+				{atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams/new">
+					<StreamNew/>
+				</Route>}
 				{atLeastAdmin(userProfile, currentConnectionName) && <Route
-					path="/streams/detail/:streamId"
+					path="/streams/:streamId"
 					component={StreamDetail}
 				/>}
-				{atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams/new">
-					<StreamNew />
-				</Route>}
-				{atLeastAdmin(userProfile, currentConnectionName) && <Route path="/streams">
-					<Streams />
-				</Route>}
-				<Route path="/system/status">
-					<Status />
+				<Route path="/streams">
+					<Streams/>
 				</Route>
-				<Route path="/system/topics">
-					<TopicTree />
+				<Route path="/home">
+					<Status/>
+				</Route>
+				<Route path="/topics">
+					<TopicTree/>
 				</Route>
 				<Route path="/system">
-					<System />
+					<System/>
 				</Route>
-				{atLeastAdmin(userProfile) && <Route path="/config/connections/new">
-					<ConnectionNew />
+				{atLeastAdmin(userProfile) && !isGroupMember(userProfile) && <Route path="/connections/new">
+					<ConnectionNew/>
 				</Route>}
-				{atLeastAdmin(userProfile, connection?.name) && <Route path="/config/connections/detail/:connectionId">
-					<ConnectionDetail />
+				{atLeastAdmin(userProfile, connection?.name) && <Route path="/connections/:connectionId">
+					<ConnectionDetail/>
 				</Route>}
-				{ !hideConnections ? <Route path="/config/connections">
-					<Connections />
-				</Route> : null }
-				{atLeastAdmin(userProfile) && <Route path="/config/settings">
-					<Settings />
+				{!hideConnections ? <Route path="/connections">
+					<Connections/>
+				</Route> : null}
+				{atLeastAdmin(userProfile) && (
+					<Route path="/certs/detail/:certId">
+						<CertificateDetail/>
+					</Route>
+				)}
+				{atLeastAdmin(userProfile) && (
+					<Route path="/certs/deploy/:certId">
+						<CertificateDeploy/>
+					</Route>
+				)}
+				<Route path="/certs">
+					<SortableTablePage Component={Certificates}/>
+				</Route>				
+				{atLeastAdmin(userProfile) && <Route path="/settings">
+					<Settings onChangeTheme={props.onChangeTheme}/>
 				</Route>}
 				<Route path="/config">
-					<Config />
+					<Config/>
 				</Route>
 				<Route path="/profile">
-					<UserProfile />
+					<UserProfile/>
+				</Route>
+				{atLeastAdmin(userProfile) && <Route path="/user-groups/new">
+					<UserGroupNew/>
+				</Route>}
+				{atLeastAdmin(userProfile) && <Route path="/user-groups/:groupId" component={UserGroupDetail}
+				/>}
+				<Route path="/user-groups">
+					<SortableTablePage Component={UserGroups}/>
+				</Route>
+				<Route path="/tokens">
+					<ApplicationTokens/>
+				</Route>
+
+				<Route path="/users/new">
+					<UserNew/>
 				</Route>
 				<Route
-					path="/admin/users/detail/:userId"
+					path="/users/:userId"
 					component={UserDetail}
 				/>
-	
-
-				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups/new">
-					<UserGroupNew />
-				</Route>}
-				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups/detail/:groupId"
-						component={UserGroupDetail}
-				/>}
-				{atLeastAdmin(userProfile) && <Route path="/admin/user-groups">
-					<SortableTablePage Component={UserGroups} />
-				</Route>}
-
-				{atLeastAdmin(userProfile) && <Route path="/admin/tokens">
-					<ApplicationTokens />
-				</Route>}
-
-				<Route path="/admin/users/new">
-					<UserNew />
+				<Route path="/users">
+					<Users/>
 				</Route>
-				<Route path="/admin/users">
-					<Users />
+				<Route path="/clusters/new">
+					<ClusterNew/>
 				</Route>
 				<Route
-					path="/admin/clusters/detail/:clusterId"
+					path="/clusters/:clusterId"
 					component={ClusterDetail}
 				/>
-				<Route path="/admin/clusters/new">
-					<ClusterNew />
-				</Route>
-				<Route path="/admin/clusters">
-					<Clusters />
-				</Route>
-				<Route path="/admin/inspect/clients">
-					<InspectClients />
+				<Route path="/clusters">
+					<Clusters/>
 				</Route>
 				<Route path="/tools/streamsheets">
-					<Streamsheets />
+					<Streamsheets/>
 				</Route>
-				{/* <Route path="/streams">
-					<Streams />
-				</Route> */}
 				<Route path="/home">
-					<Home />
+					<Home/>
 				</Route>
-				{ !hideInfoPage ? <Route path="/info">
-					<InfoPage />
-				</Route> : null }
+				{!hideInfoPage ? <Route path="/info">
+					<InfoPage/>
+				</Route> : null}
 				<Route
 					path="/testCollections/tests/detail/:id"
 					component={TestEdit}
@@ -216,7 +219,7 @@ function AppRoutes(props) {
 					component={TestCollections}
 				/>
 				<Route path="/">
-					<Redirect to="/system/status" />
+					<Redirect to="/home"/>
 				</Route>
 			</Switch>
 		);
@@ -230,7 +233,7 @@ const mapStateToProps = (state) => {
 		userProfile: state.userProfile?.userProfile,
 		userManagementFeature: state.systemStatus?.features?.usermanagement,
 		selectedConnectionToEdit: state.brokerConnections?.selectedConnectionToEdit,
-		currentConnectionName: state.brokerConnections.currentConnectionName,
+		currentConnectionName: state.brokerConnections?.currentConnectionName,
 	};
 };
 

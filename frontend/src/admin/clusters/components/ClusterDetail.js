@@ -1,36 +1,32 @@
-import React, { useContext, useState } from 'react';
-import { Redirect, Link as RouterLink } from 'react-router-dom';
-import { connect, useDispatch } from 'react-redux';
-import { updateCluster, updateClusters } from '../actions/actions';
-import { useSnackbar } from 'notistack';
-
-import AddIcon from '@material-ui/icons/Add';
-import RemoveNodeIcon from '@material-ui/icons/RemoveCircle';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
-import EditIcon from '@material-ui/icons/Edit';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import PropTypes from 'prop-types';
-import SaveIcon from '@material-ui/icons/Save';
-import Switch from '@material-ui/core/Switch';
-import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import { WebSocketContext } from '../../../websockets/WebSocket';
-import { makeStyles } from '@material-ui/core/styles';
-import { useConfirm } from 'material-ui-confirm';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
-import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
-import SelectNodeDialog from './SelectNodeDialog';
-import LeaderIcon from '@material-ui/icons/Person';
-import FollowerIcon from '@material-ui/icons/People';
+import CardHeader from '@material-ui/core/CardHeader';
+import {green, red} from '@material-ui/core/colors';
+import Grid from '@material-ui/core/Grid';
+import {makeStyles} from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Tooltip from '@material-ui/core/Tooltip';
+import AddIcon from '@material-ui/icons/Add';
+import EditIcon from '@material-ui/icons/Edit';
 import ErrorIcon from '@material-ui/icons/Error';
-import { green, red } from '@material-ui/core/colors';
+import FollowerIcon from '@material-ui/icons/People';
+import LeaderIcon from '@material-ui/icons/Person';
+import RemoveNodeIcon from '@material-ui/icons/RemoveCircle';
+import SaveIcon from '@material-ui/icons/Save';
+import {useConfirm} from 'material-ui-confirm';
+import {useSnackbar} from 'notistack';
+import PropTypes from 'prop-types';
+import React, {useContext} from 'react';
+import {connect, useDispatch} from 'react-redux';
+import {Redirect} from 'react-router-dom';
+import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
+import ContainerHeader from '../../../components/ContainerHeader';
 import WaitDialog from '../../../components/WaitDialog';
+import {WebSocketContext} from '../../../websockets/WebSocket';
+import {updateCluster, updateClusters} from '../actions/actions';
+import SelectNodeDialog from './SelectNodeDialog';
 
 const clusterShape = PropTypes.shape({
 	clustername: PropTypes.string,
@@ -40,43 +36,21 @@ const useStyles = makeStyles((theme) => ({
 	root: {
 		width: '100%'
 	},
-	paper: {
-		padding: '15px'
-	},
-	form: {
-		// display: 'flex',
-		flexWrap: 'wrap'
-	},
-	textField: {
-		// marginLeft: theme.spacing(1),
-		// marginRight: theme.spacing(1),
-		// width: 200,
-	},
-	buttons: {
-		'& > *': {
-			margin: theme.spacing(1)
-		}
-	},
-	margin: {
-		margin: theme.spacing(1)
-	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
 const getNodeIcon = (node) => {
 	if (node?.error) {
 		return <Tooltip title={node.error.message} aria-label="FailedNode">
-			<ErrorIcon style={{ color: red[500] }} />
-		</Tooltip> 
+			<ErrorIcon style={{color: red[500]}}/>
+		</Tooltip>
 	} else {
 		if (node?.leader) {
 			return <Tooltip title="Leader" aria-label="Leader">
-				<LeaderIcon style={{ color: green[500] }} />
-			</Tooltip> 
+				<LeaderIcon style={{color: green[500]}}/>
+			</Tooltip>
 		} else {
 			return <Tooltip title="Follower" aria-label="Follower">
-				<FollowerIcon />
+				<FollowerIcon/>
 			</Tooltip>
 		}
 	}
@@ -88,9 +62,9 @@ const ClusterDetail = (props) => {
 	const [editMode, setEditMode] = React.useState(false);
 	const [selectNodeDialogOpen, setSelectNodeDialogOpen] = React.useState(false);
 	const [progressDialogOpen, setProgressDialogOpen] = React.useState(false);
-	const { enqueueSnackbar } = useSnackbar();
+	const {enqueueSnackbar} = useSnackbar();
 
-	const { cluster } = props;
+	const {cluster} = props;
 	const [updatedCluster, setUpdatedCluster] = React.useState({
 		...cluster,
 	});
@@ -98,7 +72,7 @@ const ClusterDetail = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
-	const { client: brokerClient } = context;
+	const {client: brokerClient} = context;
 
 	const validate = () => {
 		if (editMode) {
@@ -202,238 +176,186 @@ const ClusterDetail = (props) => {
 	};
 
 	return cluster ? (<div>
-		<Breadcrumbs aria-label="breadcrumb">
-			<RouterLink className={classes.breadcrumbLink} to="/home">
-				Home
-			</RouterLink>
-			<RouterLink className={classes.breadcrumbLink} color="inherit" to="/admin">
-				Admin
-			</RouterLink>
-			<RouterLink className={classes.breadcrumbLink} to="/admin/clusters">
-				Clusters
-			</RouterLink>
-			<Typography className={classes.breadcrumbItem} color="textPrimary">
-				{cluster.clustername}
-			</Typography>
-		</Breadcrumbs>
-		<br />
-		<Paper className={classes.paper}>
-			<form className={classes.form} noValidate autoComplete="off">
-				<div className={classes.margin}>
-					<Grid container spacing={1} alignItems="flex-end">
-						<Grid item xs={12} sm={4}>
-							<TextField
-								required={editMode}
-								disabled={true}
-								id="clustername"
-								label="Clustername"
-								value={updatedCluster?.clustername}
-								defaultValue=""
-								variant="outlined"
-								fullWidth
-								className={classes.textField}
-							/>
-						</Grid>
-						<Grid item xs={12} sm={8}>
-							<TextField
-								disabled={!editMode}
-								id="description"
-								label="Description"
-								value={updatedCluster?.description}
-								onChange={(event) => {
-									if (editMode) {
-										setUpdatedCluster({
-											...updatedCluster,
-											description: event.target.value
-										});
-									}
-								}}
-								defaultValue=""
-								variant="outlined"
-								fullWidth
-								className={classes.textField}
-							/>
-						</Grid>
-						<br />
-					</Grid>
-					<br />
-					<Grid container spacing={1} alignItems="flex-end">
-						{cluster?.nodes?.map((node, index) =>
-							<Grid item xs={12} md={4}>
-								<Card variant="outlined">
-									<CardHeader
-										avatar={getNodeIcon(node)}
-										subheader={node.broker}
+		<ContainerBreadCrumbs title={updatedCluster?.clustername}
+							  links={[{name: 'Home', route: '/home'}, {name: 'Cluster', route: '/clusters'}]}/>
+		<ContainerHeader
+			title={`Edit Cluster: ${updatedCluster?.clustername}`}
+			subTitle="View cluster settings and the assigned broker settings. Click on Edit to change the settings or add an additional broker."
+		/>
+		<Grid container spacing={2} alignItems="flex-end">
+			<Grid item xs={12} sm={4}>
+				<TextField
+					size="small"
+					required={editMode}
+					disabled={true}
+					id="clustername"
+					label="Clustername"
+					value={updatedCluster?.clustername}
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					className={classes.textField}
+				/>
+			</Grid>
+			<Grid item xs={12} sm={8}>
+				<TextField
+					size="small"
+					disabled={!editMode}
+					id="description"
+					label="Description"
+					value={updatedCluster?.description}
+					onChange={(event) => {
+						if (editMode) {
+							setUpdatedCluster({
+								...updatedCluster,
+								description: event.target.value
+							});
+						}
+					}}
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					className={classes.textField}
+				/>
+			</Grid>
+			<br/>
+		</Grid>
+		<br/>
+		<Grid container spacing={2} alignItems="flex-end">
+			{cluster?.nodes?.map((node, index) =>
+				<Grid item xs={12} sm={4}>
+					<Card variant="outlined">
+						<CardHeader
+							avatar={getNodeIcon(node)}
+							subheader={node.broker}
+						/>
+						<CardContent style={{paddingTop: '0px'}}>
+							<Grid container spacing={1} alignItems="flex-end">
+								<Grid item xs={12}>
+									<TextField
+										size="small"
+										margin="dense"
+										disabled={true}
+										id={node?.nodeId}
+										label="Node ID"
+										value={node?.nodeId}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
 									/>
-									<CardContent>
-										<Grid container spacing={1} alignItems="flex-end">
-											<Grid item xs={12}>
-												<TextField
-													disabled={true}
-													id={node?.nodeId}
-													label="Node ID"
-													value={node?.nodeId}
-													defaultValue=""
-													variant="outlined"
-													fullWidth
-													className={classes.textField}
-												/>
-											</Grid>
-											<Grid item xs={12}>
-												<TextField
-													disabled={true}
-													id={node?.address}
-													label="Address"
-													value={node?.address}
-													defaultValue=""
-													variant="outlined"
-													fullWidth
-													className={classes.textField}
-												/>
-											</Grid>
-											<Grid item xs={12}>
-												<TextField
-													disabled={true}
-													label="Port"
-													value={node?.port}
-													defaultValue=""
-													variant="outlined"
-													fullWidth
-													className={classes.textField}
-												/>
-											</Grid>
-											{/* <Grid item xs={12}>
-													<TextField
-														disabled={true}
-														id={`${node.id}-redis-hostname`}
-														label="Redis Host"
-														value={node.ha?.backendhosts[0]?.hostname}
-														defaultValue=""
-														variant="outlined"
-														fullWidth
-														className={classes.textField}
-													/>
-												</Grid>
-												<Grid item xs={12}>
-													<TextField
-														disabled={true}
-														id={`${node.id}-redis-port`}
-														label="Redis Port"
-														value={node.ha?.backendhosts[0]?.port}
-														defaultValue=""
-														variant="outlined"
-														fullWidth
-														className={classes.textField}
-													/>
-												</Grid> */}
-											{/* <Grid item xs={12}>
-													<Tooltip title="Use LTS">
-														<FormControlLabel
-															disabled={!editMode}
-															control={
-																<Switch
-																	disabled={!editMode}
-																	checked={
-																		node.ha?.uselts
-																	}
-																	onClick={(event) => {
-																		event.stopPropagation();
-																		if (event.target.checked) {
-																			onEnableLTS(cluster, node);
-																		} else {
-																			onDisableLTS(cluster, node);
-																		}
-																	}}
-																/>
-															}
-															label="Use LTS" 
-														/>
-													</Tooltip>
-												</Grid> */}
-										</Grid>
-									</CardContent>
-									<CardActions>
-										<Button
-											disabled={!editMode || cluster?.nodes?.length <= 3}
-											size="small"
-											onClick={() => removeNodeFromCluster(node.broker)}
-											startIcon={<RemoveNodeIcon />}
-										>
-											Remove
-										</Button>
-									</CardActions>
-								</Card>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										size="small"
+										margin="dense"
+										disabled={true}
+										id={node?.address}
+										label="Address"
+										value={node?.address}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										className={classes.textField}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										size="small"
+										margin="dense"
+										disabled={true}
+										label="Port"
+										value={node?.port}
+										defaultValue=""
+										variant="outlined"
+										fullWidth
+										className={classes.textField}
+									/>
+								</Grid>
 							</Grid>
-						)}
-					</Grid>
-				</div>
-			</form>
-			{!editMode && (
-				<Grid item xs={12} className={classes.buttons}>
-					<Button
-						variant="contained"
-						color="primary"
-						className={classes.button}
-						startIcon={<EditIcon />}
-						onClick={() => setEditMode(true)}
-					>
-						Edit
-					</Button>
+						</CardContent>
+						<CardActions>
+							<Button
+								disabled={!editMode || cluster?.nodes?.length <= 3}
+								size="small"
+								onClick={() => removeNodeFromCluster(node.broker)}
+								startIcon={<RemoveNodeIcon/>}
+							>
+								Remove
+							</Button>
+						</CardActions>
+					</Card>
 				</Grid>
 			)}
-			{editMode && (
-				<>
-					<Grid item xs={12} className={classes.buttons}>
-						<Button
-							variant="contained"
-							color="primary"
-							className={classes.button}
-							startIcon={<AddIcon />}
-							onClick={() => setSelectNodeDialogOpen(true)}
-						>
-							Add node
-						</Button>
-					</Grid>
-					<Grid item xs={12} className={classes.buttons}>
-						<Button
-							variant="contained"
-							disabled={!validate()}
-							color="primary"
-							className={classes.button}
-							startIcon={<SaveIcon />}
-							onClick={(event) => {
-								event.stopPropagation();
-								onUpdateClusterDetail();
-							}}
-						>
-							Save
-						</Button>
-						<Button
-							variant="contained"
-							onClick={(event) => {
-								event.stopPropagation();
-								onCancelEdit();
-							}}
-						>
-							Cancel
-						</Button>
-					</Grid>
-				</>
-			)}
-			<SelectNodeDialog
-				open={selectNodeDialogOpen}
-				handleClose={() => setSelectNodeDialogOpen(false)}
-				handleAddNode={(node) => addNodeToCluster(node)}
-				cluster={cluster}
-			/>
-			<WaitDialog
-				title='Update process of your cluster is in process'
-				open={progressDialogOpen}
-				handleClose={() => setProgressDialogOpen(false)}
-			/>
-		</Paper>
+		</Grid>
+		{!editMode && (
+			<Grid item xs={12}>
+				<Button
+					variant="contained"
+					style={{marginTop: '10px'}}
+					size="small"
+					color="primary"
+					startIcon={<EditIcon/>}
+					onClick={() => setEditMode(true)}
+				>
+					Edit
+				</Button>
+			</Grid>
+		)}
+		{editMode && [
+			<div style={{display: 'flex', justifyContent: 'space-between'}}>
+				<Grid item xs={12}>
+					<Button
+						variant="contained"
+						size="small"
+						disabled={!validate()}
+						color="primary"
+						style={{marginRight: '10px', marginTop: '10px'}}
+						startIcon={<SaveIcon/>}
+						onClick={(event) => {
+							event.stopPropagation();
+							onUpdateClusterDetail();
+						}}
+					>
+						Save
+					</Button>
+					<Button
+						variant="contained"
+						style={{marginTop: '10px'}}
+						size="small"
+						onClick={(event) => {
+							event.stopPropagation();
+							onCancelEdit();
+						}}
+					>
+						Cancel
+					</Button>
+				</Grid>
+				<Button
+					variant="contained"
+					size="small"
+					color="primary"
+					style={{marginTop: '10px', width: '150px'}}
+					startIcon={<AddIcon/>}
+					onClick={() => setSelectNodeDialogOpen(true)}
+				>
+					Add Node
+				</Button>
+			</div>
+		]
+		}
+		<SelectNodeDialog
+			open={selectNodeDialogOpen}
+			handleClose={() => setSelectNodeDialogOpen(false)}
+			handleAddNode={(node) => addNodeToCluster(node)}
+			cluster={cluster}
+		/>
+		<WaitDialog
+			title='Update process of your cluster is in process'
+			open={progressDialogOpen}
+			handleClose={() => setProgressDialogOpen(false)}
+		/>
 	</div>) : (
-		<Redirect to="/admin/clusters" push />
+		<Redirect to="/clusters" push/>
 	);
 };
 
