@@ -1,6 +1,7 @@
 import {green, red} from '@material-ui/core/colors';
 import Divider from '@material-ui/core/Divider';
 import Hidden from '@material-ui/core/Hidden';
+import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -16,6 +17,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import DisabledIcon from '@material-ui/icons/Cancel';
 import EnabledIcon from '@material-ui/icons/CheckCircle';
+import CancelIcon from '@material-ui/icons/CancelOutlined';
+import CheckHealthStatusIcon from '@material-ui/icons/Favorite';
 import {Alert, AlertTitle} from '@material-ui/lab';
 import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
@@ -50,12 +53,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CLIENTS_TABLE_COLUMNS = [
-	{ id: 'username', key: 'Name', align: 'left', width: '25%' },
-	{ id: 'clientid', key: 'Client ID', align: 'left', width: '20%' },
-	{ id: 'protocol', key: 'Protocol', align: 'left', width: '15%' },
-	{ id: 'address', key: 'IP Address', align: 'left', width: '15%' },
-	{ id: 'last_connected', key: 'Queue Usage', align: 'center', width: '15%' },
-	{ id: 'status', key: 'Connected', align: 'center', width: '10%' },
+	{id: 'username', key: 'Name', align: 'left', width: '15%'},
+	{id: 'clientid', key: 'Client ID', align: 'left', width: '20%'},
+	{id: 'protocol', key: 'Protocol', align: 'left', width: '15%'},
+	{id: 'address', key: 'IP Address', align: 'left', width: '15%'},
+	{id: 'last_connected', key: 'Queue Usage', align: 'center', width: '15%'},
+	{id: 'status', key: 'Connected', align: 'center', width: '5%'},
+	{id: 'disconnect', key: 'Disconnect', align: 'center', width: '5%'},
 ];
 
 
@@ -65,25 +69,25 @@ const unixTimestampToDate = (unixTimestamp) => {
 	return new Date(unixTimestamp * 1000);
 };
 
-const dateToString = (date, separator=' ') => {
+const dateToString = (date, separator = ' ') => {
 	if (!date) return date;
 	return date.getFullYear() + '-'
-			+ ((date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)) + '-'
-			+ (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + separator
-			+ (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':'
-			+ (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':'
-			+ (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
+		+ ((date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)) + '-'
+		+ (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + separator
+		+ (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':'
+		+ (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':'
+		+ (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
 };
 
 
 const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelectClient) => {
-	const { inspectFeature, onSort, sortBy, sortDirection } = props;
+	const {inspectFeature, onSort, sortBy, sortDirection} = props;
 
 	if (!inspectFeature?.error && inspectFeature?.supported !== false && clients && clients.length > 0) {
 		return <div style={{height: '100%', overflowY: 'auto'}}>
 			<Hidden style={{height: '100%'}} xsDown implementation="js">
 				<TableContainer style={{maxHeight: '100%'}}>
-					<Table stickyHeader size="small"  aria-label="sticky table">
+					<Table stickyHeader size="small" aria-label="sticky table">
 						<TableHead>
 							<TableRow>
 								{CLIENTS_TABLE_COLUMNS.map((column) => (
@@ -107,12 +111,13 @@ const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelect
 										onClick={(event) => {
 											onSelectClient(client.username);
 										}}
-										style={{ cursor: 'pointer' }}
+										style={{cursor: 'pointer'}}
 										key={`filter${String(Math.random())}`}
 									>
 										<TableCell align={CLIENTS_TABLE_COLUMNS[0].align}>{client.username}</TableCell>
 										<TableCell align={CLIENTS_TABLE_COLUMNS[1].align}>{client.clientid}</TableCell>
-										<TableCell align={CLIENTS_TABLE_COLUMNS[2].align}>{`${client.protocol} ${client.protocolVersion}`}</TableCell>
+										<TableCell
+											align={CLIENTS_TABLE_COLUMNS[2].align}>{`${client.protocol} ${client.protocolVersion}`}</TableCell>
 										<TableCell align={CLIENTS_TABLE_COLUMNS[3].align}>{client.address}</TableCell>
 										<TableCell align={CLIENTS_TABLE_COLUMNS[4].align}>
 											{client.queues?.messagesOut === undefined ? '' : `${client.queues?.messagesOut} / ${client.queues?.messagesMax}`}
@@ -124,22 +129,41 @@ const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelect
 												<>
 													{
 														client.lastConnect ? [
-															<span>Last Connected: {dateToString(unixTimestampToDate(client.lastConnect))}</span>,
-															<br />
+															<span>Last Connected: {dateToString(
+																unixTimestampToDate(client.lastConnect))}</span>,
+															<br/>
 														] : null
 													}
 													{
 														client.lastDisconnect ?
-														<span>Last Disconnected: {dateToString(unixTimestampToDate(client.lastDisconnect))}</span> : null
+															<span>Last Disconnected: {dateToString(unixTimestampToDate(
+																client.lastDisconnect))}</span> : null
 													}
 												</>
 											}>
 												{client.connected ?
-													<EnabledIcon fontSize="small" style={{ color: green[500] }} />
+													<EnabledIcon fontSize="small" style={{color: green[500]}}/>
 													:
-													<DisabledIcon fontSize="small" style={{ color: red[500] }} />
+													<DisabledIcon fontSize="small" style={{color: red[500]}}/>
 												}
 											</Tooltip>
+										</TableCell>
+										<TableCell align={CLIENTS_TABLE_COLUMNS[6].align}>
+											{client.connected ?
+												<Tooltip title="Click to disconnect client">
+													<IconButton
+														size="small"
+														onClick={(event) => {
+															event.stopPropagation();
+														}}
+														aria-label="delete"
+													>
+														<CancelIcon/>
+													</IconButton>
+												</Tooltip>
+												:
+												null
+											}
 										</TableCell>
 									</StyledTableRow>
 								))}
@@ -173,7 +197,7 @@ const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelect
 										}
 									/>
 								</ListItem>
-								<Divider />
+								<Divider/>
 							</React.Fragment>
 						))}
 					</List>
@@ -192,8 +216,8 @@ const Clients = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
-	const { client: brokerClient } = context;
-	const { inspectFeature, userProfile, roles = [], clients = [], filter, onSort, sortBy, sortDirection } = props;
+	const {client: brokerClient} = context;
+	const {inspectFeature, userProfile, roles = [], clients = [], filter, onSort, sortBy, sortDirection} = props;
 	const [filteredClients, setFilteredClients] = useState(clients);
 
 	const onUpdateUserRoles = async (user, roles = []) => {
@@ -234,10 +258,10 @@ const Clients = (props) => {
 					{/* TODO: Quick hack to detect whether feature is supported */}
 					{inspectFeature?.error ? <>
 						<br/>
-							<Alert severity="warning">
-								<AlertTitle>{inspectFeature.error.title}</AlertTitle>
-								{inspectFeature.error.message}
-							</Alert>
+						<Alert severity="warning">
+							<AlertTitle>{inspectFeature.error.title}</AlertTitle>
+							{inspectFeature.error.message}
+						</Alert>
 					</> : null}
 					{!inspectFeature?.error && inspectFeature?.supported === false ? <>
 						<br/>
@@ -246,7 +270,7 @@ const Clients = (props) => {
 							Make sure that this feature is included in your MMC license.
 						</Alert>
 					</> : null}
-					{ createClientsTable(filteredClients, classes, props, onUpdateUserRoles, onSelectClient) }
+					{createClientsTable(filteredClients, classes, props, onUpdateUserRoles, onSelectClient)}
 				</div>
 			</div>
 		</div>
