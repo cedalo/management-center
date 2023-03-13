@@ -241,10 +241,6 @@ const Status = ({
 											}, {
 												label: "Bytes Received",
 												value: formatBytes(systemStatus?.$SYS?.broker?.bytes?.received)
-											}, {
-												label: "Subscriptions",
-												value: toNumber(systemStatus?.$SYS?.broker?.subscriptions?.count),
-												space: true
 											}
 											]}
 											icon={<BrokerIcon/>}
@@ -275,7 +271,7 @@ const Status = ({
 												history.push(`/clients/`);
 											}
 											}
-											label="Client Sessions"
+											label="Clients"
 											infoIcon
 											infos={[{
 												label: "Total",
@@ -283,9 +279,13 @@ const Status = ({
 											}, {
 												label: "Connected",
 												value: toNumber(systemStatus?.$SYS?.broker?.clients?.connected)
-											}, {
+											}/*, {
 												label: "Disconnected",
 												value: systemStatus?.$SYS?.broker?.clients?.disconnected === undefined ? '' : toNumber(systemStatus?.$SYS?.broker?.clients?.disconnected)
+											}*/, {
+												label: "Subscriptions",
+												value: toNumber(systemStatus?.$SYS?.broker?.subscriptions?.count),
+												space: true
 											}]}
 											icon={<ClientIcon/>}
 										/>
