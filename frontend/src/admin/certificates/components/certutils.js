@@ -49,3 +49,16 @@ const toObj = (delimiter, mapKey) => (obj, str) => {
 const identity = (v) => v;
 export const mapSubjectKey = (key) => mapSubjectKeys[key] || key;
 export const parseSubjectInfo = (str, mapKey = identity) => (str ? str.split('\n').reduce(toObj('=', mapKey), {}) : {});
+
+const isValid = ({ cert, id, filename }) => cert || (id && filename);
+export const loadCertificateInfo = async (certificate, client) => {
+	if (isValid(certificate)) {
+		try {
+			const { data: info } = await client.getCertificateInfo(certificate);
+			return { info };
+		} catch (error) {
+			return { error };
+		}
+	}
+	return { info: undefined };
+};
