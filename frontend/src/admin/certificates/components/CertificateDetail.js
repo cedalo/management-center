@@ -11,6 +11,7 @@ import { WebSocketContext } from '../../../websockets/WebSocket';
 import ContentContainer from './ContentContainer';
 import UploadButton from './UploadButton';
 import CertificateInfo from './CertificateInfo';
+import { loadCertificateInfo } from './certutils';
 
 const useStyles = makeStyles((theme) => ({
 	buttons: {
@@ -43,11 +44,6 @@ const saveMessage = (cert) => ({
 
 const isValid = (crt) => crt.name && crt.filename && crt.cert;
 
-const notifyError = (message, enqueueSnackbar) =>
-	enqueueSnackbar(`${message} Reason: ${error.message || error}`, {
-		variant: 'error'
-	});
-
 const CertificateDetail = () => {
 	const classes = useStyles();
 	const history = useHistory();
@@ -70,9 +66,17 @@ const CertificateDetail = () => {
 			setCert({ ...cert, name });
 		}
 	};
-	const onCertUpload = ({ error, data, file } = {}) => {
-		if (error) notifyError(`Failed to upload certificate file "${file.name}".`, enqueueSnackbar);
-		else setCert({ ...cert, filename: file.name, cert: data });
+	const onCertUpload = async ({ error, data, file } = {}) => {
+		if (error) enqueueSnackbar(`Failed to upload certificate file "${file.name}".`, { variant: 'error' });
+		else {
+			const certificate = { cert: data, filename: file.name };
+			const { info, error: failed } = await loadCertificateInfo(certificate, client);
+			if (!info || failed) {
+				enqueueSnackbar(`File "${file.name}" is not a valid certificate!`, { variant: 'error' });
+				certificate.cert = undefined;
+			}
+			setCert({ ...cert, ...certificate });
+		}
 	};
 	const onCertDelete = (/* event */) => {
 		setCert({ ...cert, filename: '', cert: null });
@@ -93,11 +97,7 @@ const CertificateDetail = () => {
 
 	return (
 		<ContentContainer
-			path={[
-				{ link: 'home' },
-				{ link: 'certs', title: 'Certificates' },
-				{ title: 'CA Certificate' }
-			]}
+			path={[{ link: 'home' }, { link: 'certs', title: 'Certificates' }, { title: 'CA Certificate' }]}
 		>
 			<form className={classes.form} noValidate autoComplete="off">
 				<div className={classes.margin}>
@@ -158,33 +158,34 @@ const CertificateDetail = () => {
 								}}
 							/>
 						</Grid>
-						<Grid item xs={12}>
-							{/* <CertificateInfo certificate={cert} variant="detailed" /> */}
-							<Table aria-label="certinfo-detail">
-								<TableRow>
-									<TableCell width="2%">
-										<IconButton
-											aria-label="expand row"
-											size="small"
-											onClick={() => setIsExpanded(!isExpanded)}
-										>
-											{isExpanded ? <CollapseIcon /> : <ExpandIcon />}
-										</IconButton>
+						{cert?.cert && (
+							<Grid item xs={12}>
+								<Table aria-label="certinfo-detail">
+									<TableRow>
+										<TableCell width="2%">
+											<IconButton
+												aria-label="expand row"
+												size="small"
+												onClick={() => setIsExpanded(!isExpanded)}
+											>
+												{isExpanded ? <CollapseIcon /> : <ExpandIcon />}
+											</IconButton>
+										</TableCell>
+										<TableCell width="10%" align="left">
+											Certificate Details
+										</TableCell>
+										<TableCell width="88%"></TableCell>
+									</TableRow>
+									<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+										<Collapse in={isExpanded} timeout="auto" unmountOnExit display="">
+											<Box margin={1} display="flex" flexDirection="row">
+												<CertificateInfo certificate={cert} variant="detailed" />
+											</Box>
+										</Collapse>
 									</TableCell>
-									<TableCell width="10%" align="left">
-										Certificate Details
-									</TableCell>
-									<TableCell width="88%"></TableCell>
-								</TableRow>
-								<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-									<Collapse in={isExpanded} timeout="auto" unmountOnExit>
-										<Box margin={1} display="flex" flexDirection="row">
-											<CertificateInfo certificate={cert} variant="detailed" />
-										</Box>
-									</Collapse>
-								</TableCell>
-							</Table>
-						</Grid>
+								</Table>
+							</Grid>
+						)}
 						<Grid container xs={12} alignItems="flex-start">
 							<Grid item xs={12} className={classes.buttons}>
 								<SaveCancelButtons onSave={onSave} saveDisabled={!canSave} onCancel={onCancel} />
