@@ -35,6 +35,7 @@ const mapSubjectKeys = {
 	O: 'Organization',
 	OU: 'Organization Unit',
 	C: 'Country Code',
+	E: 'E-Mail',
 	STREET: 'Street',
 	emailAddress: 'E-Mail'
 	// DC: 'Domain'

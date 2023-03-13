@@ -28,8 +28,8 @@ import {
 } from '@material-ui/core';
 import { green, red } from '@material-ui/core/colors';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import TlsEnabledIcon from '@material-ui/icons/Check';
-import TlsDisabledIcon from '@material-ui/icons/Cancel';
+import EnabledIcon from '@material-ui/icons/Check';
+import DisabledIcon from '@material-ui/icons/Cancel';
 import { useSnackbar } from 'notistack';
 import SaveCancelButtons from '../../../components/SaveCancelButtons';
 import ContainerHeader from '../../../components/ContainerHeader';
@@ -75,7 +75,8 @@ const ListenerSelect = ({ listeners, onSelect }) => {
 					<TableCell padding="checkbox">Deploy</TableCell>
 					<TableCell>Protocol</TableCell>
 					<TableCell>Port</TableCell>
-					<TableCell>Address</TableCell>
+					<TableCell>Bind Address</TableCell>
+					<TableCell>Require Certificate</TableCell>
 					<TableCell>TLS</TableCell>
 				</TableRow>
 			</TableHead>
@@ -84,7 +85,7 @@ const ListenerSelect = ({ listeners, onSelect }) => {
 					<TableRow key={listener.id}>
 						<TableCell padding="checkbox" style={rowStyle(index)}>
 							<Checkbox
-								disabled={!listener.tls}
+								disabled={!listener.tls || !listener.requireCertificate}
 								checked={!!listener.isUsed}
 								onChange={onSelect}
 								inputProps={{
@@ -94,12 +95,19 @@ const ListenerSelect = ({ listeners, onSelect }) => {
 						</TableCell>
 						<TableCell style={rowStyle(index)}>{listener.protocol}</TableCell>
 						<TableCell style={rowStyle(index)}>{listener.port}</TableCell>
-						<TableCell style={rowStyle(index)}>{listener['bind-address'] || ''}</TableCell>
+						<TableCell style={rowStyle(index)}>{listener.bindAddress || ''}</TableCell>
+						<TableCell style={rowStyle(index)}>
+							{listener.requireCertificate ? (
+								<EnabledIcon fontSize="small" style={{ color: green[500] }} />
+							) : (
+								<DisabledIcon fontSize="small" style={{ color: red[500] }} />
+							)}
+						</TableCell>
 						<TableCell style={rowStyle(index)}>
 							{listener.tls ? (
-								<TlsEnabledIcon fontSize="small" style={{ color: green[500] }} />
+								<EnabledIcon fontSize="small" style={{ color: green[500] }} />
 							) : (
-								<TlsDisabledIcon fontSize="small" style={{ color: red[500] }} />
+								<DisabledIcon fontSize="small" style={{ color: red[500] }} />
 							)}
 						</TableCell>
 					</TableRow>
