@@ -744,7 +744,7 @@ module.exports = class BaseMosquittoProxyClient {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
-			request: 'cluster-management/getCluste',
+			request: 'cluster-management/getCluster',
 			clustername
 		}, timeout);
 		return response.response;
