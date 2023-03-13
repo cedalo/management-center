@@ -29,7 +29,7 @@ const Info = ({ className, infos, infoIcon, label, chart, icon, ...rest }) => {
 	const classes = useStyles();
 
 	return (
-		<Card className={clsx(classes.root, className)} {...rest}>
+		<Card className={clsx(classes.root, className)} variant="outlined" {...rest}>
 			<CardHeader
 				title={<Typography variant="body1">{label}</Typography>}
 				avatar={<Avatar className={classes.avatar}>{icon}</Avatar>}
@@ -38,7 +38,13 @@ const Info = ({ className, infos, infoIcon, label, chart, icon, ...rest }) => {
 						<IconButton
 							className={classes.info} size="small"
 							aria-label="info">
-							<InfoOutlined fontSize="small" />
+							<InfoOutlined
+								onClick={(event) => {
+									event.stopPropagation();
+									window.open('https://docs.cedalo.com/management-center', '_blank')
+								}}
+								fontSize="small"
+							/>
 						</IconButton>
 					</Tooltip> : null
 				}

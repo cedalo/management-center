@@ -23,6 +23,7 @@ import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import Info from './Info';
 import { useTheme } from '@material-ui/core/styles';
+import {useHistory} from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -50,6 +51,7 @@ const Status = ({
 	const classes = useStyles();
 	const theme = useTheme();
 	const confirm = useConfirm();
+	const history = useHistory();
 	const {enqueueSnackbar} = useSnackbar();
 	const context = useContext(WebSocketContext);
 	const {client: brokerClient} = context;
@@ -242,7 +244,6 @@ const Status = ({
 									<Grid item xs={12} style={{paddingTop: '24px'}}>
 										<Info
 											label="Broker Info"
-											infoIcon
 											infos={[{
 												label: "Uptime",
 												value: secondsToDhms(systemStatus?.$SYS?.broker?.uptime),
@@ -259,7 +260,12 @@ const Status = ({
 								</Grid>
 								<Grid container item lg={4} xl={4} sm={6} xs={12}>
 									<Grid item xs={12}>
-										<Info
+										<Info style={{cursor: 'pointer'}}
+											onClick={(event) => {
+												event.stopPropagation();
+												history.push(`/clients/`);
+											}
+											}
 											label="Client Sessions"
 											infoIcon
 											infos={[{
@@ -270,7 +276,7 @@ const Status = ({
 												value: toNumber(systemStatus?.$SYS?.broker?.clients?.connected)
 											}, {
 												label: "Disconnected",
-												value: toNumber(systemStatus?.$SYS?.broker?.clients?.disconnected)
+												value: systemStatus?.$SYS?.broker?.clients?.disconnected === undefined ? '' : toNumber(systemStatus?.$SYS?.broker?.clients?.disconnected)
 											}]}
 											icon={<ClientIcon/>}
 										/>
@@ -337,7 +343,7 @@ const Status = ({
 														value={systemStatus?.$SYS?.broker?.clients?.total}
 														startColor="green"
 														height={250}
-														textColor={theme.palette.text.primary}
+														textColor={theme.palette.text.secondary}
 														valueTextFontWeight="normal"
 														valueTextFontSize="9pt"
 														labelFontSize="12pt"
