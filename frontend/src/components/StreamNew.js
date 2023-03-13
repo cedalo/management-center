@@ -2,6 +2,7 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import {makeStyles} from '@material-ui/core/styles';
+import {useFormStyles} from '../styles';
 import TextField from '@material-ui/core/TextField';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import SaveIcon from '@material-ui/icons/Save';
@@ -60,6 +61,7 @@ const StreamNew = (props) => {
 	const [ttl, setTTL] = useState(86400);
 	const [query, setQuery] = useState({});
 	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
+	const formClasses = useFormStyles();
 
 	const streamnameExists = props?.streams?.find((searchStream) => {
 		return searchStream.streamname === streamname;
@@ -139,6 +141,7 @@ const StreamNew = (props) => {
 							fullWidth
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 							InputProps={{
 								startAdornment: (
 									<InputAdornment position="start">
@@ -158,6 +161,7 @@ const StreamNew = (props) => {
 							fullWidth
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 						/>
 					</Grid>
 					<Grid item xs={12}>
@@ -171,6 +175,7 @@ const StreamNew = (props) => {
 							fullWidth
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 						/>
 					</Grid>
 					<Grid item xs={12}>
@@ -183,6 +188,7 @@ const StreamNew = (props) => {
 							fullWidth
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 						/>
 					</Grid>
 					<Grid item xs={12}>
@@ -197,6 +203,7 @@ const StreamNew = (props) => {
 							fullWidth
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 						/>
 					</Grid>
 					<Grid item xs={12}>
@@ -209,6 +216,7 @@ const StreamNew = (props) => {
 							fullWidth
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 						/>
 					</Grid>
 					{/* <Grid item xs={12}>

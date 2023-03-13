@@ -19,6 +19,7 @@ import {updateGroup, updateGroups} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import {useFormStyles} from '../styles';
 
 const clientShape = PropTypes.shape({
 	username: PropTypes.string,
@@ -31,7 +32,6 @@ const GroupDetail = (props) => {
 	const confirm = useConfirm();
 	const {enqueueSnackbar} = useSnackbar();
 	const {client: brokerClient} = context;
-
 	const [value, setValue] = React.useState(0);
 	const [state, setState] = React.useState({
 		checkedA: true,
@@ -42,6 +42,7 @@ const GroupDetail = (props) => {
 	const [updatedGroup, setUpdatedGroup] = React.useState({
 		...group
 	});
+	const formClasses = useFormStyles();
 
 	const validate = () => {
 		const valid = updatedGroup.groupname !== '';
@@ -107,6 +108,7 @@ const GroupDetail = (props) => {
 						id="groupname"
 						size="small"
 						margin="dense"
+						className={formClasses.textField}
 						value={updatedGroup.groupname}
 						label="Name"
 						defaultValue=""
@@ -136,6 +138,7 @@ const GroupDetail = (props) => {
 						label="Text Name"
 						size="small"
 						margin="dense"
+						className={formClasses.textField}
 						value={updatedGroup.textname}
 						//   onChange={(event) => setTextName(event.target.value)}
 						defaultValue=""
@@ -158,6 +161,7 @@ const GroupDetail = (props) => {
 						label="Description"
 						size="small"
 						margin="dense"
+						className={formClasses.textField}
 						value={updatedGroup.textdescription}
 						//   onChange={(event) => setTextDescription(event.target.value)}
 						defaultValue=""
@@ -171,7 +175,7 @@ const GroupDetail = (props) => {
 					<Button
 						variant="contained"
 						size="small"
-						style={{marginTop: '10px'}}
+						className={formClasses.buttonTop}
 						color="primary"
 						startIcon={<EditIcon/>}
 						onClick={() => setEditMode(true)}
@@ -187,7 +191,7 @@ const GroupDetail = (props) => {
 						disabled={!validate()}
 						size="small"
 						color="primary"
-						style={{marginTop: '10px', marginRight: '10px'}}
+						className={formClasses.buttonTopRight}
 						startIcon={<SaveIcon/>}
 						onClick={(event) => {
 							event.stopPropagation();
@@ -199,7 +203,7 @@ const GroupDetail = (props) => {
 					<Button
 						variant="contained"
 						size="small"
-						style={{marginTop: '10px'}}
+						className={formClasses.buttonTop}
 						onClick={(event) => {
 							event.stopPropagation();
 							onCancelEdit();
