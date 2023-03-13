@@ -116,6 +116,17 @@ const ListenerSelect = ({ listeners, onSelect }) => {
 		</Table>
 	);
 };
+const getListenersCell = (listeners, onSelect) => {
+	if (listeners == null || !listeners.length) {
+		const text = listeners ? 'No listeners available for selected connection...' : 'Loading available listeners...';
+		return (
+			<Typography variant="h8" gutterBottom component="div">
+				{text}
+			</Typography>
+		);
+	}
+	return <ListenerSelect listeners={listeners} onSelect={onSelect} />;
+};
 
 const byName = (a, b) => {
 	if (a.name < b.name) return -1;
@@ -180,19 +191,20 @@ const CertificateDeploy = ({ connections = [] }) => {
 
 	const loadListeners = async () => {
 		try {
+			setListeners(null);
 			if (isConnected(connection)) {
 				const { data } = await client.getListeners(connection.id);
 				setListeners(markUsedListeners(certificate, getConnectionInfo(connection), data));
 			} else {
 				const name = connection?.name || 'n.a.';
 				if (listeners != null) enqueueSnackbar(`Connection "${name}" is not connected`, { variant: 'warning' });
-				setListeners(null);
+				setListeners([]);
 			}
 		} catch (error) {
 			enqueueSnackbar(`Cannot deploy because listeners could not be loaded. Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
-			// history.goBack();
+			setListeners([]);
 		}
 	};
 	useEffect(() => {
@@ -249,7 +261,7 @@ const CertificateDeploy = ({ connections = [] }) => {
 			<ContainerHeader
 				title={`Deploy client CA certificate: ${certificate.name}`}
 				subTitle={
-					<Typography variant='inherit' display='inline'>
+					<Typography variant="inherit" display="inline">
 						Client certificate authorization is only possible, if the connected broker has set the right
 						configuration. The broker configuration must define a <i>certfile</i> and set{' '}
 						<i>require_certificate</i> to true.
@@ -273,15 +285,7 @@ const CertificateDeploy = ({ connections = [] }) => {
 					<TableBody>
 						<TableRow>
 							<TableCell style={{ verticalAlign: 'top' }}>Select target listeners</TableCell>
-							<TableCell align="left">
-								{listeners == null ? (
-									<Typography variant="h8" gutterBottom component="div">
-										Loading available listeners...
-									</Typography>
-								) : (
-									<ListenerSelect listeners={listeners} onSelect={onSelectListener} />
-								)}
-							</TableCell>
+							<TableCell align="left">{getListenersCell(listeners, onSelectListener)}</TableCell>
 						</TableRow>
 						<TableRow>
 							<TableCell style={{ borderBottom: 'none' }}>
