@@ -1,3 +1,5 @@
+const NodeMosquittoClient = require('../client/NodeMosquittoClient');
+
 const unloadPluginAction = {
 	type: 'plugin/unload',
 	fn: ({ user, security, pluginManager }, { pluginId }) => {
@@ -46,7 +48,7 @@ const testConnectionAction = {
 		// try {
 		await testClient.connect({
 			mqttEndpointURL: filteredConnection.url,
-			options: createOptions(filteredConnection)
+			options: NodeMosquittoClient.createOptions(filteredConnection)
 		});
 		await testClient.disconnect();
 		// } catch(error) {

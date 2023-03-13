@@ -131,6 +131,7 @@ const Plugins = (props) => {
 			}
 		}
 	};
+	const pluginsToShow = response.filter(p => )
 	if (response) {
 		return (
 			<div>
@@ -244,13 +245,6 @@ const Plugins = (props) => {
 	} else {
 		return null;
 	}
-};
-
-const mapStateToProps = (state) => {
-	return {
-		license: state.license?.license,
-		version: state.version?.version
-	};
 };
 
 export default connect(mapStateToProps)(Plugins);

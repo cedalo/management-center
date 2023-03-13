@@ -228,28 +228,6 @@ eventify(stopFunctions, async function (array, element) {
 	} // in this case as soon as the broker connected, it's stop functions which disconnects it is added to the stopFunctions array
 }); // and due to the callback it checks if stop signal has already been issued and gets executed immediately.
 
-const createOptions = (connection) => {
-	// remove unwanted parameters
-	const { name: _name, id: _id, status: _status, url: _url, credentials, ...restOfConnection } = connection;
-
-	// decode all base64 encoded fields
-	for (const property in restOfConnection) {
-		if (restOfConnection[property]?.encoding === 'base64' && restOfConnection[property]?.data) {
-			restOfConnection[property] = Buffer.from(restOfConnection[property].data, 'base64');
-		} else {
-			restOfConnection[property] =
-				(restOfConnection[property] && restOfConnection[property].data) || restOfConnection[property];
-		}
-	}
-
-	// compose the result together by adding credentials, the rest of the connection and connectTimeout into one options object
-	return {
-		...credentials,
-		...restOfConnection,
-		connectTimeout: process.env.CEDALO_MC_TIMOUT_MOSQUITTO_CONNECT || 5000
-	};
-};
-
 const init = async (licenseContainer) => {
 	const installation = loadInstallation();
 	const usageTracker = new UsageTracker({ license: licenseContainer, version, installation });
@@ -351,7 +329,7 @@ const init = async (licenseContainer) => {
 		try {
 			await brokerClient.connect({
 				mqttEndpointURL: connection.url,
-				options: createOptions(connection)
+				options: NodeMosquittoClient.createOptions(connection)
 			});
 			context.eventEmitter.emit('connect', connectionConfiguration);
 
