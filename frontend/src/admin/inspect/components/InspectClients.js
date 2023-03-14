@@ -1,11 +1,5 @@
 import {green, red} from '@material-ui/core/colors';
-import Divider from '@material-ui/core/Divider';
-import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
 import {makeStyles, withStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -14,11 +8,10 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import DisabledIcon from '@material-ui/icons/Cancel';
-import EnabledIcon from '@material-ui/icons/CheckCircle';
 import CancelIcon from '@material-ui/icons/CancelOutlined';
-import CheckHealthStatusIcon from '@material-ui/icons/Favorite';
+import EnabledIcon from '@material-ui/icons/CheckCircle';
 import {Alert, AlertTitle} from '@material-ui/lab';
 import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
@@ -53,8 +46,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CLIENTS_TABLE_COLUMNS = [
-	{id: 'username', key: 'Name', align: 'left', width: '15%'},
-	{id: 'clientid', key: 'Client ID', align: 'left', width: '20%'},
+	{id: 'name', key: 'Name', align: 'left', width: '15%'},
+	{id: 'id', key: 'Client ID', align: 'left', width: '20%'},
 	{id: 'protocol', key: 'Protocol', align: 'left', width: '15%'},
 	{id: 'address', key: 'IP Address', align: 'left', width: '15%'},
 	{id: 'last_connected', key: 'Queue Usage', align: 'center', width: '15%'},
@@ -82,72 +75,85 @@ const dateToString = (date, separator = ' ') => {
 
 const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelectClient) => {
 	const {inspectFeature, onSort, sortBy, sortDirection} = props;
+	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
+	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
 
 	if (!inspectFeature?.error && inspectFeature?.supported !== false && clients && clients.length > 0) {
 		return <div style={{height: '100%', overflowY: 'auto'}}>
-			<Hidden style={{height: '100%'}} xsDown implementation="js">
-				<TableContainer style={{maxHeight: '100%'}}>
-					<Table stickyHeader size="small" aria-label="sticky table">
-						<TableHead>
-							<TableRow>
-								{CLIENTS_TABLE_COLUMNS.map((column) => (
-									<TableCell
-										align={column.align}
-										style={{width: column.width}}
-										key={column.id}
-										sortDirection={sortBy === column.id ? sortDirection : false}
-									>
-										{column.key}
-									</TableCell>
-								))}
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{clients &&
-								clients.map((client, index) => (
-									<StyledTableRow
-										hover
-										// key={client.username}
-										onClick={(event) => {
-											onSelectClient(client.username);
-										}}
-										style={{cursor: 'pointer'}}
-										key={`filter${String(Math.random())}`}
-									>
-										<TableCell align={CLIENTS_TABLE_COLUMNS[0].align}>{client.username}</TableCell>
+			<TableContainer style={{maxHeight: '100%'}}>
+				<Table stickyHeader size="small" aria-label="sticky table">
+					<TableHead>
+						<TableRow>
+							{CLIENTS_TABLE_COLUMNS.map((column) => (
+								<TableCell
+									align={column.align}
+									style={{
+										width: column.width,
+										display: (!small && !medium) ||
+											(column.id === 'name' && (small || medium)) ||
+											(column.id === 'status' && (small || medium)) ||
+											(column.id === 'id' && medium) ? undefined : 'none'
+									}}
+									key={column.id}
+									sortDirection={sortBy === column.id ? sortDirection : false}
+								>
+									{column.key}
+								</TableCell>
+							))}
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{clients &&
+							clients.map((client, index) => (
+								<StyledTableRow
+									// hover
+									// key={client.username}
+									onClick={(event) => {
+										onSelectClient(client.username);
+									}}
+									// style={{cursor: 'pointer'}}
+									key={`filter${String(Math.random())}`}
+								>
+									<TableCell align={CLIENTS_TABLE_COLUMNS[0].align}>{client.username}</TableCell>
+									{small ? null :
 										<TableCell align={CLIENTS_TABLE_COLUMNS[1].align}>{client.clientid}</TableCell>
+									}
+									{small || medium ? null : [
 										<TableCell
-											align={CLIENTS_TABLE_COLUMNS[2].align}>{`${client.protocol} ${client.protocolVersion}`}</TableCell>
-										<TableCell align={CLIENTS_TABLE_COLUMNS[3].align}>{client.address}</TableCell>
+											align={CLIENTS_TABLE_COLUMNS[2].align}>{`${client.protocol} ${client.protocolVersion}`}
+										</TableCell>,
+										<TableCell align={CLIENTS_TABLE_COLUMNS[3].align}>{client.address}</TableCell>,
 										<TableCell align={CLIENTS_TABLE_COLUMNS[4].align}>
 											{client.queues?.messagesOut === undefined ? '' : `${client.queues?.messagesOut} / ${client.queues?.messagesMax}`}
 										</TableCell>
-										{/*<TableCell>{dateToString(unixTimestampToDate(client.lastConnect))}</TableCell>*/}
-										{/*<TableCell>{dateToString(unixTimestampToDate(client.lastDisconnect))}</TableCell>*/}
-										<TableCell align={CLIENTS_TABLE_COLUMNS[5].align}>
-											<Tooltip title={
-												<>
-													{
-														client.lastConnect ? [
-															<span>Last Connected: {dateToString(
-																unixTimestampToDate(client.lastConnect))}</span>,
-															<br/>
-														] : null
-													}
-													{
-														client.lastDisconnect ?
-															<span>Last Disconnected: {dateToString(unixTimestampToDate(
-																client.lastDisconnect))}</span> : null
-													}
-												</>
-											}>
-												{client.connected ?
-													<EnabledIcon fontSize="small" style={{color: green[500]}}/>
-													:
-													<DisabledIcon fontSize="small" style={{color: red[500]}}/>
+									]}
+									{/*<TableCell>{dateToString(unixTimestampToDate(client.lastConnect))}</TableCell>*/}
+									{/*<TableCell>{dateToString(unixTimestampToDate(client.lastDisconnect))}</TableCell>*/}
+									<TableCell align={CLIENTS_TABLE_COLUMNS[5].align}>
+										<Tooltip title={
+											<>
+												{
+													client.lastConnect ? [
+														<span>Last Connected: {dateToString(
+															unixTimestampToDate(client.lastConnect))}</span>,
+														<br/>
+													] : null
 												}
-											</Tooltip>
-										</TableCell>
+												{
+													client.lastDisconnect ?
+														<span>Last Disconnected: {dateToString(unixTimestampToDate(
+															client.lastDisconnect))}</span> : null
+												}
+											</>
+										}>
+											{client.connected ?
+												<EnabledIcon fontSize="small" style={{color: green[500]}}/>
+												:
+												<DisabledIcon fontSize="small" style={{color: red[500]}}/>
+											}
+										</Tooltip>
+									</TableCell>
+									{small || medium ? null :
 										<TableCell align={CLIENTS_TABLE_COLUMNS[6].align}>
 											{client.connected ?
 												<Tooltip title="Click to disconnect client">
@@ -165,44 +171,12 @@ const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelect
 												null
 											}
 										</TableCell>
-									</StyledTableRow>
-								))}
-						</TableBody>
-					</Table>
-				</TableContainer>
-			</Hidden>
-			<Hidden smUp implementation="css">
-				<Paper>
-					<List className={classes.root}>
-						{clients.map((client) => (
-							<React.Fragment>
-								<ListItem
-									alignItems="flex-start"
-									onClick={(event) => onSelectClient(client.username)}
-								>
-									<ListItemText
-										primary={<span>{client.username}</span>}
-										secondary={
-											<React.Fragment>
-												<Typography
-													component="span"
-													variant="body2"
-													className={classes.inline}
-													color="textPrimary"
-												>
-													{client.username}
-												</Typography>
-												<span> — {client.clientid} </span>
-											</React.Fragment>
-										}
-									/>
-								</ListItem>
-								<Divider/>
-							</React.Fragment>
-						))}
-					</List>
-				</Paper>
-			</Hidden>
+									}
+								</StyledTableRow>
+							))}
+					</TableBody>
+				</Table>
+			</TableContainer>
 		</div>
 	} else if (inspectFeature?.error) {
 		return null;

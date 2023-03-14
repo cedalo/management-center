@@ -1,17 +1,11 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
+import Collapse from '@material-ui/core/Collapse';
 import Grid from '@material-ui/core/Grid';
-import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import {makeStyles, useTheme, withStyles} from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import {makeStyles, withStyles} from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -21,8 +15,11 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import React, {useContext} from 'react';
@@ -30,25 +27,18 @@ import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateBrokerConfigurations, updateBrokerConnections, updateSelectedConnection} from '../../../actions/actions';
 import BrokerStatusIcon from '../../../components/BrokerStatusIcon';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import Collapse from '@material-ui/core/Collapse';
-import ContainerHeader from '../../../components/ContainerHeader';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
+import ContainerHeader from '../../../components/ContainerHeader';
 import PremiumFeatureDialog from '../../../components/PremiumFeatureDialog';
 import {atLeastAdmin} from '../../../utils/accessUtils/access';
 import {handleConnectionChange} from '../../../utils/connectionUtils/connections';
 import {WebSocketContext} from '../../../websockets/WebSocket';
 
 
-const GROUP_TABLE_COLUMNS = [
-	{id: 'expand', key: '', width: '10px'},
-	{id: 'name', key: 'Name'},
-	{id: 'id', key: 'ID'},
-	{id: 'url', key: 'URL'},
-	{id: 'status', key: 'Status', width: '10px'},
-	{id: 'action', key: ' ', width: '100px'}
-];
+const GROUP_TABLE_COLUMNS = [{id: 'expand', key: '', width: '10px'}, {id: 'name', key: 'Name'}, {
+	id: 'id',
+	key: 'ID'
+}, {id: 'url', key: 'URL'}, {id: 'status', key: 'Status', width: '10px'}, {id: 'action', key: ' ', width: '100px'}];
 
 const StyledTableRow = withStyles((theme) => ({
 	root: {
@@ -61,18 +51,13 @@ const StyledTableRow = withStyles((theme) => ({
 const useStyles = makeStyles((theme) => ({
 	avatar: {
 		backgroundColor: 'white'
-	},
-	imageIcon: {
-		height: '100%',
-		width: '20px'
-	},
-	iconRoot: {
+	}, imageIcon: {
+		height: '100%', width: '20px'
+	}, iconRoot: {
 		textAlign: 'center'
-	},
-	cursorPointer: {
+	}, cursorPointer: {
 		cursor: 'pointer'
-	},
-	invisibleButton: {
+	}, invisibleButton: {
 		display: 'none',
 	},
 }));
@@ -81,18 +66,18 @@ const useStyles = makeStyles((theme) => ({
 const CustomRow = (props) => {
 	const {enqueueSnackbar} = useSnackbar();
 	const initialCursorPosInfo = {
-		mouseX: null,
-		mouseY: null,
+		mouseX: null, mouseY: null,
 	};
-	const {brokerConnection, handleBrokerConnectionConnectDisconnect, onDeleteConnection, userProfile, small, medium} = props;
+	const {
+		brokerConnection, handleBrokerConnectionConnectDisconnect, onDeleteConnection, userProfile, small, medium
+	} = props;
 	const [open, setOpen] = React.useState(false);
 	const [cursorPosInfo, setCursorPosInfo] = React.useState(initialCursorPosInfo);
 
 	const handleClick = (event) => {
 		event.preventDefault();
 		setCursorPosInfo({
-			mouseX: event.clientX - 2,
-			mouseY: event.clientY - 4,
+			mouseX: event.clientX - 2, mouseY: event.clientY - 4,
 		});
 	};
 
@@ -122,12 +107,7 @@ const CustomRow = (props) => {
 	const oneExternalURLExists = someExternalURLExists && !bothExternalURLExists;
 	const makeCollapsible = someExternalURLExists || brokerConnection.ca || brokerConnection.cert || brokerConnection.key;
 
-	const numberOfAdditionalFields = !!brokerConnection.websocketsUrl +
-									!!brokerConnection.externalUnencryptedUrl +
-									!!brokerConnection.externalEncryptedUrl +
-									!!brokerConnection.ca +
-									!!brokerConnection.cert +
-									!!brokerConnection.key;
+	const numberOfAdditionalFields = !!brokerConnection.websocketsUrl + !!brokerConnection.externalUnencryptedUrl + !!brokerConnection.externalEncryptedUrl + !!brokerConnection.ca + !!brokerConnection.cert + !!brokerConnection.key;
 
 	const columnSize = (numberOfAdditionalFields === 1) ? 12 : 6;
 
@@ -143,58 +123,50 @@ const CustomRow = (props) => {
 			onContextMenu={handleClick}
 			className={atLeastAdmin(userProfile, brokerConnection.name) ? props.classes.cursorPointer : ''}
 		>
-			{medium || small ? null :
-				<TableCell style={{padding: '6px'}}>
-					<IconButton aria-label="expand row" size="small"
-						disabled={!makeCollapsible}
-						style={makeCollapsible ? {opacity: "100%"} : {opacity: "0%"}}
-						onClick={(event) =>{
-							event.stopPropagation();
-							setOpen(!open);
-						}}>
-						{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-					</IconButton>
-				</TableCell>
-			}
+			{medium || small ? null : <TableCell style={{padding: '6px'}}>
+				<IconButton aria-label="expand row" size="small"
+							disabled={!makeCollapsible}
+							style={makeCollapsible ? {opacity: "100%"} : {opacity: "0%"}}
+							onClick={(event) => {
+								event.stopPropagation();
+								setOpen(!open);
+							}}>
+					{open ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
+				</IconButton>
+			</TableCell>}
 			<TableCell style={{padding: '6px'}}>{brokerConnection.name}</TableCell>
-			{medium || small ? null :
-				<TableCell style={{padding: '6px'}}>{brokerConnection.id}</TableCell>
-			}
-			{small ? null :
-				<TableCell style={{padding: '6px'}}>{url}</TableCell>
-			}
+			{medium || small ? null : <TableCell style={{padding: '6px'}}>{brokerConnection.id}</TableCell>}
+			{small ? null : <TableCell style={{padding: '6px'}}>{url}</TableCell>}
 			<TableCell style={{padding: '6px'}}>
 				<BrokerStatusIcon brokerConnection={brokerConnection}/>
 				{}
 			</TableCell>
-			{medium || small ? null :
-				<TableCell  style={{padding: '6px'}} align="right">
-					<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}>
-						<Switch
-							color="primary"
-							disabled={!atLeastAdmin(userProfile, brokerConnection.name)}
-							checked={brokerConnection.status?.connected}
-							name="connectionConnected"
-							onClick={(event) => {
-								event.stopPropagation();
-								handleBrokerConnectionConnectDisconnect(brokerConnection.id, brokerConnection.name,
-									event.target.checked);
-							}}
-							inputProps={{'aria-label': 'Connection connected'}}
-						/>
-					</Tooltip>
-						<IconButton
-							disabled={brokerConnection.status?.connected || !atLeastAdmin(userProfile, brokerConnection.name)}
-							size="small"
-							onClick={(event) => {
-								event.stopPropagation();
-								onDeleteConnection(brokerConnection.id);
-							}}
-						>
-							<DeleteIcon fontSize="small"/>
-						</IconButton>
-					</TableCell>
-			}
+			{medium || small ? null : <TableCell style={{padding: '6px'}} align="right">
+				<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}>
+					<Switch
+						color="primary"
+						disabled={!atLeastAdmin(userProfile, brokerConnection.name)}
+						checked={brokerConnection.status?.connected}
+						name="connectionConnected"
+						onClick={(event) => {
+							event.stopPropagation();
+							handleBrokerConnectionConnectDisconnect(brokerConnection.id, brokerConnection.name,
+								event.target.checked);
+						}}
+						inputProps={{'aria-label': 'Connection connected'}}
+					/>
+				</Tooltip>
+				<IconButton
+					disabled={brokerConnection.status?.connected || !atLeastAdmin(userProfile, brokerConnection.name)}
+					size="small"
+					onClick={(event) => {
+						event.stopPropagation();
+						onDeleteConnection(brokerConnection.id);
+					}}
+				>
+					<DeleteIcon fontSize="small"/>
+				</IconButton>
+			</TableCell>}
 		</StyledTableRow>
 		<TableRow>
 			<TableCell style={{paddingBottom: 0, paddingTop: 0}} colSpan={6}>
@@ -203,49 +175,46 @@ const CustomRow = (props) => {
 						{/* {brokerConnection.externalUrl ? <Typography>Internal URL: {brokerConnection.url}</Typography> : null} */}
 						<Grid container spacing={2} alignItems="flex-end">
 							{brokerConnection.internalUrl ? <Grid item xs={columnSize} align="center">
-																<Typography style={{fontSize: 'small'}}>
-																	<span style={{fontWeight: 'bold'}}>Internal URL: </span>{brokerConnection.internalUrl}
-																</Typography>
-															</Grid>
-							: null}
+								<Typography style={{fontSize: 'small'}}>
+										<span
+											style={{fontWeight: 'bold'}}>Internal URL: </span>{brokerConnection.internalUrl}
+								</Typography>
+							</Grid> : null}
 							{brokerConnection.externalEncryptedUrl ? <Grid item xs={columnSize} align="center">
-																<Typography style={{fontSize: 'small'}}>
-																	<span style={{fontWeight: 'bold'}}>External MQTTS URL: </span>{brokerConnection.externalEncryptedUrl}
-																</Typography>
-															</Grid>
-							: null}
+								<Typography style={{fontSize: 'small'}}>
+										<span
+											style={{fontWeight: 'bold'}}>External MQTTS URL: </span>{brokerConnection.externalEncryptedUrl}
+								</Typography>
+							</Grid> : null}
 							{brokerConnection.externalUnencryptedUrl ? <Grid item xs={columnSize} align="center">
-																<Typography style={{fontSize: 'small'}}>
-																	<span style={{fontWeight: 'bold'}}>External MQTT URL: </span>{brokerConnection.externalUnencryptedUrl}
-																</Typography>
-															</Grid>
-							: null}
+								<Typography style={{fontSize: 'small'}}>
+										<span
+											style={{fontWeight: 'bold'}}>External MQTT URL: </span>{brokerConnection.externalUnencryptedUrl}
+								</Typography>
+							</Grid> : null}
 							{brokerConnection.websocketsUrl ? <Grid item xs={columnSize} align="center">
-																<Typography style={{fontSize: 'small'}}>
-																	<span style={{fontWeight: 'bold'}}>External WS URL: </span>{brokerConnection.websocketsUrl}
-																</Typography>
-															</Grid>
-							: null}
+								<Typography style={{fontSize: 'small'}}>
+										<span
+											style={{fontWeight: 'bold'}}>External WS URL: </span>{brokerConnection.websocketsUrl}
+								</Typography>
+							</Grid> : null}
 							{brokerConnection.ca ? <Grid item xs={columnSize} align="center">
-									<Typography style={{fontSize: 'small'}}>
-										<span style={{fontWeight: 'bold'}}>CA Cert File: </span>{brokerConnection.caFile}
-									</Typography>
-								</Grid>
-								: null}
+								<Typography style={{fontSize: 'small'}}>
+									<span style={{fontWeight: 'bold'}}>CA Cert File: </span>{brokerConnection.caFile}
+								</Typography>
+							</Grid> : null}
 							{brokerConnection.cert ? <Grid item md={columnSize} align="center">
-									<Typography style={{fontSize: 'small'}}>
+								<Typography style={{fontSize: 'small'}}>
 										<span
 											style={{fontWeight: 'bold'}}>Client Cert File: </span>{brokerConnection.certFile}
-									</Typography>
-								</Grid>
-								: null}
+								</Typography>
+							</Grid> : null}
 							{brokerConnection.key ? <Grid item md={columnSize} align="center">
-									<Typography style={{fontSize: 'small'}}>
+								<Typography style={{fontSize: 'small'}}>
 										<span
 											style={{fontWeight: 'bold'}}>Private Key File: </span>{brokerConnection.keyFile}
-									</Typography>
-								</Grid>
-								: null}
+								</Typography>
+							</Grid> : null}
 						</Grid>
 					</Box>
 				</Collapse>
@@ -256,36 +225,32 @@ const CustomRow = (props) => {
 			open={cursorPosInfo.mouseY !== null}
 			onClose={handleClose}
 			anchorReference="anchorPosition"
-			anchorPosition={
-				cursorPosInfo.mouseY !== null && cursorPosInfo.mouseX !== null
-					? {top: cursorPosInfo.mouseY, left: cursorPosInfo.mouseX}
-					: undefined
-			}
+			anchorPosition={cursorPosInfo.mouseY !== null && cursorPosInfo.mouseX !== null ? {
+				top: cursorPosInfo.mouseY,
+				left: cursorPosInfo.mouseX
+			} : undefined}
 		>
-			{!oneExternalURLExists && !brokerConnection.internalUrl ? <MenuItem onClick={() => copyText(brokerConnection.url)}>Copy URL</MenuItem> : null}
-			{brokerConnection.internalUrl ? <MenuItem onClick={() => copyText(brokerConnection.internalUrl)}>Copy Internal URL</MenuItem> : null}
-			{oneExternalURLExists ? <MenuItem onClick={() => copyText(brokerConnection.externalUnencryptedUrl || brokerConnection.externalEncryptedUrl)}>Copy External URL</MenuItem> :
-									bothExternalURLExists ? (
-										<>
-											<MenuItem onClick={() => copyText(brokerConnection.externalUnencryptedUrl)}>Copy External MQTT URL</MenuItem>
-											<MenuItem onClick={() => copyText(brokerConnection.externalEncryptedUrl)}>Copy External MWTTS URL</MenuItem>
-										</>
-									) : null
-			}
-			{brokerConnection.websocketsUrl ? <MenuItem onClick={() => copyText(brokerConnection.websocketsUrl)}>Copy WS URL</MenuItem> : null}
+			{!oneExternalURLExists && !brokerConnection.internalUrl ?
+				<MenuItem onClick={() => copyText(brokerConnection.url)}>Copy URL</MenuItem> : null}
+			{brokerConnection.internalUrl ?
+				<MenuItem onClick={() => copyText(brokerConnection.internalUrl)}>Copy Internal URL</MenuItem> : null}
+			{oneExternalURLExists ? <MenuItem onClick={() => copyText(
+				brokerConnection.externalUnencryptedUrl || brokerConnection.externalEncryptedUrl)}>Copy External
+				URL</MenuItem> : bothExternalURLExists ? (<>
+				<MenuItem onClick={() => copyText(brokerConnection.externalUnencryptedUrl)}>Copy External MQTT
+					URL</MenuItem>
+				<MenuItem onClick={() => copyText(brokerConnection.externalEncryptedUrl)}>Copy External MWTTS
+					URL</MenuItem>
+			</>) : null}
+			{brokerConnection.websocketsUrl ?
+				<MenuItem onClick={() => copyText(brokerConnection.websocketsUrl)}>Copy WS URL</MenuItem> : null}
 		</Menu>
 	</>
 };
 
 
 const Connections = ({
-						 brokerConnections,
-						 onSort,
-						 sortBy,
-						 sortDirection,
-						 connected,
-						 userProfile,
-						 currentConnectionName
+						 brokerConnections, onSort, sortBy, sortDirection, connected, userProfile, currentConnectionName
 					 }) => {
 	const classes = useStyles();
 	const history = useHistory();
@@ -365,8 +330,7 @@ const Connections = ({
 					variant: 'contained'
 				},
 				confirmationButtonProps: {
-					color: 'primary',
-					variant: 'contained'
+					color: 'primary', variant: 'contained'
 				}
 			});
 
@@ -406,8 +370,7 @@ const Connections = ({
 					variant: 'contained'
 				},
 				confirmationButtonProps: {
-					color: 'primary',
-					variant: 'contained'
+					color: 'primary', variant: 'contained'
 				}
 			});
 			await brokerClient.deleteConnection(id);
@@ -426,88 +389,76 @@ const Connections = ({
 		}
 	};
 
-	return (
-		<div style={{height: '100%'}}>
-			<PremiumFeatureDialog open={premiumFeatureDialogOpen} handleClose={handleClosePremiumFeatureDialog}/>
-			<ContainerBreadCrumbs title="Connections" links={[{name: 'Home', route: '/home'}]}/>
-			<div style={{height: 'calc(100% - 26px)'}}>
-				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
-					<ContainerHeader
-						title="Connections"
-						subTitle="List of Connections. Connections configure the access to an existing broker instance."
+	return (<div style={{height: '100%'}}>
+		<PremiumFeatureDialog open={premiumFeatureDialogOpen} handleClose={handleClosePremiumFeatureDialog}/>
+		<ContainerBreadCrumbs title="Connections" links={[{name: 'Home', route: '/home'}]}/>
+		<div style={{height: 'calc(100% - 26px)'}}>
+			<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
+				<ContainerHeader
+					title="Connections"
+					subTitle="List of Connections. Connections configure the access to an existing broker instance."
+				>
+					<Button
+						variant="outlined"
+						color="primary"
+						size="small"
+						// className={classes.button}
+						startIcon={<AddIcon/>}
+						onClick={(event) => {
+							event.stopPropagation();
+							onNewConnection();
+						}}
 					>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="small"
-							// className={classes.button}
-							startIcon={<AddIcon/>}
-							onClick={(event) => {
-								event.stopPropagation();
-								onNewConnection();
-							}}
-						>
-							New Connection
-						</Button>
-					</ContainerHeader>
-					{brokerConnections && brokerConnections?.length > 0 ? (
-						<div style={{height: '100%', overflowY: 'auto'}}>
-								<TableContainer style={{maxHeight: '100%'}}>
-									<Table stickyHeader size="small" aria-label="sticky table">
-										<TableHead>
-											<TableRow>
-												{GROUP_TABLE_COLUMNS.map((column) => (
-													<TableCell
-														style={{
-															padding: '6px',
-															width: column.width,
-															display: (!small && !medium) ||
-																(column.id === 'name' && (small || medium)) ||
-																(column.id === 'url' && medium) ? undefined : 'none'
-														}}
-														key={column.id}
-														// sortDirection={sortBy === column.id ? sortDirection : false}
-													>
-														{/* <TableSortLabel
+						New Connection
+					</Button>
+				</ContainerHeader>
+				{brokerConnections && brokerConnections?.length > 0 ? (
+					<div style={{height: '100%', overflowY: 'auto'}}>
+						<TableContainer style={{maxHeight: '100%'}}>
+							<Table stickyHeader size="small" aria-label="sticky table">
+								<TableHead>
+									<TableRow>
+										{GROUP_TABLE_COLUMNS.map((column) => (<TableCell
+											style={{
+												padding: '6px',
+												width: column.width,
+												display: (!small && !medium) || (column.id === 'name' && (small || medium)) || (column.id === 'status' && (small || medium)) || (column.id === 'url' && medium) ? undefined : 'none'
+											}}
+											key={column.id}
+											// sortDirection={sortBy === column.id ? sortDirection : false}
+										>
+											{/* <TableSortLabel
 														active={sortBy === column.id}
 														direction={sortDirection}
 														// onClick={() => onSort(column.id)}
 													>
 														{column.key}
 													</TableSortLabel> */}
-														{column.key}
-													</TableCell>
-												))}
-											</TableRow>
-										</TableHead>
-										<TableBody>
-											{brokerConnections &&
-												brokerConnections
-													.sort((a, b) => a.name.localeCompare(b.name))
-													.map((brokerConnection) => (
-														<CustomRow
-															small={small}
-															medium={medium}
-															hover
-															onClick={() => onSelectConnection(brokerConnection)}
-															brokerConnection={brokerConnection}
-															handleBrokerConnectionConnectDisconnect={handleBrokerConnectionConnectDisconnect}
-															onDeleteConnection={onDeleteConnection}
-															userProfile={userProfile}
-															classes={classes}
-														/>
-													))}
-										</TableBody>
-									</Table>
-								</TableContainer>
-						</div>
-					) : (
-						<div>No connections found</div>
-					)}
-				</div>
+											{column.key}
+										</TableCell>))}
+									</TableRow>
+								</TableHead>
+								<TableBody>
+									{brokerConnections && brokerConnections
+										.sort((a, b) => a.name.localeCompare(b.name))
+										.map((brokerConnection) => (<CustomRow
+											small={small}
+											medium={medium}
+											hover
+											onClick={() => onSelectConnection(brokerConnection)}
+											brokerConnection={brokerConnection}
+											handleBrokerConnectionConnectDisconnect={handleBrokerConnectionConnectDisconnect}
+											onDeleteConnection={onDeleteConnection}
+											userProfile={userProfile}
+											classes={classes}
+										/>))}
+								</TableBody>
+							</Table>
+						</TableContainer>
+					</div>) : (<div>No connections found</div>)}
 			</div>
 		</div>
-	);
+	</div>);
 };
 
 const mapStateToProps = (state) => {
