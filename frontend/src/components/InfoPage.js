@@ -1,36 +1,28 @@
-import { green, red } from '@material-ui/core/colors';
-
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
+import {green, red} from '@material-ui/core/colors';
+import Container from '@material-ui/core/Container';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Grid from '@material-ui/core/Grid';
+import {makeStyles} from '@material-ui/core/styles';
+import AppsIcon from '@material-ui/icons/Apps';
 import FeatureDisabledIcon from '@material-ui/icons/Cancel';
 import FeatureEnabledIcon from '@material-ui/icons/CheckCircle';
-import Paper from '@material-ui/core/Paper';
+import InfoIcon from '@material-ui/icons/Info';
 import PremiumVersionIcon from '@material-ui/icons/VerifiedUser';
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
-import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
+import LicenseIcon from '@material-ui/icons/VerifiedUser';
 import moment from 'moment';
+import React from 'react';
+import {connect} from 'react-redux';
 import useFetch from '../helpers/useFetch';
-import { TableHead } from '@material-ui/core';
+import ContainerBreadCrumbs from './ContainerBreadCrumbs';
+import ContainerHeader from './ContainerHeader';
+import Info from './Info';
 
 const useStyles = makeStyles((theme) => ({
-	tableContainer: {
-		'& td:first-child': {
-			width: '30%'
-		}
-	},
 	updateButton: {
 		marginLeft: '20px'
 	},
@@ -39,15 +31,17 @@ const useStyles = makeStyles((theme) => ({
 			margin: theme.spacing(0.3)
 		}
 	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+	container: {
+		paddingLeft: '0px',
+		paddingRight: '0px'
+	}
 }));
 
 const createFeatureIcon = (feature, license) =>
 	license.features && license.features.includes(feature) ? (
-		<FeatureEnabledIcon fontSize="small" style={{ color: green[500] }} />
+		<FeatureEnabledIcon fontSize="small" style={{color: green[500]}}/>
 	) : (
-		<FeatureDisabledIcon fontSize="small" style={{ color: red[500] }} />
+		<FeatureDisabledIcon fontSize="small" style={{color: red[500]}}/>
 	);
 
 const isPremiumLicense = (license) => license && license.edition === 'pro';
@@ -55,7 +49,7 @@ const isPremiumLicense = (license) => license && license.edition === 'pro';
 const getPremium = () => {
 	return (
 		<span>
-			<PremiumVersionIcon fontSize="small" style={{ color: '#ffc107', verticalAlign: 'middle' }} /> Premium
+			<PremiumVersionIcon fontSize="small" style={{color: '#ffc107', verticalAlign: 'middle'}}/> Premium
 		</span>
 	);
 };
@@ -64,7 +58,8 @@ const InfoPage = (props) => {
 	const classes = useStyles();
 	const [open, setOpen] = React.useState(false);
 	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/update`);
-	const { license, version, webSocketConnections } = props;
+	const {license, version, webSocketConnections} = props;
+	const [responsePlugIns, loadingPlugIns, hasErrorPlugIns] = useFetch(`${process.env.PUBLIC_URL}/api/plugins`);
 
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -76,7 +71,7 @@ const InfoPage = (props) => {
 
 	if (response) {
 		return (
-			<div>
+			<div style={{height: '100%'}}>
 				<Dialog
 					open={open}
 					onClose={handleClose}
@@ -108,210 +103,118 @@ const InfoPage = (props) => {
 						</Button>
 					</DialogActions>
 				</Dialog>
-				<Breadcrumbs aria-label="breadcrumb">
-					<RouterLink className={classes.breadcrumbLink} to="/home">
-						Home
-					</RouterLink>
-					<Typography className={classes.breadcrumbItem} color="textPrimary">
-						Info
-					</Typography>
-				</Breadcrumbs>
-				<br />
-				{webSocketConnections && (
-					<TableContainer component={Paper} className={classes.tableContainer}>
-						<Table size="medium">
-							<TableBody>
-								<TableRow>
-									<TableCell>
-										<b>Management Center clients</b>
-									</TableCell>
-									<TableCell>{webSocketConnections?.webSocketClients}</TableCell>
-								</TableRow>
-							</TableBody>
-						</Table>
-					</TableContainer>
-				)}
-				<br />
-				{version && (
-					<TableContainer component={Paper} className={classes.tableContainer}>
-						<Table size="medium">
-							<TableBody>
-								<TableRow>
-									<TableCell>
-										<b>Name</b>
-									</TableCell>
-									<TableCell>{version.name}</TableCell>
-								</TableRow>
-								<TableRow>
-									<TableCell>
-										<b>Version</b>
-									</TableCell>
-									<TableCell>{version.version}</TableCell>
-								</TableRow>
-								<TableRow>
-									<TableCell>
-										<b>Build number</b>
-									</TableCell>
-									<TableCell>{version.buildNumber}</TableCell>
-								</TableRow>
-								<TableRow>
-									<TableCell>
-										<b>Build date</b>
-									</TableCell>
-									<TableCell>{moment(version.buildDate).format('LLLL')}</TableCell>
-								</TableRow>
-								{ response.lastUpdated ? <TableRow>
-									<TableCell>
-										<b>Latest version</b>
-									</TableCell>
-									<TableCell>
-										{moment.unix(response.lastUpdated).format('LLLL')}
-										{moment.unix(response.lastUpdated).isAfter(moment(version.buildDate)) ? (
-											<Button
-												className={classes.updateButton}
-												size="small"
-												variant="contained"
-												color="secondary"
-												onClick={handleClickOpen}
-											>
-												Update available
-											</Button>
-										) : (
-											<span className={classes.updateButton}>You are up to date!</span>
-										)}
-									</TableCell>
-								</TableRow> : null}
-							</TableBody>
-						</Table>
-					</TableContainer>
-				)}
-				<br />
-				{license && (
-					<TableContainer component={Paper} className={classes.tableContainer}>
-						<Table size="medium">
-							<TableBody>
-								<TableRow>
-									<TableCell>
-										<b>Edition</b>
-									</TableCell>
-									<TableCell>{license.edition === 'pro' ? getPremium() : license.edition}</TableCell>
-								</TableRow>
-								<TableRow>
-									<TableCell>
-										<b>Issued by</b>
-									</TableCell>
-									<TableCell>{license.issuedBy}</TableCell>
-								</TableRow>
-								{license.comment && <TableRow>
-									<TableCell>
-										<b>Comment</b>
-									</TableCell>
-									<TableCell>{license.comment}</TableCell>
-								</TableRow>}
-								{isPremiumLicense(license) && (
-									<TableRow>
-										<TableCell>
-											<b>Issued to</b>
-										</TableCell>
-										<TableCell>{license.issuedTo}</TableCell>
-									</TableRow>
-								)}
-								{isPremiumLicense(license) && (
-									<TableRow>
-										<TableCell>
-											<b>Valid since</b>
-										</TableCell>
-										<TableCell>{moment(license.validSince).format('LLLL')}</TableCell>
-									</TableRow>
-								)}
-								{isPremiumLicense(license) && (
-									<TableRow>
-										<TableCell>
-											<b>Valid until</b>
-										</TableCell>
-										<TableCell>{moment(license.validUntil).format('LLLL')}</TableCell>
-									</TableRow>
-								)}
-								<TableRow>
-									<TableCell>
-										<b>Max. broker connections</b>
-									</TableCell>
-									<TableCell>{license.maxBrokerConnections}</TableCell>
-								</TableRow>
-								{/* <TableRow>
-									<TableCell>
-										<b>Advanced REST API</b>
-									</TableCell>
-									<TableCell>{createFeatureIcon('rest-api', license)}</TableCell>
-								</TableRow>
-								<TableRow>
-									<TableCell>
-										<b>Custom Theme</b>
-									</TableCell>
-									<TableCell>{createFeatureIcon('white-labeling', license)}</TableCell>
-								</TableRow> */}
-								{/* <TableRow>
-                  <TableCell>
-				  	<b>🚧 Import / Export</b>
-                  </TableCell>
-                  <TableCell>
-					{
-						createFeatureIcon('import-export', license)
-					}
-                  </TableCell>
-                </TableRow> */}
-								{/* <TableRow>
-									<TableCell>
-										<b>Multiple Connections</b>
-									</TableCell>
-									<TableCell>{createFeatureIcon('multiple-broker-connections', license)}</TableCell>
-								</TableRow> */}
-							</TableBody>
-						</Table>
-					</TableContainer>
-				)}
-
-				<br />
-				{license?.features &&
-					<TableContainer component={Paper} className={classes.tableContainer}>
-						<Table size="medium">
-							<TableHead>
-								<TableRow>
-									<TableCell>
-										<b>Feature</b>
-									</TableCell>
-									<TableCell>
-										<b>Version</b>
-									</TableCell>
-									{/* <TableCell>
-										<b>Valid until</b>
-									</TableCell>
-									<TableCell>
-										<b>Valid since</b>
-									</TableCell> */}
-								</TableRow>
-								</TableHead>
-							<TableBody>
-							 {license?.features.map(feature => (
-								<TableRow>
-									<TableCell>
-										{feature.name}
-									</TableCell>
-									<TableCell>
-										{feature.version}
-									</TableCell>
-									{/* <TableCell>
-										{moment(feature.validSince).format('LLLL')}
-									</TableCell>
-									<TableCell>
-										{moment(feature.validUntil).format('LLLL')}
-									</TableCell> */}
-								</TableRow>
-							))}
-							</TableBody>
-						</Table>
-					</TableContainer>
-				}
+				<ContainerBreadCrumbs title="Info" links={[{name: 'Home', route: '/home'}]}/>
+				<ContainerHeader
+					title="License Info"
+					subTitle="Display Infos about the current active license and the features contained in the license."
+				>
+					{moment.unix(response?.lastUpdated).isAfter(moment(version?.buildDate)) ? (
+						<Button
+							className={classes.updateButton}
+							size="small"
+							variant="contained"
+							color="secondary"
+							onClick={handleClickOpen}
+						>
+							Update available
+						</Button>
+					) : null}
+				</ContainerHeader>
+				<Container classes={{root: classes.container}} maxWidth={false}>
+					<Grid
+						container
+						classes={{root: classes.container}}
+						spacing={3}
+					>
+						{version ?
+							<Grid item lg={6} xs={12}>
+								<Info
+									label="Management Center"
+									alignment="table"
+									infos={[{
+										label: "Management Center clients",
+										value: webSocketConnections ? webSocketConnections?.webSocketClients : ''
+									}, {
+										label: "Version",
+										value: version.version,
+										space: true
+									}, {
+										label: "Latest Version",
+										value: response.lastUpdated ? moment.unix(response.lastUpdated).format(
+											'LLLL') : ''
+									}, {
+										label: "Build Number",
+										value: version.buildNumber,
+										space: true
+									}, {
+										label: "Build Date",
+										value: moment(version.buildDate).format('LLLL'),
+									}
+									]}
+									icon={<InfoIcon/>}
+								/>
+							</Grid> : null}
+						{license ?
+							<Grid item lg={6} xs={12}>
+								<Info
+									label="License"
+									alignment="table"
+									infos={[{
+										label: "Edition",
+										value: license.edition === 'pro' ? getPremium() : license.edition
+									}, {
+										label: "Issued by",
+										value: license.issuedBy,
+										space: true
+									}, {
+										label: "Issued to",
+										value: license.issuedTo,
+										hide: !isPremiumLicense(license)
+									}, {
+										label: "Valid since",
+										value: moment(license.validSince).format('LLLL'),
+										space: true,
+										hide: !isPremiumLicense(license)
+									}, {
+										label: "Valid until",
+										value: moment(license.validUntil).format('LLLL'),
+										hide: !isPremiumLicense(license)
+									}, {
+										label: "Maximum Broker Connections",
+										value: license.maxBrokerConnections,
+										space: true
+									}, {
+										label: "Comment",
+										value: license.comment,
+										space: true
+									}
+									]}
+									icon={<LicenseIcon/>}
+								/>
+							</Grid> : null}
+						{license?.features && responsePlugIns ?
+							<Grid item lg={12} xs={12} >
+								<Info
+									label="Features"
+									alignment="table"
+									infos={license?.features.map(feature => {
+										const plugIn = responsePlugIns.find(plug => (feature.name === plug.featureId));
+										if (plugIn) {
+											return {
+												label: `${plugIn.name}`,
+												value: plugIn.description
+											}
+										}
+										return {
+											label: `${feature.name}`,
+											value: ''
+										}
+									})}
+									icon={<AppsIcon/>}
+								/>
+							</Grid>: null}
+					</Grid>
+				</Container>
 			</div>
 		);
 	} else {

@@ -1,47 +1,21 @@
-import React, {useContext, useState} from 'react';
-import {Redirect, Link as RouterLink} from 'react-router-dom';
-import {connect, useDispatch} from 'react-redux';
-import {updateEditDefaultClient, updateRole, updateRoles} from '../actions/actions';
-import {useSnackbar} from 'notistack';
-
-import ACLIcon from '@material-ui/icons/Security';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import ACLTypesHelpDialog from './ACLTypesHelpDialog';
-import Avatar from '@material-ui/core/Avatar';
 import Box from '@material-ui/core/Box';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
-import ClientIDIcon from '@material-ui/icons/Fingerprint';
-import CredentialsIcon from '@material-ui/icons/Lock';
-import DeleteIcon from '@material-ui/icons/Delete';
 import Divider from '@material-ui/core/Divider';
-import EditIcon from '@material-ui/icons/Edit';
 import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
-import GroupIcon from '@material-ui/icons/Group';
-import GroupsIcon from '@material-ui/icons/Group';
-import HelpIcon from '@material-ui/icons/Help';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import InputLabel from '@material-ui/core/InputLabel';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
-import PasswordIcon from '@material-ui/icons/VpnKey';
-import PropTypes from 'prop-types';
-import RoleIcon from '@material-ui/icons/Policy';
-import SaveIcon from '@material-ui/icons/AddCircle';
 import Select from '@material-ui/core/Select';
-import Switch from '@material-ui/core/Switch';
+import {makeStyles} from '@material-ui/core/styles';
 import Tab from '@material-ui/core/Tab';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -53,9 +27,23 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tabs from '@material-ui/core/Tabs';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import {WebSocketContext} from '../websockets/WebSocket';
-import {makeStyles} from '@material-ui/core/styles';
+import SaveIcon from '@material-ui/icons/AddCircle';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import ClientIDIcon from '@material-ui/icons/Fingerprint';
+import HelpIcon from '@material-ui/icons/Help';
+import RoleIcon from '@material-ui/icons/Policy';
+import ACLIcon from '@material-ui/icons/Security';
 import {useConfirm} from 'material-ui-confirm';
+import {useSnackbar} from 'notistack';
+import PropTypes from 'prop-types';
+import React, {useContext} from 'react';
+import {connect, useDispatch} from 'react-redux';
+import {Redirect} from 'react-router-dom';
+import {updateEditDefaultClient, updateRole, updateRoles} from '../actions/actions';
+import {useFormStyles} from '../styles';
+import {WebSocketContext} from '../websockets/WebSocket';
+import ACLTypesHelpDialog from './ACLTypesHelpDialog';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 
@@ -137,6 +125,7 @@ const RoleDetail = (props) => {
 	const confirm = useConfirm();
 	const {enqueueSnackbar} = useSnackbar();
 	const {client: brokerClient} = context;
+	const formClasses = useFormStyles();
 
 	const {defaultClient, role = {}, onSort, sortBy, sortDirection} = props;
 
@@ -297,6 +286,7 @@ const RoleDetail = (props) => {
 							fullWidth
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 							InputProps={{
 								startAdornment: (
 									<InputAdornment position="start">
@@ -325,6 +315,7 @@ const RoleDetail = (props) => {
 							fullWidth
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 						/>
 					</Grid>
 					<Grid item xs={12}>
@@ -346,6 +337,7 @@ const RoleDetail = (props) => {
 							fullWidth
 							size="small"
 							margin="dense"
+							className={formClasses.textField}
 						/>
 					</Grid>
 				</Grid>
@@ -589,7 +581,7 @@ const RoleDetail = (props) => {
 				<Grid item xs={12}>
 					<Button
 						variant="contained"
-						style={{marginTop: '10px'}}
+						className={formClasses.buttonTop}
 						color="primary"
 						startIcon={<EditIcon/>}
 						onClick={() => setEditMode(true)}
@@ -604,7 +596,7 @@ const RoleDetail = (props) => {
 						variant="contained"
 						disabled={!validate()}
 						color="primary"
-						style={{marginTop: '10px', marginRight: '10px'}}
+						className={formClasses.buttonTopRight}
 						startIcon={<SaveIcon/>}
 						onClick={(event) => {
 							event.stopPropagation();
@@ -615,7 +607,7 @@ const RoleDetail = (props) => {
 					</Button>
 					<Button
 						variant="contained"
-						style={{marginTop: '10px'}}
+						className={formClasses.buttonTop}
 						onClick={(event) => {
 							event.stopPropagation();
 							onCancelEdit();

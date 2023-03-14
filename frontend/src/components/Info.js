@@ -1,4 +1,16 @@
-import { Avatar, Box, Card, Tooltip, IconButton, CardHeader, CardContent, Grid, Typography, colors, makeStyles } from '@material-ui/core';
+import {
+	Avatar,
+	Box,
+	Card,
+	Tooltip,
+	IconButton,
+	CardHeader,
+	CardContent,
+	Grid,
+	Typography,
+	colors,
+	makeStyles
+} from '@material-ui/core';
 import InfoOutlined from '@material-ui/icons/InfoOutlined';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -25,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-const Info = ({ className, infos, infoIcon, label, chart, icon, ...rest }) => {
+const Info = ({className, infos, infoIcon, label, chart, icon, alignment, ...rest}) => {
 	const classes = useStyles();
 
 	return (
@@ -53,15 +65,17 @@ const Info = ({ className, infos, infoIcon, label, chart, icon, ...rest }) => {
 				<Grid container style={{height: chart ? '150px' : null}} spacing={3}>
 					{chart}
 					{infos.map(info => (
-
-						<Grid style={{display: 'flex', padding: '4px 12px', marginTop: info.space ? '10px' : '0px'}} justifyContent="space-between" xs={12} item>
-							<Typography color="textPrimary" variant="body2">
-								{info.label}
-							</Typography>
-							<Typography color="textPrimary" variant="body2">
-								{info.value}
-							</Typography>
-						</Grid>
+						info.hide !== true ?
+								<Grid style={{display: 'flex', padding: '4px 12px', marginTop: info.space ? '10px' : '0px'}}
+									  justifyContent={alignment=== "table" ? "flex-start" : "space-between"} xs={12} item>
+									<Typography color="textPrimary" style={{width: alignment === 'table' ? '40%' : undefined}} variant="body2">
+										{info.label}
+									</Typography>
+									<Typography color="textPrimary" variant="body2">
+										{info.value}
+									</Typography>
+								</Grid>
+						: null
 					))}
 				</Grid>
 			</CardContent>

@@ -28,8 +28,8 @@ import {
 } from '@material-ui/core';
 import { green, red } from '@material-ui/core/colors';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import TlsEnabledIcon from '@material-ui/icons/Check';
-import TlsDisabledIcon from '@material-ui/icons/Cancel';
+import EnabledIcon from '@material-ui/icons/Check';
+import DisabledIcon from '@material-ui/icons/Cancel';
 import { useSnackbar } from 'notistack';
 import SaveCancelButtons from '../../../components/SaveCancelButtons';
 import ContainerHeader from '../../../components/ContainerHeader';
@@ -75,7 +75,8 @@ const ListenerSelect = ({ listeners, onSelect }) => {
 					<TableCell padding="checkbox">Deploy</TableCell>
 					<TableCell>Protocol</TableCell>
 					<TableCell>Port</TableCell>
-					<TableCell>Address</TableCell>
+					<TableCell>Bind Address</TableCell>
+					<TableCell>Require Certificate</TableCell>
 					<TableCell>TLS</TableCell>
 				</TableRow>
 			</TableHead>
@@ -84,7 +85,7 @@ const ListenerSelect = ({ listeners, onSelect }) => {
 					<TableRow key={listener.id}>
 						<TableCell padding="checkbox" style={rowStyle(index)}>
 							<Checkbox
-								disabled={!listener.tls}
+								disabled={!listener.tls || !listener.requireCertificate}
 								checked={!!listener.isUsed}
 								onChange={onSelect}
 								inputProps={{
@@ -94,12 +95,19 @@ const ListenerSelect = ({ listeners, onSelect }) => {
 						</TableCell>
 						<TableCell style={rowStyle(index)}>{listener.protocol}</TableCell>
 						<TableCell style={rowStyle(index)}>{listener.port}</TableCell>
-						<TableCell style={rowStyle(index)}>{listener['bind-address'] || ''}</TableCell>
+						<TableCell style={rowStyle(index)}>{listener.bindAddress || 'not configured'}</TableCell>
+						<TableCell style={rowStyle(index)}>
+							{listener.requireCertificate ? (
+								<EnabledIcon fontSize="small" style={{ color: green[500] }} />
+							) : (
+								<DisabledIcon fontSize="small" style={{ color: red[500] }} />
+							)}
+						</TableCell>
 						<TableCell style={rowStyle(index)}>
 							{listener.tls ? (
-								<TlsEnabledIcon fontSize="small" style={{ color: green[500] }} />
+								<EnabledIcon fontSize="small" style={{ color: green[500] }} />
 							) : (
-								<TlsDisabledIcon fontSize="small" style={{ color: red[500] }} />
+								<DisabledIcon fontSize="small" style={{ color: red[500] }} />
 							)}
 						</TableCell>
 					</TableRow>
@@ -107,6 +115,17 @@ const ListenerSelect = ({ listeners, onSelect }) => {
 			</TableBody>
 		</Table>
 	);
+};
+const getListenersCell = (listeners, onSelect) => {
+	if (listeners == null || !listeners.length) {
+		const text = listeners ? 'No listeners available for selected connection...' : 'Loading available listeners...';
+		return (
+			<Typography variant="h8" gutterBottom component="div">
+				{text}
+			</Typography>
+		);
+	}
+	return <ListenerSelect listeners={listeners} onSelect={onSelect} />;
 };
 
 const byName = (a, b) => {
@@ -152,9 +171,9 @@ const markUsedListeners = (certificate, connection, listeners) => {
 		return listener;
 	});
 };
-const deployMessage = (cert) => ({
+const deployMessage = (cert, { deployed, undeployed }) => ({
 	error: `'Failed to deploy certificate "${cert.name}"`,
-	success: `Certificate "${cert.name}" successfully deployed.`,
+	success: `Certificate "${cert.name}" successfully deployed to ${deployed} listeners and undeployed from ${undeployed} listeners.`,
 	warning: `Problems while deploying certificate "${cert.name}"!`
 });
 
@@ -172,19 +191,20 @@ const CertificateDeploy = ({ connections = [] }) => {
 
 	const loadListeners = async () => {
 		try {
+			setListeners(null);
 			if (isConnected(connection)) {
 				const { data } = await client.getListeners(connection.id);
 				setListeners(markUsedListeners(certificate, getConnectionInfo(connection), data));
 			} else {
 				const name = connection?.name || 'n.a.';
 				if (listeners != null) enqueueSnackbar(`Connection "${name}" is not connected`, { variant: 'warning' });
-				setListeners(null);
+				setListeners([]);
 			}
 		} catch (error) {
 			enqueueSnackbar(`Cannot deploy because listeners could not be loaded. Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
-			// history.goBack();
+			setListeners([]);
 		}
 	};
 	useEffect(() => {
@@ -204,10 +224,10 @@ const CertificateDeploy = ({ connections = [] }) => {
 	const onDeploy = async () => {
 		const selectedListeners = listeners.filter((listener) => listener.isUsed);
 		try {
-			const { status } = await client.deployCertificate(certificate, connection, selectedListeners);
+			const { status, data = {} } = await client.deployCertificate(certificate, connection, selectedListeners);
 			switch (status) {
 				case 200:
-					enqueueSnackbar(deployMessage(certificate).success, { variant: 'success' });
+					enqueueSnackbar(deployMessage(certificate, data).success, { variant: 'success' });
 					setCanUpdate(false);
 					break;
 				case 207:
@@ -237,16 +257,17 @@ const CertificateDeploy = ({ connections = [] }) => {
 	};
 
 	return (
-		<ContentContainer
-			path={[
-				{ link: 'home' },
-				{ link: 'certs', title: 'Certificates' },
-				{ title: 'Deploy' }
-			]}
-		>
-			<ContainerHeader 
-				title={`Deploy client CA certificate: ${certificate.name}`} 
-				subTitle="Client certificate authorization is only possible, if the connected broker has set the right configuration. The broker configuration must define a certfile and set require_certificate to true."/>
+		<ContentContainer path={[{ link: 'home' }, { link: 'certs', title: 'Certificates' }, { title: 'Deploy' }]}>
+			<ContainerHeader
+				title={`Deploy client CA certificate: ${certificate.name}`}
+				subTitle={
+					<Typography variant="inherit" display="inline">
+						Client certificate authorization is only possible, if the connected broker has set the right
+						configuration. The broker configuration must define a <i>certfile</i> and set{' '}
+						<i>require_certificate</i> to true.
+					</Typography>
+				}
+			/>
 			{hasConnectedConnection ? (
 				<Table size="small" aria-label="listeners">
 					<TableHead>
@@ -264,15 +285,7 @@ const CertificateDeploy = ({ connections = [] }) => {
 					<TableBody>
 						<TableRow>
 							<TableCell style={{ verticalAlign: 'top' }}>Select target listeners</TableCell>
-							<TableCell align="left">
-								{listeners == null ? (
-									<Typography variant="h8" gutterBottom component="div">
-										Loading available listeners...
-									</Typography>
-								) : (
-									<ListenerSelect listeners={listeners} onSelect={onSelectListener} />
-								)}
-							</TableCell>
+							<TableCell align="left">{getListenersCell(listeners, onSelectListener)}</TableCell>
 						</TableRow>
 						<TableRow>
 							<TableCell style={{ borderBottom: 'none' }}>

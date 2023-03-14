@@ -439,7 +439,7 @@ const ConnectionDetailComponent = (props) => {
 							}}
 						/>
 					</Grid>
-					<Grid item xs={12}>
+					{ !connection.internalUrl ? <Grid item xs={12}>
 						<TextField
 							required={editMode}
 							disabled={!editMode}
@@ -466,7 +466,7 @@ const ConnectionDetailComponent = (props) => {
 								}
 							}}
 						/>
-					</Grid>
+					</Grid> : null}
 					{ connection.internalUrl ? <Grid item xs={12}>
 						<TextField
 							disabled

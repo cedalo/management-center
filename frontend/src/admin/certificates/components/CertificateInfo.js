@@ -1,13 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { CircularProgress, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
-import { green, red } from '@material-ui/core/colors';
+import { green } from '@material-ui/core/colors';
 import CASignedIcon from '@material-ui/icons/Check';
-import SelfSignedIcon from '@material-ui/icons/Cancel';
 
 import { useSnackbar } from 'notistack';
 import { WebSocketContext } from '../../../websockets/WebSocket';
 import { InfoHint } from './AlertHint';
-import { mapSubjectKey, parseSubjectInfo } from './certutils';
+import { loadCertificateInfo, mapSubjectKey, parseSubjectInfo } from './certutils';
 
 const styles = {
 	colValue: { maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis' }
@@ -36,11 +35,7 @@ const getSummaryTable = (info = {}) => {
 					{borderlessCell()}
 					<TableCell align="left">CA certificate</TableCell>
 					<TableCell align="left">
-						{isSelfSigned ? (
-							<SelfSignedIcon fontSize="small" style={{ color: red[500] }} />
-						) : (
-							<CASignedIcon fontSize="small" style={{ color: green[500] }} />
-						)}
+						{isSelfSigned ? 'self-signed' : <CASignedIcon fontSize="small" style={{ color: green[500] }} />}
 					</TableCell>
 				</TableRow>
 				<TableRow>
@@ -96,11 +91,7 @@ const getDetailTable = (info = {}) => {
 					{borderlessCell()}
 					<TableCell align="left">CA certificate</TableCell>
 					<TableCell colSpan={2}>
-						{!ca ? (
-							<SelfSignedIcon fontSize="small" style={{ color: red[500] }} />
-						) : (
-							<CASignedIcon fontSize="small" style={{ color: green[500] }} />
-						)}
+						{!ca ? 'self-signed' : <CASignedIcon fontSize="small" style={{ color: green[500] }} />}
 					</TableCell>
 				</TableRow>
 				<TableRow>
@@ -174,7 +165,6 @@ const showLoadingHint = () =>
 		title: 'Fetching certificate information...',
 		message: <CircularProgress color="secondary" size="1.5rem" />
 	});
-const isValid = ({ cert, id, filename }) => cert || (id && filename);
 
 const CertificateInfo = ({ certificate, variant }) => {
 	const [certInfo, setCertInfo] = useState({});
@@ -184,24 +174,19 @@ const CertificateInfo = ({ certificate, variant }) => {
 	const { client } = context;
 
 	const loadCertInfo = async () => {
-		let info = {};
 		setIsLoadingInfo(true);
-		if (isValid(certificate)) {
-			try {
-				const { data } = await client.getCertificateInfo(certificate);
-				info = data;
-			} catch (error) {
-				enqueueSnackbar(`Error loading certificate info from server. Reason: ${error.message || error}`, {
-					variant: 'error'
-				});
-			}
+		const { info, error } = await loadCertificateInfo(certificate, client);
+		if (error) {
+			enqueueSnackbar(`Error loading certificate info from server. Reason: ${error.message || error}`, {
+				variant: 'error'
+			});
 		}
-		setCertInfo(info);
+		setCertInfo(info || {});
 		setIsLoadingInfo(false);
 	};
 	useEffect(() => {
 		loadCertInfo();
-	}, [certificate]);
+	}, [certificate.cert]);
 
 	return isLoadingInfo ? showLoadingHint() : showInfoTable(certInfo, variant);
 };

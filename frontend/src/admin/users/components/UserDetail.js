@@ -219,7 +219,7 @@ const UserDetail = (props) => {
 				<Button
 					disabled={updatedUser.editable === false}
 					variant="contained"
-					style={{marginTop: '20px'}}
+					className={formClasses.buttonTop}
 					size="small"
 					color="primary"
 					startIcon={<EditIcon/>}
@@ -236,7 +236,7 @@ const UserDetail = (props) => {
 					disabled={!validate()}
 					size="small"
 					color="primary"
-					style={{marginTop: '20px', marginRight: '10px'}}
+					className={formClasses.buttonTopRight}
 					startIcon={<SaveIcon/>}
 					onClick={(event) => {
 						event.stopPropagation();
@@ -248,7 +248,7 @@ const UserDetail = (props) => {
 				<Button
 					variant="contained"
 					size="small"
-					style={{marginTop: '20px'}}
+					className={formClasses.buttonTop}
 					onClick={(event) => {
 						event.stopPropagation();
 						onCancelEdit();
