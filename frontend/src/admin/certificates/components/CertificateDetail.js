@@ -42,7 +42,8 @@ const saveMessage = (cert) => ({
 	}
 });
 
-const isValid = (crt) => crt.name && crt.filename && crt.cert;
+const isValid = (crt) => crt.name && crt.filename;
+const isAvailable = (crt) => crt.cert || isValid(crt);
 
 const CertificateDetail = () => {
 	const classes = useStyles();
@@ -73,9 +74,9 @@ const CertificateDetail = () => {
 			const { info, error: failed } = await loadCertificateInfo(certificate, client);
 			if (!info || failed) {
 				enqueueSnackbar(`File "${file.name}" is not a valid certificate!`, { variant: 'error' });
-				certificate.cert = undefined;
+			} else {
+				setCert({ ...cert, ...certificate });
 			}
-			setCert({ ...cert, ...certificate });
 		}
 	};
 	const onCertDelete = (/* event */) => {
@@ -158,7 +159,7 @@ const CertificateDetail = () => {
 								}}
 							/>
 						</Grid>
-						{cert?.cert && (
+						{isAvailable(cert) && (
 							<Grid item xs={12}>
 								<Table aria-label="certinfo-detail">
 									<TableRow>
