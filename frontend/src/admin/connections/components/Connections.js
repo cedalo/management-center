@@ -11,6 +11,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import {makeStyles, useTheme, withStyles} from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Switch from '@material-ui/core/Switch';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -27,7 +28,6 @@ import {useSnackbar} from 'notistack';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
-
 import {updateBrokerConfigurations, updateBrokerConnections, updateSelectedConnection} from '../../../actions/actions';
 import BrokerStatusIcon from '../../../components/BrokerStatusIcon';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
@@ -43,9 +43,9 @@ import {WebSocketContext} from '../../../websockets/WebSocket';
 
 const GROUP_TABLE_COLUMNS = [
 	{id: 'expand', key: '', width: '10px'},
-	{id: 'configurationName', key: 'Name'},
+	{id: 'name', key: 'Name'},
 	{id: 'id', key: 'ID'},
-	{id: 'URL', key: 'URL'},
+	{id: 'url', key: 'URL'},
 	{id: 'status', key: 'Status', width: '10px'},
 	{id: 'action', key: ' ', width: '100px'}
 ];
@@ -80,15 +80,12 @@ const useStyles = makeStyles((theme) => ({
 
 const CustomRow = (props) => {
 	const {enqueueSnackbar} = useSnackbar();
-
 	const initialCursorPosInfo = {
 		mouseX: null,
 		mouseY: null,
 	};
-
-	const {brokerConnection, handleBrokerConnectionConnectDisconnect, onDeleteConnection, userProfile} = props;
+	const {brokerConnection, handleBrokerConnectionConnectDisconnect, onDeleteConnection, userProfile, small, medium} = props;
 	const [open, setOpen] = React.useState(false);
-
 	const [cursorPosInfo, setCursorPosInfo] = React.useState(initialCursorPosInfo);
 
 	const handleClick = (event) => {
@@ -146,50 +143,58 @@ const CustomRow = (props) => {
 			onContextMenu={handleClick}
 			className={atLeastAdmin(userProfile, brokerConnection.name) ? props.classes.cursorPointer : ''}
 		>
-			<TableCell style={{padding: '6px'}}>
-				<IconButton aria-label="expand row" size="small"
-					disabled={!makeCollapsible}
-					style={makeCollapsible ? {opacity: "100%"} : {opacity: "0%"}}
-					onClick={(event) =>{
-						event.stopPropagation();
-						setOpen(!open);
-					}}>
-					{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-				</IconButton>
-			</TableCell>
+			{medium || small ? null :
+				<TableCell style={{padding: '6px'}}>
+					<IconButton aria-label="expand row" size="small"
+						disabled={!makeCollapsible}
+						style={makeCollapsible ? {opacity: "100%"} : {opacity: "0%"}}
+						onClick={(event) =>{
+							event.stopPropagation();
+							setOpen(!open);
+						}}>
+						{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+					</IconButton>
+				</TableCell>
+			}
 			<TableCell style={{padding: '6px'}}>{brokerConnection.name}</TableCell>
-			<TableCell style={{padding: '6px'}}>{brokerConnection.id}</TableCell>
-			<TableCell style={{padding: '6px'}}>{url}</TableCell>
+			{medium || small ? null :
+				<TableCell style={{padding: '6px'}}>{brokerConnection.id}</TableCell>
+			}
+			{small ? null :
+				<TableCell style={{padding: '6px'}}>{url}</TableCell>
+			}
 			<TableCell style={{padding: '6px'}}>
 				<BrokerStatusIcon brokerConnection={brokerConnection}/>
 				{}
 			</TableCell>
-			<TableCell  style={{padding: '6px'}} align="right">
-				<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}>
-					<Switch
-						color="primary"
-						disabled={!atLeastAdmin(userProfile, brokerConnection.name)}
-						checked={brokerConnection.status?.connected}
-						name="connectionConnected"
-						onClick={(event) => {
-							event.stopPropagation();
-							handleBrokerConnectionConnectDisconnect(brokerConnection.id, brokerConnection.name,
-								event.target.checked);
-						}}
-						inputProps={{'aria-label': 'Connection connected'}}
-					/>
-				</Tooltip>
-				<IconButton
-					disabled={brokerConnection.status?.connected || !atLeastAdmin(userProfile, brokerConnection.name)}
-					size="small"
-					onClick={(event) => {
-						event.stopPropagation();
-						onDeleteConnection(brokerConnection.id);
-					}}
-				>
-					<DeleteIcon fontSize="small"/>
-				</IconButton>
-			</TableCell>
+			{medium || small ? null :
+				<TableCell  style={{padding: '6px'}} align="right">
+					<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}>
+						<Switch
+							color="primary"
+							disabled={!atLeastAdmin(userProfile, brokerConnection.name)}
+							checked={brokerConnection.status?.connected}
+							name="connectionConnected"
+							onClick={(event) => {
+								event.stopPropagation();
+								handleBrokerConnectionConnectDisconnect(brokerConnection.id, brokerConnection.name,
+									event.target.checked);
+							}}
+							inputProps={{'aria-label': 'Connection connected'}}
+						/>
+					</Tooltip>
+						<IconButton
+							disabled={brokerConnection.status?.connected || !atLeastAdmin(userProfile, brokerConnection.name)}
+							size="small"
+							onClick={(event) => {
+								event.stopPropagation();
+								onDeleteConnection(brokerConnection.id);
+							}}
+						>
+							<DeleteIcon fontSize="small"/>
+						</IconButton>
+					</TableCell>
+			}
 		</StyledTableRow>
 		<TableRow>
 			<TableCell style={{paddingBottom: 0, paddingTop: 0}} colSpan={6}>
@@ -285,14 +290,14 @@ const Connections = ({
 	const classes = useStyles();
 	const history = useHistory();
 	const dispatch = useDispatch();
-	const theme = useTheme();
 	const context = useContext(WebSocketContext);
 	const confirm = useConfirm();
 	const {enqueueSnackbar} = useSnackbar();
 	const {client: brokerClient} = context;
 	const [connection, setConnection] = React.useState('');
-
 	const [premiumFeatureDialogOpen, setPremiumFeatureDialogOpen] = React.useState(false);
+	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
+	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
 
 	const handleClosePremiumFeatureDialog = () => {
 		setPremiumFeatureDialogOpen(false);
@@ -447,14 +452,19 @@ const Connections = ({
 					</ContainerHeader>
 					{brokerConnections && brokerConnections?.length > 0 ? (
 						<div style={{height: '100%', overflowY: 'auto'}}>
-							<Hidden style={{height: '100%'}} xsDown implementation="js">
 								<TableContainer style={{maxHeight: '100%'}}>
 									<Table stickyHeader size="small" aria-label="sticky table">
 										<TableHead>
 											<TableRow>
 												{GROUP_TABLE_COLUMNS.map((column) => (
 													<TableCell
-														style={{padding: '6px', width: column.width}}
+														style={{
+															padding: '6px',
+															width: column.width,
+															display: (!small && !medium) ||
+																(column.id === 'name' && (small || medium)) ||
+																(column.id === 'url' && medium) ? undefined : 'none'
+														}}
 														key={column.id}
 														// sortDirection={sortBy === column.id ? sortDirection : false}
 													>
@@ -476,6 +486,8 @@ const Connections = ({
 													.sort((a, b) => a.name.localeCompare(b.name))
 													.map((brokerConnection) => (
 														<CustomRow
+															small={small}
+															medium={medium}
 															hover
 															onClick={() => onSelectConnection(brokerConnection)}
 															brokerConnection={brokerConnection}
@@ -488,37 +500,6 @@ const Connections = ({
 										</TableBody>
 									</Table>
 								</TableContainer>
-							</Hidden>
-							<Hidden smUp implementation="css">
-								<Paper>
-									<List className={classes.root}>
-										{brokerConnections && Array.isArray(brokerConnections)
-											? brokerConnections.map((brokerConnection) => (
-												<React.Fragment>
-													<ListItem alignItems="flex-start">
-														<ListItemText
-															primary={<span>{brokerConnection.name}</span>}
-															secondary={
-																<React.Fragment>
-																	<Typography
-																		component="span"
-																		variant="body2"
-																		className={classes.inline}
-																		color="textPrimary"
-																	>
-																		{brokerConnection.externalUrl || brokerConnection.url}
-																	</Typography>
-																</React.Fragment>
-															}
-														/>
-													</ListItem>
-													<Divider/>
-												</React.Fragment>
-											))
-											: null}
-									</List>
-								</Paper>
-							</Hidden>
 						</div>
 					) : (
 						<div>No connections found</div>
