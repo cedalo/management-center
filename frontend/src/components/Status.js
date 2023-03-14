@@ -22,7 +22,7 @@ import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import Info from './Info';
-import { useTheme } from '@material-ui/core/styles';
+import {useTheme} from '@material-ui/core/styles';
 import {useHistory} from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
@@ -248,24 +248,30 @@ const Status = ({
 									</Grid>
 									<Grid item xs={12} style={{paddingTop: '24px'}}>
 										<Info
-											label="Broker Info"
+											label="Publish"
+											infoIcon
 											infos={[{
-												label: "Uptime",
-												value: secondsToDhms(systemStatus?.$SYS?.broker?.uptime),
+												label: "Messages Sent",
+												value: toNumber(systemStatus?.$SYS?.broker?.publish?.messages?.sent)
 											}, {
-												label: "Version",
-												value: systemStatus?.$SYS?.broker?.version,
+												label: "Messages Received",
+												value: toNumber(systemStatus?.$SYS?.broker?.publish?.messages?.received)
 											}, {
-												label: "URL",
-												value: currentConnection?.externalEncryptedUrl || currentConnection?.externalUnencryptedUrl || currentConnection?.internalUrl || currentConnection?.url,
+												label: "Bytes Sent",
+												value: formatBytes(systemStatus?.$SYS?.broker?.publish?.bytes?.sent),
+												space: true
+											}, {
+												label: "Bytes Received",
+												value: formatBytes(systemStatus?.$SYS?.broker?.publish?.bytes?.received)
 											}]}
-											icon={<InfoIcon/>}
+											icon={<DataSentIcon/>}
 										/>
 									</Grid>
 								</Grid>
 								<Grid container item lg={4} xl={4} sm={6} xs={12}>
 									<Grid item xs={12}>
-										<Info style={{cursor: 'pointer'}}
+										<Info
+											style={{cursor: 'pointer'}}
 											onClick={(event) => {
 												event.stopPropagation();
 												history.push(`/clients/`);
@@ -292,23 +298,31 @@ const Status = ({
 									</Grid>
 									<Grid item xs={12} style={{paddingTop: '24px'}}>
 										<Info
-											label="Publish"
-											infoIcon
-											infos={[{
-												label: "Messages Sent",
-												value: toNumber(systemStatus?.$SYS?.broker?.publish?.messages?.sent)
-											}, {
-												label: "Messages Received",
-												value: toNumber(systemStatus?.$SYS?.broker?.publish?.messages?.received)
-											}, {
-												label: "Bytes Sent",
-												value: formatBytes(systemStatus?.$SYS?.broker?.publish?.bytes?.sent),
-												space: true
-											}, {
-												label: "Bytes Received",
-												value: formatBytes(systemStatus?.$SYS?.broker?.publish?.bytes?.received)
-											}]}
-											icon={<DataSentIcon/>}
+											styl
+											label="Client Usage"
+											infos={[]}
+											chart={
+												<div style={{margin: 'auto'}}>
+													<Speedometer
+														maxValue={maxClients}
+														forceRender={true}
+														value={systemStatus?.$SYS?.broker?.clients?.connected}
+														startColor="green"
+														height={300}
+														textColor={theme.palette.text.secondary}
+														valueTextFontWeight="normal"
+														valueTextFontSize="11pt"
+														labelFontSize="9pt"
+														width={300}
+														ringWidth={30}
+														segments={50}
+														needleColor="#FD602E"
+														maxSegmentLabels={maxClients === 1 ? 1 : 5}
+														endColor="red"
+													/>
+												</div>
+											}
+											icon={<ClientIcon/>}
 										/>
 									</Grid>
 								</Grid>
@@ -325,12 +339,18 @@ const Status = ({
 													label: "Edition",
 													value: brokerLicense.edition === 'pro' ? 'Premium' : brokerLicense.edition
 												}, {
+													space: true,
+													label: "Maximum Clients",
+													value: maxClients
+												}, {
+													space: true,
 													label: "Issued by",
 													value: brokerLicense.issuedBy
 												}, {
 													label: "Issued to",
 													value: brokerLicense.issuedTo
 												}, {
+													space: true,
 													label: "Valid since",
 													value: moment(brokerLicense.validSince).format('LLLL')
 												}, {
@@ -342,31 +362,18 @@ const Status = ({
 									</Grid>
 									<Grid item xs={12} style={{paddingTop: '24px'}}>
 										<Info
-											styl
-											label="Client Usage"
-											infos={[]}
-											chart={
-												<div style={{width: '250px', margin: 'auto'}}>
-													<Speedometer
-														maxValue={maxClients}
-														forceRender={true}
-														value={systemStatus?.$SYS?.broker?.clients?.total}
-														startColor="green"
-														height={250}
-														textColor={theme.palette.text.secondary}
-														valueTextFontWeight="normal"
-														valueTextFontSize="11pt"
-														labelFontSize="9pt"
-														width={250}
-														ringWidth={30}
-														segments={50}
-														needleColor="#FD602E"
-														maxSegmentLabels={maxClients === 1 ? 1 : 5}
-														endColor="red"
-													/>
-												</div>
-											}
-											icon={<ClientIcon/>}
+											label="Broker Info"
+											infos={[{
+												label: "Uptime",
+												value: secondsToDhms(systemStatus?.$SYS?.broker?.uptime),
+											}, {
+												label: "Version",
+												value: systemStatus?.$SYS?.broker?.version,
+											}, {
+												label: "URL",
+												value: currentConnection?.externalEncryptedUrl || currentConnection?.externalUnencryptedUrl || currentConnection?.internalUrl || currentConnection?.url,
+											}]}
+											icon={<InfoIcon/>}
 										/>
 									</Grid>
 								</Grid>

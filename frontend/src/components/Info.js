@@ -62,7 +62,7 @@ const Info = ({className, infos, infoIcon, label, chart, icon, alignment, ...res
 				}
 			/>
 			<CardContent>
-				<Grid container style={{height: chart ? '150px' : null}} spacing={3}>
+				<Grid container style={{height: chart ? '180px' : null}} spacing={3}>
 					{chart}
 					{infos.map(info => (
 						info.hide !== true ?
