@@ -1,4 +1,4 @@
-const { AuthError } = require('../../../../../../plugins/Errors');
+const { AuthError } = require('../../Errors');
 const NOT_AUTHORIZED_ERROR_MESSAGE = `You don't have enough user rights to perform this operation`;
 
 const createActions = (plugin) => ({
