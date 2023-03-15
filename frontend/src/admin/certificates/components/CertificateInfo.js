@@ -1,8 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { CircularProgress, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
-import { green } from '@material-ui/core/colors';
-import CASignedIcon from '@material-ui/icons/Check';
-
 import { useSnackbar } from 'notistack';
 import { WebSocketContext } from '../../../websockets/WebSocket';
 import { InfoHint } from './AlertHint';
@@ -33,10 +30,8 @@ const getSummaryTable = (info = {}) => {
 			<TableBody>
 				<TableRow>
 					{borderlessCell()}
-					<TableCell align="left">CA certificate</TableCell>
-					<TableCell align="left">
-						{isSelfSigned ? 'self-signed' : <CASignedIcon fontSize="small" style={{ color: green[500] }} />}
-					</TableCell>
+					<TableCell align="left">CA type</TableCell>
+					<TableCell align="left">{isSelfSigned ? 'self-signed' : 'regular CA'}</TableCell>
 				</TableRow>
 				<TableRow>
 					{borderlessCell()}
@@ -89,10 +84,8 @@ const getDetailTable = (info = {}) => {
 			<TableBody>
 				<TableRow>
 					{borderlessCell()}
-					<TableCell align="left">CA certificate</TableCell>
-					<TableCell colSpan={2}>
-						{!ca ? 'self-signed' : <CASignedIcon fontSize="small" style={{ color: green[500] }} />}
-					</TableCell>
+					<TableCell align="left">CA type</TableCell>
+					<TableCell colSpan={2}>{!ca ? 'self-signed' : 'regular CA'}</TableCell>
 				</TableRow>
 				<TableRow>
 					{borderlessCell()}
