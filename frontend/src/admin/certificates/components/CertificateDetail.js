@@ -98,7 +98,7 @@ const CertificateDetail = () => {
 
 	return (
 		<ContentContainer
-			path={[{ link: 'home' }, { link: 'certs', title: 'Certificates' }, { title: 'CA Certificate' }]}
+			path={[{ route: 'home', name: 'Home' }, { route: 'certs', name: 'Certificates' }, { name: 'CA Certificate' }]}
 		>
 			<form className={classes.form} noValidate autoComplete="off">
 				<div className={classes.margin}>

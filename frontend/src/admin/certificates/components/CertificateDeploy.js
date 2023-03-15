@@ -257,7 +257,7 @@ const CertificateDeploy = ({ connections = [] }) => {
 	};
 
 	return (
-		<ContentContainer path={[{ link: 'home' }, { link: 'certs', title: 'Certificates' }, { title: 'Deploy' }]}>
+		<ContentContainer path={[{ route: 'home', name:'Home' }, { route: 'certs', name: 'Certificates' }, { name: 'Deploy' }]}>
 			<ContainerHeader
 				title={`Deploy client CA certificate: ${certificate.name}`}
 				subTitle={
