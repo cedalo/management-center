@@ -70,7 +70,7 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 		handleConnectionChange(dispatch, client, connectionID, connection, setConnection, connected);
 	};
 
-	return visible && brokerConnections ? (
+	return (visible || !appBar) && brokerConnections ? (
 		<FormControl
 			id="connection-select"
 			variant="outlined"

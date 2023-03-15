@@ -1,13 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {makeStyles} from '@material-ui/core/styles';
 import Groups from './components/Groups';
-import Home from './components/Home';
-import Security from './components/Security';
-import Config from './components/Config';
-import System from './components/System';
 import InfoPage from './components/InfoPage';
-// import Login from "./components/Login";
 import Roles from './components/Roles';
 import Plugins from './components/Plugins';
 import Terminal from './components/Terminal';
@@ -31,9 +25,7 @@ import UserGroupNew from './components/UserGroupNew';
 import UserGroups from './components/UserGroups';
 import UserGroupDetail from './components/UserGroupDetail';
 import SortableTablePage from './components/SortableTablePage';
-
 import useFetch from './helpers/useFetch';
-
 import UserNew from './admin/users/components/UserNew';
 import UserDetail from './admin/users/components/UserDetail';
 import Users from './admin/users/components/Users';
@@ -106,9 +98,6 @@ function AppRoutes(props) {
 				<Route path="/roles">
 					<Roles/>
 				</Route>
-				<Route path="/security">
-					<Security/>
-				</Route>
 				<Route path="/plugins">
 					<Plugins/>
 				</Route>
@@ -131,9 +120,6 @@ function AppRoutes(props) {
 				<Route path="/topics">
 					<TopicTree/>
 				</Route>
-				<Route path="/system">
-					<System/>
-				</Route>
 				{atLeastAdmin(userProfile) && !isGroupMember(userProfile) && <Route path="/connections/new">
 					<ConnectionNew/>
 				</Route>}
@@ -155,13 +141,10 @@ function AppRoutes(props) {
 				)}
 				<Route path="/certs">
 					<SortableTablePage Component={Certificates}/>
-				</Route>				
+				</Route>
 				{atLeastAdmin(userProfile) && <Route path="/settings">
 					<Settings onChangeTheme={props.onChangeTheme}/>
 				</Route>}
-				<Route path="/config">
-					<Config/>
-				</Route>
 				<Route path="/profile">
 					<UserProfile/>
 				</Route>
@@ -199,9 +182,6 @@ function AppRoutes(props) {
 				</Route>
 				<Route path="/tools/streamsheets">
 					<Streamsheets/>
-				</Route>
-				<Route path="/home">
-					<Home/>
 				</Route>
 				{!hideInfoPage ? <Route path="/info">
 					<InfoPage/>
