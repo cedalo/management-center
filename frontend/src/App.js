@@ -1,46 +1,40 @@
-import React, {useState} from 'react';
-import {SnackbarProvider} from 'notistack';
-import clsx from 'clsx';
-import {Provider, useSelector, useDispatch} from 'react-redux';
-import Joyride from 'react-joyride';
-import {makeStyles, useTheme} from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import {ThemeProvider} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
+import Box from '@material-ui/core/Box';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import IconButton from '@material-ui/core/IconButton';
+import {makeStyles, ThemeProvider, useTheme} from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import MenuIcon from '@material-ui/icons/Menu';
-import IconButton from '@material-ui/core/IconButton';
-import TourIcon from '@material-ui/icons/Slideshow';
 import HelpIcon from '@material-ui/icons/HelpOutline';
-import ThemeModeIcon from '@material-ui/icons/Brightness4';
-import Box from '@material-ui/core/Box';
+import MenuIcon from '@material-ui/icons/Menu';
+import TourIcon from '@material-ui/icons/Slideshow';
+import clsx from 'clsx';
 import {ConfirmProvider} from 'material-ui-confirm';
-import LogoutButton from './components/LogoutButton';
-import ProfileButton from './components/ProfileButton';
-import LicenseErrorDialog from './components/LicenseErrorDialog';
-import DisconnectedDialog from './components/DisconnectedDialog';
+import {SnackbarProvider} from 'notistack';
+import React, {useEffect, useState} from 'react';
+import Joyride from 'react-joyride';
+import {Provider} from 'react-redux';
+import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import AppRoutes from './AppRoutes';
 import BrokerSelect from './components/BrokerSelect';
-import InfoButton from './components/InfoButton';
-import customTheme from './theme';
-import darkTheme from './theme-dark';
-import NewsletterPopup from './components/NewsletterPopup';
-import UpgradeButton from './components/UpgradeButton';
+import CustomDrawer from './components/CustomDrawer';
+import DisconnectedDialog from './components/DisconnectedDialog';
 import FeedbackButton from './components/FeedbackButton';
 import FilterName from './components/FilterName';
-// import Login from "./components/Login";
-import store from './store';
-import WebSocketProvider from './websockets/WebSocket';
-// import NewsDrawer from "./components/NewsDrawer";
+import LicenseErrorDialog from './components/LicenseErrorDialog';
+import LogoutButton from './components/LogoutButton';
+import NewsletterPopup from './components/NewsletterPopup';
+import OnBoardingDialog from './components/OnBoardingDialog';
+import ProfileButton from './components/ProfileButton';
+import UpgradeButton from './components/UpgradeButton';
 import useFetch from './helpers/useFetch';
 import useLocalStorage from './helpers/useLocalStorage';
-import OnBoardingDialog from './components/OnBoardingDialog';
+import store from './store';
+import customTheme from './theme';
+import darkTheme from './theme-dark';
 import steps from './tutorial/steps';
-
-import {BrowserRouter as Router, Switch, Route, Link as RouterLink, Redirect} from 'react-router-dom';
-import CustomDrawer from './components/CustomDrawer';
-import AppRoutes from './AppRoutes';
+import WebSocketProvider from './websockets/WebSocket';
 
 const tourOptions = {
 	defaultStepOptions: {
@@ -133,7 +127,6 @@ export default function App(props) {
 	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
 	const [filter, setFilter] = useState('');
 	const [showFilter, setShowFilter] = useState(false);
-
 	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/theme`);
 	const [responseConfig, loadingConfig, hasErrorConfig] = useFetch(`${process.env.PUBLIC_URL}/api/config`);
 

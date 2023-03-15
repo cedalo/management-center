@@ -21,8 +21,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import SecurityIcon from '@material-ui/icons/Security';
-import UserManagementIcon from '@material-ui/icons/SupervisedUserCircle';
 import {Alert, AlertTitle} from '@material-ui/lab';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
@@ -35,32 +33,15 @@ import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 
-const getIconForFeature = (feature) => {
-	switch (feature) {
-	case 'security-policy':
-		return <SecurityIcon/>;
-	case 'user-management':
-		return <UserManagementIcon/>;
-	}
-};
-const remove = (array, item) => {
-	const index = array.indexOf(item);
-	array.splice(index, 1);
-};
-
 const useStyles = makeStyles((theme) => ({
 	badges: {
 		'& > *': {
 			margin: theme.spacing(0.5)
 		}
-	}, // fab: {
-	// 	position: 'absolute',
-	// 	bottom: theme.spacing(2),
-	// 	right: theme.spacing(2)
-	// },
+	},
 	button: {
 		marginRight: 10
-	}, breadcrumbItem: theme.palette.breadcrumbItem, breadcrumbLink: theme.palette.breadcrumbLink
+	}
 }));
 
 const rolesShape = PropTypes.shape({

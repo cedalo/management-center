@@ -8,41 +8,10 @@ import Typography from '@material-ui/core/Typography';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputBase from '@material-ui/core/InputBase';
-import DisconnectedIcon from '@material-ui/icons/Cancel';
-import ConnectedIcon from '@material-ui/icons/CheckCircle';
-// import {
-// 	updateAnonymousGroup,
-// 	updateGroups,
-// 	updateGroupsAll,
-// 	updateRoles,
-// 	updateRolesAll,
-// 	updateClients,
-// 	updateClientsAll,
-// 	updateBrokerConfigurations,
-// 	updateBrokerConnected,
-// 	updateBrokerConnections,
-// 	updateDefaultACLAccess,
-// 	updateSettings,
-// 	updateStreams,
-// 	updateSystemStatus,
-// 	updateTopicTree,
-// 	updateEditDefaultClient,
-// 	updateFeatures,
-// 	updateBrokerLicenseInformation
-// } from '../actions/actions';
-
-// import {
-// 	updateInspectClients
-// } from '../admin/inspect/actions/actions';
-
-// import {
-// 	colors,
-//   } from '@material-ui/core';
-
 import { WebSocketContext } from '../websockets/WebSocket';
-
+import {BrowserRouter as Router, Route, Switch, useLocation} from 'react-router-dom';
 import { handleConnectionChange } from '../utils/connectionUtils/connections';
-
+import {showConnections} from '../utils/utils';
 
 const CustomInput = withStyles((theme) => ({
 	root: {
@@ -83,6 +52,12 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 	const dispatch = useDispatch();
 	const theme = useTheme();
 	const [connection, setConnection] = React.useState('');
+	const [visible, setVisible] = React.useState(false);
+	const location = useLocation();
+
+	React.useEffect(() => {
+		setVisible(showConnections());
+	}, [location.pathname]);
 
 	React.useEffect(() => {
 		setConnection(currentConnectionName);
@@ -95,7 +70,7 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 		handleConnectionChange(dispatch, client, connectionID, connection, setConnection, connected);
 	};
 
-	return brokerConnections ? (
+	return (visible || !appBar) && brokerConnections ? (
 		<FormControl
 			id="connection-select"
 			variant="outlined"

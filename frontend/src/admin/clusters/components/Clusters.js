@@ -17,6 +17,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -66,17 +67,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CLUSTER_TABLE_COLUMNS = [
-	{ id: 'clustername', key: 'Name' },
-	{ id: 'description', key: 'Description' },
-	{ id: 'numberOfNodes', key: 'Nodes' },
+	{ id: 'name', key: 'Name', align: 'left'},
+	{ id: 'description', key: 'Description', align: 'left'},
+	{ id: 'nodes', key: 'Nodes', align: 'center', width: '5%' },
+	{ id: 'delete', key: 'Delete', align: 'center', width: '5%' },
 ];
 
 const createClusterTable = (clusters, classes, props, onCheckHealthStatus, onDeleteCluster, onSelectCluster) => {
 	const { clusterManagementFeature, userRoles = [], roles = [], onSort, sortBy, sortDirection } = props;
+	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
+	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
 
 	if (!clusterManagementFeature?.error && clusterManagementFeature?.supported !== false && clusters && clusters.length > 0) {
 		return <div>
-			<Hidden xsDown implementation="css">
 				<TableContainer>
 					<Table stickyHeader size="small" aria-label="sticky table">
 						<TableHead>
@@ -84,12 +87,19 @@ const createClusterTable = (clusters, classes, props, onCheckHealthStatus, onDel
 								{CLUSTER_TABLE_COLUMNS.map((column) => (
 									<TableCell
 										key={column.id}
+										style={{
+											width: column.width,
+											display: (!small && !medium) ||
+											(column.id === 'name' && (small || medium)) ||
+											(column.id === 'nodes' && (small || medium)) ||
+											(column.id === 'delete' && (small || medium)) ||
+											(column.id === 'description' && medium) ? undefined : 'none'
+										}}
 										sortDirection={sortBy === column.id ? sortDirection : false}
 									>
 										{column.key}
 									</TableCell>
 								))}
-								<TableCell />
 							</TableRow>
 						</TableHead>
 						<TableBody>
@@ -103,10 +113,12 @@ const createClusterTable = (clusters, classes, props, onCheckHealthStatus, onDel
 										}}
 										style={{ cursor: 'pointer' }}
 									>
-										<TableCell>{cluster.clustername}</TableCell>
-										<TableCell>{cluster.description}</TableCell>
-										<TableCell>{cluster.nodes?.length || 0}</TableCell>
-										<TableCell align="right">
+										<TableCell align={CLUSTER_TABLE_COLUMNS[0].align}>{cluster.clustername}</TableCell>
+										{small ? null :
+											<TableCell align={CLUSTER_TABLE_COLUMNS[1].align}>{cluster.description}</TableCell>
+										}
+										<TableCell align={CLUSTER_TABLE_COLUMNS[2].align}>{cluster.nodes?.length || 0}</TableCell>
+										<TableCell align={CLUSTER_TABLE_COLUMNS[3].align}>
 											{/* <Tooltip title="Check health status">
 												<IconButton
 													size="small"
@@ -135,75 +147,6 @@ const createClusterTable = (clusters, classes, props, onCheckHealthStatus, onDel
 						</TableBody>
 					</Table>
 				</TableContainer>
-			</Hidden>
-			<Hidden smUp implementation="css">
-				<Paper>
-					<List className={classes.root}>
-						{clusters.map((cluster) => (
-							<React.Fragment>
-								<ListItem
-									alignItems="flex-start"
-									onClick={(event) => onSelectCluster(cluster.clustername, cluster.nodes?.length)}
-								>
-									<ListItemText
-										primary={<span>{cluster.clustername}</span>}
-										secondary={
-											<React.Fragment>
-												<Typography
-													component="span"
-													variant="body2"
-													className={classes.inline}
-													color="textPrimary"
-												>
-													{cluster.clustername}
-												</Typography>
-											</React.Fragment>
-										}
-									/>
-									<ListItemSecondaryAction>
-										<IconButton
-											edge="end"
-											size="small"
-											onClick={(event) => {
-												event.stopPropagation();
-												onSelectCluster(cluster.clustername, cluster.nodes?.length);
-											}}
-											aria-label="edit"
-										>
-											<EditIcon fontSize="small" />
-										</IconButton>
-
-										<IconButton
-											edge="end"
-											size="small"
-											onClick={(event) => {
-												event.stopPropagation();
-												onCheckHealthStatus(cluster.clustername);
-											}}
-											aria-label="delete"
-										>
-											<CheckHealthStatusIcon fontSize="small" />
-										</IconButton>
-
-										<IconButton
-											edge="end"
-											size="small"
-											onClick={(event) => {
-												event.stopPropagation();
-												onDeleteCluster(cluster.clustername);
-											}}
-											aria-label="delete"
-										>
-											<DeleteIcon fontSize="small" />
-										</IconButton>
-									</ListItemSecondaryAction>
-								</ListItem>
-								<Divider />
-							</React.Fragment>
-						))}
-					</List>
-				</Paper>
-			</Hidden>
 		</div>
 	} else if (clusterManagementFeature?.error) {
 		return null;

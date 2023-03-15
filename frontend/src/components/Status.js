@@ -1,8 +1,10 @@
-import {colors, makeStyles} from '@material-ui/core';
+import {colors, IconButton, makeStyles, Tooltip} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
+import InfoOutlined from '@material-ui/icons/InfoOutlined';
+import InspectClientsIcon from '@material-ui/icons/RecordVoiceOver';
 import DataSentIcon from '@material-ui/icons/RssFeed';
 import InfoIcon from '@material-ui/icons/Info';
 import MessageIcon from '@material-ui/icons/Email';
@@ -22,7 +24,7 @@ import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import Info from './Info';
-import { useTheme } from '@material-ui/core/styles';
+import {useTheme} from '@material-ui/core/styles';
 import {useHistory} from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
@@ -35,7 +37,12 @@ const useStyles = makeStyles((theme) => ({
 	container: {
 		paddingLeft: '0px',
 		paddingRight: '0px'
-	}
+	},
+	info: {
+		marginTop: '9px',
+		marginRight: '5px'
+	},
+
 }));
 
 const Status = ({
@@ -61,11 +68,11 @@ const Status = ({
 		((totalMessages - parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent)) / totalMessages) * 100;
 	const timerRef = React.useRef();
 	const [waitingForSysTopic, setWaitingForSysTopic] = React.useState(true);
-	const [maxClients, setMaxClients] = React.useState(1);
+	const [maxClients, setMaxClients] = React.useState();
 
 	const getMaxClients = () => {
 		const feature = brokerLicense?.features?.find(feature => 'mosquitto-clients' === feature.name);
-		return feature ? feature.count : 1;
+		return feature ? feature.count : undefined;
 	}
 
 	useEffect(() => {
@@ -248,50 +255,6 @@ const Status = ({
 									</Grid>
 									<Grid item xs={12} style={{paddingTop: '24px'}}>
 										<Info
-											label="Broker Info"
-											infos={[{
-												label: "Uptime",
-												value: secondsToDhms(systemStatus?.$SYS?.broker?.uptime),
-											}, {
-												label: "Version",
-												value: systemStatus?.$SYS?.broker?.version,
-											}, {
-												label: "URL",
-												value: currentConnection?.externalEncryptedUrl || currentConnection?.externalUnencryptedUrl || currentConnection?.internalUrl || currentConnection?.url,
-											}]}
-											icon={<InfoIcon/>}
-										/>
-									</Grid>
-								</Grid>
-								<Grid container item lg={4} xl={4} sm={6} xs={12}>
-									<Grid item xs={12}>
-										<Info style={{cursor: 'pointer'}}
-											onClick={(event) => {
-												event.stopPropagation();
-												history.push(`/clients/`);
-											}
-											}
-											label="Clients"
-											infoIcon
-											infos={[{
-												label: "Total",
-												value: toNumber(systemStatus?.$SYS?.broker?.clients?.total)
-											}, {
-												label: "Connected",
-												value: toNumber(systemStatus?.$SYS?.broker?.clients?.connected)
-											}/*, {
-												label: "Disconnected",
-												value: systemStatus?.$SYS?.broker?.clients?.disconnected === undefined ? '' : toNumber(systemStatus?.$SYS?.broker?.clients?.disconnected)
-											}*/, {
-												label: "Subscriptions",
-												value: toNumber(systemStatus?.$SYS?.broker?.subscriptions?.count),
-												space: true
-											}]}
-											icon={<ClientIcon/>}
-										/>
-									</Grid>
-									<Grid item xs={12} style={{paddingTop: '24px'}}>
-										<Info
 											label="Publish"
 											infoIcon
 											infos={[{
@@ -314,59 +277,123 @@ const Status = ({
 								</Grid>
 								<Grid container item lg={4} xl={4} sm={6} xs={12}>
 									<Grid item xs={12}>
+										<Info
+											// style={{cursor: 'pointer'}}
+											label="Clients"
+											infoIcon
+											actionIcon={
+												<Tooltip title="Click to inspect clients">
+													<IconButton
+														className={classes.info} size="small"
+														aria-label="info">
+														<InspectClientsIcon
+															onClick={(event) => {
+																event.stopPropagation();
+																history.push(`/clientinspection/`);
+															}}
+															fontSize="small"
+														/>
+													</IconButton>
+												</Tooltip>
+											}
+											infos={[{
+												label: "Total",
+												value: toNumber(systemStatus?.$SYS?.broker?.clients?.total)
+											}, {
+												label: "Connected",
+												value: toNumber(systemStatus?.$SYS?.broker?.clients?.connected)
+											}/*, {
+												label: "Disconnected",
+												value: systemStatus?.$SYS?.broker?.clients?.disconnected === undefined ? '' : toNumber(systemStatus?.$SYS?.broker?.clients?.disconnected)
+											}*/, {
+												label: "Subscriptions",
+												value: toNumber(systemStatus?.$SYS?.broker?.subscriptions?.count),
+												space: true
+											}]}
+											icon={<ClientIcon/>}
+										/>
+									</Grid>
+									<Grid item xs={12} style={{paddingTop: '24px'}}>
+										<Info
+											label={brokerLicense && brokerLicense.edition ? "Client Usage" : "Client Usage not available"}
+											infos={[]}
+											chart={
+												<div style={{margin: 'auto'}}>
+													<Speedometer
+														maxValue={maxClients || 1}
+														forceRender={true}
+														value={systemStatus?.$SYS?.broker?.clients?.connected}
+														startColor={maxClients ? "#44FF44" : "#AAAAAA"}
+														endColor={maxClients ? "#FF4444" : "#AAAAAA"}
+														height={300}
+														textColor={theme.palette.text.secondary}
+														valueTextFontWeight="normal"
+														valueTextFontSize="11pt"
+														labelFontSize="9pt"
+														width={300}
+														ringWidth={30}
+														segments={50}
+														needleColor="#FD602E"
+														maxSegmentLabels={maxClients === 1 || !maxClients ? 1 : 5}
+													/>
+												</div>
+											}
+											icon={<ClientIcon/>}
+										/>
+									</Grid>
+								</Grid>
+								<Grid container item lg={4} xl={4} sm={6} xs={12}>
+									<Grid item xs={12}>
 										{brokerLicenseLoading ?
 											<Alert severity="info">
 												<AlertTitle>Loading license information</AlertTitle>
 												<CircularProgress color="secondary"/>
 											</Alert> :
 											<Info
-												label="License"
+												label={brokerLicense.edition ? "License" : "License info not available"}
 												infos={[{
 													label: "Edition",
 													value: brokerLicense.edition === 'pro' ? 'Premium' : brokerLicense.edition
 												}, {
+													space: true,
+													label: "Maximum Clients",
+													value: maxClients
+												}, {
+													space: true,
 													label: "Issued by",
 													value: brokerLicense.issuedBy
 												}, {
 													label: "Issued to",
 													value: brokerLicense.issuedTo
 												}, {
+													space: true,
 													label: "Valid since",
-													value: moment(brokerLicense.validSince).format('LLLL')
+													value: brokerLicense.validSince ?
+														moment(brokerLicense.validSince).format('LLLL') :
+														''
 												}, {
 													label: "Valid until",
-													value: brokerLicense.issuedTo
+													value: brokerLicense.validUntil ?
+														moment(brokerLicense.validUntil).format('LLLL') :
+														''
 												}]}
 												icon={<LicenseIcon/>}
 											/>}
 									</Grid>
 									<Grid item xs={12} style={{paddingTop: '24px'}}>
 										<Info
-											styl
-											label="Client Usage"
-											infos={[]}
-											chart={
-												<div style={{width: '250px', margin: 'auto'}}>
-													<Speedometer
-														maxValue={maxClients}
-														forceRender={true}
-														value={systemStatus?.$SYS?.broker?.clients?.total}
-														startColor="green"
-														height={250}
-														textColor={theme.palette.text.secondary}
-														valueTextFontWeight="normal"
-														valueTextFontSize="11pt"
-														labelFontSize="9pt"
-														width={250}
-														ringWidth={30}
-														segments={50}
-														needleColor="#FD602E"
-														maxSegmentLabels={maxClients === 1 ? 1 : 5}
-														endColor="red"
-													/>
-												</div>
-											}
-											icon={<ClientIcon/>}
+											label="Broker Info"
+											infos={[{
+												label: "Uptime",
+												value: secondsToDhms(systemStatus?.$SYS?.broker?.uptime),
+											}, {
+												label: "Version",
+												value: systemStatus?.$SYS?.broker?.version,
+											}, {
+												label: "URL",
+												value: currentConnection?.externalEncryptedUrl || currentConnection?.externalUnencryptedUrl || currentConnection?.internalUrl || currentConnection?.url,
+											}]}
+											icon={<InfoIcon/>}
 										/>
 									</Grid>
 								</Grid>

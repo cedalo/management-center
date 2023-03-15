@@ -36,7 +36,7 @@ import SecurityIcon from '@material-ui/icons/Security';
 import UserGroupsIcon from '@material-ui/icons/PeopleOutline';
 import CertificateIcon from '@material-ui/icons/VerifiedUserOutlined'; // GppGoodOutlined';
 import {atLeastAdmin, atLeastEditor, atLeastViewer} from '../utils/accessUtils/access';
-import InfoButton from './InfoButton';
+import { isAdminOpen } from '../utils/utils';
 
 const drawerWidth = 240;
 
@@ -164,16 +164,8 @@ const CustomDrawer = ({
 	const theme = useTheme();
 	const [adminOpen, setAdminOpen] = useState(false);
 
-
 	useEffect(() => {
-		setAdminOpen(
-			location.pathname.startsWith('/user-groups') ||
-			location.pathname.startsWith('/tokens') ||
-			location.pathname.startsWith('/info') ||
-			location.pathname.startsWith('/users') ||
-			location.pathname.startsWith('/certs') ||
-			location.pathname.startsWith('/tokens') ||
-			location.pathname.startsWith('/settings'));
+		setAdminOpen(isAdminOpen());
 	}, [location.pathname]);
 
 	setShowFilter('/clientinspection' === location.pathname);
@@ -227,25 +219,6 @@ const CustomDrawer = ({
 					/>}
 				</List>
 				<Divider/>
-				<List>
-					{open ? <ListSubheader className={classes.menuSubHeader}>Configuration</ListSubheader> : null}
-					{atLeastAdmin(userProfile) && <ListItemLink
-						classes={classes}
-						to="/clusters"
-						primary="Cluster Management"
-						icon={<ClusterIcon fontSize="small"/>}
-					/>}
-					{(atLeastAdmin(userProfile, currentConnectionName) && !hideConnections) ? <ListItemLink
-						classes={classes}
-						to="/connections"
-						primary="Connections"
-						icon={<ConnectionsIcon fontSize="small"/>}
-					/> : null}
-					{atLeastAdmin(userProfile, currentConnectionName) &&
-						<ListItemLink classes={classes} to="/streams" primary="Streams"
-									  icon={<StreamsIcon fontSize="small"/>}/>}
-				</List>
-				<Divider/>
 				{atLeastEditor(userProfile, currentConnectionName) && <><List>
 					{open ? <ListSubheader className={classes.menuSubHeader}>Dynamic Security</ListSubheader> : null}
 					<ListItemLink
@@ -270,18 +243,21 @@ const CustomDrawer = ({
 						icon={<RoleIcon fontSize="small"/>}
 					/>
 				</List>
-					<Divider/></>}
+				<Divider/></>}
 				<List id="menu-items-tools">
-					{open ? <ListSubheader className={classes.menuSubHeader}>Tools</ListSubheader> : null}
+					{open ? <ListSubheader className={classes.menuSubHeader}>Manage</ListSubheader> : null}
+					{atLeastAdmin(userProfile, currentConnectionName) &&
+						<ListItemLink classes={classes} to="/streams" primary="Streams"
+									  icon={<StreamsIcon fontSize="small"/>}/>}
 					{atLeastAdmin(userProfile, currentConnectionName) &&
 						<ListItemLink classes={classes} to="/terminal" primary="Terminal"
 									  icon={<TerminalIcon fontSize="small"/>}/>}
-					<ListItemLink
-						classes={classes}
-						to="/tools/streamsheets"
-						primary="Streamsheets"
-						icon={<StreamsheetsIcon fontSize="small"/>}
-					/>
+					{/*<ListItemLink*/}
+					{/*	classes={classes}*/}
+					{/*	to="/tools/streamsheets"*/}
+					{/*	primary="Streamsheets"*/}
+					{/*	icon={<StreamsheetsIcon fontSize="small"/>}*/}
+					{/*/>*/}
 				</List>
 				<Divider/>
 				<Paper
@@ -293,6 +269,22 @@ const CustomDrawer = ({
 					}}
 				>
 					<List>
+						<List>
+							{open ? <ListSubheader className={classes.menuSubHeader}>Configuration</ListSubheader> : null}
+							{atLeastAdmin(userProfile) && <ListItemLink
+								classes={classes}
+								to="/clusters"
+								primary="Cluster Management"
+								icon={<ClusterIcon fontSize="small"/>}
+							/>}
+							{(atLeastAdmin(userProfile, currentConnectionName) && !hideConnections) ? <ListItemLink
+								classes={classes}
+								to="/connections"
+								primary="Connections"
+								icon={<ConnectionsIcon fontSize="small"/>}
+							/> : null}
+						</List>
+						<Divider/>
 						{adminOpen ? <Divider/> : null}
 						{adminOpen ?
 							<ListItemLink

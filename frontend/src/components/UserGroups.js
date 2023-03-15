@@ -90,7 +90,6 @@ const UserGroups = (props) => {
 
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
 	const [userGroupsEntries, setUserGroupsEntries] = React.useState([]);
 	const [userGroupsEntriesPaginated, setUserGroupsEntriesPaginated] = React.useState([]);
 
@@ -113,17 +112,18 @@ const UserGroups = (props) => {
 			setUserGroupsEntries(_userGroupsEntries);
 		}
 
-		let offset = page * rowsPerPage;
-		const groups = _userGroupsEntries.slice(offset, (offset) + rowsPerPage);
+		// let offset = 0; // page * rowsPerPage;
+		const groups = _userGroupsEntries; // .slice(offset, (offset) + rowsPerPage);
 
-		if (groups.length === 0 && page > 0) { // if current page has zero entries move to the previous page
-			setPage(page - 1);
-			offset = (page - 1) * rowsPerPage;
-			const groups = _userGroupsEntries.slice(offset, (offset) + rowsPerPage);
-			setUserGroupsEntriesPaginated(groups);
-		} else {
-			setUserGroupsEntriesPaginated(groups);
-		}
+		// if (groups.length === 0 && page > 0) { // if current page has zero entries move to the previous page
+		// 	setPage(page - 1);
+		// 	offset = (page - 1) * rowsPerPage;
+		// 	const groups = _userGroupsEntries.slice(offset, (offset) + rowsPerPage);
+		// 	setUserGroupsEntriesPaginated(groups);
+		// } else {
+		// 	setUserGroupsEntriesPaginated(groups);
+		// }
+		setUserGroupsEntriesPaginated(groups);
 	}, [props.userGroups, sortDirection, sortBy]);
 
 
@@ -386,19 +386,19 @@ const UserGroups = (props) => {
 															</TableRow>
 														})}
 												</TableBody>
-												<TableFooter>
-													<TableRow>
-														<TablePagination
-															rowsPerPageOptions={[5, 10, 25]}
-															colSpan={8}
-															count={userGroupsEntries.length}
-															rowsPerPage={rowsPerPage}
-															page={page}
-															onPageChange={handleChangePage}
-															onRowsPerPageChange={handleChangeRowsPerPage}
-														/>
-													</TableRow>
-												</TableFooter>
+												{/*<TableFooter>*/}
+												{/*	<TableRow>*/}
+												{/*		<TablePagination*/}
+												{/*			rowsPerPageOptions={[5, 10, 25]}*/}
+												{/*			colSpan={8}*/}
+												{/*			count={userGroupsEntries.length}*/}
+												{/*			rowsPerPage={rowsPerPage}*/}
+												{/*			page={page}*/}
+												{/*			onPageChange={handleChangePage}*/}
+												{/*			onRowsPerPageChange={handleChangeRowsPerPage}*/}
+												{/*		/>*/}
+												{/*	</TableRow>*/}
+												{/*</TableFooter>*/}
 											</Table>
 										</TableContainer>
 									</Hidden>

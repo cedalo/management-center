@@ -44,7 +44,7 @@ const UploadButton = ({ name, disabled, onUpload }) => {
 			disabled={disabled}
 			onChange={onChange(onUpload)}
 			size="small"
-			style={{width: '150px'}}
+			style={{width: '190px'}}
 			startIcon={<CloudUpload />}
 			variant="contained"
 		>
