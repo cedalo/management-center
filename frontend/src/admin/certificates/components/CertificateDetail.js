@@ -101,7 +101,7 @@ const CertificateDetail = () => {
 
 	return (
 		<ContentContainer
-			path={[{route: 'home', name: 'Home'}, {route: 'certs', name: 'Certificates'}, {name: 'CA Certificate'}]}
+			path={[{route: '/home', name: 'Home'}, {route: '/certs', name: 'Certificates'}, {name: 'CA Certificate'}]}
 		>
 			<ContainerHeader
 				title="Certificate"
