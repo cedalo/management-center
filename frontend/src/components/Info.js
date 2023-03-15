@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-const Info = ({className, infos, infoIcon, label, chart, icon, alignment, ...rest}) => {
+const Info = ({className, infos, infoIcon, actionIcon, label, chart, icon, alignment, ...rest}) => {
 	const classes = useStyles();
 
 	return (
@@ -45,20 +45,25 @@ const Info = ({className, infos, infoIcon, label, chart, icon, alignment, ...res
 			<CardHeader
 				title={<Typography variant="body1">{label}</Typography>}
 				avatar={<Avatar className={classes.avatar}>{icon}</Avatar>}
-				action={infoIcon ?
-					<Tooltip title="Click for further Infos">
-						<IconButton
-							className={classes.info} size="small"
-							aria-label="info">
-							<InfoOutlined
-								onClick={(event) => {
-									event.stopPropagation();
-									window.open('https://docs.cedalo.com/management-center', '_blank')
-								}}
-								fontSize="small"
-							/>
-						</IconButton>
-					</Tooltip> : null
+				action={infoIcon || actionIcon ?
+					<div>
+						{actionIcon}
+						{infoIcon ?
+							<Tooltip title="Click for further Infos">
+								<IconButton
+									className={classes.info} size="small"
+									aria-label="info">
+									<InfoOutlined
+										onClick={(event) => {
+											event.stopPropagation();
+											window.open('https://docs.cedalo.com/management-center', '_blank')
+										}}
+										fontSize="small"
+									/>
+								</IconButton>
+							</Tooltip>
+							: null}
+					</div> : null
 				}
 			/>
 			<CardContent>
@@ -66,16 +71,24 @@ const Info = ({className, infos, infoIcon, label, chart, icon, alignment, ...res
 					{chart}
 					{infos.map(info => (
 						info.hide !== true ?
-								<Grid style={{display: 'flex', padding: '4px 12px', marginTop: info.space ? '10px' : '0px'}}
-									  justifyContent={alignment=== "table" ? "flex-start" : "space-between"} xs={12} item>
-									<Typography color="textPrimary" style={{width: alignment === 'table' ? '40%' : undefined}} variant="body2">
-										{info.label}
-									</Typography>
-									<Typography color="textPrimary" variant="body2">
-										{info.value}
-									</Typography>
-								</Grid>
-						: null
+							<Grid style={{display: 'flex', padding: '4px 12px', marginTop: info.space ? '10px' : '0px'}}
+								  justifyContent={alignment === "table" ? "flex-start" : "space-between"} xs={12} item>
+								<Typography
+									color="textPrimary"
+									style={{width: alignment === 'table' ? '30%' : undefined}}
+									variant="body2"
+								>
+									{info.label}
+								</Typography>
+								<Typography
+									color="textPrimary"
+									variant="body2"
+									style={{width: alignment === 'table' ? '70%' : undefined}}
+								>
+									{info.value}
+								</Typography>
+							</Grid>
+							: null
 					))}
 				</Grid>
 			</CardContent>

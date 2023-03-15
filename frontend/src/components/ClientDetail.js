@@ -244,7 +244,7 @@ const ClientDetail = (props) => {
 					<TextField
 						disabled={!editMode}
 						id="client-id"
-						label="Client ID"
+						label="ID"
 						value={updatedClient.clientid}
 						defaultValue=""
 						variant="outlined"

@@ -1,8 +1,10 @@
-import {colors, makeStyles} from '@material-ui/core';
+import {colors, IconButton, makeStyles, Tooltip} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
+import InfoOutlined from '@material-ui/icons/InfoOutlined';
+import InspectClientsIcon from '@material-ui/icons/RecordVoiceOver';
 import DataSentIcon from '@material-ui/icons/RssFeed';
 import InfoIcon from '@material-ui/icons/Info';
 import MessageIcon from '@material-ui/icons/Email';
@@ -35,7 +37,12 @@ const useStyles = makeStyles((theme) => ({
 	container: {
 		paddingLeft: '0px',
 		paddingRight: '0px'
-	}
+	},
+	info: {
+		marginTop: '9px',
+		marginRight: '5px'
+	},
+
 }));
 
 const Status = ({
@@ -61,11 +68,11 @@ const Status = ({
 		((totalMessages - parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent)) / totalMessages) * 100;
 	const timerRef = React.useRef();
 	const [waitingForSysTopic, setWaitingForSysTopic] = React.useState(true);
-	const [maxClients, setMaxClients] = React.useState(1);
+	const [maxClients, setMaxClients] = React.useState();
 
 	const getMaxClients = () => {
 		const feature = brokerLicense?.features?.find(feature => 'mosquitto-clients' === feature.name);
-		return feature ? feature.count : 1;
+		return feature ? feature.count : undefined;
 	}
 
 	useEffect(() => {
@@ -271,14 +278,24 @@ const Status = ({
 								<Grid container item lg={4} xl={4} sm={6} xs={12}>
 									<Grid item xs={12}>
 										<Info
-											style={{cursor: 'pointer'}}
-											onClick={(event) => {
-												event.stopPropagation();
-												history.push(`/clients/`);
-											}
-											}
+											// style={{cursor: 'pointer'}}
 											label="Clients"
 											infoIcon
+											actionIcon={
+												<Tooltip title="Click to inspect clients">
+													<IconButton
+														className={classes.info} size="small"
+														aria-label="info">
+														<InspectClientsIcon
+															onClick={(event) => {
+																event.stopPropagation();
+																history.push(`/clientinspection/`);
+															}}
+															fontSize="small"
+														/>
+													</IconButton>
+												</Tooltip>
+											}
 											infos={[{
 												label: "Total",
 												value: toNumber(systemStatus?.$SYS?.broker?.clients?.total)
@@ -298,16 +315,16 @@ const Status = ({
 									</Grid>
 									<Grid item xs={12} style={{paddingTop: '24px'}}>
 										<Info
-											styl
-											label="Client Usage"
+											label={brokerLicense && brokerLicense.edition ? "Client Usage" : "Client Usage not available"}
 											infos={[]}
 											chart={
 												<div style={{margin: 'auto'}}>
 													<Speedometer
-														maxValue={maxClients}
+														maxValue={maxClients || 1}
 														forceRender={true}
 														value={systemStatus?.$SYS?.broker?.clients?.connected}
-														startColor="green"
+														startColor={maxClients ? "#44FF44" : "#AAAAAA"}
+														endColor={maxClients ? "#FF4444" : "#AAAAAA"}
 														height={300}
 														textColor={theme.palette.text.secondary}
 														valueTextFontWeight="normal"
@@ -317,8 +334,7 @@ const Status = ({
 														ringWidth={30}
 														segments={50}
 														needleColor="#FD602E"
-														maxSegmentLabels={maxClients === 1 ? 1 : 5}
-														endColor="red"
+														maxSegmentLabels={maxClients === 1 || !maxClients ? 1 : 5}
 													/>
 												</div>
 											}
@@ -334,7 +350,7 @@ const Status = ({
 												<CircularProgress color="secondary"/>
 											</Alert> :
 											<Info
-												label="License"
+												label={brokerLicense.edition ? "License" : "License info not available"}
 												infos={[{
 													label: "Edition",
 													value: brokerLicense.edition === 'pro' ? 'Premium' : brokerLicense.edition
@@ -352,10 +368,14 @@ const Status = ({
 												}, {
 													space: true,
 													label: "Valid since",
-													value: moment(brokerLicense.validSince).format('LLLL')
+													value: brokerLicense.validSince ?
+														moment(brokerLicense.validSince).format('LLLL') :
+														''
 												}, {
 													label: "Valid until",
-													value: brokerLicense.issuedTo
+													value: brokerLicense.validUntil ?
+														moment(brokerLicense.validUntil).format('LLLL') :
+														''
 												}]}
 												icon={<LicenseIcon/>}
 											/>}

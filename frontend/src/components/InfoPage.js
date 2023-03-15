@@ -195,21 +195,18 @@ const InfoPage = (props) => {
 						{license?.features && responsePlugIns ?
 							<Grid item lg={12} xs={12} >
 								<Info
-									label="Features"
+									label="Management Center Features"
 									alignment="table"
-									infos={license?.features.map(feature => {
+									infos={license?.features.reduce((result, feature) => {
 										const plugIn = responsePlugIns.find(plug => (feature.name === plug.featureId));
 										if (plugIn) {
-											return {
+											result.push({
 												label: `${plugIn.name}`,
 												value: plugIn.description
-											}
+											});
 										}
-										return {
-											label: `${feature.name}`,
-											value: ''
-										}
-									})}
+										return result;
+									}, [])}
 									icon={<AppsIcon/>}
 								/>
 							</Grid>: null}

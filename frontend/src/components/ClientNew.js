@@ -155,7 +155,7 @@ const ClientNew = (props) => {
 				<Grid item xs={12}>
 					<TextField
 						id="client-id"
-						label="Client ID"
+						label="ID"
 						onChange={(event) => setClientID(event.target.value)}
 						defaultValue=""
 						variant="outlined"

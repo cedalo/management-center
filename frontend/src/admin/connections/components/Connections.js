@@ -35,10 +35,14 @@ import {handleConnectionChange} from '../../../utils/connectionUtils/connections
 import {WebSocketContext} from '../../../websockets/WebSocket';
 
 
-const GROUP_TABLE_COLUMNS = [{id: 'expand', key: '', width: '10px'}, {id: 'name', key: 'Name'}, {
-	id: 'id',
-	key: 'ID'
-}, {id: 'url', key: 'URL'}, {id: 'status', key: 'Status', width: '10px'}, {id: 'action', key: ' ', width: '100px'}];
+const CONN_TABLE_COLUMNS = [
+	{id: 'expand', key: '', align: 'left', width: '10px'},
+	{id: 'name', key: 'Name', align: 'left'},
+	{id: 'id', key: 'ID', align: 'left'},
+	{id: 'url', key: 'URL', align: 'left'},
+	{id: 'status', key: 'Connected', align: 'center', width: '10px'},
+	{id: 'action', key: ' ', align: 'right', width: '100px'}
+];
 
 const StyledTableRow = withStyles((theme) => ({
 	root: {
@@ -123,50 +127,59 @@ const CustomRow = (props) => {
 			onContextMenu={handleClick}
 			className={atLeastAdmin(userProfile, brokerConnection.name) ? props.classes.cursorPointer : ''}
 		>
-			{medium || small ? null : <TableCell style={{padding: '6px'}}>
-				<IconButton aria-label="expand row" size="small"
-							disabled={!makeCollapsible}
-							style={makeCollapsible ? {opacity: "100%"} : {opacity: "0%"}}
-							onClick={(event) => {
-								event.stopPropagation();
-								setOpen(!open);
-							}}>
-					{open ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
-				</IconButton>
-			</TableCell>}
-			<TableCell style={{padding: '6px'}}>{brokerConnection.name}</TableCell>
-			{medium || small ? null : <TableCell style={{padding: '6px'}}>{brokerConnection.id}</TableCell>}
-			{small ? null : <TableCell style={{padding: '6px'}}>{url}</TableCell>}
-			<TableCell style={{padding: '6px'}}>
+			{medium || small ? null :
+				<TableCell align={CONN_TABLE_COLUMNS[0].align} style={{padding: '6px'}}>
+					<IconButton aria-label="expand row" size="small"
+								disabled={!makeCollapsible}
+								style={makeCollapsible ? {opacity: "100%"} : {opacity: "0%"}}
+								onClick={(event) => {
+									event.stopPropagation();
+									setOpen(!open);
+								}}>
+						{open ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
+					</IconButton>
+				</TableCell>
+			}
+			<TableCell align={CONN_TABLE_COLUMNS[1].align} style={{padding: '6px'}}>{brokerConnection.name}</TableCell>
+			{medium || small ? null :
+				<TableCell align={CONN_TABLE_COLUMNS[2].align}
+						   style={{padding: '6px'}}>{brokerConnection.id}</TableCell>
+			}
+			{small ? null :
+				<TableCell align={CONN_TABLE_COLUMNS[3].align} style={{padding: '6px'}}>{url}</TableCell>
+			}
+			<TableCell align={CONN_TABLE_COLUMNS[4].align} style={{padding: '6px'}}>
 				<BrokerStatusIcon brokerConnection={brokerConnection}/>
 				{}
 			</TableCell>
-			{medium || small ? null : <TableCell style={{padding: '6px'}} align="right">
-				<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}>
-					<Switch
-						color="primary"
-						disabled={!atLeastAdmin(userProfile, brokerConnection.name)}
-						checked={brokerConnection.status?.connected}
-						name="connectionConnected"
+			{medium || small ? null :
+				<TableCell align={CONN_TABLE_COLUMNS[5].align} style={{padding: '6px'}} >
+					<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}>
+						<Switch
+							color="primary"
+							disabled={!atLeastAdmin(userProfile, brokerConnection.name)}
+							checked={brokerConnection.status?.connected}
+							name="connectionConnected"
+							onClick={(event) => {
+								event.stopPropagation();
+								handleBrokerConnectionConnectDisconnect(brokerConnection.id, brokerConnection.name,
+									event.target.checked);
+							}}
+							inputProps={{'aria-label': 'Connection connected'}}
+						/>
+					</Tooltip>
+					<IconButton
+						disabled={brokerConnection.status?.connected || !atLeastAdmin(userProfile,
+							brokerConnection.name)}
+						size="small"
 						onClick={(event) => {
 							event.stopPropagation();
-							handleBrokerConnectionConnectDisconnect(brokerConnection.id, brokerConnection.name,
-								event.target.checked);
+							onDeleteConnection(brokerConnection.id);
 						}}
-						inputProps={{'aria-label': 'Connection connected'}}
-					/>
-				</Tooltip>
-				<IconButton
-					disabled={brokerConnection.status?.connected || !atLeastAdmin(userProfile, brokerConnection.name)}
-					size="small"
-					onClick={(event) => {
-						event.stopPropagation();
-						onDeleteConnection(brokerConnection.id);
-					}}
-				>
-					<DeleteIcon fontSize="small"/>
-				</IconButton>
-			</TableCell>}
+					>
+						<DeleteIcon fontSize="small"/>
+					</IconButton>
+				</TableCell>}
 		</StyledTableRow>
 		<TableRow>
 			<TableCell style={{paddingBottom: 0, paddingTop: 0}} colSpan={6}>
@@ -418,7 +431,8 @@ const Connections = ({
 							<Table stickyHeader size="small" aria-label="sticky table">
 								<TableHead>
 									<TableRow>
-										{GROUP_TABLE_COLUMNS.map((column) => (<TableCell
+										{CONN_TABLE_COLUMNS.map((column) => (<TableCell
+											align={column.align}
 											style={{
 												padding: '6px',
 												width: column.width,
