@@ -162,7 +162,7 @@ const Certificates = ({ connections, isCertSupported, doSort, sortBy, sortDirect
 				cert={deleteOptions.cert}
 				open={deleteOptions.open}
 			/>
-			<ContentContainer path={[{ route: 'home', name: 'Home' }, { name: 'Certificates' }]}>
+			<ContentContainer path={[{ route: '/home', name: 'Home' }, { name: 'Certificates' }]}>
 				{isCertSupported ? (
 					<>
 						<ContainerHeader
