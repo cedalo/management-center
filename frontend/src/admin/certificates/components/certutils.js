@@ -3,30 +3,28 @@ const normalize = (host = '') => {
 	if (host.startsWith('/')) return host.substring(1);
 	return host;
 };
-export const getConnectionInfo = (connection) => {
+const getConnectionInfo = (connection) => {
 	const { id, name, url = '' } = connection;
 	const parts = url.split(':');
 	return { id, name, protocol: parts[0], host: normalize(parts[1]), port: parts[2] };
 };
 
-
-const byHostAndPort = (all, { host, port, bind_address }) => {
+const byHostAndPort = (all, { host, port, bindAddress }) => {
+	if (bindAddress) host = bindAddress;
 	all.add(host);
 	all.add(`${host}:${port}`);
-	if (bind_address) all.add(`${bind_address}:${port}`);
 	return all;
 };
 const selectByHost = (used) => (conn) => used.has(conn.host);
 const selectByHostAndPort = (used) => (conn) => used.has(`${conn.host}:${conn.port}`);
 
-export const getUsedConnections = (availableConnections = [], listeners = []) => {
+const getUsedConnections = (availableConnections = [], listeners = []) => {
 	const usedHosts = listeners.reduce(byHostAndPort, new Set());
 	const connections = availableConnections.map((broker) => getConnectionInfo(broker));
 	let usedConnections = connections.filter(selectByHostAndPort(usedHosts));
 	if (!usedConnections.length) usedConnections = connections.filter(selectByHost(usedHosts));
 	return usedConnections.map(({ id, name }) => ({ id, name }));
 };
-
 
 const mapSubjectKeys = {
 	CN: 'Common Name',
@@ -47,11 +45,11 @@ const toObj = (delimiter, mapKey) => (obj, str) => {
 	return obj;
 };
 const identity = (v) => v;
-export const mapSubjectKey = (key) => mapSubjectKeys[key] || key;
-export const parseSubjectInfo = (str, mapKey = identity) => (str ? str.split('\n').reduce(toObj('=', mapKey), {}) : {});
+const mapSubjectKey = (key) => mapSubjectKeys[key] || key;
+const parseSubjectInfo = (str, mapKey = identity) => (str ? str.split('\n').reduce(toObj('=', mapKey), {}) : {});
 
 const isValid = ({ cert, id, filename }) => cert || (id && filename);
-export const loadCertificateInfo = async (certificate, client) => {
+const loadCertificateInfo = async (certificate, client) => {
 	if (isValid(certificate)) {
 		try {
 			const { data: info } = await client.getCertificateInfo(certificate);
@@ -62,3 +60,5 @@ export const loadCertificateInfo = async (certificate, client) => {
 	}
 	return { info: undefined };
 };
+
+export { getConnectionInfo, getUsedConnections, mapSubjectKey, parseSubjectInfo, loadCertificateInfo };

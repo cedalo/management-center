@@ -132,9 +132,19 @@ const Certificates = ({ connections, isCertSupported, doSort, sortBy, sortDirect
 			}
 		}
 	};
+	
+	const handleDeleteCert = async (cert) => {
+		try {
+			await client
+				.deleteCertificate(cert.id)
+				// .undeployDeleteCertificate(cert.id)
+				.catch((error) => enqueueSnackbar(error.message || error, { variant: 'error' }));
+			await loadCerts();
+		} catch (error) {
+			enqueueSnackbar(error.message || error, { variant: 'error' });
+		}
 
-	const handleDeleteCert = (cert) => {
-		setDeleteOptions({ open: true, cert });
+		// setDeleteOptions({ open: true, cert });
 	};
 	const closeDeleteDialog = () => {
 		loadCerts();
