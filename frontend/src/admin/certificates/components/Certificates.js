@@ -172,11 +172,11 @@ const Certificates = ({ connections, isCertSupported, doSort, sortBy, sortDirect
 				cert={deleteOptions.cert}
 				open={deleteOptions.open}
 			/>
-			<ContentContainer path={[{ route: 'home', name: 'Home' }, { name: 'Certificates' }]}>
+			<ContentContainer path={[{ route: '/home', name: 'Home' }, { name: 'Certificates' }]}>
 				{isCertSupported ? (
 					<>
 						<ContainerHeader
-							title="Client certificates management"
+							title="Client certificate management"
 							subTitle="List of currently maintained client certificates. Upload Client certificate authorities and deploy them on your broker. "
 						>
 							<Button
@@ -197,8 +197,8 @@ const Certificates = ({ connections, isCertSupported, doSort, sortBy, sortDirect
 					</>
 				) : (
 					WarningHint({
-						title: 'Certificates management feature is not available',
-						message: 'Make sure that support for certificates management is included in your MMC license.'
+						title: 'Certificate management feature is not available',
+						message: 'Make sure that support for certificate management is included in your MMC license.'
 					})
 				)}
 			</ContentContainer>
