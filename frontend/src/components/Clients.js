@@ -22,6 +22,7 @@ import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import ReloadIcon from '@material-ui/icons/Replay';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
@@ -147,6 +148,11 @@ const Clients = (props) => {
 		const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
 		dispatch(updateClients(clients));
 	};
+
+	const onReload = async () => {
+		const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
+		dispatch(updateClients(clients));
+	}
 
 	const onSelectClient = async (username) => {
 		const client = await brokerClient.getClient(username);
@@ -287,12 +293,13 @@ const Clients = (props) => {
 						connectedWarning={!props.connected}
 						brokerFeatureWarning={dynamicsecurityFeature?.supported === false ? "dynamic security" : null}
 					>
-						{dynamicsecurityFeature?.supported !== false && <>
+						{dynamicsecurityFeature?.supported !== false && [
 							<Button
 								variant="outlined"
 								color="primary"
 								size="small"
 								className={classes.button}
+								style={{marginRight: '10px'}}
 								startIcon={<AddIcon/>}
 								onClick={(event) => {
 									event.stopPropagation();
@@ -300,8 +307,19 @@ const Clients = (props) => {
 								}}
 							>
 								New Client
-							</Button>
-						</>}
+							</Button>,
+							<Button
+								variant="outlined"
+								color="primary"
+								size="small"
+								style={{paddingRight: '0px', minWidth: '30px'}}
+								startIcon={<ReloadIcon />}
+								onClick={(event) => {
+									event.stopPropagation();
+									onReload();
+								}}
+							/>
+						]}
 					</ContainerHeader>
 					{dynamicsecurityFeature?.supported !== false && clients?.clients?.length > 0 ? (
 						<div style={{height: '100%', overflowY: 'auto'}}>

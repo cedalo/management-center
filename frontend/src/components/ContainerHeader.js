@@ -25,7 +25,7 @@ export default function ConnectionHeader(props) {
 					<div
 						style={{
 							marginLeft: small ? undefined : '15px',
-							minWidth: `${props.buttonsWidth || '160px'}`,
+							minWidth: `${props.buttonsWidth || '180px'}`,
 							display: 'flex',
 							justifyContent: small ? undefined : 'flex-end'
 						}}

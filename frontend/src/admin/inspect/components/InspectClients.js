@@ -255,7 +255,6 @@ const Clients = (props) => {
 								onReload();
 							}}
 						/>
-
 					</ContainerHeader>
 					{connected ? createClientsTable(filteredClients, classes, props, onUpdateUserRoles, onSelectClient, small, medium) : null}
 				</div>
