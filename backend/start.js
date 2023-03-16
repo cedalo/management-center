@@ -33,7 +33,14 @@ const {
 	testConnectionAction,
 	createConnectionAction,
 	modifyConnectionAction,
-	deleteConnectionAction
+	getBrokerConnectionsAction,
+	commandAction,
+	connectToBrokerAction,
+	disconnectFromBrokerAction,
+	deleteConnectionAction,
+	getConfigurationAction,
+	getSettingsAction,
+	updateSettingsAction
 } = require('./src/actions/actions');
 
 console = new Logger(console, false);
@@ -835,13 +842,21 @@ const init = async (licenseContainer) => {
 	context.config.parameters.ssoUsed = !!context.pluginManager.plugins.find(
 		(plugin) => plugin._meta.id.includes('_sso') && plugin._status.type === 'loaded'
 	);
+
 	context.registerAction(unloadPluginAction);
 	context.registerAction(loadPluginAction);
 	context.registerAction(setPluginStatusAtNextStartupAction);
 	context.registerAction(testConnectionAction);
 	context.registerAction(createConnectionAction);
 	context.registerAction(modifyConnectionAction);
+	context.registerAction(getBrokerConnectionsAction);
+	context.registerAction(commandAction);
+	context.registerAction(connectToBrokerAction);
+	context.registerAction(disconnectFromBrokerAction);
 	context.registerAction(deleteConnectionAction);
+	context.registerAction(getConfigurationAction);
+	context.registerAction(getSettingsAction);
+	context.registerAction(updateSettingsAction);
 
 	if (context.server instanceof Error) {
 		// https plugin tried to be loaded but failed
