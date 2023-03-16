@@ -505,7 +505,8 @@ const init = async (licenseContainer) => {
 	console.log(`Starting Mosquitto proxy server at ${protocol}://${host}:${port}`);
 
 	const handleCommandMessage = async (message, client, user = {}) => {
-		return context.runAction(user, 'connection/command', message, { client });
+		const { id, type, ...data } = message;
+		return context.runAction(user, 'connection/command', data, { client });
 	};
 
 	context.requestHandlers.set('loadPlugin', 'plugin/load');
@@ -523,7 +524,7 @@ const init = async (licenseContainer) => {
 	context.requestHandlers.set('updateSettings', 'settings/update');
 
 	const handleRequestMessage = async (message, client, user = {}) => {
-		const { request, ...data } = message;
+		const { request, type, id, ...data } = message;
 		if (!context.security.acl.noRestrictedRoles(user)) {
 			throw new NotAuthorizedError();
 		}
