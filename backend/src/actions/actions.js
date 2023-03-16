@@ -8,8 +8,8 @@ const connectToBroker = (context, brokerName, client) => {
 		const { broker, system, topicTreeManager } = brokerConnection;
 		context.brokerManager.connectClient(client, broker, brokerConnection);
 		if (broker.connected) {
-			sendSystemStatusUpdate(system, broker, brokerConnection);
-			sendTopicTreeUpdate(topicTreeManager.topicTree, broker, brokerConnection);
+			context.sendSystemStatusUpdate(system, broker, brokerConnection);
+			context.sendTopicTreeUpdate(topicTreeManager.topicTree, broker, brokerConnection);
 		} else {
 			throw new Error('Broker not connected');
 		}
@@ -213,7 +213,7 @@ const commandAction = {
 		const { brokerManager, client, user } = context;
 		const broker = brokerManager.getBroker(client);
 		const connection = brokerManager.getBrokerConnectionByClient(client);
-		if (!userCanAccessAPI(user, api, connection)) {
+		if (!userCanAccessAPI(context, api, connection)) {
 			throw AuthError.notAllowed();
 		}
 		if (broker) {
@@ -230,15 +230,27 @@ const commandAction = {
 		} else {
 			throw new Error('Client not connected to any broker');
 		}
+	},
+	filter: (action) => {
+		const { api, command } = action;
+		if (api === 'dynamic-security') {
+			switch (command.command) {
+				case 'createClient':
+				case 'modifyClient':
+					const { password: _, ...filtered } = command;
+					return filtered;
+			}
+		}
+		return { api, command };
 	}
 };
 
 const getConfigurationAction = {
 	type: 'config/get',
 	isModifying: false,
-	fn: async (context) => {
+	fn: async ({ user, security, config }) => {
 		let configToReturn;
-		if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
+		if (security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin)) {
 			configToReturn = JSON.parse(JSON.stringify(config));
 		} else {
 			const configCopy = JSON.parse(JSON.stringify(config));
@@ -249,7 +261,7 @@ const getConfigurationAction = {
 			configToReturn = configCopy;
 		}
 
-		configToReturn.connections = context.security.acl.filterAllowedConnections(
+		configToReturn.connections = security.acl.filterAllowedConnections(
 			configToReturn.connections,
 			user.connections
 		);
