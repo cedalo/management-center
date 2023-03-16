@@ -270,8 +270,7 @@ const Streams = (props) => {
 									event.stopPropagation();
 									onReload();
 								}}
-							>
-							</Button>
+							/>
 						] : null}
 					</ContainerHeader>
 					{streamprocessingFeature?.supported !== false && streams && streams.length > 0 ? (

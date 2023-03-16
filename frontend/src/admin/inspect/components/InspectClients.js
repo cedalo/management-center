@@ -1,3 +1,4 @@
+import Button from '@material-ui/core/Button';
 import {green, red} from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
 import {makeStyles, useTheme, withStyles} from '@material-ui/core/styles';
@@ -12,7 +13,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import DisabledIcon from '@material-ui/icons/Cancel';
 import CancelIcon from '@material-ui/icons/CancelOutlined';
 import EnabledIcon from '@material-ui/icons/CheckCircle';
-import PropTypes from 'prop-types';
+import ReloadIcon from '@material-ui/icons/Replay';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
@@ -216,6 +217,11 @@ const Clients = (props) => {
 		setFilteredClients(clients);
 	}, [clients]);
 
+	const onReload = async () => {
+		const clients = await brokerClient.inspectListClients();
+		dispatch(updateInspectClients(clients));
+	}
+
 	return (
 		<div style={{height: '100%'}}>
 			<ContainerBreadCrumbs title="Client Inspection" links={[{name: 'Home', route: '/home'}]}/>
@@ -237,7 +243,20 @@ const Clients = (props) => {
 							}
 							return alerts;
 						}}
-					/>
+					>
+						<Button
+							variant="outlined"
+							color="primary"
+							size="small"
+							style={{paddingRight: '0px', minWidth: '30px'}}
+							startIcon={<ReloadIcon />}
+							onClick={(event) => {
+								event.stopPropagation();
+								onReload();
+							}}
+						/>
+
+					</ContainerHeader>
 					{connected ? createClientsTable(filteredClients, classes, props, onUpdateUserRoles, onSelectClient, small, medium) : null}
 				</div>
 			</div>
