@@ -79,7 +79,7 @@ const CustomTableRow = ({ cert, connections, handleDelete }) => {
 				<TableCell>{cert.filename}</TableCell>
 				<BadgesCell>
 					<ChipsList
-						values={getUsedConnections(connections, cert.listeners).map((conn) => ({
+						values={getUsedConnections(connections, cert).map((conn) => ({
 							label: conn.name
 						}))}
 					/>

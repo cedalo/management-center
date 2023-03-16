@@ -9,21 +9,14 @@ const getConnectionInfo = (connection) => {
 	return { id, name, protocol: parts[0], host: normalize(parts[1]), port: parts[2] };
 };
 
-const byHostAndPort = (all, { host, port, bindAddress }) => {
-	if (bindAddress) host = bindAddress;
-	all.add(host);
-	all.add(`${host}:${port}`);
+const mapById = (all, val) => {
+	all[val.id] = val;
 	return all;
 };
-const selectByHost = (used) => (conn) => used.has(conn.host);
-const selectByHostAndPort = (used) => (conn) => used.has(`${conn.host}:${conn.port}`);
-
-const getUsedConnections = (availableConnections = [], listeners = []) => {
-	const usedHosts = listeners.reduce(byHostAndPort, new Set());
-	const connections = availableConnections.map((broker) => getConnectionInfo(broker));
-	let usedConnections = connections.filter(selectByHostAndPort(usedHosts));
-	if (!usedConnections.length) usedConnections = connections.filter(selectByHost(usedHosts));
-	return usedConnections.map(({ id, name }) => ({ id, name }));
+const getUsedConnections = (availableConnections = [], cert) => {
+	const connections = availableConnections.reduce(mapById, {});
+	const ids = Object.keys(cert.usedBy);
+	return ids.filter((id) => !!connections[id]).map((id) => connections[id]);
 };
 
 const mapSubjectKeys = {
