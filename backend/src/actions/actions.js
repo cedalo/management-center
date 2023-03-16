@@ -132,18 +132,18 @@ const modifyConnectionAction = {
 const deleteConnectionAction = {
 	type: 'connection/delete',
 	isModifying: true,
-	fn: ({ user, security, configManager }, { id }) => {
+	fn: ({ user, security, configManager }, { connectionId }) => {
 		try {
-			if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, id)) {
+			if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, connectionId)) {
 				throw new NotAuthorizedError();
 			}
-			const connection = configManager.getConnection(id);
+			const connection = configManager.getConnection(connectionId);
 			if (connection.cluster) {
 				throw new Error(
-					`Could not delete "${id}" because it's part of the cluster "${connection.cluster}". Delete cluster first`
+					`Could not delete "${connectionId}" because it's part of the cluster "${connection.cluster}". Delete cluster first`
 				);
 			}
-			configManager.deleteConnection(id);
+			configManager.deleteConnection(connectionId);
 			return configManager.connections;
 		} catch (error) {
 			console.log('error when deleting:', error);

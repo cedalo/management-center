@@ -5,10 +5,10 @@ const createActions = (plugin) => ({
 	connectServerToBrokerAction: {
 		type: 'connect-disconnect/connectToBroker',
 		isModifying: true,
-		fn: async (context, { id }) => {
+		fn: async (context, { connectionId }) => {
 			const { user, security, configManager } = context;
-			if (security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, id)) {
-				const connection = configManager.getConnection(id);
+			if (security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, connectionId)) {
+				const connection = configManager.getConnection(connectionId);
 				await context.handleConnectServerToBroker(connection, user);
 				if (connection.status?.error) {
 					throw new Error(connection.status?.error);
@@ -23,11 +23,11 @@ const createActions = (plugin) => ({
 	disconnectServerFromBroker: {
 		type: 'connect-disconnect/disconnectFromBroker',
 		isModifying: true,
-		fn: async (context, { id }) => {
+		fn: async (context, { connectionId }) => {
 			const { user, security, configManager } = context;
-			if (security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, id)) {
+			if (security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, connectionId)) {
 				try {
-					const connection = configManager.getConnection(id);
+					const connection = configManager.getConnection(connectionId);
 					await context.handleDisconnectServerFromBroker(connection);
 				} catch (error) {
 					throw error;

@@ -824,21 +824,21 @@ module.exports = class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	async connectServerToBroker(id) {
+	async connectServerToBroker(connectionId) {
 		return this.sendRequest({
 			id: createID(),
 			type: 'request',
 			request: 'connectServerToBroker',
-			id
+			connectionId
 		});
 	}
 
-	async disconnectServerFromBroker(id) {
+	async disconnectServerFromBroker(connectionId) {
 		return this.sendRequest({
 			id: createID(),
 			type: 'request',
 			request: 'disconnectServerFromBroker',
-			id
+			connectionId
 		});
 	}
 
@@ -1514,7 +1514,7 @@ module.exports = class BaseMosquittoProxyClient {
 			id: createID(),
 			type: 'request',
 			request: 'deleteConnection',
-			id: connectionId
+			connectionId
 		});
 	}
 
