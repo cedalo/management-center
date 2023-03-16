@@ -1,11 +1,15 @@
+import CircularProgress from '@material-ui/core/CircularProgress';
+import {useTheme} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import {Alert, AlertTitle} from '@material-ui/lab';
 import React from 'react';
+import ConnectedWarning from './ConnectedWarning';
 
 
 export default function ConnectionHeader(props) {
 	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
-	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
+	const theme = useTheme();
 
 	return (
 		<div style={{marginBottom: '20px'}}>
@@ -30,6 +34,26 @@ export default function ConnectionHeader(props) {
 					</div> : null
 				}
 			</div>
+			{props.connectedWarning ? <ConnectedWarning connected={false} /> : null}
+			{props.brokerFeatureWarning ?
+				<Alert severity="warning"  style={{height: 'fit-content', marginTop: '15px'}}>
+					<AlertTitle>Feature not available</AlertTitle>
+					Make sure that the broker connected has {props.brokerFeatureWarning} enabled.
+				</Alert> : null
+			}
+			{props.featureWarning ?
+				<Alert severity="warning"  style={{height: 'fit-content', marginTop: '15px'}}>
+					<AlertTitle>Premium feature</AlertTitle>
+					{props.featureWarning} are a premium feature. For more information visit <a style={{color: theme.palette.primary.main}} href="https://www.cedalo.com">cedalo.com</a> or
+					contact us at <a style={{color: theme.palette.primary.main}} href="mailto:info@cedalo.com">info@cedalo.com</a>.
+				</Alert> : null
+			}
+			{props.warnings && props.warnings()?.map(warning => (
+				<Alert severity={warning.severity} style={{height: 'fit-content', marginTop: '15px'}}>
+					<AlertTitle>{warning.title}</AlertTitle>
+					{warning.error}
+				</Alert>))
+			}
 		</div>
 	);
 };

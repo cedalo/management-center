@@ -33,7 +33,6 @@ import DisabledIcon from '@material-ui/icons/Cancel';
 import EnabledIcon from '@material-ui/icons/CheckCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FileCopy from '@material-ui/icons/FileCopy';
-import {Alert, AlertTitle} from '@material-ui/lab';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
@@ -761,6 +760,18 @@ const ApplicationTokens = (props) => {
 					<ContainerHeader
 						title="Tokens"
 						subTitle="Application tokens are mainly used in order to give other applications or scripts access to the MMC's functionality and REST APIs. After creating an application token put it inside the 'Authorization' header as 'Bearer *token*' or use it as a url query parameter (https://url.com?token=*token*) when making a request to the MMC"
+						featureWarning={applicationTokensFeature?.supported === false ? "Tokens" : undefined}
+						warnings={() => {
+							const alerts = [];
+							if (applicationTokensFeature?.error && applicationTokensFeature?.supported === true) {
+								alerts.push({
+									severity: 'error',
+									title: applicationTokensFeature.error.title || 'An error has occured',
+									error: applicationTokensFeature.error.message || applicationTokensFeature.error
+								});
+							}
+							return alerts;
+						}}
 					>
 						<Button
 							variant="outlined"
@@ -775,16 +786,6 @@ const ApplicationTokens = (props) => {
 							New Token
 						</Button>
 					</ContainerHeader>
-
-					{applicationTokensFeature?.supported === false ? <><br/><Alert severity="warning">
-						<AlertTitle>Feature not available</AlertTitle>
-						Make sure that this feature is included in your MMC license.
-					</Alert></> : null}
-					{applicationTokensFeature?.error && applicationTokensFeature?.supported === true ? <><br/><Alert
-						severity="warning">
-						<AlertTitle>{applicationTokensFeature.error.title || 'An error has occured'}</AlertTitle>
-						{applicationTokensFeature.error.message || applicationTokensFeature.error}
-					</Alert></> : null}
 					{createTokenTable(tokens, classes, props, onDeleteToken)}
 				</div>
 			</div>

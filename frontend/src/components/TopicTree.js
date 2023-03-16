@@ -4,11 +4,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import {makeStyles} from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableRow from '@material-ui/core/TableRow';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import TextField from '@material-ui/core/TextField';
 import FormGroup from '@material-ui/core/FormGroup';
@@ -25,6 +20,7 @@ import PropTypes from 'prop-types';
 import React, {useEffect} from 'react';
 import {connect} from 'react-redux';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ConnectedWarning from './ConnectedWarning';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 
@@ -73,7 +69,7 @@ const prettifyJSON = (jsonString) => {
 	try {
 		const json = JSON.parse(jsonString);
 		prettifiedJSON = JSON.stringify(json, null, 2);
-	} catch(error) {
+	} catch (error) {
 		console.error('Error when converting to json:', error);
 		return jsonString;
 	}
@@ -214,7 +210,7 @@ const generateTreeData = (id, name, object, index = 0) => {
 	return node;
 };
 
-const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, topicTreeRestFeature}) => {
+const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, topicTreeRestFeature, connected}) => {
 	const classes = useStyles();
 	const [error, setError] = React.useState({occured: false, message: ''})
 	const [messageHistory, setMessageHistory] = React.useState([]);
@@ -294,7 +290,6 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 		}
 	};
 
-
 	return (
 		<div style={{height: '100%'}}>
 			<ContainerBreadCrumbs title="Topic Tree"
@@ -305,6 +300,25 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 						title="Inspect Topic Tree"
 						subTitle="Topic tree show an overview of all topics that have been adressed by a client. If you
 						click on a topic additional information for the topic will be displayed right to the tree."
+						connectedWarning={!connected}
+						warnings={() => {
+							const alerts = [];
+							if (settings?.topicTreeEnabled === false) {
+								alerts.push({
+									severity: 'warning',
+									title: 'Topic tree not enabled',
+									error: 'The MMC is currently not collecting topic tree data. If you want to collect data, please enable the topic tree feature in the settings page. Note that if you enable this setting and the MMC is collecting topic tree data, the performance of the MMC backend might decrease.'
+								});
+							}
+							if (error.occured) {
+								alerts.push({
+									severity: 'error',
+									title: 'An error has occured',
+									error: error.message
+								});
+							}
+							return alerts;
+						}}
 					>
 						{(topicTreeRestFeature?.supported) ?
 							<Button
@@ -319,41 +333,26 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 								Clear Cache
 							</Button> : null}
 					</ContainerHeader>
-
-					{(settings?.topicTreeEnabled === false) ?
-						<Alert style={{height: 'fit-content'}} severity="warning">
-							<AlertTitle>Topic tree not enabled</AlertTitle>
-							The MMC is currently not collecting topic tree data. If you want to collect data, please enable
-							the topic tree feature in the settings page.
-							Note that if you enable this setting and the MMC is collecting topic tree data, the performance
-							of the MMC backend might decrease.
-						</Alert>
-					 : null}
-					{(error.occured) ? <><br/><Alert severity="error">
-						<AlertTitle>An error has occured</AlertTitle>
-						{error.message}
-					</Alert></> : null}
-
-					{settings?.topicTreeEnabled ?
+					{connected && settings?.topicTreeEnabled ?
 						<Grid container spacing={3}>
 							<Grid item xs={8}>
 								<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
 									{/*<div className={classes.paper}>*/}
-										<div className={classes.treeHeader}>
-											<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
-												Name
-											</Typography>
-											<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
-												Last Payload
-											</Typography>
-											<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
-												Subtopics
-											</Typography>
-											<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
-												Messages
-											</Typography>
-										</div>
-										<Box style={{overflowY: 'auto'}}>
+									<div className={classes.treeHeader}>
+										<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+											Name
+										</Typography>
+										<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+											Last Payload
+										</Typography>
+										<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+											Subtopics
+										</Typography>
+										<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+											Messages
+										</Typography>
+									</div>
+									<Box style={{overflowY: 'auto'}}>
 										<TreeView
 											className={classes.root}
 											defaultCollapseIcon={<ExpandMoreIcon/>}
@@ -362,9 +361,9 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 										>
 											{renderTree(data)}
 										</TreeView>
-										</Box>
+									</Box>
 									{/*</div>*/}
-									</div>
+								</div>
 							</Grid>
 							<Grid item xs={4}>
 								<Box className={classes.leftBorder}>
@@ -494,6 +493,7 @@ const mapStateToProps = (state) => {
 		topicTree: state.topicTree,
 		currentConnectionName: state.brokerConnections?.currentConnectionName,
 		topicTreeRestFeature: state.systemStatus?.features?.topictreerest,
+		connected: state.brokerConnections?.connected,
 	};
 };
 

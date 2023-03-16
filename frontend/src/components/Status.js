@@ -3,7 +3,6 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
-import InfoOutlined from '@material-ui/icons/InfoOutlined';
 import InspectClientsIcon from '@material-ui/icons/RecordVoiceOver';
 import DataSentIcon from '@material-ui/icons/RssFeed';
 import InfoIcon from '@material-ui/icons/Info';
@@ -21,11 +20,12 @@ import Speedometer from 'react-d3-speedometer'
 import {connect} from 'react-redux';
 import Delayed from '../utils/Delayed';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ConnectedWarning from './ConnectedWarning';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import Info from './Info';
 import {useTheme} from '@material-ui/core/styles';
-import {useHistory} from 'react-router-dom';
+import {Link as RouterLink, useHistory} from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -191,6 +191,7 @@ const Status = ({
 					<ContainerHeader
 						title={`Status: ${currentConnectionName}`}
 						subTitle="Display the status and license info of the currenty selected broker. Hover over the info icon to get more information about the meaning of the values"
+						connectedWarning={!connected}
 					>
 						{systemStatus?.$SYS && connected && currentConnection?.supportsRestart === true &&
 							<Button
@@ -207,15 +208,6 @@ const Status = ({
 							</Button>
 						}
 					</ContainerHeader>
-					{!connected ? <>
-						<Delayed waitBeforeShow={1000}>
-							<Alert severity="warning">
-								<AlertTitle>System status information not accessible</AlertTitle>
-								The selected broker connection is not active
-							</Alert>
-						</Delayed>
-					</> : <></>
-					}
 					{systemStatus?.$SYS && connected ?
 						<Container classes={{root: classes.container}} maxWidth={false}>
 							<Grid

@@ -27,25 +27,19 @@ const CustomInput = withStyles((theme) => ({
 const useStyles = makeStyles((theme) => ({
 	root: {
 		paddingLeft: '10px',
+		paddingTop: '7px',
+		paddingBottom: '5px',
 		backgroundColor: 'rgba(255,255,255,0.2)',
 		border: theme.palette.type === 'dark' ? 'thin solid rgba(255,255,255,1)' : 'thin solid rgba(0,0,0,0.5)',
-		// color: 'white',
-		// fontSize: '14px'
 	},
 	label: {
 		fontSize: '12px',
 		textTransform: 'uppercase',
 		transform: 'translate(14px, 20px) scale(1)',
-		// color: 'white',
 	},
 	formControl: {
-		// margin: theme.spacing(1),
-		// height: "25px",
-		margin: theme.spacing(1),
+		margin: '6px',
 		minWidth: 120
-	},
-	select: {
-		// fontSize: '14px',
 	}
 }));
 
@@ -87,7 +81,7 @@ const BrokerSelect = ({brokerConnections, connected, currentConnectionName, send
 					variant="subtitle2"
 					style={{
 						color: theme.palette.type === 'dark' ? 'white' : 'rgba(117, 117, 117)',
-						margin: '7px 10px'
+						margin: '8px 10px'
 					}}
 				>
 					Connection:

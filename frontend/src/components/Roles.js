@@ -21,7 +21,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import {Alert, AlertTitle} from '@material-ui/lab';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
@@ -151,6 +150,8 @@ const Roles = (props) => {
 					title="Roles"
 					buttonsWidth="350px"
 					subTitle="List of existing roles. A role contains a number of ACLs, which either specifically allow or deny an action. Add as many ACLs as you need to a role."
+					connectedWarning={!props.connected}
+					brokerFeatureWarning={dynamicsecurityFeature?.supported === false ? "dynamic security" : null}
 				>
 					{dynamicsecurityFeature?.supported !== false && <Button
 						variant="outlined"
@@ -175,14 +176,6 @@ const Roles = (props) => {
 						Edit default ACL access
 					</Button>
 				</ContainerHeader>
-				{/* TODO: Quick hack to detect whether feature is supported */}
-				{dynamicsecurityFeature?.supported === false ? <>
-					<br/>
-					<Alert severity="warning">
-						<AlertTitle>Feature not available</AlertTitle>
-						Make sure that the broker connected has the dynamic security enabled.
-					</Alert>
-				</> : null}
 				{dynamicsecurityFeature?.supported !== false && roles?.roles?.length > 0 ? (
 					<div style={{height: '100%', overflowY: 'auto'}}>
 						<Hidden xsDown implementation="css">
@@ -270,7 +263,10 @@ const Roles = (props) => {
 								</List>
 							</Paper>
 						</Hidden>
-					</div>) : (<div>No roles found</div>)}
+					</div>
+					) : (
+						props.connected ? <div>No roles found</div> : null
+					)}
 			</div>
 		</div>
 	</div>);
@@ -289,7 +285,9 @@ Roles.defaultProps = {
 
 const mapStateToProps = (state) => {
 	return {
-		roles: state.roles?.roles, dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity
+		roles: state.roles?.roles,
+		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity,
+		connected: state.brokerConnections?.connected,
 	};
 };
 

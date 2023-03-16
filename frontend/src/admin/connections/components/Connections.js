@@ -328,13 +328,6 @@ const Connections = ({
 		try {
 
 			let connections = await brokerClient.getBrokerConnections();
-			// const connected = connections.filter(connection => connection?.status?.connected);
-			// if (connected?.length === 1) {
-			// 	enqueueSnackbar(`Error disconnecting broker. Reason: at least one broker needs to be connected.`, {
-			// 		variant: 'error'
-			// 	});
-			// 	return;
-			// }
 
 			await confirm({
 				title: 'Confirm disconnecting',
@@ -360,8 +353,6 @@ const Connections = ({
 			enqueueSnackbar(`Error disconnecting broker. Reason: ${error.message ? error.message : error}`, {
 				variant: 'error'
 			});
-			// enqueueSnackbar(`Error disconnecting broker. Note that this feature is only available in the premium
-			// version.`, { variant: 'error' });
 		}
 		await loadConnections();
 	}
@@ -408,8 +399,9 @@ const Connections = ({
 		<div style={{height: 'calc(100% - 26px)'}}>
 			<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
 				<ContainerHeader
-					title="Connections"
-					subTitle="List of Connections. Connections configure the access to an existing broker instance."
+					title="Broker Connections"
+					subTitle="List of Connections. Connections configure the access to an existing broker instance.
+					You have to be connected to a broker to view and manage its settings or inspect broker information"
 				>
 					<Button
 						variant="outlined"

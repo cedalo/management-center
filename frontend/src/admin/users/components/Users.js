@@ -281,6 +281,18 @@ const Users = (props) => {
 					<ContainerHeader
 						title="Users"
 						subTitle="List of users. You can configure different users and assign roles like 'admin', 'editor and 'viewer' to restrict or give access to specific features."
+						featureWarning={!userManagementFeature?.error && userManagementFeature?.supported === false ? "Users" : undefined}
+						warnings={() => {
+							const alerts = [];
+							if (userManagementFeature?.error) {
+								alerts.push({
+									severity: 'error',
+									title: userManagementFeature.error.title,
+									error: userManagementFeature.error.message
+								});
+							}
+							return alerts;
+						}}
 					>
 						{!userManagementFeature?.error && userManagementFeature?.supported !== false && <><Button
 							variant="outlined"
@@ -296,16 +308,6 @@ const Users = (props) => {
 						</Button>
 						</>}
 					</ContainerHeader>
-					{/* TODO: Quick hack to detect whether feature is supported */}
-					{userManagementFeature?.error ? <><br/><Alert severity="warning">
-						<AlertTitle>{userManagementFeature.error.title}</AlertTitle>
-						{userManagementFeature.error.message}
-					</Alert></> : null}
-					{!userManagementFeature?.error && userManagementFeature?.supported === false ? <><br/><Alert
-						severity="warning">
-						<AlertTitle>Feature not available</AlertTitle>
-						Make sure that this feature is included in your MMC license.
-					</Alert></> : null}
 					{createUserTable(users, classes, props, onDeleteUser, onUpdateUserRoles, onSelectUser)}
 				</div>
 			</div>

@@ -23,7 +23,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import ReplayIcon from '@material-ui/icons/PlayCircleFilled';
 import ReloadIcon from '@material-ui/icons/Replay';
-import {Alert, AlertTitle} from '@material-ui/lab';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import React, {useContext} from 'react';
@@ -70,7 +69,7 @@ const Streams = (props) => {
 	const confirm = useConfirm();
 	const {enqueueSnackbar} = useSnackbar();
 	const {client: brokerClient} = context;
-	const {streamprocessingFeature, connectionID, streams = [], onSort, sortBy, sortDirection} = props;
+	const {streamprocessingFeature, connectionID, streams = [], onSort, sortBy, sortDirection, connected} = props;
 	const [replayStreamEditorOpen, setReplayStreamEditorOpen] = React.useState(false);
 	const [replayStream, setReplayStream] = React.useState({});
 	const handleClickReplayStreamEditorOpen = () => {
@@ -244,6 +243,8 @@ const Streams = (props) => {
 					<ContainerHeader
 						title="Streams"
 						subTitle="List of all defined streams. Stream are used to transfer or persist topic payloads."
+						connectedWarning={!connected}
+						featureWarning={streamprocessingFeature?.supported === false ? "Streams" : undefined}
 					>
 						{streamprocessingFeature?.supported !== false ? [
 							<Button
@@ -263,23 +264,16 @@ const Streams = (props) => {
 								variant="outlined"
 								color="primary"
 								size="small"
-								startIcon={<ReloadIcon/>}
+								style={{paddingRight: '0px', minWidth: '30px'}}
+								startIcon={<ReloadIcon />}
 								onClick={(event) => {
 									event.stopPropagation();
 									onReload();
 								}}
 							>
-								Reload
 							</Button>
 						] : null}
 					</ContainerHeader>
-					{/* TODO: Quick hack to detect whether feature is supported */}
-					{streamprocessingFeature?.supported === false ? <><br/><Alert severity="warning">
-						<AlertTitle>Enterprise Solution feature</AlertTitle>
-						Streams are a premium feature. For more information visit <a className={classes.link}
-																					 href="https://www.cedalo.com">cedalo.com</a> or
-						contact us at <a className={classes.link} href="mailto:info@cedalo.com">info@cedalo.com</a>.
-					</Alert></> : null}
 					{streamprocessingFeature?.supported !== false && streams && streams.length > 0 ? (
 						<div style={{height: '100%', overflowY: 'auto'}}>
 							<Hidden xsDown implementation="css">
@@ -292,13 +286,7 @@ const Streams = (props) => {
 														key={column.id}
 														sortDirection={sortBy === column.id ? sortDirection : false}
 													>
-														{/* <TableSortLabel
-                      active={sortBy === column.id}
-                      direction={sortDirection}
-                      onClick={() => onSort(column.id)}
-                    > */}
 														{column.key}
-														{/* </TableSortLabel> */}
 													</TableCell>
 												))}
 												<TableCell/>
@@ -494,7 +482,8 @@ const Streams = (props) => {
 const mapStateToProps = (state) => {
 	return {
 		streams: state.streams?.streams,
-		streamprocessingFeature: state.systemStatus?.features?.streamprocessing
+		streamprocessingFeature: state.systemStatus?.features?.streamprocessing,
+		connected: state.brokerConnections?.connected,
 	};
 };
 

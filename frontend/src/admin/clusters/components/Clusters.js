@@ -67,59 +67,61 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CLUSTER_TABLE_COLUMNS = [
-	{ id: 'name', key: 'Name', align: 'left'},
-	{ id: 'description', key: 'Description', align: 'left'},
-	{ id: 'nodes', key: 'Nodes', align: 'center', width: '5%' },
-	{ id: 'delete', key: 'Delete', align: 'center', width: '5%' },
+	{id: 'name', key: 'Name', align: 'left'},
+	{id: 'description', key: 'Description', align: 'left'},
+	{id: 'nodes', key: 'Nodes', align: 'center', width: '5%'},
+	{id: 'delete', key: 'Delete', align: 'center', width: '5%'},
 ];
 
 const createClusterTable = (clusters, classes, props, onCheckHealthStatus, onDeleteCluster, onSelectCluster) => {
-	const { clusterManagementFeature, userRoles = [], roles = [], onSort, sortBy, sortDirection } = props;
+	const {clusterManagementFeature, userRoles = [], roles = [], onSort, sortBy, sortDirection} = props;
 	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
 	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
 
 	if (!clusterManagementFeature?.error && clusterManagementFeature?.supported !== false && clusters && clusters.length > 0) {
 		return <div>
-				<TableContainer>
-					<Table stickyHeader size="small" aria-label="sticky table">
-						<TableHead>
-							<TableRow>
-								{CLUSTER_TABLE_COLUMNS.map((column) => (
+			<TableContainer>
+				<Table stickyHeader size="small" aria-label="sticky table">
+					<TableHead>
+						<TableRow>
+							{CLUSTER_TABLE_COLUMNS.map((column) => (
+								<TableCell
+									key={column.id}
+									style={{
+										width: column.width,
+										display: (!small && !medium) ||
+										(column.id === 'name' && (small || medium)) ||
+										(column.id === 'nodes' && (small || medium)) ||
+										(column.id === 'delete' && (small || medium)) ||
+										(column.id === 'description' && medium) ? undefined : 'none'
+									}}
+									sortDirection={sortBy === column.id ? sortDirection : false}
+								>
+									{column.key}
+								</TableCell>
+							))}
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{clusters &&
+							clusters.map((cluster) => (
+								<StyledTableRow
+									hover
+									key={cluster.clustername}
+									onClick={(event) => {
+										onSelectCluster(cluster.clustername, cluster.nodes?.length);
+									}}
+									style={{cursor: 'pointer'}}
+								>
+									<TableCell align={CLUSTER_TABLE_COLUMNS[0].align}>{cluster.clustername}</TableCell>
+									{small ? null :
+										<TableCell
+											align={CLUSTER_TABLE_COLUMNS[1].align}>{cluster.description}</TableCell>
+									}
 									<TableCell
-										key={column.id}
-										style={{
-											width: column.width,
-											display: (!small && !medium) ||
-											(column.id === 'name' && (small || medium)) ||
-											(column.id === 'nodes' && (small || medium)) ||
-											(column.id === 'delete' && (small || medium)) ||
-											(column.id === 'description' && medium) ? undefined : 'none'
-										}}
-										sortDirection={sortBy === column.id ? sortDirection : false}
-									>
-										{column.key}
-									</TableCell>
-								))}
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{clusters &&
-								clusters.map((cluster) => (
-									<StyledTableRow
-										hover
-										key={cluster.clustername}
-										onClick={(event) => {
-											onSelectCluster(cluster.clustername, cluster.nodes?.length);
-										}}
-										style={{ cursor: 'pointer' }}
-									>
-										<TableCell align={CLUSTER_TABLE_COLUMNS[0].align}>{cluster.clustername}</TableCell>
-										{small ? null :
-											<TableCell align={CLUSTER_TABLE_COLUMNS[1].align}>{cluster.description}</TableCell>
-										}
-										<TableCell align={CLUSTER_TABLE_COLUMNS[2].align}>{cluster.nodes?.length || 0}</TableCell>
-										<TableCell align={CLUSTER_TABLE_COLUMNS[3].align}>
-											{/* <Tooltip title="Check health status">
+										align={CLUSTER_TABLE_COLUMNS[2].align}>{cluster.nodes?.length || 0}</TableCell>
+									<TableCell align={CLUSTER_TABLE_COLUMNS[3].align}>
+										{/* <Tooltip title="Check health status">
 												<IconButton
 													size="small"
 													onClick={(event) => {
@@ -130,23 +132,23 @@ const createClusterTable = (clusters, classes, props, onCheckHealthStatus, onDel
 													<CheckHealthStatusIcon fontSize="small" />
 												</IconButton>
 											</Tooltip> */}
-											<Tooltip title="Delete cluster">
-												<IconButton
-													size="small"
-													onClick={(event) => {
-														event.stopPropagation();
-														onDeleteCluster(cluster.clustername);
-													}}
-												>
-													<DeleteIcon fontSize="small" />
-												</IconButton>
-											</Tooltip>
-										</TableCell>
-									</StyledTableRow>
-								))}
-						</TableBody>
-					</Table>
-				</TableContainer>
+										<Tooltip title="Delete cluster">
+											<IconButton
+												size="small"
+												onClick={(event) => {
+													event.stopPropagation();
+													onDeleteCluster(cluster.clustername);
+												}}
+											>
+												<DeleteIcon fontSize="small"/>
+											</IconButton>
+										</Tooltip>
+									</TableCell>
+								</StyledTableRow>
+							))}
+					</TableBody>
+				</Table>
+			</TableContainer>
 		</div>
 	} else if (clusterManagementFeature?.error) {
 		return null;
@@ -161,10 +163,10 @@ const Clusters = (props) => {
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const confirm = useConfirm();
-	const { enqueueSnackbar } = useSnackbar();
-	const { client: brokerClient } = context;
+	const {enqueueSnackbar} = useSnackbar();
+	const {client: brokerClient} = context;
 	const [progressDialogOpen, setProgressDialogOpen] = React.useState(false);
-	const { clusterManagementFeature, clusters = [], onSort, sortBy, sortDirection } = props;
+	const {clusterManagementFeature, clusters = [], onSort, sortBy, sortDirection} = props;
 
 	const onSelectCluster = async (clustername, numberOfNodes) => {
 		setProgressDialogOpen(true);
@@ -173,7 +175,7 @@ const Clusters = (props) => {
 			dispatch(updateCluster(cluster));
 			setProgressDialogOpen(false);
 			history.push(`/clusters/${clustername}`);
-		} catch(error) {
+		} catch (error) {
 			enqueueSnackbar(`Cluster loading failed. Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
@@ -236,40 +238,43 @@ const Clusters = (props) => {
 			<ContainerHeader
 				title="Clusters"
 				subTitle="Clusters enable Mosquitto High Availabiliy. Here you can and modify the cluster setup by creating or deleting a cluster, adding or deleting a node in a cluster and more."
+				featureWarning={clusterManagementFeature?.supported === false ? "Clusters" : undefined}
+				warnings={() => {
+					const alerts = [];
+					if (clusterManagementFeature?.error && clusterManagementFeature?.supported === true) {
+						alerts.push({
+							severity: 'warning',
+							title: clusterManagementFeature.error.title || 'An error has occured',
+							error: clusterManagementFeature.error.message || clusterManagementFeature.error
+						});
+					}
+					return alerts;
+				}}
 			>
 				{!clusterManagementFeature?.error && clusterManagementFeature?.supported !== false &&
-				<Button
-					variant="outlined"
-					color="primary"
-					size="small"
-					startIcon={<AddIcon />}
-					onClick={(event) => {
-						event.stopPropagation();
-						onNewCluster();
-					}}
-				>
-					New&nbsp;Cluster
-				</Button>}
+					<Button
+						variant="outlined"
+						color="primary"
+						size="small"
+						startIcon={<AddIcon/>}
+						onClick={(event) => {
+							event.stopPropagation();
+							onNewCluster();
+						}}
+					>
+						New&nbsp;Cluster
+					</Button>}
 			</ContainerHeader>
-			{/* TODO: Quick hack to detect whether feature is supported */}
-			{clusterManagementFeature?.supported === false ? <><br/><Alert severity="warning">
-				<AlertTitle>Feature not available</AlertTitle>
-				Make sure that this feature is included in your MMC license.
-			</Alert></> : null}
-			{clusterManagementFeature?.error && clusterManagementFeature?.supported === true ? <><br/><Alert severity="warning">
-				<AlertTitle>{clusterManagementFeature.error.title || 'An error has occured'}</AlertTitle>
-				{clusterManagementFeature.error.message || clusterManagementFeature.error}
-			</Alert></> : null}
-				{!clusterManagementFeature?.error && clusterManagementFeature?.supported !== false && <>
-			<WaitDialog
-				title='Loading cluster details'
-				message='Note that this can take a while depending on the size and status of your cluster.'
-				open={progressDialogOpen}
-				handleClose={() => setProgressDialogOpen(false)}
-			/>
+			{!clusterManagementFeature?.error && clusterManagementFeature?.supported !== false && <>
+				<WaitDialog
+					title='Loading cluster details'
+					message='Note that this can take a while depending on the size and status of your cluster.'
+					open={progressDialogOpen}
+					handleClose={() => setProgressDialogOpen(false)}
+				/>
 			</>}
 
-			{ createClusterTable(clusters, classes, props, onCheckHealthStatus, onDeleteCluster, onSelectCluster) }
+			{createClusterTable(clusters, classes, props, onCheckHealthStatus, onDeleteCluster, onSelectCluster)}
 		</div>
 	);
 };

@@ -22,13 +22,12 @@ import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import {Alert, AlertTitle} from '@material-ui/lab';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
-import {Link as RouterLink, useHistory} from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 import {updateAnonymousGroup, updateClients, updateGroup, updateGroups} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
 import AnonymousGroupSelect from './AnonymousGroupSelect';
@@ -213,6 +212,8 @@ const Groups = (props) => {
 						topMargin="-12px"
 						title="Groups"
 						subTitle="List of existing groups. Groups serve as a hub to gather multiple clients and roles. The more clients are added to your broker the harder it gets to administer them. Groups can help you structure and quickly adjust your current setup."
+						connectedWarning={!props.connected}
+						brokerFeatureWarning={dynamicsecurityFeature?.supported === false ? "dynamic security" : null}
 					>
 						{dynamicsecurityFeature?.supported !== false && <>
 							<Button
@@ -229,14 +230,6 @@ const Groups = (props) => {
 							</Button>
 						</>}
 					</ContainerHeader>
-					{/* TODO: Quick hack to detect whether feature is supported */}
-					{dynamicsecurityFeature?.supported === false ? <>
-						<br/>
-							<Alert severity="warning">
-								<AlertTitle>Feature not available</AlertTitle>
-								Make sure that the broker connected has the dynamic security enabled.
-							</Alert>
-					</> : null}
 					{dynamicsecurityFeature?.supported !== false && groups?.groups?.length > 0 ? (
 						<div style={{height: '100%', overflowY: 'auto'}}>
 							<Hidden xsDown implementation="css">
@@ -390,7 +383,7 @@ const Groups = (props) => {
 							</Hidden>
 						</div>
 					) : (
-						<div>No groups found</div>
+						props.connected ? <div>No groups found</div> : null
 					)}
 				</div>
 			</div>
@@ -418,7 +411,8 @@ const mapStateToProps = (state) => {
 		rolesAll: state.roles?.rolesAll?.roles,
 		clients: state.clients?.clients?.clients,
 		clientsAll: state.clients?.clientsAll?.clients,
-		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity
+		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity,
+		connected: state.brokerConnections?.connected,
 	};
 };
 

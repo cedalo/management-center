@@ -266,7 +266,8 @@ const UserGroups = (props) => {
 							will be accessible to the user. The role specified in the group will override the user's role for
 							the connections assigned to said group.
 							A user can be added to more than one group. In this case if some of the connections in two or more
-							groups are the same, a user will get the hightest permissions among those overlapping connections"
+							groups are the same, a user will get the highest permissions among those overlapping connections"
+						featureWarning={userManagementFeature?.supported === false ? "User Groups" : undefined}
 					>
 						{userManagementFeature?.supported !== false &&
 							<Button
@@ -283,13 +284,6 @@ const UserGroups = (props) => {
 							</Button>
 						}
 					</ContainerHeader>
-					{/* TODO: Quick hack to detect whether feature is supported */}
-					{userManagementFeature?.supported === false ? <><br/>
-						<Alert severity="warning">
-							<AlertTitle>Feature not available</AlertTitle>
-							Make sure that the feature is enabled in the license.
-						</Alert>
-					</> : null}
 					{
 						userManagementFeature?.supported === false ? (
 							<></>

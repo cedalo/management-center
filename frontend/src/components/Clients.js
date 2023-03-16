@@ -22,7 +22,6 @@ import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import {Alert, AlertTitle} from '@material-ui/lab';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
@@ -285,6 +284,8 @@ const Clients = (props) => {
 						subTitle="List of existing clients. A client is any device that connects to a broker and sends or
 						receives messages. Add a client by clicking on the button to the right or modify it by
 								clicking on one of the existing clients."
+						connectedWarning={!props.connected}
+						brokerFeatureWarning={dynamicsecurityFeature?.supported === false ? "dynamic security" : null}
 					>
 						{dynamicsecurityFeature?.supported !== false && <>
 							<Button
@@ -302,16 +303,6 @@ const Clients = (props) => {
 							</Button>
 						</>}
 					</ContainerHeader>
-					{/* TODO: Quick hack to detect whether feature is supported */}
-					{dynamicsecurityFeature?.supported === false ?
-						<>
-							<br/>
-								<Alert severity="warning">
-									<AlertTitle>Feature not available</AlertTitle>
-									Make sure that the broker connected has the dynamic security enabled.
-								</Alert>
-						</> : null}
-
 					{dynamicsecurityFeature?.supported !== false && clients?.clients?.length > 0 ? (
 						<div style={{height: '100%', overflowY: 'auto'}}>
 							<Hidden xsDown implementation="css">
@@ -499,7 +490,7 @@ const Clients = (props) => {
 							</Hidden>
 						</div>
 					) : (
-						<div>No clients found</div>
+						props.connected ? <div>No clients found</div> : null
 					)}
 				</div>
 			</div>
@@ -528,7 +519,8 @@ const mapStateToProps = (state) => {
 		rolesAll: state.roles?.rolesAll?.roles,
 		clients: state.clients?.clients,
 		defaultClient: state.brokerConnections?.defaultClient,
-		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity
+		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity,
+		connected: state.brokerConnections?.connected,
 	};
 };
 
