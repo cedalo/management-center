@@ -65,6 +65,7 @@ const LicenseChecker = require('./src/license/LicenseChecker');
 const acl = require('./src/security/acl');
 const TopicTreeManager = require('./src/topictree/TopicTreeManager');
 const licenseContainer = require('./src/license/LicenseContainer');
+const { AuthError } = require('./src/plugins/Errors');
 // const NodeMosquittoProxyClient = require('../frontend/src/client/NodeMosquittoProxyClient');
 // const licenseManager = new LicenseManager();
 // await licenseManager.loadLicense();
@@ -496,182 +497,36 @@ const init = async (licenseContainer) => {
 	};
 	console.log(`Starting Mosquitto proxy server at ${protocol}://${host}:${port}`);
 
-	// TODO: move somewhere else
-	const userCanAccessAPI = (user, api, connection) => {
-		if (
-			api === 'stream-processing' &&
-			!context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin, connection.name)
-		) {
-			return false;
-		}
-		if (
-			api === 'dynamic-security' &&
-			!context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastEditor, connection.name)
-		) {
-			return false;
-		}
-		return true;
-	};
-
 	const handleCommandMessage = async (message, client, user = {}) => {
-		const { api, command } = message;
-		const broker = context.brokerManager.getBroker(client);
-		const connection = context.brokerManager.getBrokerConnectionByClient(client);
-		if (!userCanAccessAPI(user, api, connection)) {
-			throw new NotAuthorizedError();
-		}
-		if (broker) {
-			const result = await broker.sendCommandMessage(api, command);
-			// console.log(JSON.stringify(result));
-			const response = {
-				// TODO: remove users and groups properties when Mosquitto supports that API
-				// data: result.data || result.users || result.groups,
-				data: result.data,
-				done: result.error ? false : true,
-				error: result.error
-			};
-			return response;
-		} else {
-			throw new Error('Client not connected to any broker');
-		}
+		return context.runAction(user, 'connection/command', message, { client });
 	};
 
-	const connectToBroker = (brokerName, client) => {
-		const brokerConnection = context.brokerManager.getBrokerConnection(brokerName);
-		if (brokerConnection) {
-			const { broker, system, topicTreeManager } = brokerConnection;
-			context.brokerManager.connectClient(client, broker, brokerConnection);
-			if (broker.connected) {
-				sendSystemStatusUpdate(system, broker, brokerConnection);
-				sendTopicTreeUpdate(topicTreeManager.topicTree, broker, brokerConnection);
-			} else {
-				throw new Error('Broker not connected');
-			}
-		} else {
-			throw new Error('Broker not found/not connected');
-		}
-	};
+	context.requestHandlers.set('loadPlugin', 'plugin/load');
+	context.requestHandlers.set('unloadPlugin', 'plugin/unload');
+	context.requestHandlers.set('setPluginStatusAtNextStartup', 'plugin/setStatusNextStartup');
+	context.requestHandlers.set('testConnection', 'connection/test');
+	context.requestHandlers.set('createConnection', 'connection/create');
+	context.requestHandlers.set('modifyConnection', 'connection/modify');
+	context.requestHandlers.set('deleteConnection', 'connection/delete');
+	context.requestHandlers.set('connectToBroker', 'connection/connect');
+	context.requestHandlers.set('disconnectFromBroker', 'connection/disconnect');
+	context.requestHandlers.set('getBrokerConnections', 'connection/list');
+	context.requestHandlers.set('getBrokerConfigurations', 'config/get');
+	context.requestHandlers.set('getSettings', 'settings/get');
+	context.requestHandlers.set('updateSettings', 'settings/update');
 
-	const disconnectFromBroker = (brokerName, client) => {
-		context.brokerManager.disconnectClient(client); //!!
-	};
-
-	// TODO: extract in separate WebSocket API class
 	const handleRequestMessage = async (message, client, user = {}) => {
 		const { request, ...data } = message;
-		const brokerId = context.brokerManager.getBrokerConnectionByClient(client)?.connection?.id;
-
-		switch (request) {
-			case 'unloadPlugin':
-				return context.runAction(user, 'plugin/unload', data);
-			case 'loadPlugin':
-				return context.runAction(user, 'plugin/load', data);
-			case 'setPluginStatusAtNextStartup':
-				return context.runAction(user, 'plugin/setStatusNextStartup', data);
-			case 'testConnection':
-				return context.runAction(user, 'connection/test', data);
-			case 'createConnection':
-				return context.runAction(user, 'connection/create', data);
-			case 'modifyConnection':
-				return context.runAction(user, 'connection/modify', data);
-			case 'deleteConnection':
-				return context.runAction(user, 'connection/delete', data);
-
-			case 'connectToBroker': {
-				const { brokerName } = message;
-				if (context.security.acl.isConnectionAuthorized(user, null, brokerName)) {
-					const response = await connectToBroker(brokerName, client);
-					return response;
-				} else {
-					throw new NotAuthorizedError();
-				}
-			}
-			case 'disconnectFromBroker': {
-				const { brokerName } = message;
-				if (context.security.acl.isConnectionAuthorized(user, null, brokerName)) {
-					const response = await disconnectFromBroker(brokerName, client);
-					return response;
-				} else {
-					throw new NotAuthorizedError();
-				}
-			}
-			case 'getBrokerConnections': {
-				// const connections = context.brokerManager.getBrokerConnections();
-				const connections = configManager.connections;
-				const filteredConnections = context.security.acl.filterAllowedConnections(
-					connections,
-					user.connections
-				);
-				const result = stripConnectionsCredentials(filteredConnections, user, context);
-				return result;
-			}
-			case 'getBrokerConfigurations': {
-				let configToReturn;
-				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
-					configToReturn = JSON.parse(JSON.stringify(config));
-				} else {
-					const configCopy = JSON.parse(JSON.stringify(config));
-					configCopy.connections = configCopy.connections.map((connection) => {
-						delete connection.credentials;
-						return connection;
-					});
-					configToReturn = configCopy;
-				}
-
-				configToReturn.connections = context.security.acl.filterAllowedConnections(
-					configToReturn.connections,
-					user.connections
-				);
-
-				return configToReturn;
-			}
-			case 'getSettings': {
-				if (context.security.acl.noRestrictedRoles(user)) {
-					return settingsManager.settings;
-				} else {
-					throw new NotAuthorizedError();
-				}
-			}
-			case 'updateSettings': {
-				if (context.security.acl.isConnectionAuthorized(user, context.security.acl.atLeastAdmin)) {
-					const { settings } = message;
-					settingsManager.updateSettings({
-						...settingsManager.settings,
-						...settings
-					});
-					if (settingsManager.settings.allowTrackingUsageData) {
-						const data = Object.values(globalSystem);
-						usageTracker.send({
-							data,
-							os: {
-								arch: os.arch(),
-								cpus: os.cpus(),
-								platform: os.platform(),
-								release: os.release(),
-								version: os.version()
-							}
-						});
-					}
-					return settingsManager.settings;
-				} else {
-					throw new NotAuthorizedError();
-				}
-			}
-			default: {
-				if (context.security.acl.noRestrictedRoles(user)) {
-					const actionName = context.requestHandlers.get(request);
-					if (actionName) {
-						const result = await context.runAction(user, actionName, data, brokerId);
-						return result;
-					} else {
-						throw new Error(`Unsupported request: ${request}`);
-					}
-				} else {
-					throw new NotAuthorizedError();
-				}
-			}
+		if (!context.security.acl.noRestrictedRoles(user)) {
+			throw new NotAuthorizedError();
 		}
-		return {};
+		const actionName = context.requestHandlers.get(request);
+		if (actionName) {
+			const result = await context.runAction(user, actionName, data, { client });
+			return result;
+		} else {
+			throw new Error(`Unsupported request: ${request}`);
+		}
 	};
 
 	const handleClientMessage = async (message, client, user = {}) => {
@@ -893,6 +748,8 @@ const init = async (licenseContainer) => {
 		configManager,
 		pluginManager: new PluginManager(),
 		app: app,
+		settingsManager,
+		usageTracker,
 		server: null,
 		router: router,
 		config,
@@ -902,7 +759,7 @@ const init = async (licenseContainer) => {
 		registerAction: ({ type, isModifying, fn, filter = (x) => x }) => {
 			context.actions[type] = { fn, filter, isModifying };
 		},
-		runAction: (user, type, data, brokerId) => {
+		runAction: (user, type, data, extendedContext = {}) => {
 			try {
 				const action = context.actions[type];
 				if (!action) {
@@ -914,7 +771,7 @@ const init = async (licenseContainer) => {
 				let pendingResult;
 				let result;
 				try {
-					pendingResult = action.fn({ ...context, user, brokerId }, data);
+					pendingResult = action.fn({ ...context, user, ...extendedContext }, data);
 					return pendingResult;
 				} catch (error) {
 					errorMessage = error.message || 'Unknown error!';
