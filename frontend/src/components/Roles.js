@@ -21,6 +21,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import ReloadIcon from '@material-ui/icons/Replay';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
@@ -33,11 +34,6 @@ import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 
 const useStyles = makeStyles((theme) => ({
-	badges: {
-		'& > *': {
-			margin: theme.spacing(0.5)
-		}
-	},
 	button: {
 		marginRight: 10
 	}
@@ -82,6 +78,13 @@ const Roles = (props) => {
 		const roles = await client.listRoles(true, count, offset);
 		dispatch(updateRoles(roles));
 	};
+
+	const onReload = async () => {
+		const count = rowsPerPage;
+		const offset = page * rowsPerPage;
+		const roles = await client.listRoles(true, count, offset);
+		dispatch(updateRoles(roles));
+	}
 
 	const handleChangeRowsPerPage = async (event) => {
 		const rowsPerPage = parseInt(event.target.value, 10);
@@ -148,7 +151,7 @@ const Roles = (props) => {
 			<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
 				<ContainerHeader
 					title="Roles"
-					buttonsWidth="350px"
+					buttonsWidth="420px"
 					subTitle="List of existing roles. A role contains a number of ACLs, which either specifically allow or deny an action. Add as many ACLs as you need to a role."
 					connectedWarning={!props.connected}
 					brokerFeatureWarning={dynamicsecurityFeature?.supported === false ? "dynamic security" : null}
@@ -169,12 +172,26 @@ const Roles = (props) => {
 					<Button
 						variant="outlined"
 						color="primary"
+						style={{marginRight: '10px'}}
 						size="small"
 						startIcon={<EditIcon/>}
 						onClick={onEditDefaultACLAccess}
 					>
 						Edit default ACL access
 					</Button>
+					{dynamicsecurityFeature?.supported !== false &&
+						<Button
+							variant="outlined"
+							color="primary"
+							size="small"
+							style={{paddingRight: '0px', minWidth: '30px'}}
+							startIcon={<ReloadIcon />}
+							onClick={(event) => {
+								event.stopPropagation();
+								onReload();
+							}}
+						/>
+					}
 				</ContainerHeader>
 				{dynamicsecurityFeature?.supported !== false && roles?.roles?.length > 0 ? (
 					<div style={{height: '100%', overflowY: 'auto'}}>
