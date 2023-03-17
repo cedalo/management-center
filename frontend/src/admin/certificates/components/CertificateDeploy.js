@@ -162,16 +162,17 @@ const ConnectionSelect = ({ connections, selected = {}, onSelect }) => {
 };
 
 
-const listenerKey = (listener, host) => `${listener.host || host}:${listener.port}:${listener.tls}`;
+const listenerKey = ({ bindAddress, host, port }) => `${host}:${port}:${bindAddress || ''}`;
 const markUsedListeners = (certificate, connection, listeners) => {
-	const { host } = connection;
-	const usedListenerKeys = certificate.listeners?.map(listenerKey) || [];
+	const {usedBy} = certificate;
+	const usedListeners = usedBy[connection.id] || [];
+	const usedListenerKeys = usedListeners.map(listenerKey);
 	return listeners.map((listener) => {
-		listener.isUsed = usedListenerKeys.includes(listenerKey(listener, host));
-		return listener;
+		const isUsed = usedListenerKeys.includes(listenerKey(listener));
+		return { ...listener, isUsed };
 	});
 };
-const deployMessage = (cert, { deployed, undeployed }) => ({
+const deployMessage = (cert, { deployed = 0, undeployed = 0 } = {}) => ({
 	error: `'Failed to deploy certificate "${cert.name}"`,
 	success: `Certificate "${cert.name}" successfully deployed to ${deployed} listeners and undeployed from ${undeployed} listeners.`,
 	warning: `Problems while deploying certificate "${cert.name}"!`
