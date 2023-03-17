@@ -608,7 +608,7 @@ module.exports = class BaseMosquittoProxyClient {
 	}
 	async deployCertificate(cert, connection, listeners) {
 		const url = `${this._httpEndpointURL}/api/cert-management/deploy/${cert.id}`;
-		return this.doApiRequest(axios.put, url, { connection, listeners });
+		return this.doApiRequest(axios.put, url, { brokerId: connection.id, listeners });
 	}
 
 	/**
