@@ -7,6 +7,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import {Help} from '@material-ui/icons';
 import HelpIcon from '@material-ui/icons/HelpOutline';
 import MenuIcon from '@material-ui/icons/Menu';
 import TourIcon from '@material-ui/icons/Slideshow';
@@ -22,6 +23,7 @@ import BrokerSelect from './components/BrokerSelect';
 import CustomDrawer from './components/CustomDrawer';
 import FeedbackButton from './components/FeedbackButton';
 import FilterName from './components/FilterName';
+import HelpButtons from './components/HelpButtons';
 import LicenseErrorDialog from './components/LicenseErrorDialog';
 import LogoutButton from './components/LogoutButton';
 import NewsletterPopup from './components/NewsletterPopup';
@@ -37,15 +39,6 @@ import steps from './tutorial/steps';
 import WebSocketProvider from './websockets/WebSocket';
 import { Loading } from './components/DisconnectedDialog';
 
-
-const tourOptions = {
-	defaultStepOptions: {
-		cancelIcon: {
-			enabled: true
-		}
-	},
-	useModalOverlay: true
-};
 
 const drawerWidth = 240;
 
@@ -96,6 +89,7 @@ const useStyles = makeStyles((theme) => ({
 		display: 'none'
 	},
 	rightToolbar: {
+		display: 'flex',
 		height: '50px',
 		marginLeft: 'auto',
 		marginRight: -12,
@@ -105,11 +99,6 @@ const useStyles = makeStyles((theme) => ({
 	formControl: {
 		margin: theme.spacing(1),
 		minWidth: 120
-	},
-	toolbarButton: {
-		marginTop: '2px',
-		color: theme.palette.type === 'dark' ? 'white' : 'rgba(117, 117, 117)',
-		// marginBottom: theme.spacing(0.2)
 	},
 	content: {
 		flexGrow: 1,
@@ -281,39 +270,7 @@ export default function App(props) {
 															<FeedbackButton/>
 															<UpgradeButton/>
 															<BrokerSelect appBar/>
-															<Tooltip title="Start tour">
-																<IconButton
-																	edge="end"
-																	aria-label="Tour"
-																	aria-controls="tour"
-																	aria-haspopup="true"
-																	onClick={() => handleStartTour()}
-																	className={classes.toolbarButton}
-																	style={{
-																			color: darkMode === 'true' ? 'white' : 'rgba(117, 117, 117)',
-																		}}
-
-																>
-																	<TourIcon fontSize="small"/>
-																</IconButton>
-															</Tooltip>
-															<Tooltip title="Help">
-																<IconButton
-																	edge="end"
-																	aria-label="Tour"
-																	aria-controls="tour"
-																	aria-haspopup="true"
-																	onClick={() => window.open('https://docs.cedalo.com/management-center', '_blank')}
-																	className={classes.toolbarButton}
-																	style={{
-																			color: darkMode === 'true' ? 'white' : 'rgba(117, 117, 117)',
-																		}}
-
-																>
-																	<HelpIcon fontSize="small"/>
-																</IconButton>
-															</Tooltip>
-
+															<HelpButtons startTour={handleStartTour}/>
 															{!hideProfileButton ? <ProfileButton/> : null}
 															{!hideLogoutButton ? <LogoutButton/> : null}
 														</section>

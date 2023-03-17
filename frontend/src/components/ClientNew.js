@@ -20,11 +20,7 @@ import ContainerHeader from './ContainerHeader';
 import SaveCancelButtons from './SaveCancelButtons';
 import {useFormStyles} from '../styles';
 
-const useStyles = makeStyles((theme) => ({
-}));
-
 const ClientNew = (props) => {
-	const classes = useStyles();
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [clientID, setClientID] = useState('');
