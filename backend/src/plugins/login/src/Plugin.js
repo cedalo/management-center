@@ -89,14 +89,38 @@ module.exports = class Plugin extends BasePlugin {
 				// return hasSession(request) ? next() : response.redirect(303, `${CEDALO_MC_PROXY_BASE_PATH}/login`);
 			}
 		);
+	
+		router.post('/auth', (request, response, next) => {
+			passport.authenticate('local', (error, user, info) => {
+				if (error) {
+					return next(error);
+				}
+				if (!user) {
+					if (!request.query.json) {
+						return response.redirect(`${CEDALO_MC_PROXY_BASE_PATH}/login?error=authentication-failed`);
+					} else {
+						return response.status(401).json('Unauthorized');
+					}
+				} else {
+					request.login(user, function (error_) {
+						if (error_) {
+							return next(error_);
+						}
+						if (!request.query.json) {
+							return response.redirect(`${CEDALO_MC_PROXY_BASE_PATH}/`);
+						} else {
+							return response.status(200).json('Authorized');
+						}
+					});
+				}
+			})(request, response, next);
+		});
 
-		router.post(
-			'/auth',
-			passport.authenticate('local', {
-				successRedirect: `${CEDALO_MC_PROXY_BASE_PATH}/`,
-				failureRedirect: `${CEDALO_MC_PROXY_BASE_PATH}/login?error=authentication-failed`
-			})
-		);
+		// router.post('/auth', passport.authenticate('local', {
+		// 		successRedirect: `${CEDALO_MC_PROXY_BASE_PATH}/`,
+		// 		failureRedirect : `${CEDALO_MC_PROXY_BASE_PATH}/login?error=authentication-failed`,
+		// 	}
+		// ));
 	}
 
 	get meta() {
