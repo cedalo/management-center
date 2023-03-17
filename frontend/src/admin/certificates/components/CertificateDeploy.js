@@ -222,6 +222,12 @@ const CertificateDeploy = ({ connections = [] }) => {
 		setCanUpdate(false);
 	};
 
+	const showSnackAndReload = (message, variant) => {
+		enqueueSnackbar(message, { variant });
+		loadListeners();
+		setCanUpdate(false);
+	};
+
 	const onDeploy = async () => {
 		const selectedListeners = listeners.filter((listener) => listener.isUsed);
 		try {
@@ -232,15 +238,13 @@ const CertificateDeploy = ({ connections = [] }) => {
 					setCanUpdate(false);
 					break;
 				case 207:
-					enqueueSnackbar(deployMessage(certificate).warning, { variant: 'warning' });
+					showSnackAndReload(deployMessage(certificate).warning, 'warning');
 					break;
 				default:
-					enqueueSnackbar(deployMessage(certificate).error, { variant: 'error' });
+					showSnackAndReload(deployMessage(certificate).error, 'error');
 			}
 		} catch (error) {
-			enqueueSnackbar(`Error deploying certificate "${certificate.name}". Reason: ${error.message}`, {
-				variant: 'error'
-			});
+			showSnackAndReload(`Error deploying certificate "${certificate.name}". Reason: ${error.message}`, 'error');
 		}
 	};
 
