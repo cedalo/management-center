@@ -5,6 +5,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import HelpIcon from '@material-ui/icons/HelpOutline';
 import TourIcon from '@material-ui/icons/Slideshow';
 import React from 'react';
+import { useTour } from '@reactour/tour';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -18,6 +19,7 @@ export default function HelpButtons(props) {
 	const classes = useStyles();
 	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
 	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
+	const { setIsOpen } = useTour();
 
 	if (medium || small) {
 		return null;
@@ -30,7 +32,10 @@ export default function HelpButtons(props) {
 				aria-label="Tour"
 				aria-controls="tour"
 				aria-haspopup="true"
-				onClick={() => props.handleStartTour()}
+				onClick={() => {
+					// props.onStartTour()
+					setIsOpen(true);
+				}}
 				className={classes.toolbarButton}
 			>
 				<TourIcon fontSize="small"/>

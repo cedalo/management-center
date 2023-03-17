@@ -1,4 +1,4 @@
-import {colors, IconButton, makeStyles, Tooltip} from '@material-ui/core';
+import {Box, colors, IconButton, makeStyles, Tooltip} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
@@ -16,11 +16,9 @@ import {useConfirm} from 'material-ui-confirm';
 import moment from 'moment';
 import {useSnackbar} from 'notistack';
 import React, {useContext, useEffect} from 'react';
-import Speedometer from 'react-d3-speedometer'
+import Speedometer from 'react-d3-speedometer';
 import {connect} from 'react-redux';
-import Delayed from '../utils/Delayed';
 import {WebSocketContext} from '../websockets/WebSocket';
-import ConnectedWarning from './ConnectedWarning';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import Info from './Info';
@@ -191,7 +189,7 @@ const Status = ({
 	// }
 
 	return (
-		<div style={{height: '100%'}}>
+		<Box style={{height: '100%'}} data-tour="page-status">
 			<ContainerBreadCrumbs title="Home"/>
 			<div style={{height: 'calc(100% - 26px)'}}>
 				<div>
@@ -426,7 +424,7 @@ const Status = ({
 					</div>}
 				</div>
 			</div>
-		</div>
+		</Box>
 	);
 };
 

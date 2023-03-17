@@ -4,13 +4,8 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import IconButton from '@material-ui/core/IconButton';
 import {makeStyles, ThemeProvider, useTheme} from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
-import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import {Help} from '@material-ui/icons';
-import HelpIcon from '@material-ui/icons/HelpOutline';
 import MenuIcon from '@material-ui/icons/Menu';
-import TourIcon from '@material-ui/icons/Slideshow';
 import clsx from 'clsx';
 import {ConfirmProvider} from 'material-ui-confirm';
 import {SnackbarProvider} from 'notistack';
@@ -35,10 +30,10 @@ import useLocalStorage from './helpers/useLocalStorage';
 import store from './store';
 import customTheme from './theme';
 import darkTheme from './theme-dark';
-import steps from './tutorial/steps';
+import apptour from './apptour';
 import WebSocketProvider from './websockets/WebSocket';
 import { Loading } from './components/DisconnectedDialog';
-
+import { TourProvider, components } from '@reactour/tour';
 
 const drawerWidth = 240;
 
@@ -109,8 +104,17 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
+function Badge({ children }) {
+	return (
+		<components.Badge
+			styles={{ badge: (base) => ({ ...base, backgroundColor: '#FD602E' }) }}
+		>
+			{children}
+		</components.Badge>
+	)
+}
 
-export default function App(props) {
+export default function (props) {
 	// const { window } = props;
 	const classes = useStyles();
 	const [open, setOpen] = React.useState(false);
@@ -121,6 +125,20 @@ export default function App(props) {
 	const [showFilter, setShowFilter] = useState(false);
 	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/theme`);
 	const [responseConfig, loadingConfig, hasErrorConfig] = useFetch(`${process.env.PUBLIC_URL}/api/config`);
+	const [step, setStep] = useState(0);
+
+	const setCurrentStep = (stp) => {
+		// if (stps) {
+		// 	setSteps(stps);
+		// } else {
+		// 	stps = steps;
+		// }
+
+		if (apptour.length > stp && apptour[stp].routing) {
+			navigate(apptour[stp].routing, true);
+		}
+		setStep(stp);
+	};
 
 	if ((hasError || response) && (hasErrorConfig || responseConfig)) {
 		let appliedTheme = darkMode === 'true' ? darkTheme : customTheme;
@@ -133,8 +151,8 @@ export default function App(props) {
 		};
 
 		const handleStartTour = () => {
-			setOpen(true);
-			setShowTour(true);
+			// setOpen(true);
+			setIsOpen(true);
 		};
 
 		if (response) {
@@ -189,21 +207,35 @@ export default function App(props) {
 		return (
 			<ThemeProvider theme={appliedTheme}>
 				<SnackbarProvider>
-					<Joyride
-						run={showTour}
-						continuous={true}
-						//   getHelpers={this.getHelpers}
-						scrollToFirstStep={true}
-						showProgress={true}
-						showSkipButton={true}
-						steps={steps}
-						callback={onTourStateChange}
+					<TourProvider
+						steps={apptour}
+						components={{ Badge }}
+						currentStep={step}
+						setCurrentStep={(stp) => setCurrentStep(stp)}
 						styles={{
-							options: {
-								zIndex: 5000
-							}
+							popover: (base) => ({...base, color: 'black'}),
+							close: (base) => ({ ...base, right: 8, top: 8 })
 						}}
-					/>
+						showDots={false}
+						beforeClose={() => {
+							setStep(0);
+						}}
+					>
+					{/*<Joyride*/}
+					{/*	run={showTour}*/}
+					{/*	continuous={true}*/}
+					{/*	//   getHelpers={this.getHelpers}*/}
+					{/*	scrollToFirstStep={true}*/}
+					{/*	showProgress={true}*/}
+					{/*	showSkipButton={true}*/}
+					{/*	steps={steps}*/}
+					{/*	callback={onTourStateChange}*/}
+					{/*	styles={{*/}
+					{/*		options: {*/}
+					{/*			zIndex: 5000*/}
+					{/*		}*/}
+					{/*	}}*/}
+					{/*/>*/}
 					<ConfirmProvider>
 						<CssBaseline/>
 						<Router basename={process.env.PUBLIC_URL}>
@@ -270,7 +302,7 @@ export default function App(props) {
 															<FeedbackButton/>
 															<UpgradeButton/>
 															<BrokerSelect appBar/>
-															<HelpButtons startTour={handleStartTour}/>
+															<HelpButtons onStartTour={handleStartTour}/>
 															{!hideProfileButton ? <ProfileButton/> : null}
 															{!hideLogoutButton ? <LogoutButton/> : null}
 														</section>
@@ -299,6 +331,7 @@ export default function App(props) {
 							</Provider>
 						</Router>
 					</ConfirmProvider>
+					</TourProvider>
 				</SnackbarProvider>
 			</ThemeProvider>
 		);
