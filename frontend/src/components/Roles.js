@@ -1,12 +1,5 @@
 import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
 import {makeStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -16,12 +9,12 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import {Alert, AlertTitle} from '@material-ui/lab';
+import ReloadIcon from '@material-ui/icons/Replay';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
@@ -34,11 +27,6 @@ import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 
 const useStyles = makeStyles((theme) => ({
-	badges: {
-		'& > *': {
-			margin: theme.spacing(0.5)
-		}
-	},
 	button: {
 		marginRight: 10
 	}
@@ -49,10 +37,10 @@ const rolesShape = PropTypes.shape({
 });
 
 const ROLE_TABLE_COLUMNS = [
-	{id: 'rolename', key: 'Name'},
+	{id: 'name', key: 'Name'},
 	{id: 'textname', key: 'Text Name'},
-	{id: 'textdescription', key: 'Description'}
-	//   { id: "acls", key: "ACLs" },
+	{id: 'textdescription', key: 'Description'},
+	{ id: "action", key: "" },
 ];
 
 const FormattedGroupType = (props) => {
@@ -72,10 +60,10 @@ const Roles = (props) => {
 	const confirm = useConfirm();
 	const {enqueueSnackbar} = useSnackbar();
 	const {client} = context;
-
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
+	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
+	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
 	const handleChangePage = async (event, newPage) => {
 		setPage(newPage);
 		const count = rowsPerPage;
@@ -83,6 +71,13 @@ const Roles = (props) => {
 		const roles = await client.listRoles(true, count, offset);
 		dispatch(updateRoles(roles));
 	};
+
+	const onReload = async () => {
+		const count = rowsPerPage;
+		const offset = page * rowsPerPage;
+		const roles = await client.listRoles(true, count, offset);
+		dispatch(updateRoles(roles));
+	}
 
 	const handleChangeRowsPerPage = async (event) => {
 		const rowsPerPage = parseInt(event.target.value, 10);
@@ -149,8 +144,10 @@ const Roles = (props) => {
 			<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
 				<ContainerHeader
 					title="Roles"
-					buttonsWidth="350px"
+					buttonsWidth="420px"
 					subTitle="List of existing roles. A role contains a number of ACLs, which either specifically allow or deny an action. Add as many ACLs as you need to a role."
+					connectedWarning={!props.connected}
+					brokerFeatureWarning={dynamicsecurityFeature?.supported === false ? "dynamic security" : null}
 				>
 					{dynamicsecurityFeature?.supported !== false && <Button
 						variant="outlined"
@@ -168,24 +165,29 @@ const Roles = (props) => {
 					<Button
 						variant="outlined"
 						color="primary"
+						style={{marginRight: '10px'}}
 						size="small"
 						startIcon={<EditIcon/>}
 						onClick={onEditDefaultACLAccess}
 					>
 						Edit default ACL access
 					</Button>
+					{dynamicsecurityFeature?.supported !== false &&
+						<Button
+							variant="outlined"
+							color="primary"
+							size="small"
+							style={{paddingRight: '0px', minWidth: '30px'}}
+							startIcon={<ReloadIcon />}
+							onClick={(event) => {
+								event.stopPropagation();
+								onReload();
+							}}
+						/>
+					}
 				</ContainerHeader>
-				{/* TODO: Quick hack to detect whether feature is supported */}
-				{dynamicsecurityFeature?.supported === false ? <>
-					<br/>
-					<Alert severity="warning">
-						<AlertTitle>Feature not available</AlertTitle>
-						Make sure that the broker connected has the dynamic security enabled.
-					</Alert>
-				</> : null}
 				{dynamicsecurityFeature?.supported !== false && roles?.roles?.length > 0 ? (
 					<div style={{height: '100%', overflowY: 'auto'}}>
-						<Hidden xsDown implementation="css">
 							<div style={{height: '100%', overflowY: 'auto'}}>
 								<TableContainer>
 									<Table stickyHeader size="small" aria-label="sticky table">
@@ -193,17 +195,23 @@ const Roles = (props) => {
 											<TableRow>
 												{ROLE_TABLE_COLUMNS.map((column) => (<TableCell
 													key={column.id}
+													style={{
+														display: (!small && !medium) ||
+														(column.id === 'name' && (small || medium)) ||
+														(column.id === 'action' && (small || medium)) ||
+														(column.id === 'textdescription' && (small || medium))
+															? undefined : 'none'
+													}}
 													sortDirection={sortBy === column.id ? sortDirection : false}
 												>
-													<TableSortLabel
-														active={sortBy === column.id}
-														direction={sortDirection}
-														onClick={() => onSort(column.id)}
-													>
+													{/*<TableSortLabel*/}
+													{/*	active={sortBy === column.id}*/}
+													{/*	direction={sortDirection}*/}
+													{/*	onClick={() => onSort(column.id)}*/}
+													{/*>*/}
 														{column.key}
-													</TableSortLabel>
+													{/*</TableSortLabel>*/}
 												</TableCell>))}
-												<TableCell/>
 											</TableRow>
 										</TableHead>
 										<TableBody>
@@ -214,21 +222,23 @@ const Roles = (props) => {
 												style={{cursor: 'pointer'}}
 											>
 												<TableCell>{role.rolename}</TableCell>
-												<TableCell>{role.textname}</TableCell>
+												{small || medium ? null :
+													<TableCell>{role.textname}</TableCell>
+												}
 												<TableCell>{role.textdescription}</TableCell>
-												<TableCell align="right">
-													<Tooltip title="Delete role">
-														<IconButton
-															size="small"
-															onClick={(event) => {
-																event.stopPropagation();
-																onDeleteRole(role.rolename);
-															}}
-														>
-															<DeleteIcon fontSize="small"/>
-														</IconButton>
-													</Tooltip>
-												</TableCell>
+													<TableCell align="right">
+														<Tooltip title="Delete role">
+															<IconButton
+																size="small"
+																onClick={(event) => {
+																	event.stopPropagation();
+																	onDeleteRole(role.rolename);
+																}}
+															>
+																<DeleteIcon fontSize="small"/>
+															</IconButton>
+														</Tooltip>
+													</TableCell>
 											</TableRow>))}
 										</TableBody>
 										<TableFooter>
@@ -247,30 +257,10 @@ const Roles = (props) => {
 									</Table>
 								</TableContainer>
 							</div>
-						</Hidden>
-						<Hidden smUp implementation="css">
-							<Paper>
-								<List className={classes.root}>
-									{roles.roles.map((role) => (<React.Fragment>
-										<ListItem alignItems="flex-start">
-											<ListItemText
-												primary={<span>{role.rolename}</span>}
-											/>
-											<ListItemSecondaryAction>
-												<IconButton edge="end" size="small" aria-label="edit">
-													<EditIcon fontSize="small"/>
-												</IconButton>
-												<IconButton edge="end" size="small" aria-label="delete">
-													<DeleteIcon fontSize="small"/>
-												</IconButton>
-											</ListItemSecondaryAction>
-										</ListItem>
-										<Divider/>
-									</React.Fragment>))}
-								</List>
-							</Paper>
-						</Hidden>
-					</div>) : (<div>No roles found</div>)}
+					</div>
+					) : (
+						props.connected ? <div>No roles found</div> : null
+					)}
 			</div>
 		</div>
 	</div>);
@@ -289,7 +279,9 @@ Roles.defaultProps = {
 
 const mapStateToProps = (state) => {
 	return {
-		roles: state.roles?.roles, dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity
+		roles: state.roles?.roles,
+		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity,
+		connected: state.brokerConnections?.connected,
 	};
 };
 

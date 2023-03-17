@@ -1,6 +1,9 @@
-import React, { useContext } from 'react';
-import { connect } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import {green, red} from '@material-ui/core/colors';
+import DisconnectedIcon from '@material-ui/icons/Cancel';
+import ConnectedIcon from '@material-ui/icons/CheckCircle';
+import React, {useContext} from 'react';
+import {connect} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import {makeStyles, useTheme, withStyles} from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -8,9 +11,9 @@ import Typography from '@material-ui/core/Typography';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputBase from '@material-ui/core/InputBase';
-import { WebSocketContext } from '../websockets/WebSocket';
+import {WebSocketContext} from '../websockets/WebSocket';
 import {BrowserRouter as Router, Route, Switch, useLocation} from 'react-router-dom';
-import { handleConnectionChange } from '../utils/connectionUtils/connections';
+import {handleConnectionChange} from '../utils/connectionUtils/connections';
 import {showConnections} from '../utils/utils';
 
 const CustomInput = withStyles((theme) => ({
@@ -23,30 +26,24 @@ const CustomInput = withStyles((theme) => ({
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		paddingLeft: '20px',
+		paddingLeft: '10px',
+		paddingTop: '7px',
+		paddingBottom: '5px',
 		backgroundColor: 'rgba(255,255,255,0.2)',
 		border: theme.palette.type === 'dark' ? 'thin solid rgba(255,255,255,1)' : 'thin solid rgba(0,0,0,0.5)',
-		// color: 'white',
-		fontSize: '14px'
 	},
 	label: {
 		fontSize: '12px',
 		textTransform: 'uppercase',
 		transform: 'translate(14px, 20px) scale(1)',
-		// color: 'white',
 	},
 	formControl: {
-		// margin: theme.spacing(1),
-		// height: "25px",
-		margin: theme.spacing(1),
+		margin: '6px',
 		minWidth: 120
-	},
-	select: {
-		fontSize: '14px',
 	}
 }));
 
-const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sendMessage, userProfile, appBar }) => {
+const BrokerSelect = ({brokerConnections, connected, currentConnectionName, sendMessage, userProfile, appBar}) => {
 	const classes = useStyles();
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
@@ -65,7 +62,7 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 
 	const handleConnectionChangeOuter = async (event) => {
 		const connectionID = event.target.value;
-		const { client } = context;
+		const {client} = context;
 
 		handleConnectionChange(dispatch, client, connectionID, connection, setConnection, connected);
 	};
@@ -84,7 +81,7 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 					variant="subtitle2"
 					style={{
 						color: theme.palette.type === 'dark' ? 'white' : 'rgba(117, 117, 117)',
-						margin: '5px 10px'
+						margin: '8px 10px'
 					}}
 				>
 					Connection:
@@ -110,22 +107,34 @@ const BrokerSelect = ({ brokerConnections, connected, currentConnectionName, sen
 					root: classes.root,
 					icon: classes.icon
 				}}
-				input={<CustomInput />}
+				input={<CustomInput/>}
 			>
 				{brokerConnections && Array.isArray(brokerConnections)
 					? brokerConnections
-							// .filter((brokerConnection) => brokerConnection.status ? brokerConnection.status.connected : false)
-							.map((brokerConnection) => (
-								<MenuItem
-									key={brokerConnection.name}
-									value={brokerConnection.name}
-									classes={{
-										root: classes.select
-									}}
-								>
+						.sort((a, b) => a.name.localeCompare(b.name))
+						// .filter((brokerConnection) => brokerConnection.status ? brokerConnection.status.connected :
+						// false)
+						.map((brokerConnection) => (
+							<MenuItem
+								disabled={brokerConnection?.status.connected === false}
+								key={brokerConnection.name}
+								value={brokerConnection.name}
+								classes={{
+									root: classes.select
+								}}
+							>
+								<div style={{display: 'inline-flex', paddingTop: '1px'}}>
+								{brokerConnection?.status.connected ? (
+									<ConnectedIcon fontSize="small" style={{color: green[500]}}/>
+								) : (
+									<DisconnectedIcon fontSize="small" style={{color: red[500]}}/>
+								)}
+								<Typography style={{marginLeft: '8px'}} variant="body2">
 									{brokerConnection.name}
-								</MenuItem>
-							))
+								</Typography>
+								</div>
+							</MenuItem>
+						))
 					: null}
 			</Select>
 		</FormControl>

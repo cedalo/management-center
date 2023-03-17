@@ -29,6 +29,7 @@ import useFetch from './helpers/useFetch';
 import UserNew from './admin/users/components/UserNew';
 import UserDetail from './admin/users/components/UserDetail';
 import Users from './admin/users/components/Users';
+import { DisconnectedPage } from './components/DisconnectedDialog';
 import ConnectionNew from './admin/connections/components/ConnectionNew';
 import Connections from './admin/connections/components/Connections';
 import ClusterNew from './admin/clusters/components/ClusterNew';
@@ -62,6 +63,9 @@ function AppRoutes(props) {
 
 		return (
 			<Switch>
+				<Route path="/disconnected">
+					<DisconnectedPage/>
+				</Route>
 				<Route path="/clients/new">
 					<ClientNew/>
 				</Route>

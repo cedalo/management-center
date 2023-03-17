@@ -6,6 +6,8 @@ import {makeStyles, ThemeProvider, useTheme} from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import {Help} from '@material-ui/icons';
 import HelpIcon from '@material-ui/icons/HelpOutline';
 import MenuIcon from '@material-ui/icons/Menu';
 import TourIcon from '@material-ui/icons/Slideshow';
@@ -19,9 +21,9 @@ import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import AppRoutes from './AppRoutes';
 import BrokerSelect from './components/BrokerSelect';
 import CustomDrawer from './components/CustomDrawer';
-import DisconnectedDialog from './components/DisconnectedDialog';
 import FeedbackButton from './components/FeedbackButton';
 import FilterName from './components/FilterName';
+import HelpButtons from './components/HelpButtons';
 import LicenseErrorDialog from './components/LicenseErrorDialog';
 import LogoutButton from './components/LogoutButton';
 import NewsletterPopup from './components/NewsletterPopup';
@@ -35,15 +37,8 @@ import customTheme from './theme';
 import darkTheme from './theme-dark';
 import steps from './tutorial/steps';
 import WebSocketProvider from './websockets/WebSocket';
+import { Loading } from './components/DisconnectedDialog';
 
-const tourOptions = {
-	defaultStepOptions: {
-		cancelIcon: {
-			enabled: true
-		}
-	},
-	useModalOverlay: true
-};
 
 const drawerWidth = 240;
 
@@ -72,7 +67,8 @@ const useStyles = makeStyles((theme) => ({
 			easing: theme.transitions.easing.sharp,
 			duration: theme.transitions.duration.leavingScreen
 		}),
-		minHeight: '50px'
+		minHeight: '50px',
+		height: '50px'
 	},
 	mainToolBar: {
 		minHeight: '50px'
@@ -93,6 +89,8 @@ const useStyles = makeStyles((theme) => ({
 		display: 'none'
 	},
 	rightToolbar: {
+		display: 'flex',
+		height: '50px',
 		marginLeft: 'auto',
 		marginRight: -12,
 		alignItems: 'center',
@@ -101,11 +99,6 @@ const useStyles = makeStyles((theme) => ({
 	formControl: {
 		margin: theme.spacing(1),
 		minWidth: 120
-	},
-	toolbarButton: {
-		marginTop: '2px',
-		color: theme.palette.type === 'dark' ? 'white' : 'rgba(117, 117, 117)',
-		// marginBottom: theme.spacing(0.2)
 	},
 	content: {
 		flexGrow: 1,
@@ -120,7 +113,6 @@ const useStyles = makeStyles((theme) => ({
 export default function App(props) {
 	// const { window } = props;
 	const classes = useStyles();
-	const theme = useTheme();
 	const [open, setOpen] = React.useState(false);
 	const [showTour, setShowTour] = React.useState(false);
 	const [value, setValue] = React.useState('recents');
@@ -278,57 +270,24 @@ export default function App(props) {
 															<FeedbackButton/>
 															<UpgradeButton/>
 															<BrokerSelect appBar/>
-															<Tooltip title="Start tour">
-																<IconButton
-																	edge="end"
-																	aria-label="Tour"
-																	aria-controls="tour"
-																	aria-haspopup="true"
-																	onClick={() => handleStartTour()}
-																	className={classes.toolbarButton}
-																	style={{
-																			color: darkMode === 'true' ? 'white' : 'rgba(117, 117, 117)',
-																		}}
-
-																>
-																	<TourIcon fontSize="small"/>
-																</IconButton>
-															</Tooltip>
-															<Tooltip title="Help">
-																<IconButton
-																	edge="end"
-																	aria-label="Tour"
-																	aria-controls="tour"
-																	aria-haspopup="true"
-																	onClick={() => window.open('https://docs.cedalo.com/management-center', '_blank')}
-																	className={classes.toolbarButton}
-																	style={{
-																			color: darkMode === 'true' ? 'white' : 'rgba(117, 117, 117)',
-																		}}
-
-																>
-																	<HelpIcon fontSize="small"/>
-																</IconButton>
-															</Tooltip>
-
+															<HelpButtons startTour={handleStartTour}/>
 															{!hideProfileButton ? <ProfileButton/> : null}
 															{!hideLogoutButton ? <LogoutButton/> : null}
 														</section>
 													</Toolbar>
 												</AppBar>
 
-												<nav>
-													<CustomDrawer
-														hideConnections={hideConnections}
-														hideInfoPage={hideInfoPage}
-														open={open}
-														setShowFilter={(show) => setShowFilter(show)}
-														handleDrawerOpen={handleDrawerOpen}
-														handleDrawerClose={handleDrawerClose}
-													/>
-												</nav>
+												<CustomDrawer
+													hideConnections={hideConnections}
+													hideInfoPage={hideInfoPage}
+													open={open}
+													setShowFilter={(show) => setShowFilter(show)}
+													handleDrawerOpen={handleDrawerOpen}
+													handleDrawerClose={handleDrawerClose}
+												/>
 												<LicenseErrorDialog/>
-												<DisconnectedDialog/>
+												<Loading/>
+												{/*<DisconnectedRedirect/>*/}
 
 												<Box className={classes.box}>
 													<AppRoutes filter={filter} onChangeTheme={(mode) => setDarkMode(mode)}/>

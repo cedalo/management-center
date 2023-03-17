@@ -1,23 +1,18 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import FormGroup from '@material-ui/core/FormGroup';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import {makeStyles} from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableRow from '@material-ui/core/TableRow';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import TextField from '@material-ui/core/TextField';
-import FormGroup from '@material-ui/core/FormGroup';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import {Alert, AlertTitle} from '@material-ui/lab';
 import TreeItem from '@material-ui/lab/TreeItem';
 import TreeView from '@material-ui/lab/TreeView';
 import moment from 'moment';
@@ -55,7 +50,9 @@ const useStyles = makeStyles((theme) => ({
 	treeHeader: {
 		borderBottom: `1px solid ${theme.palette.divider}`,
 		display: 'grid',
-		gridTemplateColumns: 'auto 241px 80px 130px',
+		[theme.breakpoints.up('md')]: {
+			gridTemplateColumns: 'auto 241px 80px 130px'
+		},
 		paddingBottom: '8px'
 	}
 }));
@@ -73,7 +70,7 @@ const prettifyJSON = (jsonString) => {
 	try {
 		const json = JSON.parse(jsonString);
 		prettifiedJSON = JSON.stringify(json, null, 2);
-	} catch(error) {
+	} catch (error) {
 		console.error('Error when converting to json:', error);
 		return jsonString;
 	}
@@ -128,6 +125,8 @@ function StyledTreeItem(props) {
 		labelIcon: LabelIcon,
 		labelInfo,
 		color,
+		medium,
+		small,
 		bgColor,
 		...other
 	} = props;
@@ -141,7 +140,7 @@ function StyledTreeItem(props) {
 					<Typography variant="body2" className={classes.labelText}>
 						{labelText}
 					</Typography>
-					{message && (
+					{message && !medium && !small && (
 						<Tooltip title="Message body">
 							<Typography style={{minWidth: '240px'}} variant="body2" color="inherit"
 										className={classes.label}>
@@ -149,7 +148,7 @@ function StyledTreeItem(props) {
 							</Typography>
 						</Tooltip>
 					)}
-					{(topicsCounter || topicsCounter === 0) && (
+					{!small && !medium && (topicsCounter || topicsCounter === 0) && (
 						<Tooltip title="Number of subtopics">
 							<Typography style={{minWidth: '75px'}} variant="body2" color="textPrimary"
 										className={classes.label}>
@@ -157,7 +156,7 @@ function StyledTreeItem(props) {
 							</Typography>
 						</Tooltip>
 					)}
-					{labelInfo && (
+					{!small && !medium && labelInfo && (
 						<Tooltip title="Number of messages">
 							<Typography style={{minWidth: '126px'}} variant="body2" color="inherit"
 										className={classes.label}>
@@ -214,7 +213,7 @@ const generateTreeData = (id, name, object, index = 0) => {
 	return node;
 };
 
-const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, topicTreeRestFeature}) => {
+const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, topicTreeRestFeature, connected}) => {
 	const classes = useStyles();
 	const [error, setError] = React.useState({occured: false, message: ''})
 	const [messageHistory, setMessageHistory] = React.useState([]);
@@ -223,6 +222,8 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 	const [isLoading, setIsLoading] = React.useState(false);
 	const context = React.useContext(WebSocketContext);
 	const {client} = context;
+	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
+	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
 
 
 	useEffect(() => {
@@ -264,13 +265,15 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 		setMessageHistory([]);
 	}, [currentConnectionName]);
 
-	const renderTree = (node) => (
+	const renderTree = (node, small, medium) => (
 		<StyledTreeItem
 			nodeId={node.id}
 			labelText={node.name}
 			onLabelClick={() => {
 				onLabelClick(node);
 			}}
+			small={small}
+			medium={medium}
 			//   labelIcon={InfoIcon}
 			message={isJSON(node._message) ? null : node._message}
 			topicsCounter={node._topicsCounter}
@@ -279,7 +282,7 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 			//   bgColor="#fcefe3"
 		>
 			{/* <TreeItem key={node.id} nodeId={node.id} label={node.name}> */}
-			{Array.isArray(node.children) ? node.children.map((childNode) => renderTree(childNode)) : null}
+			{Array.isArray(node.children) ? node.children.map((childNode) => renderTree(childNode, small, medium)) : null}
 			{/* </TreeItem> */}
 		</StyledTreeItem>
 	);
@@ -294,7 +297,6 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 		}
 	};
 
-
 	return (
 		<div style={{height: '100%'}}>
 			<ContainerBreadCrumbs title="Topic Tree"
@@ -305,6 +307,25 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 						title="Inspect Topic Tree"
 						subTitle="Topic tree show an overview of all topics that have been adressed by a client. If you
 						click on a topic additional information for the topic will be displayed right to the tree."
+						connectedWarning={!connected}
+						warnings={() => {
+							const alerts = [];
+							if (settings?.topicTreeEnabled === false) {
+								alerts.push({
+									severity: 'warning',
+									title: 'Topic tree not enabled',
+									error: 'The MMC is currently not collecting topic tree data. If you want to collect data, please enable the topic tree feature in the settings page. Note that if you enable this setting and the MMC is collecting topic tree data, the performance of the MMC backend might decrease.'
+								});
+							}
+							if (error.occured) {
+								alerts.push({
+									severity: 'error',
+									title: 'An error has occured',
+									error: error.message
+								});
+							}
+							return alerts;
+						}}
 					>
 						{(topicTreeRestFeature?.supported) ?
 							<Button
@@ -319,52 +340,37 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 								Clear Cache
 							</Button> : null}
 					</ContainerHeader>
-
-					{(settings?.topicTreeEnabled === false) ?
-						<Alert style={{height: 'fit-content'}} severity="warning">
-							<AlertTitle>Topic tree not enabled</AlertTitle>
-							The MMC is currently not collecting topic tree data. If you want to collect data, please enable
-							the topic tree feature in the settings page.
-							Note that if you enable this setting and the MMC is collecting topic tree data, the performance
-							of the MMC backend might decrease.
-						</Alert>
-					 : null}
-					{(error.occured) ? <><br/><Alert severity="error">
-						<AlertTitle>An error has occured</AlertTitle>
-						{error.message}
-					</Alert></> : null}
-
-					{settings?.topicTreeEnabled ?
+					{connected && settings?.topicTreeEnabled ?
 						<Grid container spacing={3}>
 							<Grid item xs={8}>
 								<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
 									{/*<div className={classes.paper}>*/}
-										<div className={classes.treeHeader}>
-											<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
-												Name
-											</Typography>
-											<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
-												Last Payload
-											</Typography>
-											<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
-												Subtopics
-											</Typography>
-											<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
-												Messages
-											</Typography>
-										</div>
-										<Box style={{overflowY: 'auto'}}>
+									<div className={classes.treeHeader}>
+										<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+											Name
+										</Typography>
+										<Typography style={{display: medium || small ? 'none': undefined, fontWeight: '500', fontSize: '0.875rem'}}>
+											Last Payload
+										</Typography>
+										<Typography style={{display: medium || small ? 'none': undefined, fontWeight: '500', fontSize: '0.875rem'}}>
+											Subtopics
+										</Typography>
+										<Typography style={{display: medium || small ? 'none': undefined, fontWeight: '500', fontSize: '0.875rem'}}>
+											Messages
+										</Typography>
+									</div>
+									<Box style={{overflowY: 'auto'}}>
 										<TreeView
 											className={classes.root}
 											defaultCollapseIcon={<ExpandMoreIcon/>}
 											defaultExpandIcon={<ChevronRightIcon/>}
 											// defaultExpanded={["topic-tree-root"]}
 										>
-											{renderTree(data)}
+											{renderTree(data, small, medium)}
 										</TreeView>
-										</Box>
+									</Box>
 									{/*</div>*/}
-									</div>
+								</div>
 							</Grid>
 							<Grid item xs={4}>
 								<Box className={classes.leftBorder}>
@@ -494,6 +500,7 @@ const mapStateToProps = (state) => {
 		topicTree: state.topicTree,
 		currentConnectionName: state.brokerConnections?.currentConnectionName,
 		topicTreeRestFeature: state.systemStatus?.features?.topictreerest,
+		connected: state.brokerConnections?.connected,
 	};
 };
 

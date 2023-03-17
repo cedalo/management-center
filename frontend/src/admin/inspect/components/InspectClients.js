@@ -1,6 +1,7 @@
+import Button from '@material-ui/core/Button';
 import {green, red} from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
-import {makeStyles, withStyles} from '@material-ui/core/styles';
+import {makeStyles, useTheme, withStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -12,8 +13,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import DisabledIcon from '@material-ui/icons/Cancel';
 import CancelIcon from '@material-ui/icons/CancelOutlined';
 import EnabledIcon from '@material-ui/icons/CheckCircle';
-import {Alert, AlertTitle} from '@material-ui/lab';
-import PropTypes from 'prop-types';
+import ReloadIcon from '@material-ui/icons/Replay';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
@@ -72,11 +72,8 @@ const dateToString = (date, separator = ' ') => {
 		+ (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
 };
 
-
-const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelectClient) => {
-	const {inspectFeature, onSort, sortBy, sortDirection} = props;
-	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
-	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
+const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelectClient, small, medium) => {
+	const {inspectFeature} = props;
 
 	if (!inspectFeature?.error && inspectFeature?.supported !== false && clients && clients.length > 0) {
 		return <div style={{height: '100%', overflowY: 'auto'}}>
@@ -95,7 +92,6 @@ const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelect
 											(column.id === 'id' && medium) ? undefined : 'none'
 									}}
 									key={column.id}
-									sortDirection={sortBy === column.id ? sortDirection : false}
 								>
 									{column.key}
 								</TableCell>
@@ -191,9 +187,11 @@ const Clients = (props) => {
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const {client: brokerClient} = context;
-	const {inspectFeature, userProfile, roles = [], clients = [], filter, onSort, sortBy, sortDirection} = props;
+	const {inspectFeature, userProfile, roles = [], clients = [], filter, connected} = props;
 	const [filteredClients, setFilteredClients] = useState(clients);
-
+	const theme = useTheme();
+	const small = useMediaQuery(theme.breakpoints.down('xs'));
+	const medium = useMediaQuery(theme.breakpoints.between('sm', 'sm'));
 	const onUpdateUserRoles = async (user, roles = []) => {
 		if (!roles) {
 			roles = [];
@@ -218,7 +216,10 @@ const Clients = (props) => {
 		setFilteredClients(clients);
 	}, [clients]);
 
-	// console.log('clients:', filteredClients);
+	const onReload = async () => {
+		const clients = await brokerClient.inspectListClients();
+		dispatch(updateInspectClients(clients));
+	}
 
 	return (
 		<div style={{height: '100%'}}>
@@ -228,45 +229,44 @@ const Clients = (props) => {
 					<ContainerHeader
 						title="Inspect Clients"
 						subTitle="List of all clients that have connected to the broker at least once."
-					/>
-					{/* TODO: Quick hack to detect whether feature is supported */}
-					{inspectFeature?.error ? <>
-						<br/>
-						<Alert severity="warning">
-							<AlertTitle>{inspectFeature.error.title}</AlertTitle>
-							{inspectFeature.error.message}
-						</Alert>
-					</> : null}
-					{!inspectFeature?.error && inspectFeature?.supported === false ? <>
-						<br/>
-						<Alert severity="warning">
-							<AlertTitle>Feature not available</AlertTitle>
-							Make sure that this feature is included in your MMC license.
-						</Alert>
-					</> : null}
-					{createClientsTable(filteredClients, classes, props, onUpdateUserRoles, onSelectClient)}
+						connectedWarning={!connected}
+						featureWarning={!inspectFeature?.error && inspectFeature?.supported === false ? "Client Inspections" : null}
+						warnings={() => {
+							const alerts = [];
+							if (inspectFeature?.error) {
+								alerts.push({
+									severity: 'warning',
+									title: inspectFeature.error.title,
+									error: inspectFeature.error.message
+								});
+							}
+							return alerts;
+						}}
+					>
+						<Button
+							variant="outlined"
+							color="primary"
+							size="small"
+							style={{paddingRight: '0px', minWidth: '30px'}}
+							startIcon={<ReloadIcon />}
+							onClick={(event) => {
+								event.stopPropagation();
+								onReload();
+							}}
+						/>
+					</ContainerHeader>
+					{connected ? createClientsTable(filteredClients, classes, props, onUpdateUserRoles, onSelectClient, small, medium) : null}
 				</div>
 			</div>
 		</div>
 	);
 };
 
-Clients.propTypes = {
-	sortBy: PropTypes.string,
-	sortDirection: PropTypes.string,
-	onSelectClient: PropTypes.func.isRequired,
-	onSort: PropTypes.func.isRequired
-};
-
-Clients.defaultProps = {
-	sortBy: undefined,
-	sortDirection: undefined
-};
-
 const mapStateToProps = (state) => {
 	return {
 		clients: state.inspectClients?.clients,
-		inspectFeature: state.systemStatus?.features?.inspect
+		inspectFeature: state.systemStatus?.features?.inspect,
+		connected: state.brokerConnections?.connected,
 	};
 };
 

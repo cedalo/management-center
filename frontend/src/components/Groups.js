@@ -19,16 +19,17 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import {Alert, AlertTitle} from '@material-ui/lab';
+import ReloadIcon from '@material-ui/icons/Replay';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
-import {Link as RouterLink, useHistory} from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 import {updateAnonymousGroup, updateClients, updateGroup, updateGroups} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
 import AnonymousGroupSelect from './AnonymousGroupSelect';
@@ -60,11 +61,12 @@ const groupShape = PropTypes.shape({
 });
 
 const GROUP_TABLE_COLUMNS = [
-	{id: 'groupname', key: 'Name'},
+	{id: 'name', key: 'Name'},
 	{id: 'textname', key: 'Text Name'},
 	{id: 'textdescription', key: 'Description'},
 	{id: 'clients', key: 'Clients'},
-	{id: 'roles', key: 'Roles'}
+	{id: 'roles', key: 'Roles'},
+	{id: 'action', key: ''}
 ];
 
 const FormattedGroupType = (props) => {
@@ -84,7 +86,8 @@ const Groups = (props) => {
 	const confirm = useConfirm();
 	const {enqueueSnackbar} = useSnackbar();
 	const {client} = context;
-
+	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
+	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -95,6 +98,13 @@ const Groups = (props) => {
 		const groups = await client.listGroups(true, count, offset);
 		dispatch(updateGroups(groups));
 	};
+
+	const onReload = async () => {
+		const count = rowsPerPage;
+		const offset = page * rowsPerPage;
+		const groups = await client.listGroups(true, count, offset);
+		dispatch(updateGroups(groups));
+	}
 
 	const handleChangeRowsPerPage = async (event) => {
 		const rowsPerPage = parseInt(event.target.value, 10);
@@ -213,81 +223,95 @@ const Groups = (props) => {
 						topMargin="-12px"
 						title="Groups"
 						subTitle="List of existing groups. Groups serve as a hub to gather multiple clients and roles. The more clients are added to your broker the harder it gets to administer them. Groups can help you structure and quickly adjust your current setup."
+						connectedWarning={!props.connected}
+						brokerFeatureWarning={dynamicsecurityFeature?.supported === false ? "dynamic security" : null}
 					>
-						{dynamicsecurityFeature?.supported !== false && <>
+						{dynamicsecurityFeature?.supported !== false && [
 							<Button
 								variant="outlined"
 								color="primary"
 								size="small"
 								startIcon={<AddIcon/>}
+								style={{marginRight: '10px'}}
 								onClick={(event) => {
 									event.stopPropagation();
 									onNewGroup();
 								}}
 							>
 								New Group
-							</Button>
-						</>}
+							</Button>,
+							<Button
+								variant="outlined"
+								color="primary"
+								size="small"
+								style={{paddingRight: '0px', minWidth: '30px'}}
+								startIcon={<ReloadIcon/>}
+								onClick={(event) => {
+									event.stopPropagation();
+									onReload();
+								}}
+							/>
+						]}
 					</ContainerHeader>
-					{/* TODO: Quick hack to detect whether feature is supported */}
-					{dynamicsecurityFeature?.supported === false ? <>
-						<br/>
-							<Alert severity="warning">
-								<AlertTitle>Feature not available</AlertTitle>
-								Make sure that the broker connected has the dynamic security enabled.
-							</Alert>
-					</> : null}
 					{dynamicsecurityFeature?.supported !== false && groups?.groups?.length > 0 ? (
 						<div style={{height: '100%', overflowY: 'auto'}}>
-							<Hidden xsDown implementation="css">
-								<TableContainer>
-									<Table stickyHeader size="small" aria-label="sticky table">
-										<TableHead>
-											<TableRow>
-												{GROUP_TABLE_COLUMNS.map((column) => (
-													<TableCell
-														key={column.id}
-														sortDirection={sortBy === column.id ? sortDirection : false}
-													>
-														<TableSortLabel
-															active={sortBy === column.id}
-															direction={sortDirection}
-															onClick={() => onSort(column.id)}
-														>
-															{column.key}
-														</TableSortLabel>
-													</TableCell>
-												))}
-												<TableCell/>
-											</TableRow>
-										</TableHead>
-										<TableBody>
-											{groups &&
-												groups.groups.map((group) => (
-													<TableRow
-														hover
-														key={group.groupname}
-														onClick={(event) => {
-															if (event.target.nodeName?.toLowerCase() === 'td') {
-																onSelectGroup(group.groupname);
-															}
-														}}
-														style={{cursor: 'pointer'}}
-													>
-														<TableCell>{group.groupname}</TableCell>
-														<TableCell>{group.textname}</TableCell>
+							<TableContainer>
+								<Table stickyHeader size="small" aria-label="sticky table">
+									<TableHead>
+										<TableRow>
+											{GROUP_TABLE_COLUMNS.map((column) => (
+												<TableCell
+													key={column.id}
+													sortDirection={sortBy === column.id ? sortDirection : false}
+													style={{
+														display: (!small && !medium) ||
+														(column.id === 'name' && (small || medium)) ||
+														(column.id === 'roles' && (small || medium)) ||
+														(column.id === 'action' && (small || medium)) ||
+														(column.id === 'clients' && medium) ? undefined : 'none'
+													}}
+												>
+													{/*<TableSortLabel*/}
+													{/*	active={sortBy === column.id}*/}
+													{/*	direction={sortDirection}*/}
+													{/*	onClick={() => onSort(column.id)}*/}
+													{/*>*/}
+													{column.key}
+													{/*</TableSortLabel>*/}
+												</TableCell>
+											))}
+										</TableRow>
+									</TableHead>
+									<TableBody>
+										{groups &&
+											groups.groups.map((group) => (
+												<TableRow
+													hover
+													key={group.groupname}
+													onClick={(event) => {
+														if (event.target.nodeName?.toLowerCase() === 'td') {
+															onSelectGroup(group.groupname);
+														}
+													}}
+													style={{cursor: 'pointer'}}
+												>
+													<TableCell>{group.groupname}</TableCell>
+													{small || medium ? null : [
+														<TableCell>{group.textname}</TableCell>,
 														<TableCell>{group.textdescription}</TableCell>
-														<TableCell className={classes.badges}>
-															<SelectList
-																values={group.clients}
-																getValue={value => value.username}
-																onChange={(event, value) => {
-																	onUpdateGroupClients(group, value);
-																}}
-																disabled={false}
-																suggestions={clientSuggestions}
-															/>
-														</TableCell>
+													]}
+													<TableCell className={classes.badges}>
+														<SelectList
+															values={group.clients}
+															getValue={value => value.username}
+															onChange={(event, value) => {
+																onUpdateGroupClients(group, value);
+															}}
+															disabled={false}
+															suggestions={clientSuggestions}
+														/>
+													</TableCell>
+													{small ? null :
 														<TableCell className={classes.badges}>
 															<SelectList
 																values={group.roles}
@@ -299,6 +323,7 @@ const Groups = (props) => {
 																suggestions={roleSuggestions}
 															/>
 														</TableCell>
+													}
 														<TableCell align="right">
 															<Tooltip title="Delete group">
 																<IconButton
@@ -312,85 +337,27 @@ const Groups = (props) => {
 																</IconButton>
 															</Tooltip>
 														</TableCell>
-													</TableRow>
-												))}
-										</TableBody>
-										<TableFooter>
-											<TableRow>
-												<TablePagination
-													rowsPerPageOptions={[5, 10, 25]}
-													colSpan={8}
-													count={groups?.totalCount}
-													rowsPerPage={rowsPerPage}
-													page={page}
-													onChangePage={handleChangePage}
-													onChangeRowsPerPage={handleChangeRowsPerPage}
-												/>
-											</TableRow>
-										</TableFooter>
-									</Table>
-								</TableContainer>
-							</Hidden>
-							<Hidden smUp implementation="css">
-								<Paper>
-									<List className={classes.root}>
-										{groups.groups.map((group) => (
-											<React.Fragment>
-												<ListItem
-													alignItems="flex-start"
-													onClick={(event) => onSelectGroup(group.groupname)}
-												>
-													<ListItemText
-														primary={<span>{group.groupname}</span>}
-														secondary={
-															<React.Fragment>
-																<Typography
-																	component="span"
-																	variant="body2"
-																	className={classes.inline}
-																	color="textPrimary"
-																>
-																	{group.textname}
-																</Typography>
-																<span> — {group.textdescription} </span>
-															</React.Fragment>
-														}
-													/>
-													<ListItemSecondaryAction>
-														<IconButton
-															edge="end"
-															size="small"
-															onClick={(event) => {
-																event.stopPropagation();
-																onSelectGroup(group.groupname);
-															}}
-															aria-label="edit"
-														>
-															<EditIcon fontSize="small"/>
-														</IconButton>
-
-														<IconButton
-															edge="end"
-															size="small"
-															onClick={(event) => {
-																event.stopPropagation();
-																onDeleteGroup(group.groupname);
-															}}
-															aria-label="delete"
-														>
-															<DeleteIcon fontSize="small"/>
-														</IconButton>
-													</ListItemSecondaryAction>
-												</ListItem>
-												<Divider/>
-											</React.Fragment>
-										))}
-									</List>
-								</Paper>
-							</Hidden>
+												</TableRow>
+											))}
+									</TableBody>
+									<TableFooter>
+										<TableRow>
+											<TablePagination
+												rowsPerPageOptions={[5, 10, 25]}
+												colSpan={8}
+												count={groups?.totalCount}
+												rowsPerPage={rowsPerPage}
+												page={page}
+												onChangePage={handleChangePage}
+												onChangeRowsPerPage={handleChangeRowsPerPage}
+											/>
+										</TableRow>
+									</TableFooter>
+								</Table>
+							</TableContainer>
 						</div>
 					) : (
-						<div>No groups found</div>
+						props.connected ? <div>No groups found</div> : null
 					)}
 				</div>
 			</div>
@@ -418,7 +385,8 @@ const mapStateToProps = (state) => {
 		rolesAll: state.roles?.rolesAll?.roles,
 		clients: state.clients?.clients?.clients,
 		clientsAll: state.clients?.clientsAll?.clients,
-		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity
+		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity,
+		connected: state.brokerConnections?.connected,
 	};
 };
 

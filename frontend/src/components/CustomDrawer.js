@@ -54,7 +54,7 @@ function ListItemLink(props) {
 	return (
 		<li id={id}>
 
-			<Tooltip title={primary}>
+			<Tooltip title={primary} placement="right">
 				<MenuItem
 					button
 					component={renderLink}
@@ -271,18 +271,19 @@ const CustomDrawer = ({
 					<List>
 						<List>
 							{open ? <ListSubheader className={classes.menuSubHeader}>Configuration</ListSubheader> : null}
+							<Divider style={{margin: "7px 0px"}}/>
+							{(atLeastAdmin(userProfile, currentConnectionName) && !hideConnections) ? <ListItemLink
+								classes={classes}
+								to="/connections"
+								primary="Broker Connections"
+								icon={<ConnectionsIcon fontSize="small"/>}
+							/> : null}
 							{atLeastAdmin(userProfile) && <ListItemLink
 								classes={classes}
 								to="/clusters"
 								primary="Cluster Management"
 								icon={<ClusterIcon fontSize="small"/>}
 							/>}
-							{(atLeastAdmin(userProfile, currentConnectionName) && !hideConnections) ? <ListItemLink
-								classes={classes}
-								to="/connections"
-								primary="Connections"
-								icon={<ConnectionsIcon fontSize="small"/>}
-							/> : null}
 						</List>
 						<Divider/>
 						{adminOpen ? <Divider/> : null}

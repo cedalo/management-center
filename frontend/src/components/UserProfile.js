@@ -4,7 +4,6 @@ import { connect, useDispatch } from 'react-redux';
 import { updateUserProfile } from '../actions/actions';
 import { updateUsers } from '../admin/users/actions/actions';
 import { useSnackbar } from 'notistack';
-
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import PasswordIcon from '@material-ui/icons/VpnKey';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
@@ -15,13 +14,11 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
 import SaveIcon from '@material-ui/icons/Save';
-
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConfirm } from 'material-ui-confirm';
-
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItem from '@material-ui/core/ListItem';
 import Box from '@material-ui/core/Box';
@@ -31,9 +28,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Star from '@material-ui/icons/Star';
 import Adjust from '@material-ui/icons/Adjust';
 import Alert from '@material-ui/lab/Alert';
-
-   
-// import AutoSuggest from './AutoSuggest';
+import {useFormStyles} from '../styles';
+import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 
 
 const userShape = PropTypes.shape({
@@ -45,7 +41,8 @@ const useStyles = makeStyles((theme) => ({
 		width: '100%'
 	},
 	paper: {
-		padding: '15px'
+		padding: '15px',
+		marginTop: '15px'
 	},
 	form: {
 		display: 'flex',
@@ -63,9 +60,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 	margin: {
 		margin: theme.spacing(1)
-	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+	}
 }));
 
 const UserProfile = (props) => {
@@ -73,7 +68,6 @@ const UserProfile = (props) => {
 	const [value, setValue] = React.useState(0);
 	const [editMode, setEditMode] = React.useState(false);
 	const { enqueueSnackbar } = useSnackbar();
-
 	const { userProfile } = props;
 	const { backendParameters } = props;
 	const [password, setPassword] = useState('');
@@ -87,6 +81,7 @@ const UserProfile = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
+	const formClasses = useFormStyles();
 	const { client: brokerClient } = context;
 
 	const ROOT_USERNAME = backendParameters.rootUsername;
@@ -143,15 +138,7 @@ const UserProfile = (props) => {
 
 
 	return userProfile ? (<div>
-		<Breadcrumbs aria-label="breadcrumb">
-			<RouterLink className={classes.breadcrumbLink} to="/home">
-				Home
-			</RouterLink>
-			<Typography className={classes.breadcrumbItem} color="textPrimary">
-				Profile
-			</Typography>
-		</Breadcrumbs>
-		<br />
+		<ContainerBreadCrumbs title="Profile" links={[{name: 'Home', route: '/home'}]}/>
 		<Paper className={classes.paper}>
 			<form className={classes.form} noValidate autoComplete="off">
 				<div className={classes.margin}>
@@ -168,7 +155,9 @@ const UserProfile = (props) => {
 								defaultValue=""
 								variant="outlined"
 								fullWidth
-								className={classes.textField}
+								size="small"
+								margin="dense"
+								className={formClasses.textField}
 								InputProps={{
 									startAdornment: (
 										<InputAdornment position="start">
@@ -196,7 +185,9 @@ const UserProfile = (props) => {
 										variant="outlined"
 										fullWidth
 										type="password"
-										className={classes.textField}
+										size="small"
+										margin="dense"
+										className={formClasses.textField}
 										InputProps={{
 											startAdornment: (
 												<InputAdornment position="start">
@@ -219,7 +210,9 @@ const UserProfile = (props) => {
 										variant="outlined"
 										fullWidth
 										type="password"
-										className={classes.textField}
+										size="small"
+										margin="dense"
+										className={formClasses.textField}
 										InputProps={{
 											startAdornment: (
 												<InputAdornment position="start">
@@ -293,7 +286,7 @@ const UserProfile = (props) => {
 							<Grid item xs={6}>
 								<div style={{marginTop: "10px"}}>
 									<div style={{marginTop: "10px"}}></div>
-									<Typography sx={{ mt: 0, mb: 0 }} variant="p" component="div"> 
+									<Typography sx={{ mt: 0, mb: 0 }} variant="p" component="div">
 										<Typography variant="subtitle2" display="inline">Roles: </Typography>
 											{(!userProfile.roles || (userProfile.roles && !userProfile.roles.length)) ?
 												<Box display="inline" sx={{ fontStyle: 'italic', m: 1 }}>
@@ -329,7 +322,7 @@ const UserProfile = (props) => {
 							<Grid item xs={6}>
 								<div>
 									<div style={{marginTop: "10px"}}></div>
-									<Typography sx={{ mt: 0, mb: 0 }} variant="p" component="div"> 
+									<Typography sx={{ mt: 0, mb: 0 }} variant="p" component="div">
 										<Typography variant="subtitle2" display="inline">Groups: </Typography>
 											{(!userProfile.groups || (userProfile.groups && !userProfile.groups.length)) ?
 												<Box display="inline" sx={{ fontStyle: 'italic', m: 1 }}>

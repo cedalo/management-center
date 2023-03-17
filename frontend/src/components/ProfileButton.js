@@ -1,3 +1,4 @@
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import React, { useContext, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
@@ -20,11 +21,16 @@ const useStyles = makeStyles((theme) => ({
 const ProfileButton = (props) => {
 	const history = useHistory();
 	const classes = useStyles();
-	const confirm = useConfirm();
+	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
+	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
 
 	const handleProfile = async () => {
 		history.push('/profile');
 	};
+
+	if (small || medium) {
+		return null;
+	}
 
 	return <Tooltip title="Profile">
 		<IconButton
