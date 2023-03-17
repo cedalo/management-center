@@ -19,6 +19,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
@@ -30,7 +31,6 @@ import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateAnonymousGroup, updateClients, updateGroup, updateGroups} from '../actions/actions';
-import {updateUsers} from '../admin/users/actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
 import AnonymousGroupSelect from './AnonymousGroupSelect';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
@@ -61,11 +61,12 @@ const groupShape = PropTypes.shape({
 });
 
 const GROUP_TABLE_COLUMNS = [
-	{id: 'groupname', key: 'Name'},
+	{id: 'name', key: 'Name'},
 	{id: 'textname', key: 'Text Name'},
 	{id: 'textdescription', key: 'Description'},
 	{id: 'clients', key: 'Clients'},
-	{id: 'roles', key: 'Roles'}
+	{id: 'roles', key: 'Roles'},
+	{id: 'action', key: ''}
 ];
 
 const FormattedGroupType = (props) => {
@@ -85,7 +86,8 @@ const Groups = (props) => {
 	const confirm = useConfirm();
 	const {enqueueSnackbar} = useSnackbar();
 	const {client} = context;
-
+	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
+	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -243,7 +245,7 @@ const Groups = (props) => {
 								color="primary"
 								size="small"
 								style={{paddingRight: '0px', minWidth: '30px'}}
-								startIcon={<ReloadIcon />}
+								startIcon={<ReloadIcon/>}
 								onClick={(event) => {
 									event.stopPropagation();
 									onReload();
@@ -253,55 +255,63 @@ const Groups = (props) => {
 					</ContainerHeader>
 					{dynamicsecurityFeature?.supported !== false && groups?.groups?.length > 0 ? (
 						<div style={{height: '100%', overflowY: 'auto'}}>
-							<Hidden xsDown implementation="css">
-								<TableContainer>
-									<Table stickyHeader size="small" aria-label="sticky table">
-										<TableHead>
-											<TableRow>
-												{GROUP_TABLE_COLUMNS.map((column) => (
-													<TableCell
-														key={column.id}
-														sortDirection={sortBy === column.id ? sortDirection : false}
-													>
-														<TableSortLabel
-															active={sortBy === column.id}
-															direction={sortDirection}
-															onClick={() => onSort(column.id)}
-														>
-															{column.key}
-														</TableSortLabel>
-													</TableCell>
-												))}
-												<TableCell/>
-											</TableRow>
-										</TableHead>
-										<TableBody>
-											{groups &&
-												groups.groups.map((group) => (
-													<TableRow
-														hover
-														key={group.groupname}
-														onClick={(event) => {
-															if (event.target.nodeName?.toLowerCase() === 'td') {
-																onSelectGroup(group.groupname);
-															}
-														}}
-														style={{cursor: 'pointer'}}
-													>
-														<TableCell>{group.groupname}</TableCell>
-														<TableCell>{group.textname}</TableCell>
+							<TableContainer>
+								<Table stickyHeader size="small" aria-label="sticky table">
+									<TableHead>
+										<TableRow>
+											{GROUP_TABLE_COLUMNS.map((column) => (
+												<TableCell
+													key={column.id}
+													sortDirection={sortBy === column.id ? sortDirection : false}
+													style={{
+														display: (!small && !medium) ||
+														(column.id === 'name' && (small || medium)) ||
+														(column.id === 'roles' && (small || medium)) ||
+														(column.id === 'action' && (small || medium)) ||
+														(column.id === 'clients' && medium) ? undefined : 'none'
+													}}
+												>
+													{/*<TableSortLabel*/}
+													{/*	active={sortBy === column.id}*/}
+													{/*	direction={sortDirection}*/}
+													{/*	onClick={() => onSort(column.id)}*/}
+													{/*>*/}
+													{column.key}
+													{/*</TableSortLabel>*/}
+												</TableCell>
+											))}
+										</TableRow>
+									</TableHead>
+									<TableBody>
+										{groups &&
+											groups.groups.map((group) => (
+												<TableRow
+													hover
+													key={group.groupname}
+													onClick={(event) => {
+														if (event.target.nodeName?.toLowerCase() === 'td') {
+															onSelectGroup(group.groupname);
+														}
+													}}
+													style={{cursor: 'pointer'}}
+												>
+													<TableCell>{group.groupname}</TableCell>
+													{small || medium ? null : [
+														<TableCell>{group.textname}</TableCell>,
 														<TableCell>{group.textdescription}</TableCell>
-														<TableCell className={classes.badges}>
-															<SelectList
-																values={group.clients}
-																getValue={value => value.username}
-																onChange={(event, value) => {
-																	onUpdateGroupClients(group, value);
-																}}
-																disabled={false}
-																suggestions={clientSuggestions}
-															/>
-														</TableCell>
+													]}
+													<TableCell className={classes.badges}>
+														<SelectList
+															values={group.clients}
+															getValue={value => value.username}
+															onChange={(event, value) => {
+																onUpdateGroupClients(group, value);
+															}}
+															disabled={false}
+															suggestions={clientSuggestions}
+														/>
+													</TableCell>
+													{small ? null :
 														<TableCell className={classes.badges}>
 															<SelectList
 																values={group.roles}
@@ -313,6 +323,7 @@ const Groups = (props) => {
 																suggestions={roleSuggestions}
 															/>
 														</TableCell>
+													}
 														<TableCell align="right">
 															<Tooltip title="Delete group">
 																<IconButton
@@ -326,82 +337,24 @@ const Groups = (props) => {
 																</IconButton>
 															</Tooltip>
 														</TableCell>
-													</TableRow>
-												))}
-										</TableBody>
-										<TableFooter>
-											<TableRow>
-												<TablePagination
-													rowsPerPageOptions={[5, 10, 25]}
-													colSpan={8}
-													count={groups?.totalCount}
-													rowsPerPage={rowsPerPage}
-													page={page}
-													onChangePage={handleChangePage}
-													onChangeRowsPerPage={handleChangeRowsPerPage}
-												/>
-											</TableRow>
-										</TableFooter>
-									</Table>
-								</TableContainer>
-							</Hidden>
-							<Hidden smUp implementation="css">
-								<Paper>
-									<List className={classes.root}>
-										{groups.groups.map((group) => (
-											<React.Fragment>
-												<ListItem
-													alignItems="flex-start"
-													onClick={(event) => onSelectGroup(group.groupname)}
-												>
-													<ListItemText
-														primary={<span>{group.groupname}</span>}
-														secondary={
-															<React.Fragment>
-																<Typography
-																	component="span"
-																	variant="body2"
-																	className={classes.inline}
-																	color="textPrimary"
-																>
-																	{group.textname}
-																</Typography>
-																<span> — {group.textdescription} </span>
-															</React.Fragment>
-														}
-													/>
-													<ListItemSecondaryAction>
-														<IconButton
-															edge="end"
-															size="small"
-															onClick={(event) => {
-																event.stopPropagation();
-																onSelectGroup(group.groupname);
-															}}
-															aria-label="edit"
-														>
-															<EditIcon fontSize="small"/>
-														</IconButton>
-
-														<IconButton
-															edge="end"
-															size="small"
-															onClick={(event) => {
-																event.stopPropagation();
-																onDeleteGroup(group.groupname);
-															}}
-															aria-label="delete"
-														>
-															<DeleteIcon fontSize="small"/>
-														</IconButton>
-													</ListItemSecondaryAction>
-												</ListItem>
-												<Divider/>
-											</React.Fragment>
-										))}
-									</List>
-								</Paper>
-							</Hidden>
+												</TableRow>
+											))}
+									</TableBody>
+									<TableFooter>
+										<TableRow>
+											<TablePagination
+												rowsPerPageOptions={[5, 10, 25]}
+												colSpan={8}
+												count={groups?.totalCount}
+												rowsPerPage={rowsPerPage}
+												page={page}
+												onChangePage={handleChangePage}
+												onChangeRowsPerPage={handleChangeRowsPerPage}
+											/>
+										</TableRow>
+									</TableFooter>
+								</Table>
+							</TableContainer>
 						</div>
 					) : (
 						props.connected ? <div>No groups found</div> : null

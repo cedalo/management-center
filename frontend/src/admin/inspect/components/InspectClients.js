@@ -192,7 +192,6 @@ const Clients = (props) => {
 	const theme = useTheme();
 	const small = useMediaQuery(theme.breakpoints.down('xs'));
 	const medium = useMediaQuery(theme.breakpoints.between('sm', 'sm'));
-
 	const onUpdateUserRoles = async (user, roles = []) => {
 		if (!roles) {
 			roles = [];

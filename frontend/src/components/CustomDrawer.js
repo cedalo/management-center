@@ -271,6 +271,7 @@ const CustomDrawer = ({
 					<List>
 						<List>
 							{open ? <ListSubheader className={classes.menuSubHeader}>Configuration</ListSubheader> : null}
+							<Divider style={{margin: "7px 0px"}}/>
 							{(atLeastAdmin(userProfile, currentConnectionName) && !hideConnections) ? <ListItemLink
 								classes={classes}
 								to="/connections"

@@ -1,13 +1,6 @@
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
-import Divider from '@material-ui/core/Divider';
-import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
 import {makeStyles, withStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -18,10 +11,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
 import ReloadIcon from '@material-ui/icons/Replay';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
@@ -68,7 +60,7 @@ const clientShape = PropTypes.shape({
 });
 
 const USER_TABLE_COLUMNS = [
-	{id: 'username', key: 'Name'},
+	{id: 'name', key: 'Name'},
 	{id: 'clientid', key: 'ID'},
 	{id: 'textname', key: 'Text Name'},
 	{id: 'textdescription', key: 'Description'},
@@ -94,9 +86,10 @@ const Clients = (props) => {
 	const confirm = useConfirm();
 	const {enqueueSnackbar} = useSnackbar();
 	const {client: brokerClient} = context;
-
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
+	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
+	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
 
 	const handleChangePage = async (event, newPage) => {
 		setPage(newPage);
@@ -313,7 +306,7 @@ const Clients = (props) => {
 								color="primary"
 								size="small"
 								style={{paddingRight: '0px', minWidth: '30px'}}
-								startIcon={<ReloadIcon />}
+								startIcon={<ReloadIcon/>}
 								onClick={(event) => {
 									event.stopPropagation();
 									onReload();
@@ -323,65 +316,74 @@ const Clients = (props) => {
 					</ContainerHeader>
 					{dynamicsecurityFeature?.supported !== false && clients?.clients?.length > 0 ? (
 						<div style={{height: '100%', overflowY: 'auto'}}>
-							<Hidden xsDown implementation="css">
-								<TableContainer>
-									<Table stickyHeader size="small" aria-label="sticky table">
-										<TableHead>
-											<TableRow>
-												{USER_TABLE_COLUMNS.map((column) => (
-													<TableCell
-														key={column.id}
-														sortDirection={sortBy === column.id ? sortDirection : false}
+							<TableContainer>
+								<Table stickyHeader size="small" aria-label="sticky table">
+									<TableHead>
+										<TableRow>
+											{USER_TABLE_COLUMNS.map((column) => (
+												<TableCell
+													key={column.id}
+													style={{
+														display: (!small && !medium) ||
+														(column.id === 'name' && (small || medium)) ||
+														(column.id === 'groups' && (small || medium)) ||
+														(column.id === 'action' && (small || medium)) ||
+														(column.id === 'roles' && medium) ? undefined : 'none'
+													}}
+													sortDirection={sortBy === column.id ? sortDirection : false}
+												>
+													{column.key}
+												</TableCell>
+											))}
+											<TableCell/>
+										</TableRow>
+									</TableHead>
+									<TableBody>
+										{clients &&
+											clients.clients.map((client) => (
+												<Tooltip
+													enterDelay={0}
+													disableHoverListener={defaultClient?.username !== client.username}
+													disableFocusListener={defaultClient?.username !== client.username}
+													disableTouchListener={defaultClient?.username !== client.username}
+													title={<span style={{fontSize: '13px'}}>User used for connection cannot be edited</span>}
+												>
+													<StyledTableRow
+														hover
+														key={client.username}
+														onClick={(event) => {
+															if (
+																event.target.nodeName?.toLowerCase() === 'td' ||
+																defaultClient?.username === client.username
+															) {
+																onSelectClient(client.username);
+															}
+														}}
+														style={{cursor: 'pointer'}}
 													>
-														{column.key}
-													</TableCell>
-												))}
-												<TableCell/>
-											</TableRow>
-										</TableHead>
-										<TableBody>
-											{clients &&
-												clients.clients.map((client) => (
-													<Tooltip
-														enterDelay={0}
-														disableHoverListener={defaultClient?.username !== client.username}
-														disableFocusListener={defaultClient?.username !== client.username}
-														disableTouchListener={defaultClient?.username !== client.username}
-														title={<span style={{fontSize: '13px'}}>User used for connection cannot be edited</span>}
-													>
-														<StyledTableRow
-															hover
-															key={client.username}
-															onClick={(event) => {
-																if (
-																	event.target.nodeName?.toLowerCase() === 'td' ||
-																	defaultClient?.username === client.username
-																) {
-																	onSelectClient(client.username);
-																}
-															}}
-															style={{cursor: 'pointer'}}
-														>
+														<TableCell className={getClassForCell(
+															client)}>{client.username}</TableCell>
+														{small || medium ? null : [
 															<TableCell className={getClassForCell(
-																client)}>{client.username}</TableCell>
+																client)}>{client.clientid}</TableCell>,
 															<TableCell className={getClassForCell(
-																client)}>{client.clientid}</TableCell>
-															<TableCell className={getClassForCell(
-																client)}>{client.textname}</TableCell>
+																client)}>{client.textname}</TableCell>,
 															<TableCell className={getClassForCell(
 																client)}>{client.textdescription}</TableCell>
-															<TableCell className={`${classes.badges} ${getClassForCell(
-																client)}`}>
-																<SelectList
-																	values={client.groups}
-																	getValue={value => value.groupname}
-																	onChange={(event, value) => {
-																		onUpdateClientGroups(client, value);
-																	}}
-																	disabled={defaultClient?.username === client.username}
-																	suggestions={groupSuggestions}
-																/>
-															</TableCell>
+														]}
+														<TableCell className={`${classes.badges} ${getClassForCell(
+															client)}`}>
+															<SelectList
+																values={client.groups}
+																getValue={value => value.groupname}
+																onChange={(event, value) => {
+																	onUpdateClientGroups(client, value);
+																}}
+																disabled={defaultClient?.username === client.username}
+																suggestions={groupSuggestions}
+															/>
+														</TableCell>
+														{small ? null :
 															<TableCell className={`${classes.badges} ${getClassForCell(
 																client)}`}>
 																<SelectList
@@ -394,20 +396,22 @@ const Clients = (props) => {
 																	suggestions={roleSuggestions}
 																/>
 															</TableCell>
-															<TableCell style={{padding: '0px', width: '20px'}}>
-																<Tooltip title="Delete client">
-																	<IconButton
-																		disabled={defaultClient?.username === client.username}
-																		size="small"
-																		onClick={(event) => {
-																			event.stopPropagation();
-																			onDeleteClient(client.username);
-																		}}
-																	>
-																		<DeleteIcon fontSize="small"/>
-																	</IconButton>
-																</Tooltip>
-															</TableCell>
+														}
+														<TableCell style={{padding: '0px', width: '20px'}}>
+															<Tooltip title="Delete client">
+																<IconButton
+																	disabled={defaultClient?.username === client.username}
+																	size="small"
+																	onClick={(event) => {
+																		event.stopPropagation();
+																		onDeleteClient(client.username);
+																	}}
+																>
+																	<DeleteIcon fontSize="small"/>
+																</IconButton>
+															</Tooltip>
+														</TableCell>
+														{small || medium ? null :
 															<TableCell style={{padding: '0px', width: '20px'}}>
 																<Tooltip title="Enable / disable client">
 																	<Checkbox
@@ -425,87 +429,30 @@ const Clients = (props) => {
 																				onDisableClient(client.username);
 																			}
 																		}}
-																		inputProps={{ 'aria-label': 'Enable plugin at next startup'}}
+																		inputProps={{'aria-label': 'Enable plugin at next startup'}}
 																	/>
 																</Tooltip>
 															</TableCell>
-														</StyledTableRow>
-													</Tooltip>
-												))}
-										</TableBody>
-										<TableFooter>
-											<TableRow>
-												<TablePagination
-													rowsPerPageOptions={[5, 10, 25]}
-													colSpan={8}
-													count={clients?.totalCount}
-													rowsPerPage={rowsPerPage}
-													page={page}
-													onChangePage={handleChangePage}
-													onChangeRowsPerPage={handleChangeRowsPerPage}
-												/>
-											</TableRow>
-										</TableFooter>
-									</Table>
-								</TableContainer>
-							</Hidden>
-							<Hidden smUp implementation="css">
-								<Paper>
-									<List className={classes.root}>
-										{clients.clients.map((client) => (
-											<React.Fragment>
-												<ListItem
-													alignItems="flex-start"
-													onClick={(event) => onSelectClient(client.username)}
-												>
-													<ListItemText
-														primary={<span>{client.username}</span>}
-														secondary={
-															<React.Fragment>
-																<Typography
-																	component="span"
-																	variant="body2"
-																	className={classes.inline}
-																	color="textPrimary"
-																>
-																	{client.textname}
-																</Typography>
-																<span> — {client.textdescription} </span>
-															</React.Fragment>
 														}
-													/>
-													<ListItemSecondaryAction>
-														<IconButton
-															edge="end"
-															size="small"
-															onClick={(event) => {
-																event.stopPropagation();
-																onSelectClient(client.username);
-															}}
-															aria-label="edit"
-														>
-															<EditIcon fontSize="small"/>
-														</IconButton>
-
-														<IconButton
-															edge="end"
-															size="small"
-															onClick={(event) => {
-																event.stopPropagation();
-																onDeleteClient(client.username);
-															}}
-															aria-label="delete"
-														>
-															<DeleteIcon fontSize="small"/>
-														</IconButton>
-													</ListItemSecondaryAction>
-												</ListItem>
-												<Divider/>
-											</React.Fragment>
-										))}
-									</List>
-								</Paper>
-							</Hidden>
+													</StyledTableRow>
+												</Tooltip>
+											))}
+									</TableBody>
+									<TableFooter>
+										<TableRow>
+											<TablePagination
+												rowsPerPageOptions={[5, 10, 25]}
+												colSpan={8}
+												count={clients?.totalCount}
+												rowsPerPage={rowsPerPage}
+												page={page}
+												onChangePage={handleChangePage}
+												onChangeRowsPerPage={handleChangeRowsPerPage}
+											/>
+										</TableRow>
+									</TableFooter>
+								</Table>
+							</TableContainer>
 						</div>
 					) : (
 						props.connected ? <div>No clients found</div> : null

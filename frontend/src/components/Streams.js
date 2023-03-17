@@ -1,12 +1,5 @@
 import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
 import {makeStyles, withStyles} from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import Table from '@material-ui/core/Table';
@@ -16,11 +9,10 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import AddIcon from '@material-ui/icons/Add';
 import ClearStreamIcon from '@material-ui/icons/ClearAll';
 import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
 import ReplayIcon from '@material-ui/icons/PlayCircleFilled';
 import ReloadIcon from '@material-ui/icons/Replay';
 import {useConfirm} from 'material-ui-confirm';
@@ -50,15 +42,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const STREAM_TABLE_COLUMNS = [
-	{id: 'streamname', key: 'Stream Name'},
+	{id: 'name', key: 'Stream Name'},
 	{id: 'textDescription', key: 'Description'},
 	{id: 'sourcetopic', key: 'Source Topic'},
 	{id: 'targettopic', key: 'Target Topic'},
-	{id: 'targetqos', key: 'Target QoS'},
-	{id: 'ttl', key: 'TTL'},
 	{id: 'process', key: 'Process'},
 	{id: 'persist', key: 'Persist'},
 	{id: 'active', key: 'Active'},
+	{id: 'action', key: 'Action', width: '115px'},
 ];
 
 const Streams = (props) => {
@@ -72,6 +63,9 @@ const Streams = (props) => {
 	const {streamprocessingFeature, connectionID, streams = [], onSort, sortBy, sortDirection, connected} = props;
 	const [replayStreamEditorOpen, setReplayStreamEditorOpen] = React.useState(false);
 	const [replayStream, setReplayStream] = React.useState({});
+	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
+	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
+
 	const handleClickReplayStreamEditorOpen = () => {
 		setReplayStreamEditorOpen(true);
 	};
@@ -265,7 +259,7 @@ const Streams = (props) => {
 								color="primary"
 								size="small"
 								style={{paddingRight: '0px', minWidth: '30px'}}
-								startIcon={<ReloadIcon />}
+								startIcon={<ReloadIcon/>}
 								onClick={(event) => {
 									event.stopPropagation();
 									onReload();
@@ -275,43 +269,55 @@ const Streams = (props) => {
 					</ContainerHeader>
 					{streamprocessingFeature?.supported !== false && streams && streams.length > 0 ? (
 						<div style={{height: '100%', overflowY: 'auto'}}>
-							<Hidden xsDown implementation="css">
-								<TableContainer>
-									<Table size="small">
-										<TableHead>
-											<TableRow>
-												{STREAM_TABLE_COLUMNS.map((column) => (
-													<TableCell
-														key={column.id}
-														sortDirection={sortBy === column.id ? sortDirection : false}
-													>
-														{column.key}
-													</TableCell>
-												))}
-												<TableCell/>
-											</TableRow>
-										</TableHead>
-										<TableBody>
-											{streams &&
-												streams.map((stream) => (
-													<StyledTableRow
-														hover
-														key={stream.streamname}
-														onClick={(event) => {
-															if (
-																event.target.nodeName?.toLowerCase() === 'td'
-															) {
-																onSelectStream(stream.streamname);
-															}
-														}}
-													>
-														<TableCell>{stream.streamname}</TableCell>
+							<TableContainer>
+								<Table size="small">
+									<TableHead>
+										<TableRow>
+											{STREAM_TABLE_COLUMNS.map((column) => (
+												<TableCell
+													key={column.id}
+													sortDirection={sortBy === column.id ? sortDirection : false}
+													style={{
+														width: column.width,
+														display: (!small && !medium) ||
+														(column.id === 'name' && (small || medium)) ||
+														(column.id === 'sourcetopic' && (small || medium)) ||
+														(column.id === 'action' && (small || medium)) ||
+														(column.id === 'targettopic' && medium) ? undefined : 'none'
+													}}
+												>
+													{column.key}
+												</TableCell>
+											))}
+										</TableRow>
+									</TableHead>
+									<TableBody>
+										{streams &&
+											streams.map((stream) => (
+												<StyledTableRow
+													hover
+													key={stream.streamname}
+													onClick={(event) => {
+														if (
+															event.target.nodeName?.toLowerCase() === 'td'
+														) {
+															onSelectStream(stream.streamname);
+														}
+													}}
+												>
+													<TableCell>{stream.streamname}</TableCell>
+													{small || medium ? null :
 														<TableCell>{stream.textdescription}</TableCell>
-														<TableCell>{stream.sourcetopic}</TableCell>
+													}
+													<TableCell>{stream.sourcetopic}</TableCell>
+													{small ? null :
 														<TableCell>{stream.targettopic}</TableCell>
-														<TableCell>{stream.targetqos}</TableCell>
-														<TableCell>{stream.ttl}</TableCell>
-														{/* <TableCell>{stream.replaying ? "replaying" : "stopped"}</TableCell> */}
+													}
+													{/*{small || medium ? null : [*/}
+													{/*	<TableCell>{stream.targetqos}</TableCell>,*/}
+													{/*	<TableCell>{stream.ttl}</TableCell>*/}
+													{/*]}*/}
+													{small || medium ? null : [
 														<TableCell>
 															<Tooltip title="Process stream">
 																<Switch
@@ -323,14 +329,16 @@ const Streams = (props) => {
 																	onClick={(event) => {
 																		event.stopPropagation();
 																		if (event.target.checked) {
-																			onEnableProcessStream(stream.streamname);
+																			onEnableProcessStream(
+																				stream.streamname);
 																		} else {
-																			onDisableProcessStream(stream.streamname);
+																			onDisableProcessStream(
+																				stream.streamname);
 																		}
 																	}}
 																/>
 															</Tooltip>
-														</TableCell>
+														</TableCell>,
 														<TableCell>
 															<Tooltip title="Persist stream">
 																<Switch
@@ -342,14 +350,16 @@ const Streams = (props) => {
 																	onClick={(event) => {
 																		event.stopPropagation();
 																		if (event.target.checked) {
-																			onEnablePersistStream(stream.streamname);
+																			onEnablePersistStream(
+																				stream.streamname);
 																		} else {
-																			onDisablePersistStream(stream.streamname);
+																			onDisablePersistStream(
+																				stream.streamname);
 																		}
 																	}}
 																/>
 															</Tooltip>
-														</TableCell>
+														</TableCell>,
 														<TableCell>
 															<Tooltip title="Activate / Deactivate stream">
 																<Switch
@@ -369,105 +379,49 @@ const Streams = (props) => {
 																/>
 															</Tooltip>
 														</TableCell>
-														<TableCell align="right">
-															<Tooltip title="Clear stream messages">
-																<IconButton
-																	disabled={!stream.persist}
-																	size="small"
-																	onClick={(event) => {
-																		event.stopPropagation();
-																		onClearStreamMessages(stream.streamname);
-																	}}
-																>
-																	<ClearStreamIcon fontSize="small"/>
-																</IconButton>
-															</Tooltip>
-															<Tooltip title="Replay stream">
-																<IconButton
-																	disabled={!stream.persist}
-																	size="small"
-																	onClick={(event) => {
-																		event.stopPropagation();
-																		onReplayStream(stream);
-																	}}
-																>
-																	<ReplayIcon fontSize="small"/>
-																</IconButton>
-															</Tooltip>
-															<Tooltip title="Delete stream">
-																<IconButton
-																	size="small"
-																	onClick={(event) => {
-																		event.stopPropagation();
-																		onDeleteStream(stream.streamname);
-																	}}
-																>
-																	<DeleteIcon fontSize="small"/>
-																</IconButton>
-															</Tooltip>
-														</TableCell>
-													</StyledTableRow>
-												))}
-										</TableBody>
-									</Table>
-								</TableContainer>
-							</Hidden>
-							<Hidden smUp implementation="css">
-								<Paper>
-									<List className={classes.root}>
-										{streams.map((stream) => (
-											<React.Fragment>
-												<ListItem
-													alignItems="flex-start"
-													onClick={(event) => onSelectStream(stream.streamname)}
-												>
-													<ListItemText
-														primary={<span>{stream.streamname}</span>}
-														secondary={
-															<React.Fragment>
-																<Typography
-																	component="span"
-																	variant="body2"
-																	className={classes.inline}
-																	color="textPrimary"
-																>
-																	{stream.streamname}
-																</Typography>
-															</React.Fragment>
-														}
-													/>
-													<ListItemSecondaryAction>
-														<IconButton
-															edge="end"
-															size="small"
-															onClick={(event) => {
-																event.stopPropagation();
-																onSelectStream(stream.streamname);
-															}}
-															aria-label="edit"
-														>
-															<EditIcon fontSize="small"/>
-														</IconButton>
-
-														<IconButton
-															edge="end"
-															size="small"
-															onClick={(event) => {
-																event.stopPropagation();
-																onDeleteStream(stream.streamname);
-															}}
-															aria-label="delete"
-														>
-															<DeleteIcon fontSize="small"/>
-														</IconButton>
-													</ListItemSecondaryAction>
-												</ListItem>
-												<Divider/>
-											</React.Fragment>
-										))}
-									</List>
-								</Paper>
-							</Hidden>
+													]}
+													<TableCell align="right">
+														<Tooltip title="Clear stream messages">
+															<IconButton
+																disabled={!stream.persist}
+																size="small"
+																onClick={(event) => {
+																	event.stopPropagation();
+																	onClearStreamMessages(stream.streamname);
+																}}
+															>
+																<ClearStreamIcon fontSize="small"/>
+															</IconButton>
+														</Tooltip>
+														<Tooltip title="Replay stream">
+															<IconButton
+																disabled={!stream.persist}
+																size="small"
+																onClick={(event) => {
+																	event.stopPropagation();
+																	onReplayStream(stream);
+																}}
+															>
+																<ReplayIcon fontSize="small"/>
+															</IconButton>
+														</Tooltip>
+														<Tooltip title="Delete stream">
+															<IconButton
+																size="small"
+																onClick={(event) => {
+																	event.stopPropagation();
+																	onDeleteStream(stream.streamname);
+																}}
+															>
+																<DeleteIcon fontSize="small"/>
+															</IconButton>
+														</Tooltip>
+													</TableCell>
+												</StyledTableRow>
+											))}
+									</TableBody>
+								</Table>
+							</TableContainer>
 						</div>
 					) : (
 						<div>No streams found</div>

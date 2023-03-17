@@ -183,6 +183,13 @@ const Status = ({
 		return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 	}
 
+	// const getSegments(max) => {
+	// 	const maxSegment = Math.pow(10, Math.floor(Math.log10(max)));
+	// 	if (maxSegment === 1) {
+	// 		return [0, 1];
+	// 	}
+	// }
+
 	return (
 		<div style={{height: '100%'}}>
 			<ContainerBreadCrumbs title="Home"/>
