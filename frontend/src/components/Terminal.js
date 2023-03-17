@@ -534,7 +534,7 @@ Topic:      ${acl.topic}
 				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
 					<ContainerHeader
 						title="Terminal"
-						subTitle="The terminal window allows you to exeecute commands on the current connection. Type 'help' for a list of available commands and type '<command> --help' for information on a specific command."
+						subTitle="The terminal window allows you to execute commands on the current connection. Type 'help' for a list of available commands and type '<command> --help' for information on a specific command."
 					/>
 
 					<Terminal
