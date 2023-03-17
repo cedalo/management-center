@@ -139,7 +139,7 @@ export default function App(props) {
 			setShowTour(true);
 		};
 
-		if (response) {
+		if (response && !hasError) {
 			customTheme.palette.primary.main = response?.light?.palette?.primary?.main;
 			customTheme.palette.secondary.main = response?.light?.palette?.secondary?.main;
 			darkTheme.palette.primary.main = response?.dark?.palette?.primary?.main;
