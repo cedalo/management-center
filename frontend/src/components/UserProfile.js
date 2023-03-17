@@ -29,6 +29,7 @@ import Star from '@material-ui/icons/Star';
 import Adjust from '@material-ui/icons/Adjust';
 import Alert from '@material-ui/lab/Alert';
 import {useFormStyles} from '../styles';
+import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 
 
 const userShape = PropTypes.shape({
@@ -40,7 +41,8 @@ const useStyles = makeStyles((theme) => ({
 		width: '100%'
 	},
 	paper: {
-		padding: '15px'
+		padding: '15px',
+		marginTop: '15px'
 	},
 	form: {
 		display: 'flex',
@@ -58,9 +60,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 	margin: {
 		margin: theme.spacing(1)
-	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+	}
 }));
 
 const UserProfile = (props) => {
@@ -138,15 +138,7 @@ const UserProfile = (props) => {
 
 
 	return userProfile ? (<div>
-		<Breadcrumbs aria-label="breadcrumb">
-			<RouterLink className={classes.breadcrumbLink} to="/home">
-				Home
-			</RouterLink>
-			<Typography className={classes.breadcrumbItem} color="textPrimary">
-				Profile
-			</Typography>
-		</Breadcrumbs>
-		<br />
+		<ContainerBreadCrumbs title="Profile" links={[{name: 'Home', route: '/home'}]}/>
 		<Paper className={classes.paper}>
 			<form className={classes.form} noValidate autoComplete="off">
 				<div className={classes.margin}>
