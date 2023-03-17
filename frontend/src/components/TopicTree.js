@@ -9,6 +9,7 @@ import TextField from '@material-ui/core/TextField';
 import FormGroup from '@material-ui/core/FormGroup';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -51,7 +52,9 @@ const useStyles = makeStyles((theme) => ({
 	treeHeader: {
 		borderBottom: `1px solid ${theme.palette.divider}`,
 		display: 'grid',
-		gridTemplateColumns: 'auto 241px 80px 130px',
+		[theme.breakpoints.up('md')]: {
+			gridTemplateColumns: 'auto 241px 80px 130px'
+		},
 		paddingBottom: '8px'
 	}
 }));
@@ -124,6 +127,8 @@ function StyledTreeItem(props) {
 		labelIcon: LabelIcon,
 		labelInfo,
 		color,
+		medium,
+		small,
 		bgColor,
 		...other
 	} = props;
@@ -137,7 +142,7 @@ function StyledTreeItem(props) {
 					<Typography variant="body2" className={classes.labelText}>
 						{labelText}
 					</Typography>
-					{message && (
+					{message && !medium && !small && (
 						<Tooltip title="Message body">
 							<Typography style={{minWidth: '240px'}} variant="body2" color="inherit"
 										className={classes.label}>
@@ -145,7 +150,7 @@ function StyledTreeItem(props) {
 							</Typography>
 						</Tooltip>
 					)}
-					{(topicsCounter || topicsCounter === 0) && (
+					{!small && !medium && (topicsCounter || topicsCounter === 0) && (
 						<Tooltip title="Number of subtopics">
 							<Typography style={{minWidth: '75px'}} variant="body2" color="textPrimary"
 										className={classes.label}>
@@ -153,7 +158,7 @@ function StyledTreeItem(props) {
 							</Typography>
 						</Tooltip>
 					)}
-					{labelInfo && (
+					{!small && !medium && labelInfo && (
 						<Tooltip title="Number of messages">
 							<Typography style={{minWidth: '126px'}} variant="body2" color="inherit"
 										className={classes.label}>
@@ -219,6 +224,8 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 	const [isLoading, setIsLoading] = React.useState(false);
 	const context = React.useContext(WebSocketContext);
 	const {client} = context;
+	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
+	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
 
 
 	useEffect(() => {
@@ -260,13 +267,15 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 		setMessageHistory([]);
 	}, [currentConnectionName]);
 
-	const renderTree = (node) => (
+	const renderTree = (node, small, medium) => (
 		<StyledTreeItem
 			nodeId={node.id}
 			labelText={node.name}
 			onLabelClick={() => {
 				onLabelClick(node);
 			}}
+			small={small}
+			medium={medium}
 			//   labelIcon={InfoIcon}
 			message={isJSON(node._message) ? null : node._message}
 			topicsCounter={node._topicsCounter}
@@ -275,7 +284,7 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 			//   bgColor="#fcefe3"
 		>
 			{/* <TreeItem key={node.id} nodeId={node.id} label={node.name}> */}
-			{Array.isArray(node.children) ? node.children.map((childNode) => renderTree(childNode)) : null}
+			{Array.isArray(node.children) ? node.children.map((childNode) => renderTree(childNode, small, medium)) : null}
 			{/* </TreeItem> */}
 		</StyledTreeItem>
 	);
@@ -342,13 +351,13 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 										<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
 											Name
 										</Typography>
-										<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+										<Typography style={{display: medium || small ? 'none': undefined, fontWeight: '500', fontSize: '0.875rem'}}>
 											Last Payload
 										</Typography>
-										<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+										<Typography style={{display: medium || small ? 'none': undefined, fontWeight: '500', fontSize: '0.875rem'}}>
 											Subtopics
 										</Typography>
-										<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+										<Typography style={{display: medium || small ? 'none': undefined, fontWeight: '500', fontSize: '0.875rem'}}>
 											Messages
 										</Typography>
 									</div>
@@ -359,7 +368,7 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 											defaultExpandIcon={<ChevronRightIcon/>}
 											// defaultExpanded={["topic-tree-root"]}
 										>
-											{renderTree(data)}
+											{renderTree(data, small, medium)}
 										</TreeView>
 									</Box>
 									{/*</div>*/}
