@@ -1116,6 +1116,8 @@ const init = async (licenseContainer) => {
 			response.sendFile(publicFilePath);
 		} else if (fs.existsSync(mediaFilePath)) {
 			response.sendFile(mediaFilePath);
+		} else if (request.path.includes('/api/')) {
+			response.status(404).json('Not found');
 		} else {
 			response.sendFile(path.join(__dirname, 'public', 'index.html'));
 		}
