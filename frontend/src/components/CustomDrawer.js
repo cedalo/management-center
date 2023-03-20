@@ -198,6 +198,7 @@ const CustomDrawer = ({
 				{open ? <ListSubheader className={classes.menuSubHeader}>Inspection</ListSubheader> : null}
 				<List>
 					<ListItemLink
+						data-tour="step-nav-bar-home"
 						id="menu-item-status"
 						classes={classes}
 						to="/home"
