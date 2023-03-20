@@ -8,6 +8,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import UploadIcon from '@material-ui/icons/CloudUploadOutlined';
 import ExpandIcon from '@material-ui/icons/KeyboardArrowDown';
 import CollapseIcon from '@material-ui/icons/KeyboardArrowUp';
+import { useConfirm } from 'material-ui-confirm';
 import { useSnackbar } from 'notistack';
 import ContainerHeader from '../../../components/ContainerHeader';
 import { WebSocketContext } from '../../../websockets/WebSocket';
@@ -15,7 +16,6 @@ import { WarningHint } from './AlertHint';
 import ChipsList from './ChipsList';
 import ContentContainer from './ContentContainer';
 import ContentTable from './ContentTable';
-import CertificateDeleteDialog from './CertificateDeleteDialog';
 import { getUsedConnections } from './certutils';
 import CertificateInfo from './CertificateInfo';
 
@@ -45,6 +45,8 @@ const CERT_TABLE_COLUMNS = [
 
 const hasLicenseFeature = (name) => (license) => !!license?.features.some((feature) => feature.name === name);
 const isLicensed = hasLicenseFeature('cert-management');
+const failedDeleteMessage = (cert, error) =>
+	`Failed to delete certificate "${cert.name}"! Reason: ${error.message || error}`;
 
 const CustomTableRow = ({ cert, connections, handleDelete }) => {
 	const history = useHistory();
@@ -52,12 +54,12 @@ const CustomTableRow = ({ cert, connections, handleDelete }) => {
 
 	const onExpand = (event) => {
 		event.stopPropagation();
-		setIsExpanded(!isExpanded)
-	}
+		setIsExpanded(!isExpanded);
+	};
 	const onDelete = (event) => {
 		event.stopPropagation();
 		handleDelete(cert);
-	}
+	};
 	const onSelect = (event) => {
 		event.stopPropagation();
 		history.push(`/certs/detail/${cert.id}`, cert);
@@ -65,7 +67,7 @@ const CustomTableRow = ({ cert, connections, handleDelete }) => {
 	const onDeploy = (event) => {
 		event.stopPropagation();
 		history.push(`/certs/deploy/${cert.id}`, cert);
-	}
+	};
 
 	return (
 		<>
@@ -115,9 +117,9 @@ const CustomTableRow = ({ cert, connections, handleDelete }) => {
 const Certificates = ({ connections, isCertSupported, doSort, sortBy, sortDirection }) => {
 	// const navigate = useNavigate();
 	const history = useHistory();
+	const confirm = useConfirm();
 	const { enqueueSnackbar } = useSnackbar();
 	const { client } = useContext(WebSocketContext);
-	const [deleteOptions, setDeleteOptions] = useState({ open: false });
 	const [certs, setCerts] = useState([]);
 
 	const loadCerts = async () => {
@@ -126,30 +128,37 @@ const Certificates = ({ connections, isCertSupported, doSort, sortBy, sortDirect
 				const { data } = await client.getCertificates();
 				setCerts(Array.from(Object.values(data)));
 			} catch (error) {
-				enqueueSnackbar(`Error loading certificates from server. Reason: ${error.message || error}`, {
+				enqueueSnackbar(`Failed to load certificates from server. Reason: ${error.message || error}`, {
 					variant: 'error'
 				});
 			}
 		}
 	};
-	
+
 	const handleDeleteCert = async (cert) => {
 		try {
+			// throws on cancel
+			await confirm({
+				title: 'Confirm delete',
+				description: `Do you really want to delete certificate "${cert.name}" and remove it from all brokers?`,
+				cancellationButtonProps: {
+					variant: 'contained'
+				},
+				confirmationButtonProps: {
+					color: 'primary',
+					variant: 'contained'
+				}
+			});
 			await client
 				.deleteCertificate(cert.id)
-				// .undeployDeleteCertificate(cert.id)
-				.catch((error) => enqueueSnackbar(error.message || error, { variant: 'error' }));
+				.then(() => enqueueSnackbar(`Successfully deleted certificate "${cert.name}"!`, { variant: 'success' }))
+				.catch((error) => enqueueSnackbar(failedDeleteMessage(cert, error), { variant: 'error' }));
 			await loadCerts();
 		} catch (error) {
-			enqueueSnackbar(error.message || error, { variant: 'error' });
+			if (error) enqueueSnackbar(failedDeleteMessage(cert, error), { variant: 'error' });
 		}
-
-		// setDeleteOptions({ open: true, cert });
 	};
-	const closeDeleteDialog = () => {
-		loadCerts();
-		setDeleteOptions({ open: false });
-	};
+	
 	const onAddNewCertificate = (event) => {
 		event.stopPropagation();
 		// navigate('/certs/detail/new');
@@ -165,44 +174,36 @@ const Certificates = ({ connections, isCertSupported, doSort, sortBy, sortDirect
 	}, [sortBy, sortDirection]);
 
 	return (
-		<>
-			<CertificateDeleteDialog
-				client={client}
-				onClose={closeDeleteDialog}
-				cert={deleteOptions.cert}
-				open={deleteOptions.open}
-			/>
-			<ContentContainer path={[{ route: '/home', name: 'Home' }, { name: 'Certificates' }]}>
-				{isCertSupported ? (
-					<>
-						<ContainerHeader
-							title="Client certificate management"
-							subTitle="List of currently maintained client certificates. Upload Client certificate authorities and deploy them on your broker. "
+		<ContentContainer path={[{ route: '/home', name: 'Home' }, { name: 'Certificates' }]}>
+			{isCertSupported ? (
+				<>
+					<ContainerHeader
+						title="Client certificate management"
+						subTitle="List of currently maintained client certificates. Upload Client certificate authorities and deploy them on your broker. "
+					>
+						<Button
+							variant="outlined"
+							color="primary"
+							size="small"
+							startIcon={<AddIcon />}
+							onClick={onAddNewCertificate}
 						>
-							<Button
-								variant="outlined"
-								color="primary"
-								size="small"
-								startIcon={<AddIcon />}
-								onClick={onAddNewCertificate}
-							>
-								Add Certificate
-							</Button>
-						</ContainerHeader>
-						<ContentTable columns={CERT_TABLE_COLUMNS}>
-							{certs.map((cert) => (
-								<CustomTableRow cert={cert} connections={connections} handleDelete={handleDeleteCert} />
-							))}
-						</ContentTable>
-					</>
-				) : (
-					WarningHint({
-						title: 'Certificate management feature is not available',
-						message: 'Make sure that support for certificate management is included in your MMC license.'
-					})
-				)}
-			</ContentContainer>
-		</>
+							Add Certificate
+						</Button>
+					</ContainerHeader>
+					<ContentTable columns={CERT_TABLE_COLUMNS}>
+						{certs.map((cert) => (
+							<CustomTableRow cert={cert} connections={connections} handleDelete={handleDeleteCert} />
+						))}
+					</ContentTable>
+				</>
+			) : (
+				WarningHint({
+					title: 'Certificate management feature is not available',
+					message: 'Make sure that support for certificate management is included in your MMC license.'
+				})
+			)}
+		</ContentContainer>
 	);
 };
 

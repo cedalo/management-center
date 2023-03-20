@@ -172,9 +172,16 @@ const markUsedListeners = (certificate, connection, listeners) => {
 		return { ...listener, isUsed };
 	});
 };
+const successMessage = (cert, deployed, undeployed) => {
+	// success means at least one of (un)deployed must be > 0
+	const msgDeployed = deployed > 0 ? `deployed to ${deployed} listeners` : '';
+	const msgUndeployed = undeployed > 0 ? `undeployed from ${deployed} listeners` : '';
+	const and = msgDeployed && msgUndeployed ? ' and ' : '';
+	return `Certificate "${cert.name}" successfully ${msgDeployed}${and}${msgUndeployed}.`;
+};
 const deployMessage = (cert, { deployed = 0, undeployed = 0 } = {}) => ({
 	error: `'Failed to deploy certificate "${cert.name}"`,
-	success: `Certificate "${cert.name}" successfully deployed to ${deployed} listeners and undeployed from ${undeployed} listeners.`,
+	success: successMessage(cert, deployed, undeployed),
 	warning: `Problems while deploying certificate "${cert.name}"!`
 });
 
