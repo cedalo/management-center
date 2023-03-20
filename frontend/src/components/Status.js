@@ -169,8 +169,12 @@ const Status = ({
 		return dDisplay + hDisplay + mDisplay + sDisplay;
 	}
 
-	const toNumber = (number) => new Intl.NumberFormat().format(number);
+	const toNumber = (number) => Number.isNaN(number) ? '' : new Intl.NumberFormat().format(number);
 	const formatBytes = (bytes, decimals = 2) => {
+		if (Number.isNaN(bytes)) {
+			return ''
+		}
+
 		if (!+bytes) return '0 Bytes'
 
 		const k = 1024
