@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 
-const SortableTablePage = ({Component}) => {
+const SortableTablePage = ({Component, filter}) => {
 
 	const [sortDirection, setSortDirection] = useState('asc');
 	const [sortBy, setSortBy] = useState('');
@@ -55,6 +55,7 @@ const SortableTablePage = ({Component}) => {
                     sortBy={sortBy}
                     sortDirection={sortDirection}
                     disableSort={disableSort}
+				   filter={filter}
         />
     </>
 }
