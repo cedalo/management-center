@@ -1,4 +1,5 @@
 import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
 import {green, red} from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
 import {makeStyles, useTheme, withStyles} from '@material-ui/core/styles';
@@ -222,7 +223,7 @@ const Clients = (props) => {
 	}
 
 	return (
-		<div style={{height: '100%'}}>
+		<Box style={{height: '100%'}} data-tour="page-clientinspection">
 			<ContainerBreadCrumbs title="Client Inspection" links={[{name: 'Home', route: '/home'}]}/>
 			<div style={{height: 'calc(100% - 26px)'}}>
 				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
@@ -258,7 +259,7 @@ const Clients = (props) => {
 					{connected ? createClientsTable(filteredClients, classes, props, onUpdateUserRoles, onSelectClient, small, medium) : null}
 				</div>
 			</div>
-		</div>
+		</Box>
 	);
 };
 
