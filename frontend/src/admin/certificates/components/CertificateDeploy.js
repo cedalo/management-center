@@ -172,10 +172,14 @@ const markUsedListeners = (certificate, connection, listeners) => {
 		return { ...listener, isUsed };
 	});
 };
+const portMessage = (listeners) => {
+	const prefix = listeners.length > 1 ? 'ports' : 'port';
+	return `${prefix}: ${listeners.map((l) => l.port).join(', ')}`;
+};
 const successMessage = (cert, deployed, undeployed) => {
 	// success means at least one of (un)deployed must be > 0
-	const msgDeployed = deployed > 0 ? `deployed to ${deployed} listeners` : '';
-	const msgUndeployed = undeployed > 0 ? `undeployed from ${deployed} listeners` : '';
+	const msgDeployed = deployed.length > 0 ? `deployed to ${portMessage(deployed)}` : '';
+	const msgUndeployed = undeployed.length > 0 ? `undeployed from ${portMessage(undeployed)}` : '';
 	const and = msgDeployed && msgUndeployed ? ' and ' : '';
 	return `Certificate "${cert.name}" successfully ${msgDeployed}${and}${msgUndeployed}.`;
 };
