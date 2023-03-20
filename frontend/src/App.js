@@ -131,7 +131,9 @@ function Tour(props) {
 			setCurrentStep={(stp) => setCurrentStep(stp)}
 			styles={{
 				popover: (base) => ({...base, color: 'black', width: '450px', maxWidth: '450px'}),
-				close: (base) => ({...base, right: 8, top: 8})
+				close: (base) => ({...base, right: 8, top: 8}),
+				dot: (base, state) => ({...base, color: state.current ? '#FD602E' : undefined,
+					background: state.current ? '#FD602E' : undefined})
 			}}
 			// showDots={false}
 			beforeClose={() => {

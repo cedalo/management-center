@@ -107,7 +107,10 @@ export default [
 			<div style={{fontSize: '10pt'}}>
 				<p>
 					You can investigate the tree with the latest topics by opening the tree leaves in the topic tree. If you click
-					on a topic, infos about the topic are displayed. Here you can observe the latest payloads. Please not, that
+					on a topic, infos about the topic are displayed. Here you can observe the latest payloads.
+				</p>
+				<p>
+					Please note, that
 					only those payloads are displayed, that arrive while the page is open and the topic is selected.
 				</p>
 			</div>
