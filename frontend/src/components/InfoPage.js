@@ -105,8 +105,8 @@ const InfoPage = (props) => {
 				</Dialog>
 				<ContainerBreadCrumbs title="Info" links={[{name: 'Home', route: '/home'}]}/>
 				<ContainerHeader
-					title="License Info"
-					subTitle="Display Infos about the current active license and the features contained in the license."
+					title="Management Center License Information"
+					subTitle="Displays information about the currently active Management Center license and the features contained within."
 				>
 					{moment.unix(response?.lastUpdated).isAfter(moment(version?.buildDate)) ? (
 						<Button
@@ -132,14 +132,12 @@ const InfoPage = (props) => {
 									label="Management Center"
 									alignment="table"
 									infos={[{
-										label: "Management Center clients",
-										value: webSocketConnections ? webSocketConnections?.webSocketClients : ''
-									}, {
 										label: "Version",
 										value: version.version,
 										space: true
 									}, {
 										label: "Latest Version",
+										hide: !response || response?.lastUpdated === undefined,
 										value: response.lastUpdated ? moment.unix(response.lastUpdated).format(
 											'LLLL') : ''
 									}, {
