@@ -29,7 +29,6 @@ const FeedbackButton = ({ backendParameters }) => {
 	return (displayFeedback) ? (
 		<>
             <ColorButton
-                    style={{marginTop: '15px'}}
                     variant="contained"
                     startIcon={<FeedbackIcon  />} // style={{color: 'red'}}
                     size="small"

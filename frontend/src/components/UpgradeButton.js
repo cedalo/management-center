@@ -28,7 +28,7 @@ const UpgradeButton = ({ license }) => {
 	return (isTrial) ? (
 		<>
             <ColorButton
-                    style={{marginTop: '15px', marginLeft: '8px'}}
+                    style={{marginLeft: '8px'}}
                     variant="contained"
                     startIcon={<UpgradeIcon style={{color: 'red'}}  />}
                     size="small"
