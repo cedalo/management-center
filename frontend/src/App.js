@@ -2,20 +2,22 @@ import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import IconButton from '@material-ui/core/IconButton';
-import {makeStyles, ThemeProvider, useTheme} from '@material-ui/core/styles';
+import {makeStyles, ThemeProvider} from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import MenuIcon from '@material-ui/icons/Menu';
+import {components, TourProvider} from '@reactour/tour';
 import clsx from 'clsx';
 import {ConfirmProvider} from 'material-ui-confirm';
 import {SnackbarProvider} from 'notistack';
-import React, {useEffect, useState} from 'react';
-import Joyride from 'react-joyride';
+import React, {useState} from 'react';
 import {Provider} from 'react-redux';
-import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import {BrowserRouter as Router, Route, Switch, useHistory} from 'react-router-dom';
 import AppRoutes from './AppRoutes';
+import apptour from './apptour';
 import BrokerSelect from './components/BrokerSelect';
 import CustomDrawer from './components/CustomDrawer';
+import {Loading} from './components/DisconnectedDialog';
 import FeedbackButton from './components/FeedbackButton';
 import FilterName from './components/FilterName';
 import HelpButtons from './components/HelpButtons';
@@ -30,10 +32,7 @@ import useLocalStorage from './helpers/useLocalStorage';
 import store from './store';
 import customTheme from './theme';
 import darkTheme from './theme-dark';
-import apptour from './apptour';
 import WebSocketProvider from './websockets/WebSocket';
-import { Loading } from './components/DisconnectedDialog';
-import { TourProvider, components } from '@reactour/tour';
 
 const drawerWidth = 240;
 
@@ -104,15 +103,47 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-function Badge({ children }) {
+function Badge({children}) {
 	return (
 		<components.Badge
-			styles={{ badge: (base) => ({ ...base, backgroundColor: '#FD602E' }) }}
+			styles={{badge: (base) => ({...base, backgroundColor: '#FD602E'})}}
 		>
 			{children}
 		</components.Badge>
 	)
 }
+
+function Tour(props) {
+	const [step, setStep] = useState(0);
+	const history = useHistory();
+
+	const setCurrentStep = (stp) => {
+		if (apptour.length > stp && apptour[stp].routing) {
+			history.push(apptour[stp].routing);
+		}
+		setStep(stp);
+	};
+
+	return (<TourProvider
+			steps={apptour}
+			components={{Badge}}
+			currentStep={step}
+			setCurrentStep={(stp) => setCurrentStep(stp)}
+			styles={{
+				popover: (base) => ({...base, color: 'black', width: '450px', maxWidth: '450px'}),
+				close: (base) => ({...base, right: 8, top: 8}),
+				dot: (base, state) => ({...base, color: state.current ? '#FD602E' : undefined,
+					background: state.current ? '#FD602E' : undefined})
+			}}
+			// showDots={false}
+			beforeClose={() => {
+				setStep(0);
+			}}
+		>
+			{props.children}
+		</TourProvider>
+	)
+};
 
 export default function (props) {
 	// const { window } = props;
@@ -125,20 +156,6 @@ export default function (props) {
 	const [showFilter, setShowFilter] = useState(false);
 	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/theme`);
 	const [responseConfig, loadingConfig, hasErrorConfig] = useFetch(`${process.env.PUBLIC_URL}/api/config`);
-	const [step, setStep] = useState(0);
-
-	const setCurrentStep = (stp) => {
-		// if (stps) {
-		// 	setSteps(stps);
-		// } else {
-		// 	stps = steps;
-		// }
-
-		if (apptour.length > stp && apptour[stp].routing) {
-			navigate(apptour[stp].routing, true);
-		}
-		setStep(stp);
-	};
 
 	if ((hasError || response) && (hasErrorConfig || responseConfig)) {
 		let appliedTheme = darkMode === 'true' ? darkTheme : customTheme;
@@ -207,131 +224,117 @@ export default function (props) {
 		return (
 			<ThemeProvider theme={appliedTheme}>
 				<SnackbarProvider>
-					<TourProvider
-						steps={apptour}
-						components={{ Badge }}
-						currentStep={step}
-						setCurrentStep={(stp) => setCurrentStep(stp)}
-						styles={{
-							popover: (base) => ({...base, color: 'black'}),
-							close: (base) => ({ ...base, right: 8, top: 8 })
-						}}
-						showDots={false}
-						beforeClose={() => {
-							setStep(0);
-						}}
-					>
-					{/*<Joyride*/}
-					{/*	run={showTour}*/}
-					{/*	continuous={true}*/}
-					{/*	//   getHelpers={this.getHelpers}*/}
-					{/*	scrollToFirstStep={true}*/}
-					{/*	showProgress={true}*/}
-					{/*	showSkipButton={true}*/}
-					{/*	steps={steps}*/}
-					{/*	callback={onTourStateChange}*/}
-					{/*	styles={{*/}
-					{/*		options: {*/}
-					{/*			zIndex: 5000*/}
-					{/*		}*/}
-					{/*	}}*/}
-					{/*/>*/}
 					<ConfirmProvider>
 						<CssBaseline/>
 						<Router basename={process.env.PUBLIC_URL}>
-							<Provider store={store}>
-								<WebSocketProvider>
-									<div className={classes.root}>
-										<NewsletterPopup/>
-										<OnBoardingDialog/>
-										<Switch>
-											<Route path="/login">
-												<AppBar
-													elevation={0}
-													position="fixed"
-													className={clsx(classes.appBar, {
-														[classes.appBarShift]: open
-													})}
-												>
-													<Toolbar
-														disableGutters
-														className={classes.mainToolBar}
+							<Tour>
+								<Provider store={store}>
+									<WebSocketProvider>
+										<Box
+											data-tour="application"
+											className={classes.root}
+										>
+											<NewsletterPopup/>
+											<OnBoardingDialog/>
+											<Switch>
+												<Route path="/login">
+													<AppBar
+														elevation={0}
+														position="fixed"
+														className={clsx(classes.appBar, {
+															[classes.appBarShift]: open
+														})}
 													>
-														<Typography variant="h6" noWrap></Typography>
-													</Toolbar>
-												</AppBar>
-											</Route>
-											<Route path="/">
-												<AppBar
-													elevation={0}
-													position="fixed"
-													className={clsx(classes.appBar, {
-														[classes.appBarShift]: open
-													})}
-												>
-													<Toolbar
-														className={classes.mainToolBar}
-														style={{
-															paddingLeft: '15px'
-														}}
+														<Toolbar
+															disableGutters
+															className={classes.mainToolBar}
+														>
+															<Typography variant="h6" noWrap></Typography>
+														</Toolbar>
+													</AppBar>
+												</Route>
+												<Route path="/">
+													<AppBar
+														elevation={0}
+														position="fixed"
+														data-tour="appbar"
+														className={clsx(classes.appBar, {
+															[classes.appBarShift]: open
+														})}
 													>
-														<IconButton
-															aria-label="open drawer"
-															onClick={handleDrawerOpen}
-															edge="start"
-															className={clsx(classes.menuButton, {
-																[classes.hide]: open
-															})}
+														<Toolbar
+															className={classes.mainToolBar}
 															style={{
-																color: darkMode === 'true' ? 'white' : 'rgba(117, 117, 117)',
+																paddingLeft: '15px'
 															}}
 														>
-															<MenuIcon/>
-														</IconButton>
-														<Typography noWrap>
-															<Typography variant="h5" style={{color: '#FD602E', fontWeight: '500'}}>
-																Management Center
+															<IconButton
+																aria-label="open drawer"
+																onClick={handleDrawerOpen}
+																edge="start"
+																className={clsx(classes.menuButton, {
+																	[classes.hide]: open
+																})}
+																style={{
+																	color: darkMode === 'true' ? 'white' : 'rgba(117, 117, 117)',
+																}}
+															>
+																<MenuIcon/>
+															</IconButton>
+															<Typography noWrap>
+																<Typography variant="h5" style={{
+																	color: '#FD602E',
+																	fontWeight: '500'
+																}}>
+																	Management Center
+																</Typography>
 															</Typography>
-														</Typography>
-														{showFilter ? (
-															<div style={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-																<FilterName filter={filter} onUpdateFilter={setFilter} />
-															</div>
-														) : null}
-														<section className={classes.rightToolbar}>
-															<FeedbackButton/>
-															<UpgradeButton/>
-															<BrokerSelect appBar/>
-															<HelpButtons onStartTour={handleStartTour}/>
-															{!hideProfileButton ? <ProfileButton/> : null}
-															{!hideLogoutButton ? <LogoutButton/> : null}
-														</section>
-													</Toolbar>
-												</AppBar>
+															{showFilter ? (
+																<div style={{
+																	flexGrow: 1,
+																	display: 'flex',
+																	alignItems: 'center',
+																	justifyContent: 'center'
+																}}>
+																	<FilterName filter={filter}
+																				onUpdateFilter={setFilter}/>
+																</div>
+															) : null}
+															<section className={classes.rightToolbar}>
+																<FeedbackButton/>
+																<UpgradeButton/>
+																<BrokerSelect appBar/>
+																<HelpButtons onStartTour={handleStartTour}/>
+																{!hideProfileButton ? <ProfileButton/> : null}
+																{!hideLogoutButton ? <LogoutButton/> : null}
+															</section>
+														</Toolbar>
+													</AppBar>
 
-												<CustomDrawer
-													hideConnections={hideConnections}
-													hideInfoPage={hideInfoPage}
-													open={open}
-													setShowFilter={(show) => setShowFilter(show)}
-													handleDrawerOpen={handleDrawerOpen}
-													handleDrawerClose={handleDrawerClose}
-												/>
-												<LicenseErrorDialog/>
-												<Loading/>
-												{/*<DisconnectedRedirect/>*/}
+													<CustomDrawer
+														hideConnections={hideConnections}
+														hideInfoPage={hideInfoPage}
+														open={open}
+														setShowFilter={(show) => setShowFilter(show)}
+														handleDrawerOpen={handleDrawerOpen}
+														handleDrawerClose={handleDrawerClose}
+													/>
+													<LicenseErrorDialog/>
+													<Loading/>
+													{/*<DisconnectedRedirect/>*/}
 
-												<Box className={classes.box}>
-													<AppRoutes filter={filter} onChangeTheme={(mode) => setDarkMode(mode)}/>
-												</Box>
-											</Route>
-										</Switch>
-									</div>
-								</WebSocketProvider>
-							</Provider>
+													<Box className={classes.box}>
+														<AppRoutes filter={filter}
+																   onChangeTheme={(mode) => setDarkMode(mode)}/>
+													</Box>
+												</Route>
+											</Switch>
+										</Box>
+									</WebSocketProvider>
+								</Provider>
+							</Tour>
 						</Router>
 					</ConfirmProvider>
-					</TourProvider>
 				</SnackbarProvider>
 			</ThemeProvider>
 		);

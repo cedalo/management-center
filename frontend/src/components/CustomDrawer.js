@@ -57,6 +57,7 @@ function ListItemLink(props) {
 			<Tooltip title={primary} placement="right">
 				<MenuItem
 					button
+					data-tour={props.tour || ''}
 					component={renderLink}
 					selected={isSelected}
 					classes={{
@@ -172,6 +173,7 @@ const CustomDrawer = ({
 	// '/clients' === location.pathname);
 
 	return <Drawer
+		data-tour="navigation"
 		variant="permanent"
 		className={clsx(classes.drawer, {
 			[classes.drawerOpen]: open,
@@ -198,7 +200,7 @@ const CustomDrawer = ({
 				{open ? <ListSubheader className={classes.menuSubHeader}>Inspection</ListSubheader> : null}
 				<List>
 					<ListItemLink
-						data-tour="step-nav-bar-home"
+						tour="navbar-home"
 						id="menu-item-status"
 						classes={classes}
 						to="/home"
@@ -206,6 +208,7 @@ const CustomDrawer = ({
 						icon={<HomeIcon fontSize="small"/>}
 					/>
 					<ListItemLink
+						tour="navbar-topics"
 						id="menu-item-topics"
 						classes={classes}
 						to="/topics"
@@ -213,9 +216,10 @@ const CustomDrawer = ({
 						icon={<TopicTreeIcon fontSize="small"/>}
 					/>
 					{<ListItemLink
+						tour="navbar-clientinspection"
 						classes={classes}
 						to="/clientinspection"
-						primary="Clients"
+						primary="Client Inspection"
 						icon={<InspectClientsIcon fontSize="small"/>}
 					/>}
 				</List>
@@ -223,13 +227,14 @@ const CustomDrawer = ({
 				{atLeastEditor(userProfile, currentConnectionName) && <><List>
 					{open ? <ListSubheader className={classes.menuSubHeader}>Dynamic Security</ListSubheader> : null}
 					<ListItemLink
-						id="menu-item-clients"
+						tour="navbar-clients"
 						classes={classes}
 						to="/clients"
 						primary="Clients"
 						icon={<PersonIcon fontSize="small"/>}
 					/>
 					<ListItemLink
+						tour="navbar-groups"
 						id="menu-item-groups"
 						classes={classes}
 						to="/groups"
@@ -237,7 +242,7 @@ const CustomDrawer = ({
 						icon={<GroupIcon fontSize="small"/>}
 					/>
 					<ListItemLink
-						id="menu-item-roles"
+						tour="navbar-roles"
 						classes={classes}
 						to="/roles"
 						primary="Roles"

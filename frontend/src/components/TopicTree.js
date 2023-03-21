@@ -298,7 +298,7 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 	};
 
 	return (
-		<div style={{height: '100%'}}>
+		<Box style={{height: '100%'}} data-tour="page-topics">
 			<ContainerBreadCrumbs title="Topic Tree"
 								  links={[{name: 'Home', route: '/home'}]}/>
 			<div style={{height: 'calc(100% - 26px)'}}>
@@ -489,7 +489,7 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 			}}>
 				Topic tree last updated at: {moment(lastUpdated).format('hh:mm:ss a')}
 			</div>}
-		</div>
+		</Box>
 	);
 };
 

@@ -19,7 +19,7 @@ export default function HelpButtons(props) {
 	const classes = useStyles();
 	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
 	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
-	const { setIsOpen } = useTour();
+	const { setIsOpen, setCurrentStep } = useTour();
 
 	if (medium || small) {
 		return null;
@@ -34,6 +34,7 @@ export default function HelpButtons(props) {
 				aria-haspopup="true"
 				onClick={() => {
 					// props.onStartTour()
+					setCurrentStep(0);
 					setIsOpen(true);
 				}}
 				className={classes.toolbarButton}

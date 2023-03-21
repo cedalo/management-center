@@ -1,4 +1,5 @@
 import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
 import {green, red} from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
 import {makeStyles, useTheme, withStyles} from '@material-ui/core/styles';
@@ -8,6 +9,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import DisabledIcon from '@material-ui/icons/Cancel';
@@ -46,13 +48,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CLIENTS_TABLE_COLUMNS = [
-	{id: 'name', key: 'Name', align: 'left', width: '15%'},
-	{id: 'id', key: 'Client ID', align: 'left', width: '20%'},
-	{id: 'protocol', key: 'Protocol', align: 'left', width: '15%'},
-	{id: 'address', key: 'IP Address', align: 'left', width: '15%'},
-	{id: 'last_connected', key: 'Queue Usage', align: 'center', width: '15%'},
-	{id: 'status', key: 'Connected', align: 'center', width: '5%'},
-	{id: 'disconnect', key: 'Disconnect', align: 'center', width: '5%'},
+	{id: 'username', key: 'Name', align: 'left', width: '15%', sortable: true},
+	{id: 'clientid', key: 'Client ID', align: 'left', width: '20%', sortable: true},
+	{id: 'protocol', key: 'Protocol', align: 'left', width: '15%', sortable: false},
+	{id: 'address', key: 'IP Address', align: 'left', width: '15%', sortable: true},
+	{id: 'last_connected', key: 'Queue Usage', align: 'center', width: '15%', sortable: false},
+	{id: 'status', key: 'Connected', align: 'center', width: '5%', sortable: false},
+	{id: 'disconnect', key: 'Disconnect', align: 'center', width: '5%', sortable: false},
 ];
 
 
@@ -73,7 +75,8 @@ const dateToString = (date, separator = ' ') => {
 };
 
 const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelectClient, small, medium) => {
-	const {inspectFeature} = props;
+	const {inspectFeature, onSort, sortBy, sortDirection, disableSort, doSort} = props;
+
 
 	if (!inspectFeature?.error && inspectFeature?.supported !== false && clients && clients.length > 0) {
 		return <div style={{height: '100%', overflowY: 'auto'}}>
@@ -87,13 +90,23 @@ const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelect
 									style={{
 										width: column.width,
 										display: (!small && !medium) ||
-											(column.id === 'name' && (small || medium)) ||
+											(column.id === 'username' && (small || medium)) ||
 											(column.id === 'status' && (small || medium)) ||
-											(column.id === 'id' && medium) ? undefined : 'none'
+											(column.id === 'clientid' && medium) ? undefined : 'none'
 									}}
 									key={column.id}
+									sortDirection={sortBy === column.id ? sortDirection : false}
 								>
-									{column.key}
+									{column.sortable ?
+										<TableSortLabel
+											active={sortBy === column.id}
+											direction={sortDirection}
+											onClick={() => onSort(column.id)}
+										>
+											{column.key}
+										</TableSortLabel> :
+										column.key
+									}
 								</TableCell>
 							))}
 						</TableRow>
@@ -187,7 +200,7 @@ const Clients = (props) => {
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const {client: brokerClient} = context;
-	const {inspectFeature, userProfile, roles = [], clients = [], filter, connected} = props;
+	const {inspectFeature, userProfile, roles = [], clients = [], filter, sortDirection, sortBy, doSort, connected} = props;
 	const [filteredClients, setFilteredClients] = useState(clients);
 	const theme = useTheme();
 	const small = useMediaQuery(theme.breakpoints.down('xs'));
@@ -209,12 +222,27 @@ const Clients = (props) => {
 	};
 
 	React.useEffect(() => {
-		setFilteredClients(clients.filter(clientL => clientL.username.startsWith(filter)));
-	}, [filter]);
+		let sortedClients ;
 
-	React.useEffect(() => {
-		setFilteredClients(clients);
-	}, [clients]);
+		sortedClients = clients.filter(clientL => clientL.username.startsWith(filter));
+
+		if (sortBy) {
+			sortedClients = doSort([...sortedClients], sortDirection, (a) => a[sortBy])
+		} else {
+			sortedClients = sortedClients;
+		}
+
+		setFilteredClients(sortedClients);
+
+	}, [clients, sortDirection, sortBy, filter]);
+
+	// React.useEffect(() => {
+	// 	setFilteredClients(clients.filter(clientL => clientL.username.startsWith(filter)));
+	// }, [filter]);
+	//
+	// React.useEffect(() => {
+	// 	setFilteredClients(clients);
+	// }, [clients]);
 
 	const onReload = async () => {
 		const clients = await brokerClient.inspectListClients();
@@ -222,7 +250,7 @@ const Clients = (props) => {
 	}
 
 	return (
-		<div style={{height: '100%'}}>
+		<Box style={{height: '100%'}} data-tour="page-clientinspection">
 			<ContainerBreadCrumbs title="Client Inspection" links={[{name: 'Home', route: '/home'}]}/>
 			<div style={{height: 'calc(100% - 26px)'}}>
 				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
@@ -258,7 +286,7 @@ const Clients = (props) => {
 					{connected ? createClientsTable(filteredClients, classes, props, onUpdateUserRoles, onSelectClient, small, medium) : null}
 				</div>
 			</div>
-		</div>
+		</Box>
 	);
 };
 

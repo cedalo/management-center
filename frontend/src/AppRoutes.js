@@ -77,7 +77,7 @@ function AppRoutes(props) {
 					<Clients filter={props.filter}/>
 				</Route>
 				<Route path="/clientinspection">
-					<InspectClients filter={props.filter}/>
+					<SortableTablePage Component={InspectClients} filter={props.filter}/>
 				</Route>
 				<Route path="/groups/new">
 					<GroupNew/>

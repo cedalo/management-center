@@ -41,7 +41,7 @@ const CONN_TABLE_COLUMNS = [
 	{id: 'id', key: 'ID', align: 'left'},
 	{id: 'url', key: 'URL', align: 'left'},
 	{id: 'status', key: 'Connected', align: 'center', width: '10px'},
-	{id: 'action', key: ' ', align: 'right', width: '100px'}
+	{id: 'action', key: 'Actions', align: 'center', width: '100px'}
 ];
 
 const StyledTableRow = withStyles((theme) => ({
