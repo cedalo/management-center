@@ -87,7 +87,7 @@ const CustomTableRow = ({ cert, connections, handleDelete }) => {
 					/>
 				</BadgesCell>
 				<TableCell align="right">
-					<Tooltip title="Deploy Certificate">
+					<Tooltip title="Deploy/Undeploy Certificate">
 						<IconButton size="small" onClick={onDeploy}>
 							<UploadIcon fontSize="small" />
 						</IconButton>
