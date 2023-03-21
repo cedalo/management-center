@@ -116,7 +116,7 @@ const BrokerSelect = ({brokerConnections, connected, currentConnectionName, send
 						// false)
 						.map((brokerConnection) => (
 							<MenuItem
-								disabled={brokerConnection?.status.connected === false}
+								// disabled={brokerConnection?.status.connected === false}
 								key={brokerConnection.name}
 								value={brokerConnection.name}
 								classes={{
