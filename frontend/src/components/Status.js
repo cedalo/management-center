@@ -18,6 +18,7 @@ import {useSnackbar} from 'notistack';
 import React, {useContext, useEffect} from 'react';
 import Speedometer from 'react-d3-speedometer';
 import {connect} from 'react-redux';
+import {getConnectionInfo} from '../admin/certificates/components/certutils';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
@@ -43,6 +44,15 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
+const fetchListeners = async (client, connId) => {
+	try {
+		const { data } = await client.getListeners(connId);
+		return { id: connId, listeners: data };
+	} catch (error) {
+		return { id: connId, listeners: [], error: error.message || error };
+	}
+};
+
 const Status = ({
 					brokerLicense,
 					brokerLicenseLoading,
@@ -67,11 +77,36 @@ const Status = ({
 	const timerRef = React.useRef();
 	const [waitingForSysTopic, setWaitingForSysTopic] = React.useState(true);
 	const [maxClients, setMaxClients] = React.useState();
+	const [listeners, setListeners] = React.useState(null);
 
 	const getMaxClients = () => {
 		const feature = brokerLicense?.features?.find(feature => 'mosquitto-clients' === feature.name);
 		return feature ? feature.count : undefined;
 	}
+
+	const applyListeners = (listeners, error) => {
+		const ports = listeners.map(info => info.port).join(', ');
+		if (error) {
+			setListeners([]);
+		} else {
+			setListeners(ports);
+		}
+	}
+
+	const loadListeners = async () => {
+		setListeners(null);
+		if (connected) {
+			const { id, error, listeners } = await fetchListeners(brokerClient, currentConnection.id);
+			// check response against current selected connection and ignore if they do not match
+			if (currentConnection?.id === id) applyListeners(listeners, error);
+		} else {
+			setListeners([]);
+		}
+	};
+
+	useEffect(() => {
+		loadListeners();
+	}, [currentConnection]);
 
 	useEffect(() => {
 		setMaxClients(getMaxClients());
@@ -93,7 +128,6 @@ const Status = ({
 			cleanRef();
 		}
 	}, []);
-
 
 	if (connected && !systemStatus?.$SYS) {
 		if (!timerRef.current) {
@@ -229,6 +263,7 @@ const Status = ({
 										<Info
 											label="Broker Traffic"
 											infoIcon
+											infoTooltip={<>The information displayed here is gathered from Mosquitto system topics. <br/>Click here to get a detailed explanation.</>}
 											infos={[{
 												label: "Messages Sent",
 												value: toNumber(systemStatus?.$SYS?.broker?.messages?.sent)
@@ -258,6 +293,7 @@ const Status = ({
 										<Info
 											label="Publish"
 											infoIcon
+											infoTooltip={<>The information displayed here is gathered from Mosquitto system topics. <br/>Click here to get a detailed explanation.</>}
 											infos={[{
 												label: "Messages Sent",
 												value: toNumber(systemStatus?.$SYS?.broker?.publish?.messages?.sent)
@@ -282,6 +318,7 @@ const Status = ({
 											// style={{cursor: 'pointer'}}
 											label="Clients"
 											infoIcon
+											infoTooltip={<>The information displayed here is gathered from Mosquitto system topics. <br/>Click here to get a detailed explanation.</>}
 											actionIcon={
 												<Tooltip title="Click to inspect clients">
 													<IconButton
@@ -393,6 +430,9 @@ const Status = ({
 											}, {
 												label: "URL",
 												value: currentConnection?.externalEncryptedUrl || currentConnection?.externalUnencryptedUrl || currentConnection?.internalUrl || currentConnection?.url,
+											}, {
+												label: "Open Ports",
+												value: listeners || '',
 											}]}
 											icon={<InfoIcon/>}
 										/>
