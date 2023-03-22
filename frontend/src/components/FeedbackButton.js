@@ -1,6 +1,7 @@
 import Button from '@material-ui/core/Button';
 import { indigo } from '@material-ui/core/colors';
 import { withStyles } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import FeedbackIcon from '@material-ui/icons/Feedback';
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
@@ -18,6 +19,7 @@ const ColorButton = withStyles((theme) => ({
 
 const FeedbackButton = ({ backendParameters }) => {
     const [displayFeedback, setDisplayFeedback] = useState(backendParameters.showFeedbackForm);
+	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
 
     useEffect(() => {
         setDisplayFeedback(backendParameters?.showFeedbackForm);
@@ -26,7 +28,7 @@ const FeedbackButton = ({ backendParameters }) => {
     const formPageAddress = 'https://majy33976q6.typeform.com/to/aeRoINk0';
 
 
-	return (displayFeedback) ? (
+	return (!small && displayFeedback) ? (
 		<>
             <ColorButton
                     variant="contained"
