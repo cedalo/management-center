@@ -114,7 +114,7 @@ const CustomTableRow = ({ cert, connections, handleDelete }) => {
 	);
 };
 
-const Certificates = ({ connections, isCertSupported, doSort, sortBy, sortDirection }) => {
+const Certificates = ({ connections, isCertSupported }) => {
 	// const navigate = useNavigate();
 	const history = useHistory();
 	const confirm = useConfirm();
@@ -168,10 +168,6 @@ const Certificates = ({ connections, isCertSupported, doSort, sortBy, sortDirect
 	useEffect(() => {
 		loadCerts();
 	}, []);
-
-	useEffect(() => {
-		if (sortBy) setCerts(doSort([...certs], sortDirection, (a) => a[sortBy]));
-	}, [sortBy, sortDirection]);
 
 	return (
 		<ContentContainer path={[{ route: '/home', name: 'Home' }, { name: 'Certificates' }]}>
