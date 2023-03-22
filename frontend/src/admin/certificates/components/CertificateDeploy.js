@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  ********************************************************************************/
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import {
@@ -200,7 +200,6 @@ const fetchListeners = async (client, connId) => {
 	}
 };
 
-
 const CertificateDeploy = ({ connections = [] }) => {
 	const history = useHistory();
 	const [certificate] = useState(history.location.state);
@@ -210,24 +209,21 @@ const CertificateDeploy = ({ connections = [] }) => {
 	const [listeners, setListeners] = useState(null);
 	const { client } = useContext(WebSocketContext);
 	const hasConnectedConnection = connections.some(isConnected);
+	const connectionRef = useRef(connection);
 
-	const applyListeners = (listeners, error) => {
-		if (error) {
-			enqueueSnackbar(`Cannot deploy because listeners could not be loaded. Reason: ${error}`, {
-				variant: 'error'
-			});
-		}
-		setListeners(markUsedListeners(certificate, getConnectionInfo(connection), listeners));
-	}
 	const loadListeners = async () => {
 		setListeners(null);
 		if (isConnected(connection)) {
 			const { id, error, listeners } = await fetchListeners(client, connection.id);
 			// check response against current selected connection and ignore if they do not match
-			selectConnection((conn) => {
-				if (conn?.id === id) applyListeners(listeners, error);
-				return conn;
-			});
+			if (connectionRef.current?.id === id) {
+				if (error) {
+					enqueueSnackbar(`Cannot deploy because listeners could not be loaded. Reason: ${error}`, {
+						variant: 'error'
+					});
+				}
+				setListeners(markUsedListeners(certificate, getConnectionInfo(connection), listeners));
+			}
 		} else {
 			const name = connection?.name || 'n.a.';
 			if (listeners != null) enqueueSnackbar(`Connection "${name}" is not connected`, { variant: 'warning' });
@@ -244,7 +240,9 @@ const CertificateDeploy = ({ connections = [] }) => {
 
 	const onSelectConnection = (event) => {
 		const id = event.target.value;
-		selectConnection(connections.find((c) => c.id === id));
+		const connection = connections.find((c) => c.id === id);
+		connectionRef.current = connection;
+		selectConnection(connection);
 		setCanUpdate(false);
 	};
 
