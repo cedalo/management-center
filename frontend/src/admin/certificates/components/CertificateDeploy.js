@@ -191,6 +191,16 @@ const deployMessage = (cert, { deployed = 0, undeployed = 0 } = {}) => ({
 
 const isConnected = (conn) => conn?.status?.connected;
 
+const fetchListeners = async (client, connId) => {
+	try {
+		const { data } = await client.getListeners(connId);
+		return { id: connId, listeners: data };
+	} catch (error) {
+		return { id: connId, listeners: [], error: error.message || error };
+	}
+};
+
+
 const CertificateDeploy = ({ connections = [] }) => {
 	const history = useHistory();
 	const [certificate] = useState(history.location.state);
@@ -201,21 +211,26 @@ const CertificateDeploy = ({ connections = [] }) => {
 	const { client } = useContext(WebSocketContext);
 	const hasConnectedConnection = connections.some(isConnected);
 
-	const loadListeners = async () => {
-		try {
-			setListeners(null);
-			if (isConnected(connection)) {
-				const { data } = await client.getListeners(connection.id);
-				setListeners(markUsedListeners(certificate, getConnectionInfo(connection), data));
-			} else {
-				const name = connection?.name || 'n.a.';
-				if (listeners != null) enqueueSnackbar(`Connection "${name}" is not connected`, { variant: 'warning' });
-				setListeners([]);
-			}
-		} catch (error) {
-			enqueueSnackbar(`Cannot deploy because listeners could not be loaded. Reason: ${error.message || error}`, {
+	const applyListeners = (listeners, error) => {
+		if (error) {
+			enqueueSnackbar(`Cannot deploy because listeners could not be loaded. Reason: ${error}`, {
 				variant: 'error'
 			});
+		}
+		setListeners(markUsedListeners(certificate, getConnectionInfo(connection), listeners));
+	}
+	const loadListeners = async () => {
+		setListeners(null);
+		if (isConnected(connection)) {
+			const { id, error, listeners } = await fetchListeners(client, connection.id);
+			// check response against current selected connection and ignore if they do not match
+			selectConnection((conn) => {
+				if (conn?.id === id) applyListeners(listeners, error);
+				return conn;
+			});
+		} else {
+			const name = connection?.name || 'n.a.';
+			if (listeners != null) enqueueSnackbar(`Connection "${name}" is not connected`, { variant: 'warning' });
 			setListeners([]);
 		}
 	};

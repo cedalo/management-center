@@ -179,7 +179,7 @@ const CertificateInfo = ({ certificate, variant }) => {
 	};
 	useEffect(() => {
 		loadCertInfo();
-	}, [certificate.cert]);
+	}, []);
 
 	return isLoadingInfo ? showLoadingHint() : showInfoTable(certInfo, variant);
 };
