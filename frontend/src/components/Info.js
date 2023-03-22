@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-const Info = ({className, infos, infoIcon, actionIcon, label, chart, icon, alignment, ...rest}) => {
+const Info = ({className, infos, infoIcon, infoTooltip, actionIcon, label, chart, icon, alignment, ...rest}) => {
 	const classes = useStyles();
 
 	return (
@@ -49,7 +49,7 @@ const Info = ({className, infos, infoIcon, actionIcon, label, chart, icon, align
 					<div>
 						{actionIcon}
 						{infoIcon ?
-							<Tooltip title="Click for further Infos">
+							<Tooltip title={infoTooltip}>
 								<IconButton
 									className={classes.info} size="small"
 									aria-label="info">

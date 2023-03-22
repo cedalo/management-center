@@ -18,6 +18,7 @@ import {useSnackbar} from 'notistack';
 import React, {useContext, useEffect} from 'react';
 import Speedometer from 'react-d3-speedometer';
 import {connect} from 'react-redux';
+import {getConnectionInfo} from '../admin/certificates/components/certutils';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
@@ -67,15 +68,37 @@ const Status = ({
 	const timerRef = React.useRef();
 	const [waitingForSysTopic, setWaitingForSysTopic] = React.useState(true);
 	const [maxClients, setMaxClients] = React.useState();
+	const [listeners, setListeners] = React.useState(null);
 
 	const getMaxClients = () => {
 		const feature = brokerLicense?.features?.find(feature => 'mosquitto-clients' === feature.name);
 		return feature ? feature.count : undefined;
 	}
 
+	const loadListeners = async () => {
+		try {
+			// const url = new URL(currentConnection?.externalEncryptedUrl || currentConnection?.externalUnencryptedUrl ||
+			// 	currentConnection?.internalUrl || currentConnection?.url);
+			setListeners(null);
+			if (connected) {
+				const { data } = await brokerClient.getListeners(currentConnection.id);
+				const ports = data.map(info => info.port).join(', ');
+				setListeners(ports);
+			}
+		} catch (error) {
+			setListeners([]);
+		}
+	};
+
 	useEffect(() => {
 		setMaxClients(getMaxClients());
+		loadListeners();
 	}, [brokerLicense]);
+
+	useEffect(() => {
+		// loadListeners();
+
+	}, []);
 
 	const cleanRef = () => {
 		if (timerRef.current) {
@@ -93,7 +116,6 @@ const Status = ({
 			cleanRef();
 		}
 	}, []);
-
 
 	if (connected && !systemStatus?.$SYS) {
 		if (!timerRef.current) {
@@ -229,6 +251,7 @@ const Status = ({
 										<Info
 											label="Broker Traffic"
 											infoIcon
+											infoTooltip={<>The information displayed here is gathered from Mosquitto system topics. <br/>Click here to get a detailed explanation.</>}
 											infos={[{
 												label: "Messages Sent",
 												value: toNumber(systemStatus?.$SYS?.broker?.messages?.sent)
@@ -258,6 +281,7 @@ const Status = ({
 										<Info
 											label="Publish"
 											infoIcon
+											infoTooltip={<>The information displayed here is gathered from Mosquitto system topics. <br/>Click here to get a detailed explanation.</>}
 											infos={[{
 												label: "Messages Sent",
 												value: toNumber(systemStatus?.$SYS?.broker?.publish?.messages?.sent)
@@ -282,6 +306,7 @@ const Status = ({
 											// style={{cursor: 'pointer'}}
 											label="Clients"
 											infoIcon
+											infoTooltip={<>The information displayed here is gathered from Mosquitto system topics. <br/>Click here to get a detailed explanation.</>}
 											actionIcon={
 												<Tooltip title="Click to inspect clients">
 													<IconButton
@@ -393,6 +418,9 @@ const Status = ({
 											}, {
 												label: "URL",
 												value: currentConnection?.externalEncryptedUrl || currentConnection?.externalUnencryptedUrl || currentConnection?.internalUrl || currentConnection?.url,
+											}, {
+												label: "Open Ports",
+												value: listeners || '',
 											}]}
 											icon={<InfoIcon/>}
 										/>
