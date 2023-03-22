@@ -31,20 +31,25 @@ console = new Logger(console, false);
 
 const version = require('./src/utils/version');
 
+const preprocessBoolEnvVariable = (envVariable) => {
+	return !!((envVariable && typeof envVariable === 'string' && envVariable.toLowerCase() === 'false') ? false : envVariable);
+}
+
 const HTTP_PORT = 80;
 const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
-const CEDALO_MC_ENABLE_FULL_LOG = !!(((process.env.CEDALO_MC_ENABLE_FULL_LOG && process.env.CEDALO_MC_ENABLE_FULL_LOG.toLowerCase()) === 'false') ? false : process.env.CEDALO_MC_ENABLE_FULL_LOG);
-const CEDALO_MC_SHOW_FEEDBACK_FORM = !!(((process.env.CEDALO_MC_SHOW_FEEDBACK_FORM && process.env.CEDALO_MC_SHOW_FEEDBACK_FORM.toLowerCase()) === 'false') ? false : process.env.CEDALO_MC_SHOW_FEEDBACK_FORM);
+const CEDALO_MC_ENABLE_FULL_LOG = preprocessBoolEnvVariable(process.env.CEDALO_MC_ENABLE_FULL_LOG);
+const CEDALO_MC_SHOW_FEEDBACK_FORM = preprocessBoolEnvVariable(process.env.CEDALO_MC_SHOW_FEEDBACK_FORM);
+const CEDALO_MC_SHOW_STREAMSHEETS = preprocessBoolEnvVariable(process.env.CEDALO_MC_SHOW_STREAMSHEETS || true);
 const CEDALO_MC_USERNAME = process.env.CEDALO_MC_USERNAME;
 
 const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
 
 console.log(`Mosquitto Management Center version ${version.version || 'unknown'}`)
-console.log(`MMC is starting in the ${process.env.CEDALO_MC_MODE === 'offline' ? 'offline' : 'online'} mode`);
+console.log(`MMC is starting in ${process.env.CEDALO_MC_MODE === 'offline' ? 'offline' : 'online'} mode`);
 
 // const LicenseManager = require("../src/LicenseManager");
 const LicenseChecker = require('./src/license/LicenseChecker');
@@ -275,6 +280,7 @@ const init = async (licenseContainer) => {
 	addStreamsheetsConfig(config);
 	config.parameters = {
 		showFeedbackForm: CEDALO_MC_SHOW_FEEDBACK_FORM,
+		showStreemsheets: CEDALO_MC_SHOW_STREAMSHEETS,
 		rootUsername: CEDALO_MC_USERNAME,
 		ssoUsed: false
 	};
