@@ -53,7 +53,7 @@ const CLIENTS_TABLE_COLUMNS = [
 	{id: 'protocol', key: 'Protocol', align: 'left', width: '15%', sortable: false},
 	{id: 'address', key: 'IP Address', align: 'left', width: '15%', sortable: true},
 	{id: 'last_connected', key: 'Queue Usage', align: 'center', width: '15%', sortable: false},
-	{id: 'status', key: 'Connected', align: 'center', width: '5%', sortable: false},
+	{id: 'connected', key: 'Connected', align: 'center', width: '5%', sortable: true},
 	{id: 'disconnect', key: 'Disconnect', align: 'center', width: '5%', sortable: false},
 ];
 

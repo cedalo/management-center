@@ -268,6 +268,7 @@ const CustomDrawer = ({
 				<Divider/>
 				<Paper
 					style={{
+						zIndex: '5009',
 						position: 'absolute',
 						bottom: '0px',
 						boxShadow: 'none',
