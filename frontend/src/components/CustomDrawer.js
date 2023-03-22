@@ -111,9 +111,9 @@ const useStyles = makeStyles((theme) => ({
 		color: theme.palette.menuItem.color,
 	},
 	menuSubHeader: {
-		// color: 'white',
 		fontWeight: 'bold',
 		fontSize: '12px',
+		backgroundColor: theme.palette.background.paper,
 		textTransform: 'uppercase',
 		lineHeight: '24px'
 	},
