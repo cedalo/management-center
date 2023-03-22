@@ -15,7 +15,7 @@ import {Alert, AlertTitle} from '@material-ui/lab';
 import {useConfirm} from 'material-ui-confirm';
 import moment from 'moment';
 import {useSnackbar} from 'notistack';
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useEffect, useRef} from 'react';
 import Speedometer from 'react-d3-speedometer';
 import {connect} from 'react-redux';
 import {getConnectionInfo} from '../admin/certificates/components/certutils';
@@ -78,6 +78,7 @@ const Status = ({
 	const [waitingForSysTopic, setWaitingForSysTopic] = React.useState(true);
 	const [maxClients, setMaxClients] = React.useState();
 	const [listeners, setListeners] = React.useState(null);
+	const connectionRef = useRef(currentConnection);
 
 	const getMaxClients = () => {
 		const feature = brokerLicense?.features?.find(feature => 'mosquitto-clients' === feature.name);
@@ -98,13 +99,14 @@ const Status = ({
 		if (connected) {
 			const { id, error, listeners } = await fetchListeners(brokerClient, currentConnection.id);
 			// check response against current selected connection and ignore if they do not match
-			if (currentConnection?.id === id) applyListeners(listeners, error);
+			if (connectionRef.current?.id === id) applyListeners(listeners, error);
 		} else {
 			setListeners([]);
 		}
 	};
 
 	useEffect(() => {
+		connectionRef.current = currentConnection;
 		loadListeners();
 	}, [currentConnection]);
 
