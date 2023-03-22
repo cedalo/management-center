@@ -146,17 +146,18 @@ const useStyles = makeStyles((theme) => ({
 
 
 const CustomDrawer = ({
-						  userProfile = {},
-						  userManagementFeature,
-						  dynamicSecurityFeature,
-						  hideConnections,
-						  hideInfoPage,
-						  open,
-						  handleDrawerOpen,
-						  handleDrawerClose,
-						  currentConnectionName,
-						  connected,
-						  setShowFilter
+						userProfile = {},
+						userManagementFeature,
+						dynamicSecurityFeature,
+						hideConnections,
+						hideInfoPage,
+						open,
+						handleDrawerOpen,
+						handleDrawerClose,
+						currentConnectionName,
+						connected,
+						setShowFilter,
+						backendParameters
 					  }) => {
 	const classes = useStyles();
 	const theme = useTheme();
@@ -264,12 +265,14 @@ const CustomDrawer = ({
 							primary="Terminal"
 							icon={<TerminalIcon fontSize="small"/>}
 						/>}
-					{/*<ListItemLink*/}
-					{/*	classes={classes}*/}
-					{/*	to="/tools/streamsheets"*/}
-					{/*	primary="Streamsheets"*/}
-					{/*	icon={<StreamsheetsIcon fontSize="small"/>}*/}
-					{/*/>*/}
+					{/* {backendParameters.showStreemsheets ? 
+						<ListItemLink
+							classes={classes}
+							to="/tools/streamsheets"
+							primary="Streamsheets"
+							icon={<StreamsheetsIcon fontSize="small" />}
+						/>
+					: null} */}
 				</List>
 				<Divider/>
 				<Paper
@@ -398,7 +401,8 @@ const mapStateToProps = (state) => {
 		dynamicSecurityFeature: state.systemStatus?.features?.dynamicsecurity,
 		brokerConnections: state.brokerConnections.brokerConnections,
 		connected: state.brokerConnections.connected,
-		currentConnectionName: state.brokerConnections.currentConnectionName
+		currentConnectionName: state.brokerConnections.currentConnectionName,
+		backendParameters: state.backendParameters?.backendParameters,
 	};
 };
 
