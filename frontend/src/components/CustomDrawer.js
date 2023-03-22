@@ -291,6 +291,12 @@ const CustomDrawer = ({
 								primary="Cluster Management"
 								icon={<ClusterIcon fontSize="small"/>}
 							/>}
+							{atLeastAdmin(userProfile) && <ListItemLink
+								classes={classes}
+								to="/certs"
+								primary="Certificate Management"
+								icon={<CertificateIcon fontSize="small"/>}
+							/>}
 						</List>
 						<Divider/>
 						{adminOpen ? <Divider/> : null}
@@ -322,12 +328,6 @@ const CustomDrawer = ({
 							to="/user-groups"
 							primary="User Groups"
 							icon={<UserGroupsIcon fontSize="small"/>}
-						/>}
-						{adminOpen && atLeastAdmin(userProfile) && <ListItemLink
-							classes={classes}
-							to="/certs"
-							primary="Certificate Management"
-							icon={<CertificateIcon fontSize="small"/>}
 						/>}
 						{adminOpen && atLeastAdmin(userProfile) ? <ListItemLink
 							classes={classes}

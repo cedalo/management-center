@@ -35,12 +35,12 @@ const BadgesCell = withStyles((theme) => ({
 }))(TableCell);
 
 const CERT_TABLE_COLUMNS = [
-	{ id: 'info', key: '', sortable: false },
+	{ id: 'info', key: '', sortable: false, width: '10px' },
 	{ id: 'name', key: 'Descriptive Name', sortable: true },
 	{ id: 'filename', key: 'Filename', sortable: true },
 	{ id: 'broker', key: 'Used by', sortable: false },
-	{ id: 'deploy', key: '', sortable: false },
-	{ id: 'delete', key: '', sortable: false }
+	{ id: 'deploy', key: 'Deploy', align: 'center', sortable: false, width: '10px' },
+	{ id: 'delete', key: 'Delete', align: 'center', sortable: false, width: '10px' }
 ];
 
 const hasLicenseFeature = (name) => (license) => !!license?.features.some((feature) => feature.name === name);
@@ -72,7 +72,7 @@ const CustomTableRow = ({ cert, connections, handleDelete }) => {
 	return (
 		<>
 			<StyledTableRow hover key={cert.name} onClick={onSelect} style={{ cursor: 'pointer' }}>
-				<TableCell>
+				<TableCell style={{padding: '6px'}}>
 					<IconButton aria-label="expand row" size="small" onClick={onExpand}>
 						{isExpanded ? <CollapseIcon /> : <ExpandIcon />}
 					</IconButton>
@@ -86,14 +86,14 @@ const CustomTableRow = ({ cert, connections, handleDelete }) => {
 						}))}
 					/>
 				</BadgesCell>
-				<TableCell align="right">
+				<TableCell align="center">
 					<Tooltip title="Deploy/Undeploy Certificate">
 						<IconButton size="small" onClick={onDeploy}>
 							<UploadIcon fontSize="small" />
 						</IconButton>
 					</Tooltip>
 				</TableCell>
-				<TableCell align="right">
+				<TableCell align="center">
 					<Tooltip title="Delete Certificate">
 						<IconButton size="small" onClick={onDelete}>
 							<DeleteIcon fontSize="small" />
@@ -158,7 +158,7 @@ const Certificates = ({ connections, isCertSupported }) => {
 			if (error) enqueueSnackbar(failedDeleteMessage(cert, error), { variant: 'error' });
 		}
 	};
-	
+
 	const onAddNewCertificate = (event) => {
 		event.stopPropagation();
 		// navigate('/certs/detail/new');

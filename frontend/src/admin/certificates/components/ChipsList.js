@@ -5,7 +5,7 @@ import { Chip, Grid } from '@material-ui/core';
 const byLabel = (a, b) => {
 	if (a.label < b.label) return -1;
 	return a.label > b.label ? 1 : 0;
-}; 
+};
 const ChipsGrid = (values) => (
 	<Grid container spacing={2}>
 		{values.sort(byLabel).map((broker) => (
@@ -21,6 +21,7 @@ const ChipList = ({ component, values }) => {
 		<TextField
 			// label="Deployed to"
 			variant="outlined"
+			size="small"
 			component={component}
 			placeholder={values?.length ? '' : 'Not deployed'}
 			fullWidth
