@@ -74,7 +74,7 @@ const nestedRowUpperCased = nestRow((key) => key.toUpperCase());
 const getDetailTable = (info = {}) => {
 	const { ca, fingerprints, infoAccess, issuer, keyUsage, serialNumber, subject, subjectAltName, valid } = info;
 	return (
-		<Table aria-label="certinfo-detail">
+		<Table size="small" aria-label="certinfo-detail">
 			<colgroup>
 				<col style={{ width: '5%' }} />
 				<col style={{ width: '15%' }} />

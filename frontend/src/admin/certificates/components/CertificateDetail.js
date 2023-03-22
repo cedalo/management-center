@@ -25,6 +25,9 @@ const useStyles = makeStyles((theme) => ({
 		// fontSize: '0.8em',
 		borderRadius: '100%'
 	},
+	tableCell: {
+		padding: '2px'
+	},
 	closeIcon: {
 		maxHeight: '60%',
 		maxWidth: '60%'
@@ -169,9 +172,9 @@ const CertificateDetail = () => {
 				</Grid>
 				{isAvailable(cert) && (
 					<Grid item xs={12}>
-						<Table aria-label="certinfo-detail">
+						<Table size="small" aria-label="certinfo-detail">
 							<TableRow>
-								<TableCell width="2%">
+								<TableCell style={{width: "10px"}}>
 									<IconButton
 										aria-label="expand row"
 										size="small"
@@ -180,10 +183,10 @@ const CertificateDetail = () => {
 										{isExpanded ? <CollapseIcon/> : <ExpandIcon/>}
 									</IconButton>
 								</TableCell>
-								<TableCell width="10%" align="left">
+								<TableCell align="left">
 									Certificate Details
 								</TableCell>
-								<TableCell width="88%"></TableCell>
+								{/*<TableCell width="88%"></TableCell>*/}
 							</TableRow>
 							<TableCell style={{paddingBottom: 0, paddingTop: 0}} colSpan={6}>
 								<Collapse in={isExpanded} timeout="auto" unmountOnExit display="">
