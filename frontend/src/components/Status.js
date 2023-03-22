@@ -44,6 +44,15 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
+const fetchListeners = async (client, connId) => {
+	try {
+		const { data } = await client.getListeners(connId);
+		return { id: connId, listeners: data };
+	} catch (error) {
+		return { id: connId, listeners: [], error: error.message || error };
+	}
+};
+
 const Status = ({
 					brokerLicense,
 					brokerLicenseLoading,
@@ -75,30 +84,33 @@ const Status = ({
 		return feature ? feature.count : undefined;
 	}
 
+	const applyListeners = (listeners, error) => {
+		const ports = listeners.map(info => info.port).join(', ');
+		if (error) {
+			setListeners([]);
+		} else {
+			setListeners(ports);
+		}
+	}
+
 	const loadListeners = async () => {
-		try {
-			// const url = new URL(currentConnection?.externalEncryptedUrl || currentConnection?.externalUnencryptedUrl ||
-			// 	currentConnection?.internalUrl || currentConnection?.url);
-			setListeners(null);
-			if (connected) {
-				const { data } = await brokerClient.getListeners(currentConnection.id);
-				const ports = data.map(info => info.port).join(', ');
-				setListeners(ports);
-			}
-		} catch (error) {
+		setListeners(null);
+		if (connected) {
+			const { id, error, listeners } = await fetchListeners(brokerClient, currentConnection.id);
+			// check response against current selected connection and ignore if they do not match
+			if (currentConnection?.id === id) applyListeners(listeners, error);
+		} else {
 			setListeners([]);
 		}
 	};
 
 	useEffect(() => {
-		setMaxClients(getMaxClients());
 		loadListeners();
-	}, [brokerLicense]);
+	}, [currentConnection]);
 
 	useEffect(() => {
-		// loadListeners();
-
-	}, []);
+		setMaxClients(getMaxClients());
+	}, [brokerLicense]);
 
 	const cleanRef = () => {
 		if (timerRef.current) {
