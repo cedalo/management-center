@@ -234,7 +234,7 @@ const Status = ({
 			<div style={{height: 'calc(100% - 26px)'}}>
 				<div>
 					<ContainerHeader
-						title={`Status: ${currentConnectionName}`}
+						title={`System Info: ${currentConnectionName}`}
 						subTitle="Display the status and license info of the currenty selected broker. Hover over the info icon to get more information about the meaning of the values"
 						connectedWarning={!connected}
 					>
@@ -266,6 +266,7 @@ const Status = ({
 											label="Broker Traffic"
 											infoIcon
 											infoTooltip={<>The information displayed here is gathered from Mosquitto system topics. <br/>Click here to get a detailed explanation.</>}
+											infoLink="https://docs.cedalo.com/mosquitto/management-center/overview/inspection/mc-system#broker-traffic"
 											infos={[{
 												label: "Messages Sent",
 												value: toNumber(systemStatus?.$SYS?.broker?.messages?.sent)
@@ -296,6 +297,7 @@ const Status = ({
 											label="Publish"
 											infoIcon
 											infoTooltip={<>The information displayed here is gathered from Mosquitto system topics. <br/>Click here to get a detailed explanation.</>}
+											infoLink="https://docs.cedalo.com/mosquitto/management-center/overview/inspection/mc-system#publish"
 											infos={[{
 												label: "Messages Sent",
 												value: toNumber(systemStatus?.$SYS?.broker?.publish?.messages?.sent)
@@ -321,6 +323,7 @@ const Status = ({
 											label="Clients"
 											infoIcon
 											infoTooltip={<>The information displayed here is gathered from Mosquitto system topics. <br/>Click here to get a detailed explanation.</>}
+											infoLink="https://docs.cedalo.com/mosquitto/management-center/overview/inspection/mc-system#clients"
 											actionIcon={
 												<Tooltip title="Click to inspect clients">
 													<IconButton

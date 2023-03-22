@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-const Info = ({className, infos, infoIcon, infoTooltip, actionIcon, label, chart, icon, alignment, ...rest}) => {
+const Info = ({className, infos, infoIcon, infoTooltip, infoLink, actionIcon, label, chart, icon, alignment, ...rest}) => {
 	const classes = useStyles();
 
 	return (
@@ -56,7 +56,7 @@ const Info = ({className, infos, infoIcon, infoTooltip, actionIcon, label, chart
 									<InfoOutlined
 										onClick={(event) => {
 											event.stopPropagation();
-											window.open('https://docs.cedalo.com/management-center', '_blank')
+											window.open(infoLink, '_blank')
 										}}
 										fontSize="small"
 									/>
