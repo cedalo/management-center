@@ -52,7 +52,7 @@ const CLIENTS_TABLE_COLUMNS = [
 	{id: 'clientid', key: 'Client ID', align: 'left', width: '20%', sortable: true},
 	{id: 'protocol', key: 'Protocol', align: 'left', width: '15%', sortable: false},
 	{id: 'address', key: 'IP Address', align: 'left', width: '15%', sortable: true},
-	{id: 'last_connected', key: 'Queue Usage', align: 'center', width: '15%', sortable: false},
+	{id: 'messagesOut', key: 'Queue Usage', align: 'center', width: '15%', sortable: true},
 	{id: 'connected', key: 'Connected', align: 'center', width: '5%', sortable: true},
 	{id: 'disconnect', key: 'Disconnect', align: 'center', width: '5%', sortable: false},
 ];
@@ -225,6 +225,7 @@ const Clients = (props) => {
 		let sortedClients ;
 
 		sortedClients = clients.filter(clientL => clientL.username.startsWith(filter));
+		sortedClients.forEach(cl => cl.queues ? cl.messagesOut = cl.queues.messagesOut : cl.messagesOut = 0);
 
 		if (sortBy) {
 			sortedClients = doSort([...sortedClients], sortDirection, (a) => a[sortBy])
