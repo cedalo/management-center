@@ -25,6 +25,8 @@ import WaitDialog from '../../../components/WaitDialog';
 import {WebSocketContext} from '../../../websockets/WebSocket';
 import {updateCluster, updateClusters} from '../actions/actions';
 import { getSyncModeLabel } from './clusterutils';
+import DialogContentText from '@material-ui/core/DialogContentText';
+
 
 const StyledTableRow = withStyles((theme) => ({
 	root: {
@@ -204,13 +206,73 @@ const Clusters = (props) => {
 		});
 		try {
 			await brokerClient.deleteCluster(clustername);
-			enqueueSnackbar(`Cluster "${clustername}" successfully deleted`, {
+			enqueueSnackbar(`Cluster "${clustername}" deleted successfully`, {
 				variant: 'success'
 			});
 		} catch (error) {
-			enqueueSnackbar(`Error deleting cluster ${clustername}. Reason: ${error.message || error}`, {
+			enqueueSnackbar(`Error deleting cluster "${clustername}". Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
+			try {
+				await confirm({
+					title: 'Force delete cluster',
+					description: (
+						<>
+						<DialogContentText style={{ textAlign: "left" }}>
+						  <span>When deleting cluster {clustername} an error occured:</span>
+						  <br/>
+						  <span>"{error.message || error}"</span>
+						  <br/>
+						  <span>It might be that the cluster is dangling.</span>
+						  <br/>
+						  <br/>
+						  <span>Do you want to delete cluster configuration from MMC?</span>
+						  <br/>
+						  <span>Note that this is only an MMC-side action and does not ensure that the actual cluster will be deleted</span>
+						</DialogContentText>
+						</>
+					),
+					confirmationText: 'Yes',
+					cancellationText: 'No',
+					cancellationButtonProps: {
+						variant: 'contained'
+					},
+					confirmationButtonProps: {
+						color: 'primary',
+						variant: 'contained'
+					}
+				});
+				await confirm({
+					title: 'Force delete cluster',
+					description: (
+						<>
+							<span>Are you sure you want to delete configuration of the cluster "{clustername}" on the side of the Management Center?</span>
+							<br/>
+							<span>This action cannot be undone</span>
+						</>
+					),
+					confirmationText: 'Yes',
+					cancellationText: 'No',
+					cancellationButtonProps: {
+						variant: 'contained'
+					},
+					confirmationButtonProps: {
+						color: 'primary',
+						variant: 'contained'
+					}
+				});
+				try {
+					await brokerClient.deleteClusterConfiguration(clustername);
+					enqueueSnackbar(`Configuration of the cluster "${clustername}" deleted successfully`, {
+						variant: 'success'
+					});
+				} catch(error_) {
+					enqueueSnackbar(`Error deleting cluster "${clustername}" configuration. Reason: ${error_.message || error_}`, {
+						variant: 'error'
+					});
+				}
+			} catch(_) {
+			}
 		}
 		const clusters = await brokerClient.listClusters();
 		dispatch(updateClusters(clusters));
