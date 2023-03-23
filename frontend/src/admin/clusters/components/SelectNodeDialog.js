@@ -16,6 +16,12 @@ import TextField from '@material-ui/core/TextField';
 import { connect } from 'react-redux';
 import ConnectionNewComponent from '../../../components/ConnectionNewComponent';
 import SelectNodeComponent from './SelectNodeComponent';
+import {
+	getNodeIdsUniqueValidator,
+    getPrivateAddressesPresentValidator,
+    getBrokersPresentValidator
+} from '../validators';
+
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -53,10 +59,22 @@ const useStyles = makeStyles((theme) => ({
 const getDialogContent = ({
 	brokerConnections, 
 	node, 
+	setNode,
 	handleAddNode, 
 	classes, 
-	handleClose
+	handleClose,
+	cluster
 }) => {
+	const areNodeIdsUnique = getNodeIdsUniqueValidator([...cluster.nodes, node]);
+	const arePrivateAddressesPresent = getPrivateAddressesPresentValidator([...cluster.nodes, node]);
+	const areBrokersPresent = getBrokersPresentValidator([...cluster.nodes, node]);
+
+	const validate = () => {
+		const valid = arePrivateAddressesPresent()
+					&& areBrokersPresent()
+					&& areNodeIdsUnique(); 
+		return valid;
+	};
 
 	if (!brokerConnections || brokerConnections.length === 0) {
 		return <>
@@ -81,12 +99,12 @@ const getDialogContent = ({
 			</DialogTitle>
 			<DialogContent>
 				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
-					<SelectNodeComponent defaultNode={node} />
+					<SelectNodeComponent defaultNode={node} cluster={cluster} setNode={setNode} checkAllNodeIds={areNodeIdsUnique} />
 				</Grid>
 			</DialogContent>
 			<DialogActions>
 				<Button
-					disabled={node?.address === ''}
+					disabled={!validate()}
 					onClick={() => handleAddNode(node)}>
 					Add node
 				</Button>
@@ -97,6 +115,7 @@ const getDialogContent = ({
 const SelectNodeDialog = ({ brokerConnections, cluster, open, handleClose, handleAddNode }) => {
 	const classes = useStyles();
 	const [node, setNode] = React.useState({
+		nodeId: (cluster && cluster.nodes && cluster.nodes[cluster.nodes.length - 1].nodeId + 1) || undefined, // last cluster nodes' id + 1
 		port: 7000
 	});
 
@@ -110,10 +129,12 @@ const SelectNodeDialog = ({ brokerConnections, cluster, open, handleClose, handl
 			{
 				getDialogContent({
 					brokerConnections, 
-					node, 
+					node,
+					setNode,
 					handleAddNode, 
 					classes, 
-					handleClose
+					handleClose,
+					cluster
 				})
 			}
 		</Dialog>
@@ -123,6 +144,7 @@ const SelectNodeDialog = ({ brokerConnections, cluster, open, handleClose, handl
 const mapStateToProps = (state) => {
 	return {
 		brokerConnections: state.brokerConnections?.brokerConnections,
+		cluster: state.clusters?.cluster,
 	};
 };
 

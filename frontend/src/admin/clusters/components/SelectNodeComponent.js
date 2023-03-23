@@ -40,7 +40,6 @@ const validNodeIdRange = (nodeId) => {
 };
 
 const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, defaultNode = {}, setNode, checkAllNodeIds }) => {
-
 	const classes = useStyles();
 	const [validNodeId, setValidNodeId] = useState(true);
 
