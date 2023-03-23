@@ -18,7 +18,6 @@ import {useSnackbar} from 'notistack';
 import React, {useContext, useEffect, useRef} from 'react';
 import Speedometer from 'react-d3-speedometer';
 import {connect} from 'react-redux';
-import {getConnectionInfo} from '../admin/certificates/components/certutils';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
@@ -77,7 +76,7 @@ const Status = ({
 	const timerRef = React.useRef();
 	const [waitingForSysTopic, setWaitingForSysTopic] = React.useState(true);
 	const [maxClients, setMaxClients] = React.useState();
-	const [listeners, setListeners] = React.useState(null);
+	const [ports, setPorts] = React.useState();
 	const connectionRef = useRef(currentConnection);
 
 	const getMaxClients = () => {
@@ -86,22 +85,20 @@ const Status = ({
 	}
 
 	const applyListeners = (listeners, error) => {
-		const ports = listeners.map(info => info.port).join(', ');
+		const pts = listeners.map(info => info.port).join(', ');
 		if (error) {
-			setListeners([]);
+			setPorts();
 		} else {
-			setListeners(ports);
+			setPorts(pts);
 		}
 	}
 
 	const loadListeners = async () => {
-		setListeners(null);
+		setPorts();
 		if (connected) {
 			const { id, error, listeners } = await fetchListeners(brokerClient, currentConnection.id);
 			// check response against current selected connection and ignore if they do not match
 			if (connectionRef.current?.id === id) applyListeners(listeners, error);
-		} else {
-			setListeners([]);
 		}
 	};
 
@@ -205,10 +202,10 @@ const Status = ({
 		return dDisplay + hDisplay + mDisplay + sDisplay;
 	}
 
-	const toNumber = (number) => number === undefined || Number.isNaN(number) ? '' : new Intl.NumberFormat().format(number);
+	const toNumber = (number) => number === undefined || Number.isNaN(number) ? 'N/A' : new Intl.NumberFormat().format(number);
 	const formatBytes = (bytes, decimals = 2) => {
 		if (Number.isNaN(bytes)) {
-			return ''
+			return 'N/A'
 		}
 
 		if (!+bytes) return '0 Bytes'
@@ -230,12 +227,12 @@ const Status = ({
 
 	return (
 		<Box style={{height: '100%'}} data-tour="page-status">
-			<ContainerBreadCrumbs title="Home"/>
+			<ContainerBreadCrumbs title="Dashboard"/>
 			<div style={{height: 'calc(100% - 26px)'}}>
 				<div>
 					<ContainerHeader
-						title={`System Info: ${currentConnectionName}`}
-						subTitle="Display the status and license info of the currenty selected broker. Hover over the info icon to get more information about the meaning of the values"
+						title={`Broker: ${currentConnectionName}`}
+						subTitle="Display the status and license info of the selected broker. Hover over the info icon to get more information about each metric"
 						connectedWarning={!connected}
 					>
 						{systemStatus?.$SYS && connected && currentConnection?.supportsRestart === true &&
@@ -360,6 +357,9 @@ const Status = ({
 										<Info
 											label={brokerLicense && brokerLicense.edition ? "Client Usage" : "Client Usage not available"}
 											infos={[]}
+											infoIcon
+											infoTooltip={<>The information displayed here is gathered from Mosquitto system topics and your license. <br/>Click here to get a detailed explanation.</>}
+											infoLink="https://docs.cedalo.com/mosquitto/management-center/overview/inspection/mc-system#client-usage"
 											chart={
 												<div style={{margin: 'auto'}}>
 													<Speedometer
@@ -394,31 +394,34 @@ const Status = ({
 											</Alert> :
 											<Info
 												label={brokerLicense.edition ? "License" : "License info not available"}
+												infoIcon
+												infoTooltip={<>The information displayed here is gathered from your license. <br/>Click here to get a detailed explanation.</>}
+												infoLink="https://docs.cedalo.com/mosquitto/management-center/overview/inspection/mc-system#license"
 												infos={[{
 													label: "Edition",
-													value: brokerLicense.edition === 'pro' ? 'Premium' : brokerLicense.edition
+													value: brokerLicense.edition === 'pro' ? 'Premium' : (brokerLicense.edition  || 'N/A')
 												}, {
 													space: true,
 													label: "Maximum Clients",
-													value: maxClients
+													value: maxClients || 'N/A'
 												}, {
 													space: true,
 													label: "Issued by",
-													value: brokerLicense.issuedBy
+													value: brokerLicense.issuedBy || 'N/A'
 												}, {
 													label: "Issued to",
-													value: brokerLicense.issuedTo
+													value: brokerLicense.issuedTo || 'N/A'
 												}, {
 													space: true,
 													label: "Valid since",
 													value: brokerLicense.validSince ?
 														moment(brokerLicense.validSince).format('LLLL') :
-														''
+														'N/A'
 												}, {
 													label: "Valid until",
 													value: brokerLicense.validUntil ?
 														moment(brokerLicense.validUntil).format('LLLL') :
-														''
+														'N/A'
 												}]}
 												icon={<LicenseIcon/>}
 											/>}
@@ -426,18 +429,21 @@ const Status = ({
 									<Grid item xs={12} style={{paddingTop: '24px'}}>
 										<Info
 											label="Broker Info"
+											infoIcon
+											infoTooltip={<>The information displayed here is gathered from Mosquitto system topics and your configuration<br/>Click here to get a detailed explanation.</>}
+											infoLink="https://docs.cedalo.com/mosquitto/management-center/overview/inspection/mc-system#broker-info"
 											infos={[{
 												label: "Uptime",
 												value: secondsToDhms(systemStatus?.$SYS?.broker?.uptime),
 											}, {
 												label: "Version",
-												value: systemStatus?.$SYS?.broker?.version,
+												value: systemStatus?.$SYS?.broker?.version || 'N/A',
 											}, {
 												label: "URL",
 												value: currentConnection?.externalEncryptedUrl || currentConnection?.externalUnencryptedUrl || currentConnection?.internalUrl || currentConnection?.url,
 											}, {
 												label: "Open Ports",
-												value: listeners || '',
+												value: ports || 'N/A',
 											}]}
 											icon={<InfoIcon/>}
 										/>

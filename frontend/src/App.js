@@ -200,15 +200,6 @@ export default function (props) {
 			}
 		}
 
-		const onTourStateChange = (event) => {
-			if (event.action === 'close' || event.action === 'reset') {
-				// TODO: this is a hack to prevent the
-				// strange main menu behavior when the
-				// in app tour selects the menu items
-				window.location.reload();
-			}
-		};
-
 		const handleChange = (event, newValue) => {
 			setValue(newValue);
 		};
