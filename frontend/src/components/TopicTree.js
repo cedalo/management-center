@@ -152,7 +152,7 @@ function StyledTreeItem(props) {
 						<Tooltip title="Number of subtopics">
 							<Typography style={{minWidth: '75px'}} variant="body2" color="textPrimary"
 										className={classes.label}>
-								{topicsCounter}
+								{topicsCounter ? topicsCounter : ''}
 							</Typography>
 						</Tooltip>
 					)}
