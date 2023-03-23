@@ -305,7 +305,7 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
 					<ContainerHeader
 						title="Inspect Topic Tree"
-						subTitle="Topic tree show an overview of all topics that have been addressed by a client. If you
+						subTitle="Topic tree shows an overview of all topics that have been addressed by a client. If you
 						click on a topic, additional information for the topic will be displayed right to the tree."
 						connectedWarning={!connected}
 						warnings={() => {

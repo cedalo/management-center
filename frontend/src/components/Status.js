@@ -227,7 +227,7 @@ const Status = ({
 
 	return (
 		<Box style={{height: '100%'}} data-tour="page-status">
-			<ContainerBreadCrumbs title="Dashboard"/>
+			<ContainerBreadCrumbs title="Home"/>
 			<div style={{height: 'calc(100% - 26px)'}}>
 				<div>
 					<ContainerHeader
