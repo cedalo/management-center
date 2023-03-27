@@ -12,8 +12,8 @@ const API_INSPECT = 'cedalo/inspect';
 const API_DYNAMIC_SECURITY = 'dynamic-security';
 const API_STREAMS_PROCESSING = 'stream-processing';
 const API_HIGH_AVAILABILITY = 'cedalo/ha';
-const ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED = 'You are not authorized to access the user management.';
-const ERROR_MESSAGE_API_NOT_FOUND = 'API not found. Note that this is a premium feature.';
+const ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED = 'You are not authorized to access the user management';
+const ERROR_MESSAGE_API_NOT_FOUND = 'API not found. Note that this is a premium feature';
 const NOT_AUTHORIZED_MESSAGE = 'Not authorized';
 
 
@@ -1967,5 +1967,17 @@ module.exports = class BaseMosquittoProxyClient {
 			API_INSPECT
 		);
 		return data?.clients;
+	}
+
+	// Client Control
+	async disconnectClient(clientId) {
+		const response = await this.sendRequest({
+			id: createID(),
+			command: 'disconnectClient',
+			type: 'request',
+			request: 'disconnectClient',
+			clientId
+		});
+		return response.response;
 	}
 }

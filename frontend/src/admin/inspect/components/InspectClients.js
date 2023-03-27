@@ -23,6 +23,7 @@ import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
 import {WebSocketContext} from '../../../websockets/WebSocket';
 import {updateInspectClient, updateInspectClients} from '../actions/actions';
+import {useSnackbar} from 'notistack';
 
 
 const StyledTableRow = withStyles((theme) => ({
@@ -74,7 +75,9 @@ const dateToString = (date, separator = ' ') => {
 		+ (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
 };
 
-const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelectClient, small, medium) => {
+
+
+const createClientsTable = (clients, classes, props, onDisconnectClient, onUpdateUserRoles, onSelectClient, small, medium) => {
 	const {inspectFeature, onSort, sortBy, sortDirection, disableSort, doSort} = props;
 
 
@@ -168,8 +171,9 @@ const createClientsTable = (clients, classes, props, onUpdateUserRoles, onSelect
 												<Tooltip title="Click to disconnect client">
 													<IconButton
 														size="small"
-														onClick={(event) => {
+														onClick={async (event) => {
 															event.stopPropagation();
+															await onDisconnectClient(client);
 														}}
 														aria-label="delete"
 													>
@@ -200,11 +204,29 @@ const Clients = (props) => {
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const {client: brokerClient} = context;
-	const {inspectFeature, userProfile, roles = [], clients = [], filter, sortDirection, sortBy, doSort, connected} = props;
+	const {inspectFeature, userProfile, roles = [], clients = [], filter, sortDirection, sortBy, doSort, connected } = props;
 	const [filteredClients, setFilteredClients] = useState(clients);
 	const theme = useTheme();
 	const small = useMediaQuery(theme.breakpoints.down('xs'));
 	const medium = useMediaQuery(theme.breakpoints.between('sm', 'sm'));
+	const { enqueueSnackbar } = useSnackbar();
+
+	const onDisconnectClient = async (client) => {
+		try {
+			await brokerClient.disconnectClient(client.clientid);
+			enqueueSnackbar(`Disconnect sent to client "${client.clientid}"`, {
+				variant: 'success'
+			});
+		} catch(error) {
+			console.error(error);
+			enqueueSnackbar(`Error disconnecting client "${client.clientid}". Reason: ${error.message || error}`, {
+				variant: 'error'
+			});
+		}
+		const refreshedInspectClients = await brokerClient.inspectListClients();
+		dispatch(updateInspectClients(refreshedInspectClients));
+	};
+
 	const onUpdateUserRoles = async (user, roles = []) => {
 		if (!roles) {
 			roles = [];
@@ -248,7 +270,7 @@ const Clients = (props) => {
 	const onReload = async () => {
 		const clients = await brokerClient.inspectListClients();
 		dispatch(updateInspectClients(clients));
-	}
+	};
 
 	return (
 		<Box style={{height: '100%'}} data-tour="page-clientinspection">
@@ -284,7 +306,7 @@ const Clients = (props) => {
 							}}
 						/>
 					</ContainerHeader>
-					{connected ? createClientsTable(filteredClients, classes, props, onUpdateUserRoles, onSelectClient, small, medium) : null}
+					{connected ? createClientsTable(filteredClients, classes, props, onDisconnectClient, onUpdateUserRoles, onSelectClient, small, medium) : null}
 				</div>
 			</div>
 		</Box>
