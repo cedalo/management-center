@@ -559,6 +559,8 @@ const init = async (licenseContainer) => {
 	// TODO: extract in separate WebSocket API class
 	const handleRequestMessage = async (message, client, user = {}) => {
 		const { request, ...data } = message;
+		const brokerId = context.brokerManager.getBrokerConnectionByClient(client)?.connection?.id;
+
 		switch (request) {
 			case 'unloadPlugin':
 				return context.runAction(user, 'plugin/unload', data);
@@ -659,7 +661,7 @@ const init = async (licenseContainer) => {
 				if (context.security.acl.noRestrictedRoles(user)) {
 					const actionName = context.requestHandlers.get(request);
 					if (actionName) {
-						const result = await context.runAction(user, actionName, data);
+						const result = await context.runAction(user, actionName, data, brokerId);
 						return result;
 					} else {
 						throw new Error(`Unsupported request: ${request}`);
@@ -900,7 +902,7 @@ const init = async (licenseContainer) => {
 		registerAction: ({ type, isModifying, fn, filter = (x) => x }) => {
 			context.actions[type] = { fn, filter, isModifying };
 		},
-		runAction: (user, type, data) => {
+		runAction: (user, type, data, brokerId) => {
 			try {
 				const action = context.actions[type];
 				if (!action) {
@@ -912,7 +914,7 @@ const init = async (licenseContainer) => {
 				let pendingResult;
 				let result;
 				try {
-					pendingResult = action.fn({ ...context, user }, data);
+					pendingResult = action.fn({ ...context, user, brokerId }, data);
 					return pendingResult;
 				} catch (error) {
 					errorMessage = error.message || 'Unknown error!';
