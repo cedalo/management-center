@@ -197,7 +197,7 @@ const ClusterDetail = (props) => {
 					className={classes.textField}
 				/>
 			</Grid>
-			<Grid item xs={12} sm={8}>
+			<Grid item xs={12} sm={6}>
 				<TextField
 					size="small"
 					disabled={!editMode}
@@ -213,6 +213,19 @@ const ClusterDetail = (props) => {
 						}
 					}}
 					defaultValue=""
+					variant="outlined"
+					fullWidth
+					className={classes.textField}
+				/>
+			</Grid>
+			<Grid item xs={12} sm={2}>
+				<TextField
+					size="small"
+					disabled={true}
+					id="syncmode"
+					label="Syncmode"
+					value={cluster.syncmode}
+					defaultValue="full"
 					variant="outlined"
 					fullWidth
 					className={classes.textField}
