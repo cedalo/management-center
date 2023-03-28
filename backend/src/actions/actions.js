@@ -115,6 +115,22 @@ const createConnectionAction = {
 			throw error;
 		}
 		return configManager.connections;
+	},
+	filter: (data) => {
+		const {
+			connection: { caFile, certFile, keyFile, credentials, ...rest },
+			...filteredData
+		} = data;
+		return {
+			...filteredData,
+			connection: {
+				...rest,
+				caFile: !!caFile,
+				certFile: !!certFile,
+				keyFile: !!keyFile,
+				credentials: credentials && Object.keys(credentials).length >0
+			}
+		};
 	}
 };
 const modifyConnectionAction = {
@@ -127,6 +143,22 @@ const modifyConnectionAction = {
 		configManager.updateConnection(oldConnectionId, connection);
 
 		return configManager.connections;
+	},
+	filter: (data) => {
+		const {
+			connection: { caFile, certFile, keyFile, credentials, ...rest },
+			...filteredData
+		} = data;
+		return {
+			...filteredData,
+			connection: {
+				...rest,
+				caFile: !!caFile,
+				certFile: !!certFile,
+				keyFile: !!keyFile,
+				credentials: credentials && Object.keys(credentials).length >0
+			}
+		};
 	}
 };
 const deleteConnectionAction = {
@@ -231,8 +263,8 @@ const commandAction = {
 			throw new Error('Client not connected to any broker');
 		}
 	},
-	filter: (action) => {
-		const { api, command } = action;
+	filter: (data) => {
+		const { api, command } = data;
 		if (api === 'dynamic-security') {
 			switch (command.command) {
 				case 'createClient':
