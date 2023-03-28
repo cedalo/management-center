@@ -1,3 +1,4 @@
+const os = require('os');
 const NodeMosquittoClient = require('../client/NodeMosquittoClient');
 const { AuthError } = require('../plugins/Errors');
 const { stripConnectionsCredentials } = require('../utils/utils');
@@ -316,7 +317,7 @@ const getSettingsAction = {
 const updateSettingsAction = {
 	type: 'settings/update',
 	isModifying: true,
-	fn: async ({ user, settingsManager, security }, { settings }) => {
+	fn: async ({ globalSystem, usageTracker, user, settingsManager, security }, { settings }) => {
 		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin)) {
 			throw AuthError.notAllowed();
 		}
