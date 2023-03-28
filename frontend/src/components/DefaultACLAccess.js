@@ -87,7 +87,7 @@ const DefaultACLAccess = ({defaultACLAccess}) => {
 					<ContainerHeader
 						title="Default ACL Access"
 						buttonsWidth="350px"
-						subTitle="TODO"
+						subTitle="Define the default Access Control List"
 					/>
 					<div style={{height: '100%', overflowY: 'auto'}}>
 					<Hidden xsDown implementation="css">

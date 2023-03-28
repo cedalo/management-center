@@ -66,8 +66,8 @@ const RoleNew = () => {
 		<div>
 			<ContainerBreadCrumbs title="New" links={[{name: 'Home', route: '/home'}, {name: 'Roles', route: '/roles'}]}/>
 			<ContainerHeader
-				title={`New Group`}
-				subTitle="Create a new group by assigning a unique name."
+				title={`New Role`}
+				subTitle="Create a new role by assigning a unique name."
 			/>
 			<Grid container spacing={1} alignItems="flex-end">
 				<Grid item xs={12}>
@@ -107,7 +107,7 @@ const RoleNew = () => {
 				<Grid item xs={12}>
 					<TextField
 						id="textdescription"
-						label="Text description"
+						label="Description"
 						onChange={(event) => setTextdescription(event.target.value)}
 						defaultValue=""
 						variant="outlined"

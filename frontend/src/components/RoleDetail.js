@@ -330,7 +330,7 @@ const RoleDetail = (props) => {
 								}
 							}}
 							id="textdescription"
-							label="Text description"
+							label="Description"
 							value={updatedRole.textdescription}
 							defaultValue=""
 							variant="outlined"

@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 	tableContainer: {
 		minHeight: '500px',
 		'& td:nth-child(2)': {
-			minWidth: '100px'
+			// minWidth: '100px'
 		}
 	},
 	badges: {
@@ -60,13 +60,13 @@ const clientShape = PropTypes.shape({
 });
 
 const USER_TABLE_COLUMNS = [
-	{id: 'name', key: 'Name'},
-	{id: 'clientid', key: 'ID'},
-	{id: 'textname', key: 'Text Name'},
-	{id: 'textdescription', key: 'Description'},
-	{id: 'groups', key: 'Groups'},
-	{id: 'roles', key: 'Roles'},
-	{id: 'actions', key: ' '}
+	{id: 'name', key: 'Name', width: '10%'},
+	{id: 'clientid', key: 'ID', width: '10%'},
+	{id: 'textname', key: 'Text Name', width: '10%'},
+	{id: 'textdescription', key: 'Description', width: '15%'},
+	{id: 'groups', key: 'Groups', width: '20%'},
+	{id: 'roles', key: 'Roles', width: '20%'},
+	{id: 'actions', key: 'Actions', width: '5%'}
 ];
 
 const FormattedClientType = (props) => {
@@ -324,6 +324,7 @@ const Clients = (props) => {
 												<TableCell
 													key={column.id}
 													style={{
+														width: column.width,
 														display: (!small && !medium) ||
 														(column.id === 'name' && (small || medium)) ||
 														(column.id === 'groups' && (small || medium)) ||
@@ -335,7 +336,6 @@ const Clients = (props) => {
 													{column.key}
 												</TableCell>
 											))}
-											<TableCell/>
 										</TableRow>
 									</TableHead>
 									<TableBody>
@@ -397,22 +397,8 @@ const Clients = (props) => {
 																/>
 															</TableCell>
 														}
-														<TableCell style={{padding: '0px', width: '20px'}}>
-															<Tooltip title="Delete client">
-																<IconButton
-																	disabled={defaultClient?.username === client.username}
-																	size="small"
-																	onClick={(event) => {
-																		event.stopPropagation();
-																		onDeleteClient(client.username);
-																	}}
-																>
-																	<DeleteIcon fontSize="small"/>
-																</IconButton>
-															</Tooltip>
-														</TableCell>
 														{small || medium ? null :
-															<TableCell style={{padding: '0px', width: '20px'}}>
+															<TableCell style={{padding: '0px'}} align="center">
 																<Tooltip title="Enable / disable client">
 																	<Checkbox
 																		color="primary"
@@ -431,6 +417,18 @@ const Clients = (props) => {
 																		}}
 																		inputProps={{'aria-label': 'Enable plugin at next startup'}}
 																	/>
+																</Tooltip>
+																<Tooltip title="Delete client">
+																	<IconButton
+																		disabled={defaultClient?.username === client.username}
+																		size="small"
+																		onClick={(event) => {
+																			event.stopPropagation();
+																			onDeleteClient(client.username);
+																		}}
+																	>
+																		<DeleteIcon fontSize="small"/>
+																	</IconButton>
 																</Tooltip>
 															</TableCell>
 														}

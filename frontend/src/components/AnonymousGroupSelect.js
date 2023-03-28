@@ -19,11 +19,11 @@ const AnonymousGroupSelect = ({ anonymousGroup, groupsAll = [], onUpdateAnonymou
 
 	return <FormControl id="anonymous-group-select" variant="outlined">
 			<TextField
-				label="Anonymous group"
+				label="Anonymous Group"
 				variant="outlined"
 				select
 				size="small"
-				placeholder="Select anonymous group"
+				placeholder="Select Anonymous Group"
 				style={{width: '200px', marginTop: '5px'}}
 				options={groupSuggestions}
 				value={anonymousGroup?.groupname || ''}
