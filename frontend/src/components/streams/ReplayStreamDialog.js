@@ -137,7 +137,7 @@ export default function ReplayStreamDialog({ stream, open, handleReplay, handleC
 						</Grid>
 					</Grid>
 				</DialogContent>
-				<DialogActions>
+				<DialogActions style={{padding: '15px 24px'}}>
 					<Button
 						onClick={handleClose}
 						variant="contained"
