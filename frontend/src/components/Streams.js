@@ -42,14 +42,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const STREAM_TABLE_COLUMNS = [
-	{id: 'name', key: 'Stream Name'},
-	{id: 'textDescription', key: 'Description'},
-	{id: 'sourcetopic', key: 'Source Topic'},
-	{id: 'targettopic', key: 'Target Topic'},
-	{id: 'process', key: 'Process'},
-	{id: 'persist', key: 'Persist'},
-	{id: 'active', key: 'Active'},
-	{id: 'action', key: 'Action', width: '115px'},
+	{id: 'name', key: 'Name', width: '10%', align: 'left'},
+	{id: 'textDescription', key: 'Description', width: '15%', align: 'left'},
+	{id: 'sourcetopic', key: 'Source Topic', width: '20%', align: 'left'},
+	{id: 'targettopic', key: 'Target Topic', width: '20%', align: 'left'},
+	{id: 'process', key: 'Process', width: '5%', align: 'center'},
+	{id: 'persist', key: 'Persist', width: '5%', align: 'center'},
+	{id: 'active', key: 'Active', width: '5%', align: 'center'},
+	{id: 'action', key: 'Action', width: '10%', align: 'center'},
 ];
 
 const Streams = (props) => {
@@ -277,6 +277,7 @@ const Streams = (props) => {
 												<TableCell
 													key={column.id}
 													sortDirection={sortBy === column.id ? sortDirection : false}
+													align={column.align}
 													style={{
 														width: column.width,
 														display: (!small && !medium) ||
@@ -286,7 +287,9 @@ const Streams = (props) => {
 														(column.id === 'targettopic' && medium) ? undefined : 'none'
 													}}
 												>
+													<span>
 													{column.key}
+														</span>
 												</TableCell>
 											))}
 										</TableRow>
@@ -318,7 +321,7 @@ const Streams = (props) => {
 													{/*	<TableCell>{stream.ttl}</TableCell>*/}
 													{/*]}*/}
 													{small || medium ? null : [
-														<TableCell>
+														<TableCell align="center">
 															<Tooltip title="Process stream">
 																<Switch
 																	color="primary"
@@ -339,7 +342,7 @@ const Streams = (props) => {
 																/>
 															</Tooltip>
 														</TableCell>,
-														<TableCell>
+														<TableCell align="center">
 															<Tooltip title="Persist stream">
 																<Switch
 																	color="primary"
@@ -360,7 +363,7 @@ const Streams = (props) => {
 																/>
 															</Tooltip>
 														</TableCell>,
-														<TableCell>
+														<TableCell align="center">
 															<Tooltip title="Activate / Deactivate stream">
 																<Switch
 																	color="primary"
@@ -380,42 +383,44 @@ const Streams = (props) => {
 															</Tooltip>
 														</TableCell>
 													]}
-													<TableCell align="right">
-														<Tooltip title="Clear stream messages">
-															<IconButton
-																disabled={!stream.persist}
-																size="small"
-																onClick={(event) => {
-																	event.stopPropagation();
-																	onClearStreamMessages(stream.streamname);
-																}}
-															>
-																<ClearStreamIcon fontSize="small"/>
-															</IconButton>
-														</Tooltip>
-														<Tooltip title="Replay stream">
-															<IconButton
-																disabled={!stream.persist}
-																size="small"
-																onClick={(event) => {
-																	event.stopPropagation();
-																	onReplayStream(stream);
-																}}
-															>
-																<ReplayIcon fontSize="small"/>
-															</IconButton>
-														</Tooltip>
-														<Tooltip title="Delete stream">
-															<IconButton
-																size="small"
-																onClick={(event) => {
-																	event.stopPropagation();
-																	onDeleteStream(stream.streamname);
-																}}
-															>
-																<DeleteIcon fontSize="small"/>
-															</IconButton>
-														</Tooltip>
+													<TableCell align="center">
+														<div style={{display: 'flex'}}>
+															<Tooltip title="Clear stream messages">
+																<IconButton
+																	disabled={!stream.persist}
+																	size="small"
+																	onClick={(event) => {
+																		event.stopPropagation();
+																		onClearStreamMessages(stream.streamname);
+																	}}
+																>
+																	<ClearStreamIcon fontSize="small"/>
+																</IconButton>
+															</Tooltip>
+															<Tooltip title="Replay stream">
+																<IconButton
+																	disabled={!stream.persist}
+																	size="small"
+																	onClick={(event) => {
+																		event.stopPropagation();
+																		onReplayStream(stream);
+																	}}
+																>
+																	<ReplayIcon fontSize="small"/>
+																</IconButton>
+															</Tooltip>
+															<Tooltip title="Delete stream">
+																<IconButton
+																	size="small"
+																	onClick={(event) => {
+																		event.stopPropagation();
+																		onDeleteStream(stream.streamname);
+																	}}
+																>
+																	<DeleteIcon fontSize="small"/>
+																</IconButton>
+															</Tooltip>
+														</div>
 													</TableCell>
 												</StyledTableRow>
 											))}
