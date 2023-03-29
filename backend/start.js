@@ -768,11 +768,8 @@ const init = async (licenseContainer) => {
 			context.actions[type] = { fn, filter, isModifying };
 		},
 		runAction: (user, type, data, extendedContext = {}) => {
-			try {
-				const action = context.actions[type];
-				if (!action) {
-					throw new Error(`Unknown action: "${type}"`);
-				}
+			const action = context.actions[type];
+			if (action) {
 				const { isModifying } = action;
 
 				let errorMessage;
@@ -806,9 +803,8 @@ const init = async (licenseContainer) => {
 							context.actionEmitter.emit(eventName, eventData);
 						});
 				}
-			} catch (error) {
-				console.error(error);
 			}
+			console.error(`Unknown action: "${type}"`);
 		},
 		broadcastWebSocketMessage,
 		sendTopicTreeUpdate,
