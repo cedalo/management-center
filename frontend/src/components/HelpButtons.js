@@ -25,6 +25,55 @@ export default function HelpButtons(props) {
 		return null;
 	}
 
+	const getHelpContext = () => {
+		// let link = 'https://docs.cedalo.com/management-center';
+		const basePath = 'https://cedalo.github.io/documentation-staging/';
+		let link = `${basePath}mosquitto/next/management-center/overview/`;
+		const path = location.pathname.split('/');
+
+		if (path.length < 2) {
+			return `${basePath}mosquitto/next/management-center/introduction/`;
+		}
+
+		switch (path[1]) {
+		case 'home':
+			link += 'inspection/mc-system';
+			break;
+		case 'topics':
+			link += 'inspection/mc-topics';
+			break;
+		case 'clientinspection':
+			link += 'inspection/mc-clientinspection';
+			break;
+		case 'clients':
+		case 'groups':
+		case 'roles':
+		case 'streams':
+		case 'terminal':
+		case 'connections':
+		case 'clusters':
+			link += `configuration/mc-${path[1]}`;
+			break;
+		case 'certs':
+			link += `configuration/mc-certificates`;
+			break;
+		case 'user-groups':
+		case 'users':
+		case 'settings':
+		case 'tokens':
+			link += `administraion/mc-${path[1]}`;
+			break;
+		case 'info':
+			link += `admimistration/mc-information`;
+			break;
+		default:
+			link = `${basePath}mosquitto/next/management-center/introduction/`;
+			break;
+		}
+
+		return link;
+	}
+
 	return <>
 		<Tooltip title="Start tour">
 			<IconButton
@@ -48,7 +97,7 @@ export default function HelpButtons(props) {
 				aria-label="Tour"
 				aria-controls="tour"
 				aria-haspopup="true"
-				onClick={() => window.open('https://docs.cedalo.com/management-center', '_blank')}
+				onClick={() => window.open(getHelpContext(), '_blank')}
 				className={classes.toolbarButton}
 			>
 				<HelpIcon fontSize="small"/>
