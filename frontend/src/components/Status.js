@@ -1,4 +1,4 @@
-import {Box, colors, IconButton, makeStyles, Tooltip} from '@material-ui/core';
+import {Box, IconButton, makeStyles, Tooltip} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
@@ -6,7 +6,6 @@ import Grid from '@material-ui/core/Grid';
 import InspectClientsIcon from '@material-ui/icons/RecordVoiceOver';
 import DataSentIcon from '@material-ui/icons/RssFeed';
 import InfoIcon from '@material-ui/icons/Info';
-import MessageIcon from '@material-ui/icons/Email';
 import BrokerIcon from '@material-ui/icons/LeakAdd';
 import ClientIcon from '@material-ui/icons/Person';
 import RestartIcon from '@material-ui/icons/Replay';
@@ -23,7 +22,7 @@ import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import Info from './Info';
 import {useTheme} from '@material-ui/core/styles';
-import {Link as RouterLink, useHistory} from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -43,6 +42,29 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
+// Browser URL class does not work with mqtt protocol
+const parseUrl = (url) => {
+	const m = url.match(/^((?:([^:\/?#]+:)(?:\/\/))?((?:([^\/?#:]*)(?::([^\/?#:]*))?@)?([^\/?#:]*)(?::([^\/?#:]*))?))?([^?#]*)(\?[^#]*)?(#.*)?$/),
+		r = {
+			hash: m[10] || "",                   // #asd
+			host: m[3] || "",                    // localhost:257
+			hostname: m[6] || "",                // localhost
+			href: m[0] || "",                    // http://username:password@localhost:257/deploy/?asd=asd#asd
+			origin: m[1] || "",                  // http://username:password@localhost:257
+			pathname: m[8] || (m[1] ? "/" : ""), // /deploy/
+			port: m[7] || "",                    // 257
+			protocol: m[2] || "",                // http:
+			search: m[9] || "",                  // ?asd=asd
+			username: m[4] || "",                // username
+			password: m[5] || ""                 // password
+		};
+	if (r.protocol.length === 2) {
+		r.protocol = "file:///" + r.protocol.toUpperCase();
+		r.origin = r.protocol + "//" + r.host;
+	}
+	r.href = r.origin + r.pathname + r.search + r.hash;
+	return r;
+};
 const fetchListeners = async (client, connId) => {
 	try {
 		const { data } = await client.getListeners(connId);
@@ -69,14 +91,10 @@ const Status = ({
 	const {enqueueSnackbar} = useSnackbar();
 	const context = useContext(WebSocketContext);
 	const {client: brokerClient} = context;
-	const totalMessages = parseInt(systemStatus?.$SYS?.broker?.messages?.sent);
-	const publishMessages = (parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent) / totalMessages) * 100;
-	const otherMessages =
-		((totalMessages - parseInt(systemStatus?.$SYS?.broker?.publish?.messages?.sent)) / totalMessages) * 100;
 	const timerRef = React.useRef();
 	const [waitingForSysTopic, setWaitingForSysTopic] = React.useState(true);
 	const [maxClients, setMaxClients] = React.useState();
-	const [ports, setPorts] = React.useState();
+	const [listeners, setListeners] = React.useState();
 	const connectionRef = useRef(currentConnection);
 
 	const getMaxClients = () => {
@@ -84,17 +102,12 @@ const Status = ({
 		return feature ? feature.count : undefined;
 	}
 
-	const applyListeners = (listeners, error) => {
-		const pts = listeners.map(info => info.port).join(', ');
-		if (error) {
-			setPorts();
-		} else {
-			setPorts(pts);
-		}
+	const applyListeners = (lis, error) => {
+		setListeners(error ? undefined : lis);
 	}
 
 	const loadListeners = async () => {
-		setPorts();
+		setListeners();
 		if (connected) {
 			const { id, error, listeners } = await fetchListeners(brokerClient, currentConnection.id);
 			// check response against current selected connection and ignore if they do not match
@@ -160,34 +173,6 @@ const Status = ({
 		}
 	}
 
-	const data = {
-		datasets: [
-			{
-				data: [publishMessages, otherMessages],
-				backgroundColor: [colors.indigo[500], colors.red[600], colors.orange[600]],
-				borderWidth: 8,
-				borderColor: colors.common.white,
-				hoverBorderColor: colors.common.white
-			}
-		],
-		labels: ['PUBLISH', 'Other']
-	};
-
-	const dataDescriptions = [
-		{
-			title: 'PUBLISH',
-			value: Math.round(publishMessages),
-			icon: MessageIcon,
-			color: colors.indigo[500]
-		},
-		{
-			title: 'Other',
-			value: Math.round(otherMessages),
-			icon: MessageIcon,
-			color: colors.red[600]
-		}
-	];
-
 	const secondsToDhms = (seconds) => {
 		seconds = parseInt(seconds);
 		const d = Math.floor(seconds / (3600 * 24));
@@ -218,8 +203,58 @@ const Status = ({
 		return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 	}
 
-	const host = process.env.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING === 'undefined' ?
-		undefined : process.env.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING;
+	const getBrokerInfos = () => {
+		const host = process.env.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING === 'undefined' ?
+			undefined : process.env.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING;
+		const mqtt = process.env.CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING === 'undefined' ?
+			false : process.env.CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING === 'mosquitto.true';
+		const mqtts = process.env.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING === 'undefined' ?
+			false : process.env.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING === 'mosquitto.true';
+		const ws = process.env.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING === 'undefined' ?
+			false : process.env.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING === 'mosquitto.true';
+		// const connInfo = parseUrl('mqtt://mosquitto:1883');
+		const connInfo = parseUrl(currentConnection.url); //  === "mosquitto";
+		const hostInfo = parseUrl(host);
+		const ver1 = connInfo && connInfo.hostname === 'mosquitto';
+
+		const infos = [{
+			label: "Uptime",
+			value: secondsToDhms(systemStatus?.$SYS?.broker?.uptime),
+		}, {
+			label: "Version",
+			value: systemStatus?.$SYS?.broker?.version || 'N/A',
+		}];
+
+		if (ver1) {
+			const wsListener = listeners && listeners.find(listener => listener.port === 8090);
+			const requireCerts = wsListener && wsListener.requireCertificate;
+			infos.push({
+				label: "MQTT Connection",
+				value: mqtt && hostInfo ? `mqtt://${hostInfo.hostname}:1883` : 'N/A'
+			});
+			infos.push({
+				label: "MQTT Connection (TLS)",
+				value: mqtts && hostInfo ? `mqtts://${hostInfo.hostname}:8883`: 'N/A'
+			});
+			if (requireCerts) {
+				infos.push({
+					label: "Websocket Connection (TLS)",
+					value: ws && hostInfo ? `wss://${hostInfo.hostname}:8090` : 'N/A',
+				});
+			} else {
+				infos.push({
+					label: "Websocket Connection (TLS)",
+					value: ws && hostInfo ? `wss://${hostInfo.hostname}:443/mqtt` : 'N/A'
+				});
+			}
+		} else {
+			infos.push({
+				label: "URL",
+				value: currentConnection?.externalEncryptedUrl || currentConnection?.externalUnencryptedUrl || currentConnection?.internalUrl || currentConnection?.url
+			});
+		}
+		return infos;
+	};
 
 	return (
 		<Box style={{height: '100%'}} data-tour="page-status">
@@ -428,20 +463,7 @@ const Status = ({
 											infoIcon
 											infoTooltip={<>The information displayed here is gathered from Mosquitto system topics and your configuration<br/>Click here to get a detailed explanation.</>}
 											infoLink="https://docs.cedalo.com/mosquitto/management-center/overview/inspection/mc-system#broker-info"
-											infos={[{
-												label: "Uptime",
-												value: secondsToDhms(systemStatus?.$SYS?.broker?.uptime),
-											}, {
-												label: "Version",
-												value: systemStatus?.$SYS?.broker?.version || 'N/A',
-											}, {
-												label: "MQTT Connection",
-												value: host ? `mqtt://${host}:1883` : 'N/A',
-													// currentConnection?.externalEncryptedUrl || currentConnection?.externalUnencryptedUrl || currentConnection?.internalUrl || currentConnection?.url
-											}, {
-												label: "Open Ports",
-												value: ports || 'N/A',
-											}]}
+											infos={getBrokerInfos()}
 											icon={<InfoIcon/>}
 										/>
 									</Grid>
