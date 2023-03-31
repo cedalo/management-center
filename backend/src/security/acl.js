@@ -68,5 +68,8 @@ module.exports = {
     },
     isConnectionAuthorized(user) {
         return true;
+    },
+    allowConditions() {
+        return true;
     }
 }
