@@ -61,7 +61,7 @@ export default function HelpButtons(props) {
 		case 'users':
 		case 'settings':
 		case 'tokens':
-			link += `administraion/mc-${path[1]}`;
+			link += `administration/mc-${path[1]}`;
 			break;
 		case 'info':
 			link += `admimistration/mc-information`;
