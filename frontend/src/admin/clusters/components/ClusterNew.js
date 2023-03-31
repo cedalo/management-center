@@ -37,6 +37,12 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
+import {
+	getNodeIdsUniqueValidator,
+    getPrivateAddressesPresentValidator,
+    getBrokersPresentValidator
+} from '../validators';
+
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -95,17 +101,20 @@ const ClusterNew = (props) => {
 		node1, node2, node3
 	];
 
-	const areNodeIdsUnique = () => {
-		return (new Set([node1.nodeId, node2.nodeId, node3.nodeId])).size === 3;
-	};
+	const areNodeIdsUnique = getNodeIdsUniqueValidator(nodes);
+	const arePrivateAddressesPresent = getPrivateAddressesPresentValidator(nodes);
+	const areBrokersPresent = getBrokersPresentValidator(nodes);
+	// const areNodeIdsUnique = () => {
+	// 	return (new Set([node1.nodeId, node2.nodeId, node3.nodeId])).size === 3;
+	// };
 
-	const arePrivateAddressesPresent = () => {
-		return node1.address && node2.address && node3.address;
-	};
+	// const arePrivateAddressesPresent = () => {
+	// 	return node1.address && node2.address && node3.address;
+	// };
 
-	const areBrokersPresent = () => {
-		return node1.broker && node2.broker && node3.broker;
-	};
+	// const areBrokersPresent = () => {
+	// 	return node1.broker && node2.broker && node3.broker;
+	// };
 
 	const validate = () => {
 		const valid = !clusternameExists && clustername !== ''

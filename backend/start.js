@@ -31,19 +31,25 @@ console = new Logger(console, false);
 
 const version = require('./src/utils/version');
 
+const preprocessBoolEnvVariable = (envVariable) => {
+	return !!((envVariable && typeof envVariable === 'string' && envVariable.toLowerCase() === 'false') ? false : envVariable);
+}
+
+const HTTP_PORT = 80;
 const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
-const CEDALO_MC_ENABLE_FULL_LOG = !!(((process.env.CEDALO_MC_ENABLE_FULL_LOG && process.env.CEDALO_MC_ENABLE_FULL_LOG.toLowerCase()) === 'false') ? false : process.env.CEDALO_MC_ENABLE_FULL_LOG);
-const CEDALO_MC_SHOW_FEEDBACK_FORM = !!(((process.env.CEDALO_MC_SHOW_FEEDBACK_FORM && process.env.CEDALO_MC_SHOW_FEEDBACK_FORM.toLowerCase()) === 'false') ? false : process.env.CEDALO_MC_SHOW_FEEDBACK_FORM);
+const CEDALO_MC_ENABLE_FULL_LOG = preprocessBoolEnvVariable(process.env.CEDALO_MC_ENABLE_FULL_LOG);
+const CEDALO_MC_SHOW_FEEDBACK_FORM = preprocessBoolEnvVariable(process.env.CEDALO_MC_SHOW_FEEDBACK_FORM);
+const CEDALO_MC_SHOW_STREAMSHEETS = preprocessBoolEnvVariable(process.env.CEDALO_MC_SHOW_STREAMSHEETS || true);
 const CEDALO_MC_USERNAME = process.env.CEDALO_MC_USERNAME;
 
 const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
 
 console.log(`Mosquitto Management Center version ${version.version || 'unknown'}`)
-console.log(`MMC is starting in the ${process.env.CEDALO_MC_MODE === 'offline' ? 'offline' : 'online'} mode`);
+console.log(`MMC is starting in ${process.env.CEDALO_MC_MODE === 'offline' ? 'offline' : 'online'} mode`);
 
 // const LicenseManager = require("../src/LicenseManager");
 const LicenseChecker = require('./src/license/LicenseChecker');
@@ -274,6 +280,7 @@ const init = async (licenseContainer) => {
 	addStreamsheetsConfig(config);
 	config.parameters = {
 		showFeedbackForm: CEDALO_MC_SHOW_FEEDBACK_FORM,
+		showStreemsheets: CEDALO_MC_SHOW_STREAMSHEETS,
 		rootUsername: CEDALO_MC_USERNAME,
 		ssoUsed: false
 	};
@@ -986,6 +993,8 @@ const init = async (licenseContainer) => {
 		preprocessUserFunctions: actions.preprocessUserFunctions
 	};
 
+	let httpPlainApp;
+	let httpPlainServer;
 	const pluginManager = new PluginManager();
 	pluginManager.init(config.plugins, context, swaggerDocument);
 	context.config.parameters.ssoUsed = !!pluginManager.plugins.find(plugin => plugin._meta.id.includes('_sso') && plugin._status.type === 'loaded');
@@ -999,6 +1008,30 @@ const init = async (licenseContainer) => {
 		protocol = 'http';
 	} else { // https plugin was successfully enabled
 		server = context.server;
+
+		if (parseInt(port) !== parseInt(HTTP_PORT)) {
+			// set up plain http server
+			httpPlainApp = express();
+			// set up a route to redirect http to https
+			httpPlainApp.get('*', function(request, response) {  
+				response.redirect('https://' + request.headers.host + `:${port}` + request.url);
+
+				// Or, if you don't want to automatically detect the domain name from the request header, you can hard code it:
+				// res.redirect('https://example.com' + req.url);
+			});
+			httpPlainServer =  http.createServer(httpPlainApp);
+			// have it listen on 80
+			// httpPlainServer.listen(HTTP_PORT)
+			httpPlainServer.listen({
+				host,
+				port: HTTP_PORT
+			}, () => {
+					console.log(`HTTP to HTTPS redirect set up for http://${host}:${HTTP_PORT}`);
+				}
+			);
+		} else {
+			console.log(`HTTP to HTTPS redirect is not set up. Same port used for HTTPS and HTTP (port ${port}). Change port in CEDALO_MC_PROXY_PORT variable to solve this`);
+		}
 	}
 
 	// Swagger
@@ -1115,6 +1148,8 @@ const init = async (licenseContainer) => {
 			response.sendFile(publicFilePath);
 		} else if (fs.existsSync(mediaFilePath)) {
 			response.sendFile(mediaFilePath);
+		} else if (request.path.includes('/api/')) {
+			response.status(404).json('Not found');
 		} else {
 			response.sendFile(path.join(__dirname, 'public', 'index.html'));
 		}
@@ -1197,6 +1232,7 @@ const init = async (licenseContainer) => {
 	});
 
 	stopFunctions.push(() => server.close());
+	stopFunctions.push(() => httpPlainServer?.close()); // plain server created to redirect http -> https in case https is used
 	stopFunctions.push(() => {
 		clearInterval(intervalD)
 	});

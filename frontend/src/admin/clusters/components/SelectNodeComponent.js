@@ -40,7 +40,6 @@ const validNodeIdRange = (nodeId) => {
 };
 
 const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, defaultNode = {}, setNode, checkAllNodeIds }) => {
-
 	const classes = useStyles();
 	const [validNodeId, setValidNodeId] = useState(true);
 
@@ -96,9 +95,9 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 				<FormControl variant="outlined" className={classes.formControl}>
 					<InputLabel htmlFor="broker">Broker</InputLabel>
 					<Select
-						autoFocus
-						defaultValue=""
-						placeholder='Please select an instance'
+						// autoFocus
+						// defaultValue=""
+						placeholder={'Select a broker'}
 						value={defaultNode.broker}
 						onChange={(event) => handleSelectBroker(event.target.value)}
 						label="Instance"

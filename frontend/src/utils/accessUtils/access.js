@@ -3,6 +3,10 @@ export const isConnectionAllowed = (userProfile, currentConnectionName, permissi
 	if (typeof userProfile === 'object' && Object.keys(userProfile).length === 0) return undefined; // check if userProfile is an empty object
 	if (typeof currentConnectionName === 'object' && Object.keys(currentConnectionName).length === 0) return undefined;
 
+	if (!userProfile.connections) { // if license not present, connections array is not injected into user object
+		return undefined;
+	}
+
 	for (const connection of userProfile.connections) {
 		if (connection.name === currentConnectionName) {
 			return permissionFunction(connection);

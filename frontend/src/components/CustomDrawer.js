@@ -140,7 +140,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const CustomDrawer = ({ userProfile = {}, userManagementFeature, dynamicSecurityFeature, hideConnections, open, handleDrawerOpen, handleDrawerClose, currentConnectionName, connected}) => {
+const CustomDrawer = ({ userProfile = {}, userManagementFeature, dynamicSecurityFeature, hideConnections, open, handleDrawerOpen, handleDrawerClose, currentConnectionName, connected, backendParameters}) => {
 	const classes = useStyles();
 	const theme = useTheme();
 
@@ -251,13 +251,14 @@ icon={<SettingsIcon />}
 			<Divider /></>}
 			<List id="menu-items-tools">
 				{open ? <ListSubheader className={classes.menuSubHeader}>Tools</ListSubheader> : null}
-				<ListItemLink
-					classes={classes}
-					to="/tools/streamsheets"
-					primary="Streamsheets"
-					icon={<StreamsheetsIcon fontSize="small" />}
-				/>
-
+				{backendParameters.showStreemsheets ? 
+					<ListItemLink
+						classes={classes}
+						to="/tools/streamsheets"
+						primary="Streamsheets"
+						icon={<StreamsheetsIcon fontSize="small" />}
+					/>
+				: null}
 				{atLeastAdmin(userProfile, currentConnectionName) && <ListItemLink classes={classes} to="/streams" primary="Streams" icon={<StreamsIcon />} />}
 				{atLeastAdmin(userProfile, currentConnectionName) && <ListItemLink classes={classes} to="/terminal" primary="Terminal" icon={<TerminalIcon />} />}
 			</List>
@@ -327,7 +328,8 @@ const mapStateToProps = (state) => {
 		dynamicSecurityFeature: state.systemStatus?.features?.dynamicsecurity,
 		brokerConnections: state.brokerConnections.brokerConnections,
 		connected: state.brokerConnections.connected,
-		currentConnectionName: state.brokerConnections.currentConnectionName
+		currentConnectionName: state.brokerConnections.currentConnectionName,
+		backendParameters: state.backendParameters?.backendParameters,
 	};
 };
 

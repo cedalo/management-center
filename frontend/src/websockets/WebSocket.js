@@ -75,6 +75,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 	dispatch(updateStreams([]));
 	dispatch(updateSystemStatus({}));
 	dispatch(updateBackendParameters({}));
+	dispatch(updateUserRoles([]));
 
 
 	// TODO: merge with code from BrokerSelect
@@ -126,7 +127,6 @@ const init = async (client, dispatch, connectionConfiguration) => {
 				error: 'Not found'
 			}));
 		} else {
-			console.log('App tokens are disabled')
 			dispatch(updateApplicationTokens(tokens));
 			dispatch(updateFeatures({
 				feature: 'applicationtokens',
@@ -215,6 +215,22 @@ const init = async (client, dispatch, connectionConfiguration) => {
 
 	dispatch(updateLoading(false));
 
+	try {
+		const clusters = await client.listClusters();
+		dispatch(updateClusters(clusters));
+		dispatch(updateFeatures({
+			feature: 'clustermanagement',
+			status: 'ok'
+		}));
+	} catch (error) {
+		console.error('Error listing clusters:', error);
+		dispatch(updateFeatures({
+			feature: 'clustermanagement',
+			status: 'failed',
+			error
+		}));
+	}
+
 	if (brokerConnected) {
 		try {
 			const testCollections = await client.listTestCollections();
@@ -222,21 +238,6 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		} catch (error) {
 			// TODO: handle error
 			console.log('Test collections:', error);
-		}
-	
-		try {
-			const clusters = await client.listClusters();
-			dispatch(updateClusters(clusters));
-			dispatch(updateFeatures({
-				feature: 'clustermanagement',
-				status: 'ok'
-			}));
-		} catch (error) {
-			dispatch(updateFeatures({
-				feature: 'clustermanagement',
-				status: 'failed',
-				error
-			}));
 		}
 
 		try {

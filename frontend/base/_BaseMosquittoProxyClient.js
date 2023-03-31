@@ -737,6 +737,16 @@ module.exports = class BaseMosquittoProxyClient {
 		return response.response;
 	}
 
+	async deleteClusterConfiguration(clustername) {
+		const response = await this.sendRequest({
+			id: createID(),
+			type: 'request',
+			request: 'deleteClusterConfiguration',
+			clustername
+		});
+		return response.response;
+	}
+
 	async deleteAllClusters() {
 		const response = await this.sendRequest({
 			id: createID(),

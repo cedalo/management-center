@@ -40,6 +40,8 @@ import useLocalStorage from '../helpers/useLocalStorage';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { updateSettings } from '../actions/actions';
 import { useSnackbar } from 'notistack';
+import useFetch from '../helpers/useFetch';
+
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -109,8 +111,8 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-function getSteps() {
-	return [
+function getSteps(newsletterAvailable) {
+	let steps = [
 		{
 			label: 'Management Center for Eclipse Mosquitto',
 			description: 'Manage everything in one central place',
@@ -131,7 +133,10 @@ function getSteps() {
 			description: 'Visualize and inspect MQTT topics',
 			imgPath: '/onboarding-topic-tree.png'
 		},
-		{
+	];
+
+	if (newsletterAvailable) {
+		steps = steps.concat([{
 			label: 'Subscribe to our newsletter',
 			description: 'Get the latest news about Mosquitto, MQTT and Streamsheets.',
 			imgPath: '/onboarding-newsletter.png',
@@ -142,8 +147,10 @@ function getSteps() {
 			description: 'We are continuously improving our software. For that it would be really great if you would allow the tracking of anonymous usage data.',
 			imgPath: '/onboarding-dashboard.png',
 			usageData: true
-		}
-	];
+		}]);
+	}
+
+	return steps;
 }
 
 const OnBoardingDialog = ({ settings }) => {
@@ -156,7 +163,10 @@ const OnBoardingDialog = ({ settings }) => {
 	const [activeStep, setActiveStep] = React.useState(0);
 	const [email, setEMail] = React.useState('');
 	const [subscribed, setSubscribed] = useLocalStorage('cedalo.managementcenter.subscribedToNewsletter');
-	const steps = getSteps();
+	const [newsletterEndpointResponse, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/newsletter/subscribe`);
+
+	const steps = getSteps(hasError ? null : newsletterEndpointResponse?.newsletterEndpointAvailable);
+	
 	const [showOnBoardingDialog, setShowOnBoardingDialog] = useLocalStorage(
 		'cedalo.managementcenter.showOnBoardingDialog'
 	);
@@ -179,7 +189,7 @@ const OnBoardingDialog = ({ settings }) => {
 	};
 
 	const handleNext = () => {
-		if (activeStep + 1 < steps.length) {
+		if (activeStep < steps.length - 1) {
 			setActiveStep((prevActiveStep) => prevActiveStep + 1);
 		} else {
 			handleClose();
@@ -310,14 +320,14 @@ const OnBoardingDialog = ({ settings }) => {
 				<DialogContentText id="alert-dialog-description"></DialogContentText>
 
 				<MobileStepper
-					steps={6}
+					steps={steps.length}
 					activeStep={activeStep}
 					variant="dots"
 					position="static"
 					className={classes.root}
 					nextButton={
-						<Button size="small" onClick={handleNext} disabled={activeStep + 1 >= steps.length}>
-							Next
+						<Button size="small" onClick={handleNext} disabled={activeStep + 1 > steps.length}>
+							{activeStep === (steps.length - 1) ? 'Finish' : 'Next'}
 							{theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
 						</Button>
 					}
@@ -347,7 +357,7 @@ const OnBoardingDialog = ({ settings }) => {
 											onClick={handleNext}
 											className={classes.button}
 										>
-											{activeStep === 5 ? 'Finish' : 'Next'}
+											{activeStep === (steps.length - 1) ? 'Finish' : 'Next'}
 										</Button>
 									</div>
 								</div>
@@ -355,14 +365,14 @@ const OnBoardingDialog = ({ settings }) => {
 						</Step>
 					))}
 				</MobileStepper>
-				{activeStep === steps.length && (
+				{/* {activeStep === steps.length && (
 					<Paper square elevation={0} className={classes.resetContainer}>
 						<Typography>All steps completed - you&apos;re finished</Typography>
 						<Button onClick={handleReset} className={classes.button}>
 							Reset
 						</Button>
 					</Paper>
-				)}
+				)} */}
 			</DialogContent>
 			<DialogActions>
 				{/* <Button onClick={handleClose} color="primary">

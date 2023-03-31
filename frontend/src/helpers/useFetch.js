@@ -7,6 +7,12 @@ export default function useFetch(url, opts) {
 	useEffect(() => {
 		setLoading(true);
 		fetch(url, opts)
+			.then((res) => {
+				if (!res.ok) {
+					throw new Error(res.data);
+				}
+				return res;
+			})	
 			.then(async (res) => {
 				const json = await res.json();
 				setResponse(json);

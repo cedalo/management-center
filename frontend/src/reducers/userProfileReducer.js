@@ -15,6 +15,10 @@ export default function userProfileReducer(state = {}, action) {
 			newState.userProfile.isEditor = newState.userProfile.roles.includes(EDITOR_ROLE);
 			newState.userProfile.isViewer = newState.userProfile.roles.includes(VIEW_ROLE);
 
+			if (!newState.userProfile.connections) {
+				break;
+			}
+
 			for (const connection of newState.userProfile.connections) {
 				connection.isAdmin = (connection.role === ADMIN_ROLE);
 				connection.isEditor = (connection.role === EDITOR_ROLE);
