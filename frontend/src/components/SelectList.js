@@ -25,7 +25,7 @@ export default function SelectList({values, onChange, disabled, suggestions, get
 				option ? option.label : ''
 			}
 			getOptionSelected={(option, value) =>
-				values.find(() => option.value === value.value)
+				option.value === value.value &&  values.find((val) => value.value === getValue(val))
 			}
 			value={values.map((value) => ({
 				label: getLabel ? getLabel(value) : getValue(value),
@@ -45,7 +45,7 @@ export default function SelectList({values, onChange, disabled, suggestions, get
 						color="primary"
 						checkedIcon={checkedIcon}
 						style={{ marginRight: 8, padding: '2px' }}
-						checked={values.find((value) => option.value === getValue(value))}
+						checked={!!values.find((value) => option.value === getValue(value))}
 					/>
 					{option.label}
 				</React.Fragment>

@@ -218,12 +218,8 @@ const Status = ({
 		return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 	}
 
-	// const getSegments(max) => {
-	// 	const maxSegment = Math.pow(10, Math.floor(Math.log10(max)));
-	// 	if (maxSegment === 1) {
-	// 		return [0, 1];
-	// 	}
-	// }
+	const host = process.env.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING === 'undefined' ?
+		undefined : process.env.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING;
 
 	return (
 		<Box style={{height: '100%'}} data-tour="page-status">
@@ -439,8 +435,9 @@ const Status = ({
 												label: "Version",
 												value: systemStatus?.$SYS?.broker?.version || 'N/A',
 											}, {
-												label: "URL",
-												value: currentConnection?.externalEncryptedUrl || currentConnection?.externalUnencryptedUrl || currentConnection?.internalUrl || currentConnection?.url,
+												label: "MQTT Connection",
+												value: host ? `mqtt://${host}:1883` : 'N/A',
+													// currentConnection?.externalEncryptedUrl || currentConnection?.externalUnencryptedUrl || currentConnection?.internalUrl || currentConnection?.url
 											}, {
 												label: "Open Ports",
 												value: ports || 'N/A',

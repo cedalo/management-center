@@ -7,7 +7,6 @@ export const isAdminOpen = () => {
 		location.pathname.startsWith('/tokens') ||
 		location.pathname.startsWith('/info') ||
 		location.pathname.startsWith('/users') ||
-		location.pathname.startsWith('/certs') ||
 		location.pathname.startsWith('/tokens') ||
 		location.pathname.startsWith('/settings');
 };

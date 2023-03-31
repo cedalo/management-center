@@ -33,7 +33,7 @@ export default function ReplayStreamDialog({ stream, open, handleReplay, handleC
 	return (
 		<div>
 			<Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-				<DialogTitle id="form-dialog-title">Replay stream "{stream.streamname}"</DialogTitle>
+				<DialogTitle id="form-dialog-title">Replay Stream "{stream.streamname}"</DialogTitle>
 				<DialogContent>
 					<DialogContentText>
 						Change the replay settings and press "Replay" to replay this stream.
@@ -50,6 +50,8 @@ export default function ReplayStreamDialog({ stream, open, handleReplay, handleC
 								value={replayTopic}
 								defaultValue=""
 								variant="outlined"
+								size="small"
+								margin="dense"
 								fullWidth
 								className={classes.textField}
 							/>
@@ -64,6 +66,8 @@ export default function ReplayStreamDialog({ stream, open, handleReplay, handleC
 								value={gte}
 								defaultValue=""
 								variant="outlined"
+								size="small"
+								margin="dense"
 								fullWidth
 								className={classes.textField}
 							/>
@@ -78,6 +82,8 @@ export default function ReplayStreamDialog({ stream, open, handleReplay, handleC
 								value={lte}
 								defaultValue=""
 								variant="outlined"
+								size="small"
+								margin="dense"
 								fullWidth
 								className={classes.textField}
 							/>
@@ -107,6 +113,8 @@ export default function ReplayStreamDialog({ stream, open, handleReplay, handleC
 								value={limit}
 								defaultValue=""
 								variant="outlined"
+								size="small"
+								margin="dense"
 								fullWidth
 								className={classes.textField}
 							/>
@@ -121,20 +129,26 @@ export default function ReplayStreamDialog({ stream, open, handleReplay, handleC
 								value={speed}
 								defaultValue=""
 								variant="outlined"
+								size="small"
+								margin="dense"
 								fullWidth
 								className={classes.textField}
 							/>
 						</Grid>
 					</Grid>
 				</DialogContent>
-				<DialogActions>
+				<DialogActions style={{padding: '15px 24px'}}>
 					<Button
 						onClick={handleClose}
+						variant="contained"
+						size="small"
 					>
 							Cancel
 					</Button>
 					<Button
 						disabled={!validate()}
+						variant="contained"
+						size="small"
 						onClick={() => handleReplay(stream, { replayTopic, gte, lte, reverse, limit, speed })}>
 							Replay
 					</Button>

@@ -1,70 +1,34 @@
-import AddIcon from '@material-ui/icons/Add';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
-import {updateCluster, updateClusters} from '../actions/actions';
+import {updateClusters} from '../actions/actions';
 import {useSnackbar} from 'notistack';
 
 import {Alert, AlertTitle} from '@material-ui/lab';
-import AccountCircle from '@material-ui/icons/AccountCircle';
 import ClusterIcon from '@material-ui/icons/Storage';
-import Box from '@material-ui/core/Box';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
-import ClientIDIcon from '@material-ui/icons/Fingerprint';
-import ClientIcon from '@material-ui/icons/Person';
-import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
-import PasswordIcon from '@material-ui/icons/VpnKey';
-import PropTypes from 'prop-types';
-import {Link as RouterLink} from 'react-router-dom';
-import SaveIcon from '@material-ui/icons/Save';
+import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
 import {WebSocketContext} from '../../../websockets/WebSocket';
-import {makeStyles} from '@material-ui/core/styles';
 import {useConfirm} from 'material-ui-confirm';
 import {useHistory} from 'react-router-dom';
-import AutoSuggest from '../../../components/AutoSuggest';
 import SaveCancelButtons from '../../../components/SaveCancelButtons';
 import SelectNodeComponent from './SelectNodeComponent';
 import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 
-const useStyles = makeStyles((theme) => ({
-	root: {
-		'& > *': {
-			// margin: theme.spacing(1)
-		},
-		'& .MuiTextField-root': {
-			// margin: theme.spacing(1),
-		}
-	},
-	form: {
-		display: 'flex',
-		flexWrap: 'wrap'
-	},
-	margin: {
-		margin: theme.spacing(2)
-	},
-}));
+
+const SYNCMODES = ['full', 'dynsec'];
 
 const ClusterNew = (props) => {
-	const {clusters, clusterManagementFeature} = props;
-	const classes = useStyles();
+	const {clusterManagementFeature} = props;
 
 	const [clustername, setClustername] = useState('Example');
 	const [clusterDescription, setClusterDescription] = useState('Example cluster');
+	const [syncmode, setSyncmode] = useState('full');
 	const [node1, setNode1] = useState({
 		nodeId: 1,
 		port: 7000
@@ -118,6 +82,7 @@ const ClusterNew = (props) => {
 			await client.createCluster({
 				clustername,
 				description: clusterDescription,
+				syncmode,
 				nodes
 			});
 			const clusters = await client.listClusters();
@@ -151,16 +116,26 @@ const ClusterNew = (props) => {
 
 	return (
 		<div>
-			<ContainerBreadCrumbs title="New"
-								  links={[{name: 'Home', route: '/home'}, {name: 'Clusters', route: '/clusters'}]}/>
+			<ContainerBreadCrumbs
+				title="New"
+				links={[
+					{ name: 'Home', route: '/home' },
+					{ name: 'Clusters', route: '/clusters' }
+				]}
+			/>
 			{/* TODO: Quick hack to detect whether feature is supported */}
-			{clusterManagementFeature?.error ? <><br/><Alert severity="warning">
-				<AlertTitle>{clusterManagementFeature.error.title}</AlertTitle>
-				{clusterManagementFeature.error.message}
-			</Alert></> : null}
-			{!clusterManagementFeature?.error &&
-				<div style={{height: 'calc(100% - 26px)'}}>
-					<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
+			{clusterManagementFeature?.error ? (
+				<>
+					<br />
+					<Alert severity="warning">
+						<AlertTitle>{clusterManagementFeature.error.title}</AlertTitle>
+						{clusterManagementFeature.error.message}
+					</Alert>
+				</>
+			) : null}
+			{!clusterManagementFeature?.error && (
+				<div style={{ height: 'calc(100% - 26px)' }}>
+					<div style={{ display: 'grid', gridTemplateRows: 'max-content auto', height: '100%' }}>
 						<ContainerHeader
 							title="New Cluster"
 							subTitle="Add a new cluster by assigning existing brokers to the cluster"
@@ -182,13 +157,13 @@ const ClusterNew = (props) => {
 									InputProps={{
 										startAdornment: (
 											<InputAdornment position="start">
-												<ClusterIcon/>
+												<ClusterIcon />
 											</InputAdornment>
 										)
 									}}
 								/>
 							</Grid>
-							<Grid item xs={12} sm={8}>
+							<Grid item xs={12} sm={6}>
 								<TextField
 									required={false}
 									id="description"
@@ -201,16 +176,31 @@ const ClusterNew = (props) => {
 									fullWidth
 								/>
 							</Grid>
+							<Grid item xs={12} sm={2}>
+								<TextField
+									required={false}
+									id="syncmode"
+									size="small"
+									margin="normal"
+									label="Syncmode"
+									onChange={(event) => setSyncmode(event.target.value)}
+									defaultValue="full"
+									variant="outlined"
+									fullWidth
+									select
+								>
+									{SYNCMODES.map((mode) => (
+										<MenuItem value={mode}>{mode}</MenuItem>
+									))}
+								</TextField>
+							</Grid>
 						</Grid>
-						<br/>
+						<br />
 						<Grid container spacing={2} alignItems="flex-end">
 							<Grid item xs={12} sm={4}>
 								<Card variant="outlined">
-									<CardHeader
-										subheader="Node 1"
-										disableTypography
-									/>
-									<CardContent style={{paddingTop: '0px'}}>
+									<CardHeader subheader="Node 1" disableTypography />
+									<CardContent style={{ paddingTop: '0px' }}>
 										<SelectNodeComponent
 											defaultNode={node1}
 											setNode={setNode1}
@@ -221,11 +211,8 @@ const ClusterNew = (props) => {
 							</Grid>
 							<Grid item xs={12} sm={4}>
 								<Card variant="outlined">
-									<CardHeader
-										subheader="Node 2"
-										disableTypography
-									/>
-									<CardContent style={{paddingTop: '0px'}}>
+									<CardHeader subheader="Node 2" disableTypography />
+									<CardContent style={{ paddingTop: '0px' }}>
 										<SelectNodeComponent
 											defaultNode={node2}
 											setNode={setNode2}
@@ -236,11 +223,8 @@ const ClusterNew = (props) => {
 							</Grid>
 							<Grid item xs={12} sm={4}>
 								<Card variant="outlined">
-									<CardHeader
-										subheader="Node 3"
-										disableTypography
-									/>
-									<CardContent style={{paddingTop: '0px'}}>
+									<CardHeader subheader="Node 3" disableTypography />
+									<CardContent style={{ paddingTop: '0px' }}>
 										<SelectNodeComponent
 											defaultNode={node3}
 											setNode={setNode3}
@@ -251,7 +235,7 @@ const ClusterNew = (props) => {
 							</Grid>
 						</Grid>
 						<Grid container xs={12} alignItems="flex-start">
-							<Grid item xs={12} >
+							<Grid item xs={12}>
 								<SaveCancelButtons
 									onSave={onSaveCluster}
 									saveDisabled={!validate()}
@@ -261,7 +245,7 @@ const ClusterNew = (props) => {
 						</Grid>
 					</div>
 				</div>
-			}
+			)}
 		</div>
 	);
 };

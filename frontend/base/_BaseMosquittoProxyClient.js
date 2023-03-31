@@ -259,7 +259,7 @@ module.exports = class BaseMosquittoProxyClient {
 			if (error?.response?.status === 404) {
 				throw new APINotFoundError();
 			} else if (error?.response?.status === 400) {
-				throw new APIError('400', error.response.data || 'Invalid request');
+				throw new APIError('400', error.response.data?.message || 'Invalid request');
 			} else {
 				throw new NotAuthorizedError();
 			}
@@ -294,7 +294,7 @@ module.exports = class BaseMosquittoProxyClient {
 			if (error?.response?.status === 404) {
 				throw new APINotFoundError();
 			} else if (error?.response?.status === 400) {
-				throw new APIError('Bad request', error.response.data || error.message);
+				throw new APIError('Bad request', error.response.data?.message || error.message);
 			} else {
 				throw new NotAuthorizedError();
 			}
@@ -324,7 +324,7 @@ module.exports = class BaseMosquittoProxyClient {
 			if (error?.response?.status === 404) {
 				throw new APINotFoundError();
 			} else if (error?.response?.status === 400) {
-				throw new APIError('400', error.response.data || 'Invalid request');
+				throw new APIError('400', error.response.data?.message || 'Invalid request');
 			} else {
 				throw new NotAuthorizedError();
 			}
@@ -572,7 +572,7 @@ module.exports = class BaseMosquittoProxyClient {
 			this.logger.error(error);
 			switch (error.response?.status) {
 				case 400:
-					throw new APIError('400', error.response.data || 'Invalid request');
+					throw new APIError('400', error.response.data?.message || 'Invalid request');
 				case 404:
 					throw new APINotFoundError();
 				case 500:
@@ -824,21 +824,21 @@ module.exports = class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	async connectServerToBroker(id) {
+	async connectServerToBroker(connectionId) {
 		return this.sendRequest({
 			id: createID(),
 			type: 'request',
 			request: 'connectServerToBroker',
-			id
+			connectionId
 		});
 	}
 
-	async disconnectServerFromBroker(id) {
+	async disconnectServerFromBroker(connectionId) {
 		return this.sendRequest({
 			id: createID(),
 			type: 'request',
 			request: 'disconnectServerFromBroker',
-			id
+			connectionId
 		});
 	}
 
@@ -1514,7 +1514,7 @@ module.exports = class BaseMosquittoProxyClient {
 			id: createID(),
 			type: 'request',
 			request: 'deleteConnection',
-			id: connectionId
+			connectionId
 		});
 	}
 

@@ -432,7 +432,7 @@ const StreamDetail = (props) => {
 						<Button
 							variant="contained"
 							disabled={!validate()}
-							style={{marginRight: '10px', marginTop: '10px'}}
+							style={{marginRight: '10px', marginTop: '10px', marginBottom: '15px'}}
 							size="small"
 							color="primary"
 							startIcon={<SaveIcon />}
@@ -445,7 +445,7 @@ const StreamDetail = (props) => {
 						</Button>
 						<Button
 							variant="contained"
-							style={{marginTop: '10px'}}
+							style={{marginTop: '10px', marginBottom: '15px'}}
 							size="small"
 							onClick={(event) => {
 								event.stopPropagation();

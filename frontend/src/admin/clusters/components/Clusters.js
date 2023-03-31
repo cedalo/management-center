@@ -69,6 +69,7 @@ const useStyles = makeStyles((theme) => ({
 const CLUSTER_TABLE_COLUMNS = [
 	{id: 'name', key: 'Name', align: 'left'},
 	{id: 'description', key: 'Description', align: 'left'},
+	{id: 'syncmode', key: 'Syncmode', align: 'left', width: '10%'},
 	{id: 'nodes', key: 'Nodes', align: 'center', width: '5%'},
 	{id: 'delete', key: 'Delete', align: 'center', width: '5%'},
 ];
@@ -92,6 +93,7 @@ const createClusterTable = (clusters, classes, props, onCheckHealthStatus, onDel
 										display: (!small && !medium) ||
 										(column.id === 'name' && (small || medium)) ||
 										(column.id === 'nodes' && (small || medium)) ||
+										(column.id === 'syncmode' && (small || medium)) ||
 										(column.id === 'delete' && (small || medium)) ||
 										(column.id === 'description' && medium) ? undefined : 'none'
 									}}
@@ -119,8 +121,10 @@ const createClusterTable = (clusters, classes, props, onCheckHealthStatus, onDel
 											align={CLUSTER_TABLE_COLUMNS[1].align}>{cluster.description}</TableCell>
 									}
 									<TableCell
-										align={CLUSTER_TABLE_COLUMNS[2].align}>{cluster.nodes?.length || 0}</TableCell>
-									<TableCell align={CLUSTER_TABLE_COLUMNS[3].align}>
+										align={CLUSTER_TABLE_COLUMNS[2].align}>{cluster.syncmode || 'full'}</TableCell>
+									<TableCell
+										align={CLUSTER_TABLE_COLUMNS[3].align}>{cluster.nodes?.length || 0}</TableCell>
+									<TableCell align={CLUSTER_TABLE_COLUMNS[4].align}>
 										{/* <Tooltip title="Check health status">
 												<IconButton
 													size="small"

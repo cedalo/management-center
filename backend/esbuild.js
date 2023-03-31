@@ -44,6 +44,7 @@ const plugins = [
 
 const define = {
 	'process.env.PUBLIC_URL': process.env.PUBLIC_URL || '""',
+	'process.env.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING': `"${process.env.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING}"` || '""',
 	'process.env.MOSQUITTO_PROXY_URL': process.env.MOSQUITTO_PROXY_URL || '""'
 };
 

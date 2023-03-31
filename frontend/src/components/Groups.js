@@ -61,12 +61,12 @@ const groupShape = PropTypes.shape({
 });
 
 const GROUP_TABLE_COLUMNS = [
-	{id: 'name', key: 'Name'},
-	{id: 'textname', key: 'Text Name'},
-	{id: 'textdescription', key: 'Description'},
-	{id: 'clients', key: 'Clients'},
-	{id: 'roles', key: 'Roles'},
-	{id: 'action', key: ''}
+	{id: 'name', key: 'Name', width: '10%', align: 'left'},
+	{id: 'textname', key: 'Text Name', width: '10%', align: 'left'},
+	{id: 'textdescription', key: 'Description', width: '25%', align: 'left'},
+	{id: 'clients', key: 'Clients', width: '25%', align: 'left'},
+	{id: 'roles', key: 'Roles', width: '25%', align: 'left'},
+	{id: 'action', key: 'Delete', width: '5%', align: 'center'}
 ];
 
 const FormattedGroupType = (props) => {
@@ -140,7 +140,7 @@ const Groups = (props) => {
 		await client.setAnonymousGroup(groupname);
 		const group = await client.getAnonymousGroup();
 		dispatch(updateAnonymousGroup(group));
-		enqueueSnackbar('Anonymous group successfully set', {
+		enqueueSnackbar('Anonymous Group successfully set', {
 			variant: 'success'
 		});
 	}
@@ -263,7 +263,9 @@ const Groups = (props) => {
 												<TableCell
 													key={column.id}
 													sortDirection={sortBy === column.id ? sortDirection : false}
+													align={column.align}
 													style={{
+														width: column.width,
 														display: (!small && !medium) ||
 														(column.id === 'name' && (small || medium)) ||
 														(column.id === 'roles' && (small || medium)) ||
@@ -324,7 +326,7 @@ const Groups = (props) => {
 															/>
 														</TableCell>
 													}
-														<TableCell align="right">
+														<TableCell align="center">
 															<Tooltip title="Delete group">
 																<IconButton
 																	size="small"
