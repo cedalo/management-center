@@ -77,7 +77,8 @@ const dateToString = (date, separator = ' ') => {
 
 
 
-const createClientsTable = (clients, classes, props, onDisconnectClient, onUpdateUserRoles, onSelectClient, small, medium) => {
+const createClientsTable = (clients, classes, props, onDisconnectClient, onUpdateUserRoles,
+							onSelectClient, small, medium, clientControlFeature) => {
 	const {inspectFeature, onSort, sortBy, sortDirection, disableSort, doSort} = props;
 
 
@@ -95,7 +96,9 @@ const createClientsTable = (clients, classes, props, onDisconnectClient, onUpdat
 										display: (!small && !medium) ||
 											(column.id === 'username' && (small || medium)) ||
 											(column.id === 'status' && (small || medium)) ||
-											(column.id === 'clientid' && medium) ? undefined : 'none'
+											(column.id === 'clientid' && medium) ? (
+												(column.id === 'disconnect' && (clientControlFeature?.error || !clientControlFeature?.supported)) ? 'none' : undefined)
+											: 'none'
 									}}
 									key={column.id}
 									sortDirection={sortBy === column.id ? sortDirection : false}
@@ -165,7 +168,7 @@ const createClientsTable = (clients, classes, props, onDisconnectClient, onUpdat
 											}
 										</Tooltip>
 									</TableCell>
-									{small || medium ? null :
+									{small || medium || (clientControlFeature?.error || !clientControlFeature?.supported) ? null :
 										<TableCell align={CLIENTS_TABLE_COLUMNS[6].align}>
 											{client.connected ?
 												<Tooltip title="Click to disconnect client">
@@ -204,7 +207,8 @@ const Clients = (props) => {
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const {client: brokerClient} = context;
-	const {inspectFeature, userProfile, roles = [], clients = [], filter, sortDirection, sortBy, doSort, connected } = props;
+	const {inspectFeature, clientControlFeature, userProfile, roles = [], clients = [],
+			filter, sortDirection, sortBy, doSort, connected } = props;
 	const [filteredClients, setFilteredClients] = useState(clients);
 	const theme = useTheme();
 	const small = useMediaQuery(theme.breakpoints.down('xs'));
@@ -281,14 +285,22 @@ const Clients = (props) => {
 						title="Inspect Clients"
 						subTitle="List of all clients that have connected to the broker at least once."
 						connectedWarning={!connected}
-						featureWarning={!inspectFeature?.error && inspectFeature?.supported === false ? "Client Inspections" : null}
+						featureWarning={(!clientControlFeature?.error && clientControlFeature?.supported === false) ? "Client Control" : null}
+						brokerFeatureWarning={(!inspectFeature?.error && inspectFeature?.supported === false) ? "Client Inspection" : null}
 						warnings={() => {
 							const alerts = [];
 							if (inspectFeature?.error) {
 								alerts.push({
 									severity: 'warning',
-									title: inspectFeature.error.title,
-									error: inspectFeature.error.message
+									title: 'Client Inspect Error: ' + inspectFeature?.error?.title,
+									error: inspectFeature?.error?.message
+								});
+							}
+							if (clientControlFeature?.error) {
+								alerts.push({
+									severity: 'warning',
+									title: 'Client Control Error: ' + clientControlFeature?.error?.title,
+									error: clientControlFeature?.error?.message
 								});
 							}
 							return alerts;
@@ -306,7 +318,7 @@ const Clients = (props) => {
 							}}
 						/>
 					</ContainerHeader>
-					{connected ? createClientsTable(filteredClients, classes, props, onDisconnectClient, onUpdateUserRoles, onSelectClient, small, medium) : null}
+					{connected ? createClientsTable(filteredClients, classes, props, onDisconnectClient, onUpdateUserRoles, onSelectClient, small, medium, clientControlFeature) : null}
 				</div>
 			</div>
 		</Box>
@@ -318,6 +330,7 @@ const mapStateToProps = (state) => {
 		clients: state.inspectClients?.clients,
 		inspectFeature: state.systemStatus?.features?.inspect,
 		connected: state.brokerConnections?.connected,
+		clientControlFeature: state.systemStatus?.features?.clientcontrol
 	};
 };
 
