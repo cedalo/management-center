@@ -90,6 +90,8 @@ const Clients = (props) => {
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
 	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
+	const [roleSuggestions, setRoleSuggestions] = useState([]);
+	const [roles, setRoles] = useState([]);
 
 	const handleChangePage = async (event, newPage) => {
 		setPage(newPage);
@@ -254,6 +256,16 @@ const Clients = (props) => {
 		// setFilteredClients(clients.filter(clientL => clientL.username.startsWith(filter)));
 	}, [filter]);
 
+	React.useEffect(() => {
+		const suggestions = rolesAll
+			.sort()
+			.map((rolename) => ({
+				label: rolename,
+				value: rolename
+			}));
+		setRoleSuggestions(suggestions);
+	}, [clients]);
+
 	const groupSuggestions = groupsAll
 		.sort()
 		.map((groupname) => ({
@@ -261,12 +273,6 @@ const Clients = (props) => {
 			value: groupname
 		}));
 
-	const roleSuggestions = rolesAll
-		.sort()
-		.map((rolename) => ({
-			label: rolename,
-			value: rolename
-		}));
 
 
 	const getClassForCell = (client) => {
