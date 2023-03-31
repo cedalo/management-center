@@ -155,15 +155,15 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			console.log('Topic tree REST is disabled');
 			dispatch(updateFeatures({
 				feature: 'topictreerest',
-				status: {message: "BaseMosquittoProxyClient: Timeout", status: 'failed'},
-				error: {name: 'Response invalid', message: 'No pong in reply'}
+				status: {message: ERROR_MESSAGE, status: 'failed'},
+				// error: {name: 'Response invalid', message: 'No pong in reply'}
 			}));
 		}
 	} catch(error) {
 		console.log('Topic tree failed with error:', error);
 		dispatch(updateFeatures({
 			feature: 'topictreerest',
-			status: 'failed',
+			status: {message: ERROR_MESSAGE, status: 'failed'},
 			error
 		}));
 	}
@@ -180,7 +180,6 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		  	dispatch(updateFeatures({
 				feature: 'tls',
 				status: {message: ERROR_MESSAGE, satatus: 'failed'},
-				error
 		  	}));
 		}
 	} catch (error) {
@@ -216,6 +215,30 @@ const init = async (client, dispatch, connectionConfiguration) => {
 
 	dispatch(updateLoading(false));
 
+
+	try {
+		const isEnabled = await client.checkClientControlEnabled();
+		console.log('client.checkClientControlEnabled::::::::::::::::::::::::', isEnabled)
+		if (isEnabled) {
+		  	dispatch(updateFeatures({
+				feature: 'clientcontrol',
+				status: 'ok'
+			}));
+		} else {
+		  	dispatch(updateFeatures({
+				feature: 'clientcontrol',
+				status: {message: ERROR_MESSAGE, satatus: 'failed'},
+		  	}));
+		}
+	} catch (error) {
+		dispatch(updateFeatures({
+		  	feature: 'clientcontrol',
+		  	status: {message: ERROR_MESSAGE, satatus: 'failed'},
+			error
+		}));
+	}
+
+
 	if (brokerConnected) {
 		try {
 			const testCollections = await client.listTestCollections();
@@ -224,7 +247,8 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			// TODO: handle error
 			console.log('Test collections:', error);
 		}
-	
+
+
 		try {
 			const clusters = await client.listClusters();
 			dispatch(updateClusters(clusters));

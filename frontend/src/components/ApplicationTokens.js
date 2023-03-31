@@ -763,7 +763,7 @@ const ApplicationTokens = (props) => {
 						featureWarning={applicationTokensFeature?.supported === false ? "Tokens" : undefined}
 						warnings={() => {
 							const alerts = [];
-							if (applicationTokensFeature?.error && applicationTokensFeature?.supported === true) {
+							if (applicationTokensFeature?.error /*&& applicationTokensFeature?.supported === true*/) {
 								alerts.push({
 									severity: 'error',
 									title: applicationTokensFeature.error.title || 'An error has occured',

@@ -241,7 +241,7 @@ const Clusters = (props) => {
 				featureWarning={clusterManagementFeature?.supported === false ? "Clusters" : undefined}
 				warnings={() => {
 					const alerts = [];
-					if (clusterManagementFeature?.error && clusterManagementFeature?.supported === true) {
+					if (clusterManagementFeature?.error /*&& clusterManagementFeature?.supported === true*/) {
 						alerts.push({
 							severity: 'warning',
 							title: clusterManagementFeature.error.title || 'An error has occured',
