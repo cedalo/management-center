@@ -414,19 +414,19 @@ module.exports = class BaseMosquittoProxyClient {
 	}
 
 
-	async checkTLSEnabled() {
-		try {
-			const url = `${this._httpEndpointURL}/api/user-management/groups/${groupname}`;
-			const response = await axios.get(url, this._headers);
-			return response.data;
-		} catch (error) {
-			if (error?.response?.status === 404) {
-				throw new APINotFoundError();
-			} else {
-				throw new NotAuthorizedError();
-			}
-		}
-	}
+	// async checkTLSEnabled() {
+	// 	try {
+	// 		const url = `${this._httpEndpointURL}/api/user-management/groups/${groupname}`;
+	// 		const response = await axios.get(url, this._headers);
+	// 		return response.data;
+	// 	} catch (error) {
+	// 		if (error?.response?.status === 404) {
+	// 			throw new APINotFoundError();
+	// 		} else {
+	// 			throw new NotAuthorizedError();
+	// 		}
+	// 	}
+	// }
 
 
 	async listUserGroupsOfUser(username) {
@@ -1969,7 +1969,13 @@ module.exports = class BaseMosquittoProxyClient {
 		return data?.clients;
 	}
 
-	// Client Control
+
+	/**
+	 * ******************************************************************************************
+	 * Methods for client control
+	 * ******************************************************************************************
+	 */
+
 	async disconnectClient(clientId) {
 		const response = await this.sendRequest({
 			id: createID(),
@@ -1979,5 +1985,20 @@ module.exports = class BaseMosquittoProxyClient {
 			clientId
 		});
 		return response.response;
+	}
+
+
+	async checkClientControlEnabled() {
+		try {
+			const url = `${this._httpEndpointURL}/api/client-control/ping`;
+			const response = await axios.get(url, this._headers);
+			return response.data?.pong;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new NotAuthorizedError();
+			}
+		}
 	}
 }
