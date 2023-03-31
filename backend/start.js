@@ -750,7 +750,6 @@ const init = async (licenseContainer) => {
 				}
 			}
 		}
-		return {};
 	};
 
 	const handleClientMessage = async (message, client, user = {}) => {
@@ -1046,7 +1045,7 @@ const init = async (licenseContainer) => {
 	if (!CEDALO_MC_OFFLINE) {
 		const NEWSLETTER_URL = 'https://api.cedalo.cloud/rest/api/v1.0/newsletter/subscribe';
 		router.get('/api/newsletter/subscribe', (request, response) => {
-			response.status(200).send({
+			response.status(200).json({
 				newsletterEndpointAvailable: true
 			});
 		});
@@ -1066,7 +1065,7 @@ const init = async (licenseContainer) => {
 		});
 	} else {
 		router.get('/api/newsletter/subscribe', (request, response) => {
-			response.status(200).send({
+			response.status(200).json({
 				newsletterEndpointAvailable: false
 			});
 		});
@@ -1125,7 +1124,7 @@ const init = async (licenseContainer) => {
 	router.use((error, request, response, next) => {
 		if (error) {
 			console.error(error.stack)
-			response.status(500).send('Something went wrong!')
+			response.status(500).json('Something went wrong!')
 		} else {
 			next();
 		}
