@@ -48,7 +48,8 @@ const parseUrl = (url) => {
 		return undefined;
 	}
 
-	const m = url.match(/^((?:([^:\/?#]+:)(?:\/\/))?((?:([^\/?#:]*)(?::([^\/?#:]*))?@)?([^\/?#:]*)(?::([^\/?#:]*))?))?([^?#]*)(\?[^#]*)?(#.*)?$/),
+	const m = url.match(
+			/^((?:([^:\/?#]+:)(?:\/\/))?((?:([^\/?#:]*)(?::([^\/?#:]*))?@)?([^\/?#:]*)(?::([^\/?#:]*))?))?([^?#]*)(\?[^#]*)?(#.*)?$/),
 		r = {
 			hash: m[10] || "",                   // #asd
 			host: m[3] || "",                    // localhost:257
@@ -71,10 +72,10 @@ const parseUrl = (url) => {
 };
 const fetchListeners = async (client, connId) => {
 	try {
-		const { data } = await client.getListeners(connId);
-		return { id: connId, listeners: data };
+		const {data} = await client.getListeners(connId);
+		return {id: connId, listeners: data};
 	} catch (error) {
-		return { id: connId, listeners: [], error: error.message || error };
+		return {id: connId, listeners: [], error: error.message || error};
 	}
 };
 
@@ -113,7 +114,7 @@ const Status = ({
 	const loadListeners = async () => {
 		setListeners();
 		if (connected) {
-			const { id, error, listeners } = await fetchListeners(brokerClient, currentConnection.id);
+			const {id, error, listeners} = await fetchListeners(brokerClient, currentConnection.id);
 			// check response against current selected connection and ignore if they do not match
 			if (connectionRef.current?.id === id) applyListeners(listeners, error);
 		}
@@ -191,7 +192,8 @@ const Status = ({
 		return dDisplay + hDisplay + mDisplay + sDisplay;
 	}
 
-	const toNumber = (number) => number === undefined || Number.isNaN(number) ? 'N/A' : new Intl.NumberFormat().format(number);
+	const toNumber = (number) => number === undefined || Number.isNaN(number) ? 'N/A' : new Intl.NumberFormat().format(
+		number);
 	const formatBytes = (bytes, decimals = 2) => {
 		if (Number.isNaN(bytes)) {
 			return 'N/A'
@@ -238,7 +240,7 @@ const Status = ({
 			});
 			infos.push({
 				label: "MQTT Connection (TLS)",
-				value: mqtts && hostInfo ? `mqtts://${hostInfo.hostname}:8883`: 'N/A'
+				value: mqtts && hostInfo ? `mqtts://${hostInfo.hostname}:8883` : 'N/A'
 			});
 			if (requireCerts) {
 				infos.push({
@@ -297,7 +299,8 @@ const Status = ({
 										<Info
 											label="Broker Traffic"
 											infoIcon
-											infoTooltip={<>The information displayed here is gathered from Mosquitto system topics. <br/>Click here to get a detailed explanation.</>}
+											infoTooltip={<>The information displayed here is gathered from Mosquitto
+												system topics. <br/>Click here to get a detailed explanation.</>}
 											infoLink="https://docs.cedalo.com/mosquitto/management-center/overview/inspection/mc-system#broker-traffic"
 											infos={[{
 												label: "Messages Sent",
@@ -328,7 +331,8 @@ const Status = ({
 										<Info
 											label="Publish"
 											infoIcon
-											infoTooltip={<>The information displayed here is gathered from Mosquitto system topics. <br/>Click here to get a detailed explanation.</>}
+											infoTooltip={<>The information displayed here is gathered from Mosquitto
+												system topics. <br/>Click here to get a detailed explanation.</>}
 											infoLink="https://docs.cedalo.com/mosquitto/management-center/overview/inspection/mc-system#publish"
 											infos={[{
 												label: "Messages Sent",
@@ -354,7 +358,8 @@ const Status = ({
 											// style={{cursor: 'pointer'}}
 											label="Clients"
 											infoIcon
-											infoTooltip={<>The information displayed here is gathered from Mosquitto system topics. <br/>Click here to get a detailed explanation.</>}
+											infoTooltip={<>The information displayed here is gathered from Mosquitto
+												system topics. <br/>Click here to get a detailed explanation.</>}
 											infoLink="https://docs.cedalo.com/mosquitto/management-center/overview/inspection/mc-system#clients"
 											actionIcon={
 												<Tooltip title="Click to inspect clients">
@@ -393,7 +398,9 @@ const Status = ({
 											label={brokerLicense && brokerLicense.edition ? "Client Usage" : "Client Usage not available"}
 											infos={[]}
 											infoIcon
-											infoTooltip={<>The information displayed here is gathered from Mosquitto system topics and your license. <br/>Click here to get a detailed explanation.</>}
+											infoTooltip={<>The information displayed here is gathered from Mosquitto
+												system topics and your license. <br/>Click here to get a detailed
+												explanation.</>}
 											infoLink="https://docs.cedalo.com/mosquitto/management-center/overview/inspection/mc-system#client-usage"
 											chart={
 												<div style={{margin: 'auto'}}>
@@ -430,11 +437,12 @@ const Status = ({
 											<Info
 												label={brokerLicense.edition ? "License" : "License info not available"}
 												infoIcon
-												infoTooltip={<>The information displayed here is gathered from your license. <br/>Click here to get a detailed explanation.</>}
+												infoTooltip={<>The information displayed here is gathered from your
+													license. <br/>Click here to get a detailed explanation.</>}
 												infoLink="https://docs.cedalo.com/mosquitto/management-center/overview/inspection/mc-system#license"
 												infos={[{
 													label: "Edition",
-													value: brokerLicense.edition === 'pro' ? 'Premium' : (brokerLicense.edition  || 'N/A')
+													value: brokerLicense.edition === 'pro' ? 'Premium' : (brokerLicense.edition || 'N/A')
 												}, {
 													space: true,
 													label: "Maximum Clients",
@@ -465,7 +473,9 @@ const Status = ({
 										<Info
 											label="Broker Info"
 											infoIcon
-											infoTooltip={<>The information displayed here is gathered from Mosquitto system topics and your configuration<br/>Click here to get a detailed explanation.</>}
+											infoTooltip={<>The information displayed here is gathered from Mosquitto
+												system topics and your configuration<br/>Click here to get a detailed
+												explanation.</>}
 											infoLink="https://docs.cedalo.com/mosquitto/management-center/overview/inspection/mc-system#broker-info"
 											infos={getBrokerInfos()}
 											icon={<InfoIcon/>}

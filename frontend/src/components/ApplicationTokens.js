@@ -28,6 +28,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import AddIcon from '@material-ui/icons/Add';
 import DisabledIcon from '@material-ui/icons/Cancel';
 import EnabledIcon from '@material-ui/icons/CheckCircle';
@@ -93,14 +94,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const USER_TABLE_COLUMNS = [
-	{id: 'name', key: 'Name'},
-	{id: 'role', key: 'Role'},
-	{id: 'requestedBy', key: 'Requested By'},
-	{id: 'issueDate', key: 'Issue Date'},
-	{id: 'validUntil', key: 'Valid Until'},
-	{id: 'lastUsed', key: 'Last Used'},
-	{id: 'hash', key: 'Hash'},
-	{id: 'status', key: 'Status'},
+	{id: 'name', key: 'Name', width: '10%', align: 'left'},
+	{id: 'role', key: 'Role', width: '10%', align: 'left'},
+	{id: 'requestedBy', key: 'Requested By', width: '7%', align: 'left'},
+	{id: 'issueDate', key: 'Issue Date', width: '8%', align: 'left'},
+	{id: 'validUntil', key: 'Valid Until', width: '8%', align: 'left'},
+	{id: 'lastUsed', key: 'Last Used', width: '8%', align: 'left'},
+	{id: 'hash', key: 'Hash', width: '10%', align: 'left'},
+	{id: 'status', key: 'Valid', width: '5%', align: 'center'},
+	{id: 'delete', key: 'Delete', width: '5%', align: 'center'},
 ];
 
 
@@ -502,32 +504,31 @@ const createNewTokenDialog = (dialogOpen, handleDialogClose, client, userRoles, 
 const createTokenTable = (tokens, classes, props, onDeleteToken) => {
 	let {applicationTokensFeature, userRoles = [], onSort, sortBy, sortDirection} = props;
 	const {enqueueSnackbar} = useSnackbar();
+	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
+	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
 
 	if (!applicationTokensFeature?.error && applicationTokensFeature?.supported !== false && tokens && tokens.length > 0) {
 		return <div style={{height: '100%', overflowY: 'auto'}}>
-			<Hidden xsDown implementation="css">
 				<TableContainer>
 					<Table size="small">
-						<colgroup>
-							<col key={1} style={{width: '15.5%'}}/>
-							<col key={2} style={{width: '10%'}}/>
-							<col key={3} style={{width: '15%'}}/>
-							<col key={4} style={{width: '17%'}}/>
-							<col key={5} style={{width: '17%'}}/>
-							<col key={6} style={{width: '17%'}}/>
-							<col key={7} style={{width: '9.5%'}}/>
-						</colgroup>
 						<TableHead>
 							<TableRow>
 								{USER_TABLE_COLUMNS.map((column) => (
 									<TableCell
 										key={column.id}
 										sortDirection={sortBy === column.id ? sortDirection : false}
+										align={column.align}
+										style={{
+											width: column.width,
+											display: (!small && !medium) ||
+												(column.id === 'name' && (small || medium)) ||
+												(column.id === 'hash' && medium) ||
+												(column.id === 'delete' && (small || medium))  ? undefined : 'none'
+										}}
 									>
 										{column.key}
 									</TableCell>
 								))}
-								<TableCell/>
 							</TableRow>
 						</TableHead>
 						<TableBody>
@@ -559,71 +560,77 @@ const createTokenTable = (tokens, classes, props, onDeleteToken) => {
 												/>
 											</Tooltip>
 										</TableCell>
-										<TableCell>{token.role}</TableCell>
-										<TableCell>
-											{(token.requestedBy?.length > 18) ?
-												<Tooltip title={token.requestedBy}>
-													<div>
-														{token.requestedBy.substring(0, 18) + '...'}
-													</div>
-												</Tooltip> :
-												<>
-													{token.requestedBy}
-												</>
-											}
-										</TableCell>
-										<TableCell>{token.issueDate ? getDateString(
-											new Date(token.issueDate)) : ''}</TableCell>
-										<TableCell>{token.validUntil ? getDateString(
-											new Date(token.validUntil)) : ''}</TableCell>
-										<TableCell>{token.lastUsed ? getDateString(
-											new Date(token.lastUsed)) : ''}</TableCell>
-										<TableCell className={classes.badges}>
-											<Tooltip title={token.hash}>
-												<InputBase
-													id="token-hash"
-													className={classes.copyField}
-													value={token.hash}
-													endAdornment={<InputAdornment position="end">
-															<IconButton
-																size="small"
-																className={classes.iconButton}
-																aria-label="copy token hash"
-																onClick={() => copyText(token.hash, enqueueSnackbar)}
-															>
-																<FileCopy fontSize="small"/>
-															</IconButton>
-													</InputAdornment>
-													}
-												/>
-												{/* <AutoSuggest
-                                                    disabled={user.editable === false}
-                                                    suggestions={roleSuggestions}
-                                                    values={user.roles?.map((role) => ({
-                                                        label: role,
-                                                        value: role
-                                                    }))}
-                                                    handleChange={(value) => {
-                                                        onUpdateUserRoles(user, value);
-                                                    }}
-                                                /> */}
-											</Tooltip>
-										</TableCell>
-
-
+										{small || medium ? null : [
+											<TableCell>{token.role}</TableCell>,
+											<TableCell>
+												{(token.requestedBy?.length > 18) ?
+													<Tooltip title={token.requestedBy}>
+														<div>
+															{token.requestedBy.substring(0, 18) + '...'}
+														</div>
+													</Tooltip> :
+													<>
+														{token.requestedBy}
+													</>
+												}
+											</TableCell>,
+											<TableCell>{token.issueDate ? getDateString(
+												new Date(token.issueDate)) : ''}
+											</TableCell>,
+											<TableCell>{token.validUntil ? getDateString(
+												new Date(token.validUntil)) : ''}
+											</TableCell>,
+											<TableCell>{token.lastUsed ? getDateString(
+												new Date(token.lastUsed)) : ''}
+											</TableCell>,
+										]}
+										{small ? null :
+											<TableCell className={classes.badges}>
+												<Tooltip title={token.hash}>
+													<InputBase
+														id="token-hash"
+														className={classes.copyField}
+														value={token.hash}
+														endAdornment={<InputAdornment position="end">
+																<IconButton
+																	size="small"
+																	className={classes.iconButton}
+																	aria-label="copy token hash"
+																	onClick={() => copyText(token.hash, enqueueSnackbar)}
+																>
+																	<FileCopy fontSize="small"/>
+																</IconButton>
+														</InputAdornment>
+														}
+													/>
+													{/* <AutoSuggest
+														disabled={user.editable === false}
+														suggestions={roleSuggestions}
+														values={user.roles?.map((role) => ({
+															label: role,
+															value: role
+														}))}
+														handleChange={(value) => {
+															onUpdateUserRoles(user, value);
+														}}
+													/> */}
+												</Tooltip>
+											</TableCell>
+										}
+										{small || medium ? null :
+											<TableCell align="center">
+												{token.validUntil && (new Date(token.validUntil)) > (new Date()) ?
+													<Tooltip title={"Token is valid"}>
+														<EnabledIcon fontSize="small" style={{color: green[500]}}/>
+													</Tooltip>
+													:
+													<Tooltip title={"Token has expired"}>
+														<DisabledIcon fontSize="small" style={{color: red[500]}}/>
+													</Tooltip>
+												}
+											</TableCell>
+										}
 										<TableCell align="center">
-											{token.validUntil && (new Date(token.validUntil)) > (new Date()) ?
-												<Tooltip title={"Token is valid"}>
-													<EnabledIcon fontSize="small" style={{color: green[500]}}/>
-												</Tooltip>
-												:
-												<Tooltip title={"Token has expired"}>
-													<DisabledIcon fontSize="small" style={{color: red[500]}}/>
-												</Tooltip>
-											}
-										</TableCell>
-
-										<TableCell align="right">
 											<Tooltip title="Revoke token">
 												<IconButton
 													size="small"
@@ -641,52 +648,6 @@ const createTokenTable = (tokens, classes, props, onDeleteToken) => {
 						</TableBody>
 					</Table>
 				</TableContainer>
-			</Hidden>
-			<Hidden smUp implementation="css">
-				<Paper>
-					<List className={classes.root}>
-						{tokens.map((token) => (
-							<React.Fragment key={token.hash}>
-								<ListItem
-									alignItems="flex-start"
-								>
-									<ListItemText
-										primary={<span>{token.role}</span>}
-										secondary={
-											<React.Fragment>
-												<Typography
-													component="span"
-													variant="body2"
-													className={classes.inline}
-													color="textPrimary"
-												>
-													{token.name && (token.name.length > 20) ? token.name.substring(0,
-														20) + '...' : token.name}
-												</Typography>
-												<span> — {token.role}</span>
-											</React.Fragment>
-										}
-									/>
-									<ListItemSecondaryAction>
-										<IconButton
-											edge="end"
-											size="small"
-											onClick={(event) => {
-												event.stopPropagation();
-												onDeleteUser(user.username);
-											}}
-											aria-label="delete"
-										>
-											<DeleteIcon fontSize="small"/>
-										</IconButton>
-									</ListItemSecondaryAction>
-								</ListItem>
-								<Divider/>
-							</React.Fragment>
-						))}
-					</List>
-				</Paper>
-			</Hidden>
 		</div>
 	} else if (applicationTokensFeature?.error) {
 		return null;
