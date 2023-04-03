@@ -21,3 +21,7 @@ export const showConnections = () => {
 		location.pathname.startsWith('/clusters') ||
 		location.pathname.startsWith('/settings'));
 };
+
+export const getHelpBasePath = () => {
+	return 'https://cedalo.github.io/documentation-staging/';
+}

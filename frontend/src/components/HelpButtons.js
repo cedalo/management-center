@@ -6,6 +6,7 @@ import HelpIcon from '@material-ui/icons/HelpOutline';
 import TourIcon from '@material-ui/icons/Slideshow';
 import React from 'react';
 import { useTour } from '@reactour/tour';
+import {getHelpBasePath} from '../utils/utils';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -27,7 +28,7 @@ export default function HelpButtons(props) {
 
 	const getHelpContext = () => {
 		// let link = 'https://docs.cedalo.com/management-center';
-		const basePath = 'https://cedalo.github.io/documentation-staging/';
+		const basePath = getHelpBasePath();
 		let link = `${basePath}mosquitto/next/management-center/overview/`;
 		const path = location.pathname.split('/');
 
