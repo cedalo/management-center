@@ -99,7 +99,7 @@ const UserNew = (props) => {
 			]}/>
 			<ContainerHeader
 				title="New User"
-				subTitle="Create a new user. A user name and the password are required."
+				subTitle="Create a new user. User name and the password are required."
 			/>
 			{/* TODO: Quick hack to detect whether feature is supported */}
 			{userManagementFeature?.error ? <><br/><Alert severity="warning">

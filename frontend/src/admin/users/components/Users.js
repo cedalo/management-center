@@ -49,8 +49,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const USER_TABLE_COLUMNS = [
-	{id: 'username', key: 'Name'},
-	{id: 'roles', key: 'Roles'}
+	{id: 'username', key: 'Name', align: 'left', width: '25%'},
+	{id: 'roles', key: 'Roles', align: 'left', width: '65%'},
+	{id: 'delete', key: 'Delete', align: 'center', width: '5%'}
 ];
 
 const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles, onSelectUser) => {
@@ -65,7 +66,6 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 
 	if (!userManagementFeature?.error && userManagementFeature?.supported !== false && users && users.length > 0) {
 		return (<div style={{height: '100%', overflowY: 'auto'}}>
-			<Hidden xsDown implementation="css">
 				<TableContainer>
 					<Table stickyHeader size="small" aria-label="sticky table">
 						<TableHead>
@@ -74,11 +74,14 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 									<TableCell
 										key={column.id}
 										sortDirection={sortBy === column.id ? sortDirection : false}
+										align={column.align}
+										style={{
+											width: column.width,
+										}}
 									>
 										{column.key}
 									</TableCell>
 								))}
-								<TableCell/>
 							</TableRow>
 						</TableHead>
 						<TableBody>
@@ -107,7 +110,7 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 												suggestions={roleSuggestions}
 											/>
 										</TableCell>
-										<TableCell align="right">
+										<TableCell align="center">
 											<Tooltip title="Delete user">
 												<IconButton
 													disabled={user.editable === false}
@@ -126,63 +129,6 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 						</TableBody>
 					</Table>
 				</TableContainer>
-			</Hidden>
-			<Hidden smUp implementation="css">
-				<Paper>
-					<List>
-						{users.map((user) => (
-							<React.Fragment>
-								<ListItem
-									alignItems="flex-start"
-									onClick={(event) => onSelectUser(user.username)}
-								>
-									<ListItemText
-										primary={<span>{user.username}</span>}
-										secondary={
-											<React.Fragment>
-												<Typography
-													component="span"
-													variant="body2"
-													color="textPrimary"
-												>
-													{user.textname}
-												</Typography>
-												<span> — {user.textdescription} </span>
-											</React.Fragment>
-										}
-									/>
-									<ListItemSecondaryAction>
-										<IconButton
-											edge="end"
-											size="small"
-											onClick={(event) => {
-												event.stopPropagation();
-												onSelectUser(user.username);
-											}}
-											aria-label="edit"
-										>
-											<EditIcon fontSize="small"/>
-										</IconButton>
-
-										<IconButton
-											edge="end"
-											size="small"
-											onClick={(event) => {
-												event.stopPropagation();
-												onDeleteUser(user.username);
-											}}
-											aria-label="delete"
-										>
-											<DeleteIcon fontSize="small"/>
-										</IconButton>
-									</ListItemSecondaryAction>
-								</ListItem>
-								<Divider/>
-							</React.Fragment>
-						))}
-					</List>
-				</Paper>
-			</Hidden>
 		</div>)
 	} else if (userManagementFeature?.error) {
 		return null;
