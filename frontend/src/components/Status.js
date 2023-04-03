@@ -44,6 +44,10 @@ const useStyles = makeStyles((theme) => ({
 
 // Browser URL class does not work with mqtt protocol
 const parseUrl = (url) => {
+	if (!url) {
+		return undefined;
+	}
+
 	const m = url.match(/^((?:([^:\/?#]+:)(?:\/\/))?((?:([^\/?#:]*)(?::([^\/?#:]*))?@)?([^\/?#:]*)(?::([^\/?#:]*))?))?([^?#]*)(\?[^#]*)?(#.*)?$/),
 		r = {
 			hash: m[10] || "",                   // #asd
