@@ -185,6 +185,7 @@ const Groups = (props) => {
 
 	const {
 		dynamicsecurityFeature,
+		defaultClient,
 		anonymousGroup,
 		groups = [],
 		rolesAll = [],
@@ -199,7 +200,8 @@ const Groups = (props) => {
 		.sort()
 		.map((username) => ({
 			label: username,
-			value: username
+			value: username,
+			disabled: username === defaultClient?.username
 		}));
 
 	const roleSuggestions = rolesAll
@@ -389,6 +391,7 @@ const mapStateToProps = (state) => {
 		clientsAll: state.clients?.clientsAll?.clients,
 		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity,
 		connected: state.brokerConnections?.connected,
+		defaultClient: state.brokerConnections?.defaultClient,
 	};
 };
 

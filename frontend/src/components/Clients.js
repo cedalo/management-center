@@ -274,10 +274,8 @@ const Clients = (props) => {
 		}));
 
 
-
-	const getClassForCell = (client) => {
-		return `${(defaultClient?.username === client.username) ? classes.disabled : ''}`;
-	}
+	const isDefaultClient = (client) => defaultClient?.username === client.username
+	const getClassForCell = (client) => `${isDefaultClient(client) ? classes.disabled : ''}`;
 
 	return (
 		<div style={{height: '100%'}}>
@@ -360,7 +358,7 @@ const Clients = (props) => {
 														onClick={(event) => {
 															if (
 																event.target.nodeName?.toLowerCase() === 'td' ||
-																defaultClient?.username === client.username
+																isDefaultClient(client)
 															) {
 																onSelectClient(client.username);
 															}
@@ -385,7 +383,7 @@ const Clients = (props) => {
 																onChange={(event, value) => {
 																	onUpdateClientGroups(client, value);
 																}}
-																disabled={defaultClient?.username === client.username}
+																disabled={isDefaultClient(client)}
 																suggestions={groupSuggestions}
 															/>
 														</TableCell>
@@ -398,7 +396,7 @@ const Clients = (props) => {
 																	onChange={(event, value) => {
 																		onUpdateClientRoles(client, value);
 																	}}
-																	disabled={defaultClient?.username === client.username}
+																	disabled={isDefaultClient(client)}
 																	suggestions={roleSuggestions}
 																/>
 															</TableCell>
@@ -408,7 +406,7 @@ const Clients = (props) => {
 																<Tooltip title="Enable / disable client">
 																	<Checkbox
 																		color="primary"
-																		disabled={defaultClient?.username === client.username}
+																		disabled={isDefaultClient(client)}
 																		checked={
 																			typeof client.disabled === 'undefined' ||
 																			client.disabled === false
@@ -426,7 +424,7 @@ const Clients = (props) => {
 																</Tooltip>
 																<Tooltip title="Delete client">
 																	<IconButton
-																		disabled={defaultClient?.username === client.username}
+																		disabled={isDefaultClient(client)}
 																		size="small"
 																		onClick={(event) => {
 																			event.stopPropagation();
