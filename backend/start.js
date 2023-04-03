@@ -803,8 +803,9 @@ const init = async (licenseContainer) => {
 							context.actionEmitter.emit(eventName, eventData);
 						});
 				}
+			} else {
+				console.error(`Unknown action: "${type}"`);
 			}
-			console.error(`Unknown action: "${type}"`);
 		},
 		broadcastWebSocketMessage,
 		sendTopicTreeUpdate,
