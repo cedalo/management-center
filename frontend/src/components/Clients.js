@@ -347,9 +347,9 @@ const Clients = (props) => {
 											clients.clients.map((client) => (
 												<Tooltip
 													enterDelay={0}
-													disableHoverListener={defaultClient?.username !== client.username}
-													disableFocusListener={defaultClient?.username !== client.username}
-													disableTouchListener={defaultClient?.username !== client.username}
+													disableHoverListener={!isDefaultClient(client)}
+													disableFocusListener={!isDefaultClient(client)}
+													disableTouchListener={!isDefaultClient(client)}
 													title={<span style={{fontSize: '13px'}}>User used for connection cannot be edited</span>}
 												>
 													<StyledTableRow
