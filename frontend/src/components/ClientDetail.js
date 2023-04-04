@@ -21,6 +21,7 @@ import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import {useFormStyles} from '../styles';
+import { isAdminClient } from '../helpers/utils';
 
 const PASSWORD_ERROR_MESSAGE = 'Password should not be empty';
 
@@ -81,7 +82,7 @@ const ClientDetail = (props) => {
 		}
 	}, []);
 
-	const {client = {}, defaultClient} = props;
+	const { client = {}, isAdminClient } = props;
 	const [updatedClient, setUpdatedClient] = React.useState({
 		...client
 	});
@@ -316,7 +317,7 @@ const ClientDetail = (props) => {
 					/>
 				</Grid>
 			</Grid>
-			{!editMode && defaultClient?.username !== client.username && (
+			{!editMode && !isAdminClient(client) /* defaultClient?.username !== client.username */ && (
 				<Grid item xs={12}>
 					<Button
 						variant="contained"
@@ -330,7 +331,7 @@ const ClientDetail = (props) => {
 					</Button>
 				</Grid>
 			)}
-			{editMode && defaultClient?.username !== client.username && (
+			{editMode && !isAdminClient(client) /* defaultClient?.username !== client.username */ && (
 				<Grid item xs={12}>
 					<Button
 						variant="contained"
@@ -372,7 +373,7 @@ ClientDetail.propTypes = {
 const mapStateToProps = (state) => {
 	return {
 		client: state.clients?.client,
-		defaultClient: state.brokerConnections?.defaultClient
+		isAdminClient: isAdminClient(state)
 	};
 };
 

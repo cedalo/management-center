@@ -36,6 +36,7 @@ import AnonymousGroupSelect from './AnonymousGroupSelect';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import SelectList from './SelectList';
+import { isAdminClient } from '../helpers/utils';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -68,6 +69,8 @@ const GROUP_TABLE_COLUMNS = [
 	{id: 'roles', key: 'Roles', width: '25%', align: 'left'},
 	{id: 'action', key: 'Delete', width: '5%', align: 'center'}
 ];
+
+const byUserName = (c1, c2) => c1.username > c2.username;
 
 const FormattedGroupType = (props) => {
 	switch (props.provider) {
@@ -185,24 +188,22 @@ const Groups = (props) => {
 
 	const {
 		dynamicsecurityFeature,
-		defaultClient,
+		isAdminClient,
 		anonymousGroup,
 		groups = [],
 		rolesAll = [],
-		clientsAll = [],
+		clients = [],
 		onSort,
 		sortBy,
 		sortDirection
 	} = props;
 
 	// TODO: probably extract into reducer
-	const clientSuggestions = clientsAll
-		.sort()
-		.map((username) => ({
-			label: username,
-			value: username,
-			disabled: username === defaultClient?.username
-		}));
+	const clientSuggestions = clients.sort(byUserName).map((client) => ({
+		label: client.username,
+		value: client.username,
+		disabled: isAdminClient(client)
+	}));
 
 	const roleSuggestions = rolesAll
 		.sort()
@@ -388,10 +389,9 @@ const mapStateToProps = (state) => {
 		roles: state.roles?.roles?.roles,
 		rolesAll: state.roles?.rolesAll?.roles,
 		clients: state.clients?.clients?.clients,
-		clientsAll: state.clients?.clientsAll?.clients,
 		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity,
 		connected: state.brokerConnections?.connected,
-		defaultClient: state.brokerConnections?.defaultClient,
+		isAdminClient: isAdminClient(state)
 	};
 };
 

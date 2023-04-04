@@ -26,6 +26,7 @@ import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import SelectList from './SelectList';
+import { isAdminClient } from '../helpers/utils';
 
 const StyledTableRow = withStyles((theme) => ({
 	root: {
@@ -241,8 +242,8 @@ const Clients = (props) => {
 
 	const {
 		dynamicsecurityFeature,
+		isAdminClient,
 		connectionID,
-		defaultClient,
 		groupsAll = [],
 		rolesAll = [],
 		clients = [],
@@ -274,8 +275,7 @@ const Clients = (props) => {
 		}));
 
 
-	const isDefaultClient = (client) => defaultClient?.username === client.username
-	const getClassForCell = (client) => `${isDefaultClient(client) ? classes.disabled : ''}`;
+	const getClassForCell = (client) => `${isAdminClient(client) ? classes.disabled : ''}`;
 
 	return (
 		<div style={{height: '100%'}}>
@@ -347,9 +347,9 @@ const Clients = (props) => {
 											clients.clients.map((client) => (
 												<Tooltip
 													enterDelay={0}
-													disableHoverListener={!isDefaultClient(client)}
-													disableFocusListener={!isDefaultClient(client)}
-													disableTouchListener={!isDefaultClient(client)}
+													disableHoverListener={!isAdminClient(client)}
+													disableFocusListener={!isAdminClient(client)}
+													disableTouchListener={!isAdminClient(client)}
 													title={<span style={{fontSize: '13px'}}>User used for connection cannot be edited</span>}
 												>
 													<StyledTableRow
@@ -358,7 +358,7 @@ const Clients = (props) => {
 														onClick={(event) => {
 															if (
 																event.target.nodeName?.toLowerCase() === 'td' ||
-																isDefaultClient(client)
+																isAdminClient(client)
 															) {
 																onSelectClient(client.username);
 															}
@@ -383,7 +383,7 @@ const Clients = (props) => {
 																onChange={(event, value) => {
 																	onUpdateClientGroups(client, value);
 																}}
-																disabled={isDefaultClient(client)}
+																disabled={isAdminClient(client)}
 																suggestions={groupSuggestions}
 															/>
 														</TableCell>
@@ -396,7 +396,7 @@ const Clients = (props) => {
 																	onChange={(event, value) => {
 																		onUpdateClientRoles(client, value);
 																	}}
-																	disabled={isDefaultClient(client)}
+																	disabled={isAdminClient(client)}
 																	suggestions={roleSuggestions}
 																/>
 															</TableCell>
@@ -406,7 +406,7 @@ const Clients = (props) => {
 																<Tooltip title="Enable / disable client">
 																	<Checkbox
 																		color="primary"
-																		disabled={isDefaultClient(client)}
+																		disabled={isAdminClient(client)}
 																		checked={
 																			typeof client.disabled === 'undefined' ||
 																			client.disabled === false
@@ -424,7 +424,7 @@ const Clients = (props) => {
 																</Tooltip>
 																<Tooltip title="Delete client">
 																	<IconButton
-																		disabled={isDefaultClient(client)}
+																		disabled={isAdminClient(client)}
 																		size="small"
 																		onClick={(event) => {
 																			event.stopPropagation();
@@ -485,9 +485,9 @@ const mapStateToProps = (state) => {
 		roles: state.roles?.roles?.roles,
 		rolesAll: state.roles?.rolesAll?.roles,
 		clients: state.clients?.clients,
-		defaultClient: state.brokerConnections?.defaultClient,
 		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity,
 		connected: state.brokerConnections?.connected,
+		isAdminClient: isAdminClient(state)
 	};
 };
 
