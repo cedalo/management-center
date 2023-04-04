@@ -104,46 +104,48 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 						<TableBody>
 							{users &&
 								users.map((user) => (
-									<StyledTableRow
-										disabled={user.editable === false}
-										hover
-										key={user.username}
-										onClick={(event) => {
-											if (event.target.nodeName?.toLowerCase() === 'td') {
-												onSelectUser(user.username);
-											}
-										}}
-										style={{ cursor: 'pointer' }}
-									>
-										<TableCell>{user.username}</TableCell>
-										<TableCell className={classes.badges}>
-											<AutoSuggest
-												disabled={user.editable === false}
-												suggestions={roleSuggestions}
-												values={user.roles?.map((role) => ({
-													label: role,
-													value: role
-												}))}
-												handleChange={(value) => {
-													onUpdateUserRoles(user, value);
-												}}
-											/>
-										</TableCell>
-										<TableCell align="right">
-											<Tooltip title="Delete user">
-												<IconButton
+									<Tooltip title={user.isRoot ? "Root user is not editable" : ""}>
+										<StyledTableRow
+											disabled={user.editable === false}
+											hover
+											key={user.username}
+											onClick={(event) => {
+												if (event.target.nodeName?.toLowerCase() === 'td') {
+													onSelectUser(user.username);
+												}
+											}}
+											style={{ cursor: 'pointer' }}
+										>
+											<TableCell>{user.username}</TableCell>
+											<TableCell className={classes.badges}>
+												<AutoSuggest
 													disabled={user.editable === false}
-													size="small"
-													onClick={(event) => {
-														event.stopPropagation();
-														onDeleteUser(user.username);
+													suggestions={roleSuggestions}
+													values={user.roles?.map((role) => ({
+														label: role,
+														value: role
+													}))}
+													handleChange={(value) => {
+														onUpdateUserRoles(user, value);
 													}}
-												>
-													<DeleteIcon fontSize="small" />
-												</IconButton>
-											</Tooltip>
-										</TableCell>
-									</StyledTableRow>
+												/>
+											</TableCell>
+											<TableCell align="right">
+												<Tooltip title="Delete user">
+													<IconButton
+														disabled={user.editable === false}
+														size="small"
+														onClick={(event) => {
+															event.stopPropagation();
+															onDeleteUser(user.username);
+														}}
+													>
+														<DeleteIcon fontSize="small" />
+													</IconButton>
+												</Tooltip>
+											</TableCell>
+										</StyledTableRow>
+									</Tooltip>
 								))}
 						</TableBody>
 					</Table>
