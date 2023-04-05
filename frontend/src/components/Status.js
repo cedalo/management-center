@@ -22,6 +22,7 @@ import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import ContentContainer from './ContentContainer';
 import Info from './Info';
 import {useTheme} from '@material-ui/core/styles';
 import {useHistory} from 'react-router-dom';
@@ -267,256 +268,255 @@ const Status = ({
 	const basePath = getHelpBasePath();
 
 	return (
-		<ContainerBox dataTour="page-status">
-			<ContainerBreadCrumbs title="Home"/>
-			<div style={{height: 'calc(100% - 34px)'}}>
-				<div>
-					<ContainerHeader
-						title={`Broker: ${currentConnectionName}`}
-						subTitle="Display the status and license info of the selected broker. Hover over the info icon to get more information about each metric"
-						connectedWarning={!connected}
+		<ContentContainer
+			dataTour="page-status"
+			breadCrumbs={<ContainerBreadCrumbs title="Home"/>}
+			overFlowX="hidden"
+		>
+			<ContainerHeader
+				title={`Broker: ${currentConnectionName}`}
+				subTitle="Display the status and license info of the selected broker. Hover over the info icon to get more information about each metric"
+				connectedWarning={!connected}
+			>
+				{systemStatus?.$SYS && <div style={{
+					fontSize: '0.9em',
+					position: 'absolute',
+					right: '15px',
+					top: '70px'
+				}}>
+					Dashboard last updated at: {moment(lastUpdated).format('hh:mm:ss a')}
+				</div>}
+				{systemStatus?.$SYS && connected && currentConnection?.supportsRestart === true &&
+					<Button
+						variant="outlined"
+						color="primary"
+						size="small"
+						onClick={(event) => {
+							event.stopPropagation();
+							onRestart(currentConnectionName, currentConnection?.serviceName);
+						}}
+						startIcon={<RestartIcon/>}
 					>
-						{systemStatus?.$SYS && connected && currentConnection?.supportsRestart === true &&
-							<Button
-								variant="outlined"
-								color="primary"
-								size="small"
-								onClick={(event) => {
-									event.stopPropagation();
-									onRestart(currentConnectionName, currentConnection?.serviceName);
-								}}
-								startIcon={<RestartIcon/>}
-							>
-								Restart
-							</Button>
-						}
-					</ContainerHeader>
-					{systemStatus?.$SYS && connected ?
-						<Container classes={{root: classes.container}} maxWidth={false}>
-							<Grid
-								container
-								classes={{root: classes.container}}
-								spacing={3}
-							>
-								<Grid container item lg={4} xl={4} sm={6} xs={12}>
-									<Grid item xs={12}>
-										<Info
-											label="Broker Traffic"
-											infoIcon
-											infoTooltip={<>The information displayed here is gathered from Mosquitto
-												system topics. <br/>Click here to get a detailed explanation.</>}
-											infoLink={`${basePath}mosquitto/next/management-center/overview/inspection/mc-system#broker-traffic`}
-											infos={[{
-												label: "Messages Sent",
-												value: toNumber(systemStatus?.$SYS?.broker?.messages?.sent)
-											}, {
-												label: "Messages Received",
-												value: toNumber(systemStatus?.$SYS?.broker?.messages?.received)
-											}, {
-												label: "Messages Stored",
-												value: toNumber(systemStatus?.$SYS?.broker?.messages?.stored)
-											}, {
-												label: "Messages Retained",
-												value: toNumber(
-													systemStatus?.$SYS?.broker?.['retained messages']?.count)
-											}, {
-												label: "Bytes Sent",
-												value: formatBytes(systemStatus?.$SYS?.broker?.bytes?.sent),
-												space: true
-											}, {
-												label: "Bytes Received",
-												value: formatBytes(systemStatus?.$SYS?.broker?.bytes?.received)
-											}
-											]}
-											icon={<BrokerIcon/>}
-										/>
-									</Grid>
-									<Grid item xs={12} style={{paddingTop: '24px'}}>
-										<Info
-											label="Publish"
-											infoIcon
-											infoTooltip={<>The information displayed here is gathered from Mosquitto
-												system topics. <br/>Click here to get a detailed explanation.</>}
-											infoLink={`${basePath}mosquitto/next/management-center/overview/inspection/mc-system#publish`}
-											infos={[{
-												label: "Messages Sent",
-												value: toNumber(systemStatus?.$SYS?.broker?.publish?.messages?.sent)
-											}, {
-												label: "Messages Received",
-												value: toNumber(systemStatus?.$SYS?.broker?.publish?.messages?.received)
-											}, {
-												label: "Bytes Sent",
-												value: formatBytes(systemStatus?.$SYS?.broker?.publish?.bytes?.sent),
-												space: true
-											}, {
-												label: "Bytes Received",
-												value: formatBytes(systemStatus?.$SYS?.broker?.publish?.bytes?.received)
-											}]}
-											icon={<DataSentIcon/>}
-										/>
-									</Grid>
-								</Grid>
-								<Grid container item lg={4} xl={4} sm={6} xs={12}>
-									<Grid item xs={12}>
-										<Info
-											// style={{cursor: 'pointer'}}
-											label="Clients"
-											infoIcon
-											infoTooltip={<>The information displayed here is gathered from Mosquitto
-												system topics. <br/>Click here to get a detailed explanation.</>}
-											infoLink={`${basePath}mosquitto/next/management-center/overview/inspection/mc-system#clients`}
-											actionIcon={
-												<Tooltip title="Click to inspect clients">
-													<IconButton
-														className={classes.info} size="small"
-														aria-label="info">
-														<InspectClientsIcon
-															onClick={(event) => {
-																event.stopPropagation();
-																history.push(`/clientinspection/`);
-															}}
-															fontSize="small"
-														/>
-													</IconButton>
-												</Tooltip>
-											}
-											infos={[{
-												label: "Total",
-												value: toNumber(systemStatus?.$SYS?.broker?.clients?.total)
-											}, {
-												label: "Connected",
-												value: toNumber(systemStatus?.$SYS?.broker?.clients?.connected)
-											}/*, {
+						Restart
+					</Button>
+				}
+			</ContainerHeader>
+			{systemStatus?.$SYS && connected ?
+				<Container classes={{root: classes.container}} maxWidth={false}>
+					<Grid
+						container
+						classes={{root: classes.container}}
+						spacing={3}
+					>
+						<Grid container item lg={4} xl={4} sm={6} xs={12} >
+							<Grid item xs={12}>
+								<Info
+									label="Broker Traffic"
+									infoIcon
+									infoTooltip={<>The information displayed here is gathered from Mosquitto
+										system topics. <br/>Click here to get a detailed explanation.</>}
+									infoLink={`${basePath}mosquitto/next/management-center/overview/inspection/mc-system#broker-traffic`}
+									infos={[{
+										label: "Messages Sent",
+										value: toNumber(systemStatus?.$SYS?.broker?.messages?.sent)
+									}, {
+										label: "Messages Received",
+										value: toNumber(systemStatus?.$SYS?.broker?.messages?.received)
+									}, {
+										label: "Messages Stored",
+										value: toNumber(systemStatus?.$SYS?.broker?.messages?.stored)
+									}, {
+										label: "Messages Retained",
+										value: toNumber(
+											systemStatus?.$SYS?.broker?.['retained messages']?.count)
+									}, {
+										label: "Bytes Sent",
+										value: formatBytes(systemStatus?.$SYS?.broker?.bytes?.sent),
+										space: true
+									}, {
+										label: "Bytes Received",
+										value: formatBytes(systemStatus?.$SYS?.broker?.bytes?.received)
+									}
+									]}
+									icon={<BrokerIcon/>}
+								/>
+							</Grid>
+							<Grid item xs={12} style={{paddingTop: '24px'}}>
+								<Info
+									label="Publish"
+									infoIcon
+									infoTooltip={<>The information displayed here is gathered from Mosquitto
+										system topics. <br/>Click here to get a detailed explanation.</>}
+									infoLink={`${basePath}mosquitto/next/management-center/overview/inspection/mc-system#publish`}
+									infos={[{
+										label: "Messages Sent",
+										value: toNumber(systemStatus?.$SYS?.broker?.publish?.messages?.sent)
+									}, {
+										label: "Messages Received",
+										value: toNumber(systemStatus?.$SYS?.broker?.publish?.messages?.received)
+									}, {
+										label: "Bytes Sent",
+										value: formatBytes(systemStatus?.$SYS?.broker?.publish?.bytes?.sent),
+										space: true
+									}, {
+										label: "Bytes Received",
+										value: formatBytes(systemStatus?.$SYS?.broker?.publish?.bytes?.received)
+									}]}
+									icon={<DataSentIcon/>}
+								/>
+							</Grid>
+						</Grid>
+						<Grid container item lg={4} xl={4} sm={6} xs={12}>
+							<Grid item xs={12}>
+								<Info
+									// style={{cursor: 'pointer'}}
+									label="Clients"
+									infoIcon
+									infoTooltip={<>The information displayed here is gathered from Mosquitto
+										system topics. <br/>Click here to get a detailed explanation.</>}
+									infoLink={`${basePath}mosquitto/next/management-center/overview/inspection/mc-system#clients`}
+									actionIcon={
+										<Tooltip title="Click to inspect clients">
+											<IconButton
+												className={classes.info} size="small"
+												aria-label="info">
+												<InspectClientsIcon
+													onClick={(event) => {
+														event.stopPropagation();
+														history.push(`/clientinspection/`);
+													}}
+													fontSize="small"
+												/>
+											</IconButton>
+										</Tooltip>
+									}
+									infos={[{
+										label: "Total",
+										value: toNumber(systemStatus?.$SYS?.broker?.clients?.total)
+									}, {
+										label: "Connected",
+										value: toNumber(systemStatus?.$SYS?.broker?.clients?.connected)
+									}/*, {
 												label: "Disconnected",
 												value: systemStatus?.$SYS?.broker?.clients?.disconnected === undefined ? '' : toNumber(systemStatus?.$SYS?.broker?.clients?.disconnected)
 											}*/, {
-												label: "Subscriptions",
-												value: toNumber(systemStatus?.$SYS?.broker?.subscriptions?.count),
-												space: true
-											}]}
-											icon={<ClientIcon/>}
-										/>
-									</Grid>
-									<Grid item xs={12} style={{paddingTop: '24px'}}>
-										<Info
-											label={brokerLicense && brokerLicense.edition ? "Client Usage" : "Client Usage not available"}
-											infos={[]}
-											infoIcon
-											infoTooltip={<>The information displayed here is gathered from Mosquitto
-												system topics and your license. <br/>Click here to get a detailed
-												explanation.</>}
-											infoLink={`${basePath}mosquitto/next/management-center/overview/inspection/mc-system#client-usage`}
-											chart={
-												<div style={{margin: 'auto'}}>
-													<Speedometer
-														maxValue={maxClients || 1}
-														forceRender={true}
-														value={systemStatus?.$SYS?.broker?.clients?.connected}
-														startColor={maxClients ? "#44FF44" : "#AAAAAA"}
-														endColor={maxClients ? "#FF4444" : "#AAAAAA"}
-														height={300}
-														textColor={theme.palette.text.secondary}
-														valueTextFontWeight="normal"
-														valueTextFontSize="11pt"
-														labelFontSize="9pt"
-														width={300}
-														ringWidth={30}
-														segments={50}
-														needleColor="#FD602E"
-														maxSegmentLabels={maxClients === 1 || !maxClients ? 1 : 5}
-													/>
-												</div>
-											}
-											icon={<ClientIcon/>}
-										/>
-									</Grid>
-								</Grid>
-								<Grid container item lg={4} xl={4} sm={6} xs={12}>
-									<Grid item xs={12}>
-										{brokerLicenseLoading ?
-											<Alert severity="info">
-												<AlertTitle>Loading license information</AlertTitle>
-												<CircularProgress color="secondary"/>
-											</Alert> :
-											<Info
-												label={brokerLicense.edition ? "License" : "License info not available"}
-												infoIcon
-												infoTooltip={<>The information displayed here is gathered from your
-													license. <br/>Click here to get a detailed explanation.</>}
-												infoLink={`${basePath}mosquitto/next/management-center/overview/inspection/mc-system#license`}
-												infos={[{
-													label: "Edition",
-													value: brokerLicense.edition === 'pro' ? 'Premium' : (brokerLicense.edition || 'N/A')
-												}, {
-													space: true,
-													label: "Maximum Clients",
-													value: maxClients || 'N/A'
-												}, {
-													space: true,
-													label: "Issued by",
-													value: brokerLicense.issuedBy || 'N/A'
-												}, {
-													label: "Issued to",
-													value: brokerLicense.issuedTo || 'N/A'
-												}, {
-													space: true,
-													label: "Valid since",
-													value: brokerLicense.validSince ?
-														moment(brokerLicense.validSince).format('LLLL') :
-														'N/A'
-												}, {
-													label: "Valid until",
-													value: brokerLicense.validUntil ?
-														moment(brokerLicense.validUntil).format('LLLL') :
-														'N/A'
-												}]}
-												icon={<LicenseIcon/>}
-											/>}
-									</Grid>
-									<Grid item xs={12} style={{paddingTop: '24px'}}>
-										<Info
-											label="Broker Info"
-											infoIcon
-											infoTooltip={<>The information displayed here is gathered from Mosquitto
-												system topics and your configuration<br/>Click here to get a detailed
-												explanation.</>}
-											infoLink={`${basePath}mosquitto/next/management-center/overview/inspection/mc-system#broker-info`}
-											infos={getBrokerInfos()}
-											icon={<InfoIcon/>}
-										/>
-									</Grid>
-								</Grid>
+										label: "Subscriptions",
+										value: toNumber(systemStatus?.$SYS?.broker?.subscriptions?.count),
+										space: true
+									}]}
+									icon={<ClientIcon/>}
+								/>
 							</Grid>
-						</Container> :
-						(connected ? (
-							(waitingForSysTopic ?
-								<Alert severity="info">
-									<AlertTitle>Loading system status information</AlertTitle>
-									<CircularProgress color="secondary" size="1.5rem"/>
-								</Alert> :
-								<Alert severity="warning">
-									<AlertTitle>System status information could not be fetched</AlertTitle>
-									We couldn't retrieve the system status information in the given time window.
-									Please make sure that the user "{defaultClient?.username}" has the rights to
-									read
-									the
-									"$SYS" topic on the selected broker.
-									In rare cases, you may wait a bit longer until system information is finally
-									sent
-								</Alert>)
-						) : <></>)
-					}
-					{systemStatus?.$SYS && <div style={{
-						fontSize: '0.9em',
-						position: 'absolute',
-						right: '15px',
-						top: '70px'
-					}}>
-						Dashboard last updated at: {moment(lastUpdated).format('hh:mm:ss a')}
-					</div>}
-				</div>
-			</div>
-		</ContainerBox>
+							<Grid item xs={12} style={{paddingTop: '24px'}}>
+								<Info
+									label={brokerLicense && brokerLicense.edition ? "Client Usage" : "Client Usage not available"}
+									infos={[]}
+									infoIcon
+									infoTooltip={<>The information displayed here is gathered from Mosquitto
+										system topics and your license. <br/>Click here to get a detailed
+										explanation.</>}
+									infoLink={`${basePath}mosquitto/next/management-center/overview/inspection/mc-system#client-usage`}
+									chart={
+										<div style={{margin: 'auto'}}>
+											<Speedometer
+												maxValue={maxClients || 1}
+												forceRender={true}
+												value={systemStatus?.$SYS?.broker?.clients?.connected}
+												startColor={maxClients ? "#44FF44" : "#AAAAAA"}
+												endColor={maxClients ? "#FF4444" : "#AAAAAA"}
+												height={300}
+												textColor={theme.palette.text.secondary}
+												valueTextFontWeight="normal"
+												valueTextFontSize="11pt"
+												labelFontSize="9pt"
+												width={300}
+												ringWidth={30}
+												segments={50}
+												needleColor="#FD602E"
+												maxSegmentLabels={maxClients === 1 || !maxClients ? 1 : 5}
+											/>
+										</div>
+									}
+									icon={<ClientIcon/>}
+								/>
+							</Grid>
+						</Grid>
+						<Grid container item lg={4} xl={4} sm={6} xs={12}>
+							<Grid item xs={12}>
+								{brokerLicenseLoading ?
+									<Alert severity="info">
+										<AlertTitle>Loading license information</AlertTitle>
+										<CircularProgress color="secondary"/>
+									</Alert> :
+									<Info
+										label={brokerLicense.edition ? "License" : "License info not available"}
+										infoIcon
+										infoTooltip={<>The information displayed here is gathered from your
+											license. <br/>Click here to get a detailed explanation.</>}
+										infoLink={`${basePath}mosquitto/next/management-center/overview/inspection/mc-system#license`}
+										infos={[{
+											label: "Edition",
+											value: brokerLicense.edition === 'pro' ? 'Premium' : (brokerLicense.edition || 'N/A')
+										}, {
+											space: true,
+											label: "Maximum Clients",
+											value: maxClients || 'N/A'
+										}, {
+											space: true,
+											label: "Issued by",
+											value: brokerLicense.issuedBy || 'N/A'
+										}, {
+											label: "Issued to",
+											value: brokerLicense.issuedTo || 'N/A'
+										}, {
+											space: true,
+											label: "Valid since",
+											value: brokerLicense.validSince ?
+												moment(brokerLicense.validSince).format('LLLL') :
+												'N/A'
+										}, {
+											label: "Valid until",
+											value: brokerLicense.validUntil ?
+												moment(brokerLicense.validUntil).format('LLLL') :
+												'N/A'
+										}]}
+										icon={<LicenseIcon/>}
+									/>}
+							</Grid>
+							<Grid item xs={12} style={{paddingTop: '24px'}}>
+								<Info
+									label="Broker Info"
+									infoIcon
+									infoTooltip={<>The information displayed here is gathered from Mosquitto
+										system topics and your configuration<br/>Click here to get a detailed
+										explanation.</>}
+									infoLink={`${basePath}mosquitto/next/management-center/overview/inspection/mc-system#broker-info`}
+									infos={getBrokerInfos()}
+									icon={<InfoIcon/>}
+								/>
+							</Grid>
+						</Grid>
+					</Grid>
+				</Container> :
+				(connected ? (
+					(waitingForSysTopic ?
+						<Alert severity="info">
+							<AlertTitle>Loading system status information</AlertTitle>
+							<CircularProgress color="secondary" size="1.5rem"/>
+						</Alert> :
+						<Alert severity="warning">
+							<AlertTitle>System status information could not be fetched</AlertTitle>
+							We couldn't retrieve the system status information in the given time window.
+							Please make sure that the user "{defaultClient?.username}" has the rights to
+							read
+							the
+							"$SYS" topic on the selected broker.
+							In rare cases, you may wait a bit longer until system information is finally
+							sent
+						</Alert>)
+				) : <></>)
+			}
+		</ContentContainer>
 	);
 };
 

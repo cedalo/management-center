@@ -13,7 +13,13 @@ const ContainerBox = ({children, dataTour}) => {
 			}}
 			data-tour={dataTour}
 		>
-			<Box style={{padding: '5px 15px 15px 15px'}}>
+			<Box
+				style={{
+					height: '100%',
+					padding: '5px 15px 15px 15px',
+					backgroundColor: theme.palette.background.default
+				}}
+			>
 				{children}
 			</Box>
 		</Box>
