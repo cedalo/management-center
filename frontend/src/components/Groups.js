@@ -33,6 +33,7 @@ import {useHistory} from 'react-router-dom';
 import {updateAnonymousGroup, updateClients, updateGroup, updateGroups} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
 import AnonymousGroupSelect from './AnonymousGroupSelect';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import SelectList from './SelectList';
@@ -213,14 +214,14 @@ const Groups = (props) => {
 		}));
 
 	return (
-		<div style={{height: '100%'}}>
+		<ContainerBox dataTour="page-groups">
 			<div style={{display: 'flex', justifyContent: 'space-between'}}>
 				<ContainerBreadCrumbs title="Groups" links={[{name: 'Home', route: '/home'}]}/>
 				<AnonymousGroupSelect
 					onUpdateAnonymousGroup={onUpdateAnonymousGroup}
 				/>
 			</div>
-			<div style={{height: 'calc(100% - 26px)'}}>
+			<div style={{height: 'calc(100% - 34px)'}}>
 				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
 					<ContainerHeader
 						topMargin="-12px"
@@ -366,7 +367,7 @@ const Groups = (props) => {
 					)}
 				</div>
 			</div>
-		</div>
+		</ContainerBox>
 	);
 };
 

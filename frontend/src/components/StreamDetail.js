@@ -2,8 +2,6 @@ import Button from '@material-ui/core/Button';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import {makeStyles} from '@material-ui/core/styles';
-import {useFormStyles} from '../styles';
 import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -24,7 +22,9 @@ import {connect, useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import {updateStream, updateStreams} from '../actions/actions';
 import useLocalStorage from '../helpers/useLocalStorage';
+import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import './jsoneditor-fix.css';
@@ -149,7 +149,7 @@ const StreamDetail = (props) => {
 	// TODO: get stream by streamname if current stream is not defined
 
 	return stream.streamname ? (
-		<div>
+		<ContainerBox>
 			<ContainerBreadCrumbs title={stream.streamname} links={[{name: 'Home', route: '/home'},{name: 'Streams', route: '/streams'}]}/>
 			<ContainerHeader
 				title={`Edit Stream: ${stream.streamname}`}
@@ -456,7 +456,7 @@ const StreamDetail = (props) => {
 						</Button>
 					</Grid>
 				)}
-		</div>
+		</ContainerBox>
 	) : (
 		<Redirect to="/streams" push />
 	);

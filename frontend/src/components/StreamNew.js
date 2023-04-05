@@ -2,7 +2,6 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import {makeStyles} from '@material-ui/core/styles';
-import {useFormStyles} from '../styles';
 import TextField from '@material-ui/core/TextField';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import SaveIcon from '@material-ui/icons/Save';
@@ -20,7 +19,9 @@ import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateStreams} from '../actions/actions';
 import useLocalStorage from '../helpers/useLocalStorage';
+import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import './jsoneditor-fix.css';
@@ -121,7 +122,7 @@ const StreamNew = (props) => {
 	};
 
 	return (
-		<div>
+		<ContainerBox>
 			<ContainerBreadCrumbs title="New Stream" links={[{name: 'Home', route: '/home'},{name: 'Streams', route: '/streams'}]}/>
 			<ContainerHeader
 				title="New Stream"
@@ -277,7 +278,7 @@ const StreamNew = (props) => {
 						</Grid>
 					</Grid>
 				</Grid>
-		</div>
+		</ContainerBox>
 	);
 };
 

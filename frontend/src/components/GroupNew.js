@@ -9,6 +9,7 @@ import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateGroups} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import SaveCancelButtons from './SaveCancelButtons';
@@ -67,7 +68,7 @@ const GroupNew = (props) => {
 	};
 
 	return (
-		<div>
+		<ContainerBox>
 			<ContainerBreadCrumbs title="New" links={[{name: 'Home', route: '/home'},
 				{name: 'Groups', route: '/groups'}
 			]}/>
@@ -135,7 +136,7 @@ const GroupNew = (props) => {
 					/>
 				</Grid>
 			</Grid>
-		</div>
+		</ContainerBox>
 	);
 };
 

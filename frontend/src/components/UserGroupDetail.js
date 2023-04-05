@@ -12,10 +12,11 @@ import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import {updateUserGroup, updateUserGroups} from '../admin/users/actions/actions';
+import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
-import {useFormStyles} from '../styles';
 
 const UserGroupDetail = (props) => {
 	const context = useContext(WebSocketContext);
@@ -68,7 +69,7 @@ const UserGroupDetail = (props) => {
 	};
 
 	return props.userGroup.name ? (
-		<div>
+		<ContainerBox>
 			<ContainerBreadCrumbs title={updatedGroup.name} links={[{name: 'Home', route: '/home'},
 				{name: 'User Groups', route: '/user-groups'}
 			]}/>
@@ -206,7 +207,7 @@ const UserGroupDetail = (props) => {
 					</Button>
 				</Grid>
 			)}
-		</div>
+		</ContainerBox>
 	) : (
 		<Redirect to="/user-groups" push/>
 	);

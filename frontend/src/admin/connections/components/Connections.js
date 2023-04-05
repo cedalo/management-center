@@ -27,6 +27,7 @@ import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateBrokerConfigurations, updateBrokerConnections, updateSelectedConnection} from '../../../actions/actions';
 import BrokerStatusIcon from '../../../components/BrokerStatusIcon';
+import ContainerBox from '../../../components/ContainerBox';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
 import PremiumFeatureDialog from '../../../components/PremiumFeatureDialog';
@@ -393,7 +394,7 @@ const Connections = ({
 		}
 	};
 
-	return (<div style={{height: '100%'}}>
+	return (<ContainerBox>
 		<PremiumFeatureDialog open={premiumFeatureDialogOpen} handleClose={handleClosePremiumFeatureDialog}/>
 		<ContainerBreadCrumbs title="Connections" links={[{name: 'Home', route: '/home'}]}/>
 		<div style={{height: 'calc(100% - 26px)'}}>
@@ -464,7 +465,7 @@ const Connections = ({
 					</div>) : (<div>No connections found</div>)}
 			</div>
 		</div>
-	</div>);
+	</ContainerBox>);
 };
 
 const mapStateToProps = (state) => {

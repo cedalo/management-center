@@ -41,6 +41,7 @@ import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {updateApplicationTokens} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 
@@ -714,7 +715,7 @@ const ApplicationTokens = (props) => {
 	};
 
 	return (
-		<div style={{height: '100%'}}>
+		<ContainerBox>
 			<ContainerBreadCrumbs title="Tokens" links={[{name: 'Home', route: '/home'}]}/>
 			<div style={{height: 'calc(100% - 26px)'}}>
 				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
@@ -751,7 +752,7 @@ const ApplicationTokens = (props) => {
 				</div>
 			</div>
 			{createNewTokenDialog(dialogOpen, handleDialogClose, client, userRoles, tokens)}
-		</div>
+		</ContainerBox>
 	);
 };
 

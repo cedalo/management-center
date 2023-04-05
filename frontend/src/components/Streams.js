@@ -22,6 +22,7 @@ import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateStream, updateStreams} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import ReplayStreamDialog from './streams/ReplayStreamDialog';
@@ -224,7 +225,7 @@ const Streams = (props) => {
 	};
 
 	return (
-		<div style={{height: '100%'}}>
+		<ContainerBox>
 			<ReplayStreamDialog
 				stream={replayStream}
 				open={replayStreamEditorOpen}
@@ -433,7 +434,7 @@ const Streams = (props) => {
 					)}
 				</div>
 			</div>
-		</div>
+		</ContainerBox>
 	);
 };
 

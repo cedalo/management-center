@@ -1,18 +1,12 @@
+import {makeStyles, useTheme} from '@material-ui/core/styles';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
-import {makeStyles, useTheme} from '@material-ui/core/styles';
-import {
-	updateAnonymousGroup,
-	updateDefaultACLAccess,
-	updateClient,
-	updateClients,
-	updateGroups,
-	updateRoles
-} from '../actions/actions';
-import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import Terminal from 'terminal-in-react';
-import {WebSocketContext} from '../websockets/WebSocket';
+import {updateAnonymousGroup, updateClients, updateDefaultACLAccess, updateGroups} from '../actions/actions';
 import useLocalStorage from '../helpers/useLocalStorage';
+import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
+import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 
 
@@ -528,7 +522,7 @@ Topic:      ${acl.topic}
 	}
 
 	return (
-		<div style={{height: '100%'}}>
+		<ContainerBox>
 			<ContainerBreadCrumbs title="Terminal" links={[{name: 'Home', route: '/home'}]}/>
 			<div style={{height: 'calc(100% - 26px)'}}>
 				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
@@ -582,7 +576,7 @@ Topic:      ${acl.topic}
 					/>
 				</div>
 			</div>
-		</div>
+		</ContainerBox>
 	);
 };
 

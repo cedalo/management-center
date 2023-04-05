@@ -7,6 +7,7 @@ import {connect, useDispatch} from 'react-redux';
 import {updateSettings} from '../actions/actions';
 import useLocalStorage from '../helpers/useLocalStorage';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 
@@ -44,7 +45,7 @@ const Settings = ({settings, onChangeTheme, sendMessage}) => {
 	};
 
 	return (
-		<div style={{height: '100%'}}>
+		<ContainerBox>
 			<ContainerBreadCrumbs title="Settings" links={[{name: 'Home', route: '/home'}]}/>
 			<div style={{height: 'calc(100% - 26px)'}}>
 				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
@@ -103,7 +104,7 @@ const Settings = ({settings, onChangeTheme, sendMessage}) => {
 					</FormGroup>
 				</div>
 			</div>
-		</div>
+		</ContainerBox>
 	);
 };
 

@@ -22,11 +22,12 @@ import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateClients, updateGroups, updateRole, updateRoles} from '../actions/actions';
+import {getAdminRolesFromState} from '../helpers/utils';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import StyledTypography from './StyledTypography';
-import { getAdminRolesFromState } from '../helpers/utils';
 
 const useStyles = makeStyles((theme) => ({
 	button: {
@@ -141,7 +142,7 @@ const Roles = (props) => {
 	const {dynamicsecurityFeature, defaultACLAccess, adminRoles, roles = [], onSort, sortBy, sortDirection} = props;
 
 	return (
-		<div style={{ height: '100%' }}>
+		<ContainerBox>
 			<ContainerBreadCrumbs title="Roles" links={[{ name: 'Home', route: '/home' }]} />
 			<div style={{ height: 'calc(100% - 26px)' }}>
 				<div style={{ display: 'grid', gridTemplateRows: 'max-content auto', height: '100%' }}>
@@ -292,7 +293,7 @@ const Roles = (props) => {
 					) : null}
 				</div>
 			</div>
-		</div>
+		</ContainerBox>
 	);
 };
 

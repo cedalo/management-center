@@ -21,6 +21,7 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
+import ContainerBox from '../../../components/ContainerBox';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
 import WaitDialog from '../../../components/WaitDialog';
@@ -175,7 +176,7 @@ const ClusterDetail = (props) => {
 		setEditMode(false);
 	};
 
-	return cluster ? (<div>
+	return cluster ? (<ContainerBox>
 		<ContainerBreadCrumbs title={updatedCluster?.clustername}
 							  links={[{name: 'Home', route: '/home'}, {name: 'Cluster', route: '/clusters'}]}/>
 		<ContainerHeader
@@ -367,7 +368,7 @@ const ClusterDetail = (props) => {
 			open={progressDialogOpen}
 			handleClose={() => setProgressDialogOpen(false)}
 		/>
-	</div>) : (
+	</ContainerBox>) : (
 		<Redirect to="/clusters" push/>
 	);
 };

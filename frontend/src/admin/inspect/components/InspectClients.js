@@ -19,6 +19,7 @@ import ReloadIcon from '@material-ui/icons/Replay';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
+import ContainerBox from '../../../components/ContainerBox';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
 import {WebSocketContext} from '../../../websockets/WebSocket';
@@ -277,9 +278,9 @@ const Clients = (props) => {
 	};
 
 	return (
-		<Box style={{height: '100%'}} data-tour="page-clientinspection">
+		<ContainerBox dataTour="page-clientinspection">
 			<ContainerBreadCrumbs title="Client Inspection" links={[{name: 'Home', route: '/home'}]}/>
-			<div style={{height: 'calc(100% - 26px)'}}>
+			<div style={{height: 'calc(100% - 34px)'}}>
 				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
 					<ContainerHeader
 						title="Inspect Clients"
@@ -321,7 +322,7 @@ const Clients = (props) => {
 					{connected ? createClientsTable(filteredClients, classes, props, onDisconnectClient, onUpdateUserRoles, onSelectClient, small, medium, clientControlFeature) : null}
 				</div>
 			</div>
-		</Box>
+		</ContainerBox>
 	);
 };
 

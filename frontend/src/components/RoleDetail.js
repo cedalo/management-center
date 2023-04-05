@@ -44,6 +44,7 @@ import {updateEditDefaultClient, updateRole, updateRoles} from '../actions/actio
 import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ACLTypesHelpDialog from './ACLTypesHelpDialog';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import { getAdminRolesFromState } from '../helpers/utils';
@@ -258,7 +259,7 @@ const RoleDetail = (props) => {
 	};
 
 	return role.rolename ? (
-		<div style={{ height: '100%' }}>
+		<ContainerBox>
 			<ACLTypesHelpDialog open={aclTypesHelpDialogOpen} handleClose={handleCloseACLTypesHelpDialog} />
 			<ContainerBreadCrumbs
 				title={role.rolename}
@@ -645,7 +646,7 @@ const RoleDetail = (props) => {
 					</Button>
 				</Grid>
 			)}
-		</div>
+		</ContainerBox>
 	) : (
 		<Redirect to="/roles" push />
 	);

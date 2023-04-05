@@ -22,8 +22,8 @@
         }
 
         #logo-container {
-            text-align: center;
-            margin-bottom: 2em;
+            text-align: right;
+            margin-bottom: 1em;
         }
 
         #link {
@@ -66,6 +66,13 @@
         .group {
             position: relative;
             margin-bottom: 45px;
+        }
+
+        #title {
+            margin-bottom: 1.2em;
+            font-size: 24pt;
+            font-weight: 400;
+            text-align: left;
         }
 
         input {
@@ -191,13 +198,17 @@
     <div id="container">
         <!-- <div style="width: 100vw; height: 100vh; background-image: url('images/loginbg.png');""> -->
         <form method="POST" action="./auth">
-            <div id="logo-container"><a href="https://cedalo.com" target="_blank"><img id="logo" src="images/logo-red.png" width="150px" /></a>
-                <!-- <br/><br/><span id="subtitle">Mosquitto Management Center</span> -->
+            <div id="logo-container">
+                <a href="https://cedalo.com" target="_blank">
+                    <img id="logo" src="images/cedalo.png" width="75px" />
+                </a>
             </div>
+            <div id="title">Management Center</div>
             <div id="error-container"></div>
             <div class="group">
-                <input id="username" type="text" name="username"><span class="highlight"></span><span
-                    class="bar"></span>
+                <input id="username" type="text" name="username">
+                <span class="highlight"></span>
+                <span class="bar"></span>
                 <label>Username</label>
             </div>
             <div class="group">
@@ -216,9 +227,9 @@
     <script>
 
         const styleTextField = (textField) => {
-            textField.onblur = function () {
+            textField.oninput = function () {
                 if (this.value) {
-                    this.className = 'used'
+					this.className = 'used'
                 } else {
                     this.className = ''
                 }
@@ -240,9 +251,10 @@
                 const themes = await response.json();
                 const mode = isDarkMode ? 'dark' : 'light';
                 const theme = themes[mode];
-                const { backgroundColor, logo } = theme.login;
-                document.getElementById('logo').src = logo.path;
-                document.querySelector('body').style.backgroundColor = backgroundColor;
+                const { palette, logo } = theme;
+                document.getElementById('logo').src = logo;
+                document.getElementById('title').innerText = themes.title;
+                document.querySelector('body').style.background = palette.loginBackground;
             } catch (error) {
                 console.error(error);
             }

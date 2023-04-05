@@ -18,6 +18,7 @@ import moment from 'moment';
 import React from 'react';
 import {connect} from 'react-redux';
 import useFetch from '../helpers/useFetch';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import Info from './Info';
@@ -71,7 +72,7 @@ const InfoPage = (props) => {
 
 	if (response) {
 		return (
-			<div style={{height: '100%'}}>
+			<ContainerBox>
 				<Dialog
 					open={open}
 					onClose={handleClose}
@@ -210,7 +211,7 @@ const InfoPage = (props) => {
 							</Grid>: null}
 					</Grid>
 				</Container>
-			</div>
+			</ContainerBox>
 		);
 	} else {
 		return null;

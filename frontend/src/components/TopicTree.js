@@ -20,6 +20,7 @@ import PropTypes from 'prop-types';
 import React, {useEffect} from 'react';
 import {connect} from 'react-redux';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 
@@ -298,10 +299,10 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 	};
 
 	return (
-		<Box style={{height: '100%'}} data-tour="page-topics">
+		<ContainerBox dataTour="page-topics">
 			<ContainerBreadCrumbs title="Topic Tree"
 								  links={[{name: 'Home', route: '/home'}]}/>
-			<div style={{height: 'calc(100% - 26px)'}}>
+			<div style={{height: 'calc(100% - 34px)'}}>
 				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
 					<ContainerHeader
 						title="Inspect Topic Tree"
@@ -489,7 +490,7 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 			}}>
 				Topic tree last updated at: {moment(lastUpdated).format('hh:mm:ss a')}
 			</div>}
-		</Box>
+		</ContainerBox>
 	);
 };
 

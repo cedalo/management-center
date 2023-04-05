@@ -9,6 +9,7 @@ import {useSnackbar} from 'notistack';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
+import ContainerBox from '../../../components/ContainerBox';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
 import SaveCancelButtons from '../../../components/SaveCancelButtons';
@@ -93,7 +94,7 @@ const UserNew = (props) => {
 	};
 
 	return (
-		<div>
+		<ContainerBox>
 			<ContainerBreadCrumbs title="New" links={[{name: 'Home', route: '/home'},
 				{name: 'Users', route: '/users'}
 			]}/>
@@ -213,7 +214,7 @@ const UserNew = (props) => {
 					</Grid>
 				</Grid>
 			</div>}
-		</div>
+		</ContainerBox>
 	);
 };
 

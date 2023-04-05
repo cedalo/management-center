@@ -8,11 +8,12 @@ import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateRoles} from '../actions/actions';
+import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import SaveCancelButtons from './SaveCancelButtons';
-import {useFormStyles} from '../styles';
 
 const RoleNew = () => {
 	const [rolename, setRolename] = useState('');
@@ -63,7 +64,7 @@ const RoleNew = () => {
 	};
 
 	return (
-		<div>
+		<ContainerBox>
 			<ContainerBreadCrumbs title="New" links={[{name: 'Home', route: '/home'}, {name: 'Roles', route: '/roles'}]}/>
 			<ContainerHeader
 				title={`New Role`}
@@ -127,7 +128,7 @@ const RoleNew = () => {
 					/>
 				</Grid>
 			</Grid>
-		</div>
+		</ContainerBox>
 	);
 };
 

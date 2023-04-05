@@ -20,6 +20,7 @@ import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateUserGroup, updateUserGroups} from '../admin/users/actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import SelectList from './SelectList';
@@ -248,7 +249,7 @@ const UserGroups = (props) => {
 
 
 	return (
-		<div style={{height: '100%'}}>
+		<ContainerBox>
 			<ContainerBreadCrumbs title="User Groups" links={[{name: 'Home', route: '/home'}]}/>
 			<div style={{height: 'calc(100% - 26px)'}}>
 				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
@@ -392,7 +393,7 @@ const UserGroups = (props) => {
 					}
 				</div>
 			</div>
-		</div>
+		</ContainerBox>
 	);
 };
 

@@ -35,6 +35,11 @@ const theme = createTheme({
 		}
 	},
 	overrides: {
+		MuiCard: {
+			root: {
+				background: 'none',
+			},
+		},
 		MuiAppBar: {
 			colorPrimary: {
 				backgroundColor: '#F7F9FC',

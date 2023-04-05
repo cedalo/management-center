@@ -18,6 +18,7 @@ import {connect, useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import {updateClient, updateClients} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import {useFormStyles} from '../styles';
@@ -147,7 +148,7 @@ const ClientDetail = (props) => {
 	// TODO: get client by id if current client is not defined
 
 	return client.username ? (
-		<div>
+		<ContainerBox>
 			<ContainerBreadCrumbs title={client.username} links={[{name: 'Home', route: '/home'},
 				{name: 'Clients', route: '/clients'}
 			]}/>
@@ -360,7 +361,7 @@ const ClientDetail = (props) => {
 					</Button>
 				</Grid>
 			)}
-		</div>
+		</ContainerBox>
 	) : (
 		<Redirect to="/clients" push/>
 	);

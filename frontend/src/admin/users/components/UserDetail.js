@@ -10,6 +10,7 @@ import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
+import ContainerBox from '../../../components/ContainerBox';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
 import SelectList from '../../../components/SelectList';
@@ -114,7 +115,7 @@ const UserDetail = (props) => {
 		setEditMode(false);
 	};
 
-	return user ? (<div>
+	return user ? (<ContainerBox>
 		<ContainerBreadCrumbs title={user.username} links={[{name: 'Home', route: '/home'},
 			{name: 'Users', route: '/users'}
 		]}/>
@@ -258,7 +259,7 @@ const UserDetail = (props) => {
 				</Button>
 			</Grid>
 		)}
-	</div>) : null;
+	</ContainerBox>) : null;
 };
 
 UserDetail.propTypes = {

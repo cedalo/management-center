@@ -1,10 +1,10 @@
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
+import ContainerBox from '../../../components/ContainerBox';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
 import {updateClusters} from '../actions/actions';
 import {useSnackbar} from 'notistack';
-
 import {Alert, AlertTitle} from '@material-ui/lab';
 import ClusterIcon from '@material-ui/icons/Storage';
 import Grid from '@material-ui/core/Grid';
@@ -115,7 +115,7 @@ const ClusterNew = (props) => {
 	};
 
 	return (
-		<div>
+		<ContainerBox>
 			<ContainerBreadCrumbs
 				title="New"
 				links={[
@@ -246,7 +246,7 @@ const ClusterNew = (props) => {
 					</div>
 				</div>
 			)}
-		</div>
+		</ContainerBox>
 	);
 };
 

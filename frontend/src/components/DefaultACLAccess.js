@@ -1,39 +1,29 @@
-import AddIcon from '@material-ui/icons/Add';
-import EditIcon from '@material-ui/icons/Edit';
-import React, {useContext} from 'react';
-import {useSnackbar} from 'notistack';
-import {connect, useDispatch} from 'react-redux';
-import {Link as RouterLink} from 'react-router-dom';
-import {makeStyles, useTheme, withStyles} from '@material-ui/core/styles';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
-import DeleteIcon from '@material-ui/icons/Delete';
 import Divider from '@material-ui/core/Divider';
-import FormControl from '@material-ui/core/FormControl';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
-import SaveIcon from '@material-ui/icons/AddCircle';
 import Select from '@material-ui/core/Select';
+import {makeStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import {WebSocketContext} from '../websockets/WebSocket';
+import DeleteIcon from '@material-ui/icons/Delete';
+import {useSnackbar} from 'notistack';
+import React, {useContext} from 'react';
+import {connect, useDispatch} from 'react-redux';
 import {updateDefaultACLAccess} from '../actions/actions';
+import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 
@@ -79,7 +69,7 @@ const DefaultACLAccess = ({defaultACLAccess}) => {
 	}
 
 	return (
-		<div style={{height: '100%'}}>
+		<ContainerBox>
 			<ContainerBreadCrumbs title="Default ACL Access"
 								  links={[{name: 'Home', route: '/home'}, {name: 'Roles', route: '/roles'}]}/>
 			<div style={{height: 'calc(100% - 26px)'}}>
@@ -169,7 +159,7 @@ const DefaultACLAccess = ({defaultACLAccess}) => {
 				</div>
 				</div>
 			</div>
-		</div>
+		</ContainerBox>
 	);
 };
 

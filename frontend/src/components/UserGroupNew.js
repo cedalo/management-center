@@ -10,6 +10,7 @@ import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateUserGroups} from '../admin/users/actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import SaveCancelButtons from './SaveCancelButtons';
@@ -64,7 +65,7 @@ const UserGroupNew = (props) => {
 	};
 
 	return (
-		<div>
+		<ContainerBox>
 			<ContainerBreadCrumbs title="New" links={[{name: 'Home', route: '/home'},
 				{name: 'User Groups', route: '/user-groups'}
 			]}/>
@@ -142,7 +143,7 @@ const UserGroupNew = (props) => {
 					/>
 				</Grid>
 			</Grid>
-		</div>
+		</ContainerBox>
 	);
 };
 

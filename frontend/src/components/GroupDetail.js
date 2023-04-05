@@ -1,11 +1,7 @@
-import Box from '@material-ui/core/Box';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import {makeStyles} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
@@ -14,12 +10,13 @@ import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
-import {Link as RouterLink, Redirect} from 'react-router-dom';
+import {Redirect} from 'react-router-dom';
 import {updateGroup, updateGroups} from '../actions/actions';
+import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
-import {useFormStyles} from '../styles';
 
 const clientShape = PropTypes.shape({
 	username: PropTypes.string,
@@ -84,7 +81,7 @@ const GroupDetail = (props) => {
 	};
 
 	return group.groupname ? (
-		<div>
+		<ContainerBox>
 			<ContainerBreadCrumbs title={updatedGroup.groupname} links={[{name: 'Home', route: '/home'},
 				{name: 'Groups', route: '/groups'}
 			]}/>
@@ -213,7 +210,7 @@ const GroupDetail = (props) => {
 					</Button>
 				</Grid>
 			)}
-		</div>
+		</ContainerBox>
 	) : (
 		<Redirect to="/groups" push/>
 	);

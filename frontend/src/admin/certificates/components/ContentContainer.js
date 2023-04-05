@@ -1,5 +1,5 @@
 import React from 'react';
-import {Hidden} from '@material-ui/core';
+import ContainerBox from '../../../components/ContainerBox';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 
 const getHeaderContent = (children) => {
@@ -13,7 +13,7 @@ const ContentContainer = ({children, path}) => {
 	const last = path.pop();
 
 	return (
-		<div style={{height: '100%'}}>
+		<ContainerBox>
 			{path && path.length &&
 				<ContainerBreadCrumbs title={last.name} links={path}/>
 			}
@@ -25,7 +25,7 @@ const ContentContainer = ({children, path}) => {
 					</div>
 				</div>
 			</div>
-		</div>
+		</ContainerBox>
 	);
 };
 export default ContentContainer;

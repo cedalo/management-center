@@ -23,6 +23,7 @@ import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateClient, updateClients, updateGroups} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import SelectList from './SelectList';
@@ -278,7 +279,7 @@ const Clients = (props) => {
 	const getClassForCell = (client) => `${isAdminClient(client) ? classes.disabled : ''}`;
 
 	return (
-		<div style={{height: '100%'}}>
+		<ContainerBox dataTour="page-clients">
 			<ContainerBreadCrumbs title="Clients" links={[{name: 'Home', route: '/home'}]}/>
 			<div style={{height: 'calc(100% - 26px)'}}>
 				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
@@ -461,7 +462,7 @@ const Clients = (props) => {
 					)}
 				</div>
 			</div>
-		</div>
+		</ContainerBox>
 	);
 };
 

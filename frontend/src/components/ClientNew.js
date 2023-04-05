@@ -15,6 +15,7 @@ import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateClients} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import SaveCancelButtons from './SaveCancelButtons';
@@ -81,7 +82,7 @@ const ClientNew = (props) => {
 	};
 
 	return (
-		<div>
+		<ContainerBox>
 			<ContainerBreadCrumbs title="New" links={[{name: 'Home', route: '/home'},
 				{name: 'Clients', route: '/clients'}
 			]}/>
@@ -204,7 +205,7 @@ const ClientNew = (props) => {
 					/>
 				</Grid>
 			</Grid>
-		</div>
+		</ContainerBox>
 	);
 };
 

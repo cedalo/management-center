@@ -19,6 +19,7 @@ import Speedometer from 'react-d3-speedometer';
 import {connect} from 'react-redux';
 import {getHelpBasePath} from '../utils/utils';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import Info from './Info';
@@ -266,9 +267,9 @@ const Status = ({
 	const basePath = getHelpBasePath();
 
 	return (
-		<Box style={{height: '100%'}} data-tour="page-status">
+		<ContainerBox dataTour="page-status">
 			<ContainerBreadCrumbs title="Home"/>
-			<div style={{height: 'calc(100% - 26px)'}}>
+			<div style={{height: 'calc(100% - 34px)'}}>
 				<div>
 					<ContainerHeader
 						title={`Broker: ${currentConnectionName}`}
@@ -515,7 +516,7 @@ const Status = ({
 					</div>}
 				</div>
 			</div>
-		</Box>
+		</ContainerBox>
 	);
 };
 
