@@ -3,7 +3,6 @@ import Button from '@material-ui/core/Button';
 import FormGroup from '@material-ui/core/FormGroup';
 import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import {makeStyles} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -18,12 +17,12 @@ import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import {updateClient, updateClients} from '../actions/actions';
+import {isAdminClient} from '../helpers/utils';
+import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
-import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
-import {useFormStyles} from '../styles';
-import {isAdminClient} from '../helpers/utils';
+import ContentContainer from './ContentContainer';
 
 const PASSWORD_ERROR_MESSAGE = 'Password should not be empty';
 
@@ -149,91 +148,89 @@ const ClientDetail = (props) => {
 	// TODO: get client by id if current client is not defined
 
 	return client.username ? (
-		<ContainerBox>
-			<ContainerBreadCrumbs title={client.username} links={[{name: 'Home', route: '/home'},
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title={client.username} links={[{name: 'Home', route: '/home'},
 				{name: 'Clients', route: '/clients'}
-			]}/>
-			<div style={{height: 'calc(100% - 26px)'}}>
-				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
-					<ContainerHeader
-						title={`Edit Client: ${client.username}`}
-						subTitle="Here you can modify the properties of a client. The user name can not be changed."
-					/>
-					<Box style={{height: '100%', overflowY: 'auto'}}>
-						<FormGroup>
-							<TextField
-								required={editMode}
-								disabled={true}
-								onChange={(event) => {
-									if (editMode) {
-										setUpdatedClient({
-											...updatedClient,
-											username: event.target.value
-										});
-									}
-								}}
-								id="username"
-								label="Name"
-								value={updatedClient.username}
-								defaultValue=""
-								variant="outlined"
-								fullWidth
-								size="small"
-								margin="normal"
-								className={formClasses.textField}
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position="start">
-											<AccountCircle/>
-										</InputAdornment>
-									)
-								}}
-							/>
-							<TextField
-								disabled={!editMode}
-								onChange={(event) => {
-									if (event.target.value) {
-										setPasswordError(null);
-									} else {
-										setPasswordError(PASSWORD_ERROR_MESSAGE);
-									}
-									if (editMode) {
-										setUpdatedClient({
-											...updatedClient,
-											password: event.target.value
-										})
-									}
-								}}
-								id="password"
-								label="Password (You can change the password here, empty password will be ignored)"
-								helperText={passwordError}
-								value={client.password}
-								error={!!passwordError}
-								// defaultValue="*****"
-								onFocus={() => {
-									if (!updatedClient.password) {
-										setPasswordError(PASSWORD_ERROR_MESSAGE);
-									}
-								}}
-								onBlur={() => {
-									setPasswordError(null);
-								}}
-								inputRef={ref}
-								variant="outlined"
-								fullWidth
-								type={showPassword ? 'text' : 'password'}
-								size="small"
-								margin="normal"
-								className={formClasses.textField}
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position="start">
-											<PasswordIcon/>
-										</InputAdornment>
-									)
-								}}
-							/>
-							{/* <IconButton onClick={() => {
+			]}/>}
+		>
+			<ContainerHeader
+				title={`Edit Client: ${client.username}`}
+				subTitle="Here you can modify the properties of a client. The user name can not be changed."
+			/>
+			<FormGroup>
+				<TextField
+					required={editMode}
+					disabled={true}
+					onChange={(event) => {
+						if (editMode) {
+							setUpdatedClient({
+								...updatedClient,
+								username: event.target.value
+							});
+						}
+					}}
+					id="username"
+					label="Name"
+					value={updatedClient.username}
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position="start">
+								<AccountCircle/>
+							</InputAdornment>
+						)
+					}}
+				/>
+				<TextField
+					disabled={!editMode}
+					onChange={(event) => {
+						if (event.target.value) {
+							setPasswordError(null);
+						} else {
+							setPasswordError(PASSWORD_ERROR_MESSAGE);
+						}
+						if (editMode) {
+							setUpdatedClient({
+								...updatedClient,
+								password: event.target.value
+							})
+						}
+					}}
+					id="password"
+					label="Password (You can change the password here, empty password will be ignored)"
+					helperText={passwordError}
+					value={client.password}
+					error={!!passwordError}
+					// defaultValue="*****"
+					onFocus={() => {
+						if (!updatedClient.password) {
+							setPasswordError(PASSWORD_ERROR_MESSAGE);
+						}
+					}}
+					onBlur={() => {
+						setPasswordError(null);
+					}}
+					inputRef={ref}
+					variant="outlined"
+					fullWidth
+					type={showPassword ? 'text' : 'password'}
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position="start">
+								<PasswordIcon/>
+							</InputAdornment>
+						)
+					}}
+				/>
+				{/* <IconButton onClick={() => {
 										if (showPassword) {
 											setShowPassword(false);
 										} else {
@@ -242,121 +239,118 @@ const ClientDetail = (props) => {
 									}} >
 									{ showPassword ? <HidePasswordIcon /> : <ShowPasswordIcon /> }
 									</IconButton> */}
-							<TextField
-								disabled={!editMode}
-								id="client-id"
-								label="ID"
-								value={updatedClient.clientid}
-								defaultValue=""
-								variant="outlined"
-								fullWidth
-								size="small"
-								margin="normal"
-								className={formClasses.textField}
-								onChange={(event) => {
-									if (editMode) {
-										setUpdatedClient({
-											...updatedClient,
-											clientid: event.target.value
-										});
-									}
-								}}
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position="start">
-											<ClientIDIcon/>
-										</InputAdornment>
-									)
-								}}
-							/>
-							<TextField
-								disabled={!editMode}
-								onChange={(event) => {
-									if (editMode) {
-										setUpdatedClient({
-											...updatedClient,
-											textname: event.target.value
-										});
-									}
-								}}
-								id="textname"
-								label="Text Name"
-								value={updatedClient.textname}
-								//   onChange={(event) => setTextName(event.target.value)}
-								defaultValue=""
-								variant="outlined"
-								fullWidth
-								size="small"
-								margin="normal"
-								className={formClasses.textField}
-							/>
-							<TextField
-								disabled={!editMode}
-								onChange={(event) => {
-									if (editMode) {
-										setUpdatedClient({
-											...updatedClient,
-											textdescription: event.target.value
-										});
-									}
-								}}
-								id="textdescription"
-								label="Description"
-								value={updatedClient.textdescription}
-								//   onChange={(event) => setTextDescription(event.target.value)}
-								defaultValue=""
-								variant="outlined"
-								fullWidth
-								size="small"
-								margin="normal"
-								className={formClasses.textField}
-							/>
-							{!editMode && !isAdminClient(client) /* defaultClient?.username !== client.username */ && (
-								<Button
-									variant="contained"
-									size="small"
-									color="primary"
-									style={{marginTop: '10px', width: '120px'}}
-									startIcon={<EditIcon/>}
-									onClick={() => setEditMode(true)}
-								>
-									Edit
-								</Button>
-							)}
-							{editMode && !isAdminClient(client) /* defaultClient?.username !== client.username */ && (
-								<Grid item xs={12}>
-									<Button
-										variant="contained"
-										disabled={!validate()}
-										size="small"
-										color="primary"
-										style={{marginTop: '10px', marginRight: '10px'}}
-										startIcon={<SaveIcon/>}
-										onClick={(event) => {
-											event.stopPropagation();
-											onUpdateClient();
-										}}
-									>
-										Save
-									</Button>
-									<Button
-										variant="contained"
-										size="small"
-										style={{marginTop: '10px'}}
-										onClick={(event) => {
-											event.stopPropagation();
-											onCancelEdit();
-										}}
-									>
-										Cancel
-									</Button>
-								</Grid>
-							)}
-						</FormGroup>
-					</Box>
-				</div>
-			</div>
-		</ContainerBox>
+				<TextField
+					disabled={!editMode}
+					id="client-id"
+					label="ID"
+					value={updatedClient.clientid}
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+					onChange={(event) => {
+						if (editMode) {
+							setUpdatedClient({
+								...updatedClient,
+								clientid: event.target.value
+							});
+						}
+					}}
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position="start">
+								<ClientIDIcon/>
+							</InputAdornment>
+						)
+					}}
+				/>
+				<TextField
+					disabled={!editMode}
+					onChange={(event) => {
+						if (editMode) {
+							setUpdatedClient({
+								...updatedClient,
+								textname: event.target.value
+							});
+						}
+					}}
+					id="textname"
+					label="Text Name"
+					value={updatedClient.textname}
+					//   onChange={(event) => setTextName(event.target.value)}
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+				/>
+				<TextField
+					disabled={!editMode}
+					onChange={(event) => {
+						if (editMode) {
+							setUpdatedClient({
+								...updatedClient,
+								textdescription: event.target.value
+							});
+						}
+					}}
+					id="textdescription"
+					label="Description"
+					value={updatedClient.textdescription}
+					//   onChange={(event) => setTextDescription(event.target.value)}
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+				/>
+				{!editMode && !isAdminClient(client) /* defaultClient?.username !== client.username */ && (
+					<Button
+						variant="contained"
+						size="small"
+						color="primary"
+						style={{marginTop: '10px', width: '120px'}}
+						startIcon={<EditIcon/>}
+						onClick={() => setEditMode(true)}
+					>
+						Edit
+					</Button>
+				)}
+				{editMode && !isAdminClient(client) /* defaultClient?.username !== client.username */ && (
+					<Grid item xs={12}>
+						<Button
+							variant="contained"
+							disabled={!validate()}
+							size="small"
+							color="primary"
+							style={{marginTop: '10px', marginRight: '10px'}}
+							startIcon={<SaveIcon/>}
+							onClick={(event) => {
+								event.stopPropagation();
+								onUpdateClient();
+							}}
+						>
+							Save
+						</Button>
+						<Button
+							variant="contained"
+							size="small"
+							style={{marginTop: '10px'}}
+							onClick={(event) => {
+								event.stopPropagation();
+								onCancelEdit();
+							}}
+						>
+							Cancel
+						</Button>
+					</Grid>
+				)}
+			</FormGroup>
+		</ContentContainer>
 	) : (
 		<Redirect to="/clients" push/>
 	);

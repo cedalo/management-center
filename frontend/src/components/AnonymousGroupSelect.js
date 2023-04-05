@@ -17,14 +17,22 @@ const AnonymousGroupSelect = ({ anonymousGroup, groupsAll = [], onUpdateAnonymou
 			value: groupname
 		}));
 
-	return <FormControl id="anonymous-group-select" variant="outlined">
+	return <FormControl
+		style={{
+			position: 'absolute',
+			top: '67px',
+			right: '10px',
+			width: '200px'
+		}}
+		id="anonymous-group-select"
+		variant="outlined"
+	>
 			<TextField
 				label="Anonymous Group"
 				variant="outlined"
 				select
 				size="small"
 				placeholder="Select Anonymous Group"
-				style={{width: '200px', marginTop: '5px'}}
 				options={groupSuggestions}
 				value={anonymousGroup?.groupname || ''}
 				onChange={(event) => {

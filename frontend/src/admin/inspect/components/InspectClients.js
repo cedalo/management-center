@@ -264,14 +264,6 @@ const Clients = (props) => {
 
 	}, [clients, sortDirection, sortBy, filter]);
 
-	// React.useEffect(() => {
-	// 	setFilteredClients(clients.filter(clientL => clientL.username.startsWith(filter)));
-	// }, [filter]);
-	//
-	// React.useEffect(() => {
-	// 	setFilteredClients(clients);
-	// }, [clients]);
-
 	const onReload = async () => {
 		const clients = await brokerClient.inspectListClients();
 		dispatch(updateInspectClients(clients));
