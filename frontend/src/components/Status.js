@@ -216,11 +216,11 @@ const Status = ({
 		const host = process.env.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING === 'undefined' ?
 			undefined : process.env.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING;
 		const mqtt = process.env.CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING === 'undefined' ?
-			false : process.env.CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING === 'mosquitto.true';
+			false : process.env.CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING === 'mosquitto:true';
 		const mqtts = process.env.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING === 'undefined' ?
-			false : process.env.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING === 'mosquitto.true';
+			false : process.env.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING === 'mosquitto:true';
 		const ws = process.env.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING === 'undefined' ?
-			false : process.env.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING === 'mosquitto.true';
+			false : process.env.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING === 'mosquitto:true';
 		// const connInfo = parseUrl('mqtt://mosquitto:1883');
 		const connInfo = parseUrl(currentConnection.url); //  === "mosquitto";
 		const hostInfo = parseUrl(host);
