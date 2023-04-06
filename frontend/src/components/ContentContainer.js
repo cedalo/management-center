@@ -19,7 +19,7 @@ const ContentContainer = ({children, breadCrumbs, dataTour, overFlowX}) => {
 			<div style={{height: 'calc(100% - 26px)'}}>
 				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
 					{header}
-					<div style={{heigth: '100%', overflowY: 'auto', overflowX: overFlowX}}>
+					<div style={{height: '100%', overflowY: 'auto', overflowX: overFlowX}}>
 						{content}
 					</div>
 				</div>
