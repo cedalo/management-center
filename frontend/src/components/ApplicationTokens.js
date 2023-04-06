@@ -806,7 +806,6 @@ const mapStateToProps = (state) => {
 	return {
 		userProfile: state.userProfile?.userProfile,
 		userRoles: state.userRoles?.userRoles,
-		users: state.users?.users,
         tokens: state.tokens?.tokens,
         applicationTokensFeature: state.systemStatus?.features?.applicationtokens,
 	};
