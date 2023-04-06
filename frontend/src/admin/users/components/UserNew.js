@@ -1,3 +1,4 @@
+import FormGroup from '@material-ui/core/FormGroup';
 import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
@@ -12,6 +13,7 @@ import {useHistory} from 'react-router-dom';
 import ContainerBox from '../../../components/ContainerBox';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
+import ContentContainer from '../../../components/ContentContainer';
 import SaveCancelButtons from '../../../components/SaveCancelButtons';
 import SelectList from '../../../components/SelectList';
 import {useFormStyles} from '../../../styles';
@@ -19,7 +21,7 @@ import {WebSocketContext} from '../../../websockets/WebSocket';
 import {updateUsers} from '../actions/actions';
 
 const UserNew = (props) => {
-	const { users, userRoles = [], userManagementFeature, backendParameters } = props;
+	const {users, userRoles = [], userManagementFeature, backendParameters} = props;
 	const formClasses = useFormStyles();
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
@@ -94,127 +96,119 @@ const UserNew = (props) => {
 	};
 
 	return (
-		<ContainerBox>
-			<ContainerBreadCrumbs title="New" links={[{name: 'Home', route: '/home'},
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title="New" links={[{name: 'Home', route: '/home'},
 				{name: 'Users', route: '/users'}
-			]}/>
+			]}/>}
+		>
 			<ContainerHeader
 				title="New User"
 				subTitle="Create a new user. User name and the password are required."
+				warnings={() => {
+					const alerts = [];
+					if (userManagementFeature?.error) {
+						alerts.push({
+							severity: 'warning',
+							title: userManagementFeature.error.title || 'An error has occured',
+							error: userManagementFeature.error.message
+						});
+					}
+					return alerts;
+				}}
+
 			/>
-			{/* TODO: Quick hack to detect whether feature is supported */}
-			{userManagementFeature?.error ? <><br/><Alert severity="warning">
-				<AlertTitle>{userManagementFeature.error.title}</AlertTitle>
-				{userManagementFeature.error.message}
-			</Alert></> : null}
 			{!userManagementFeature?.error &&
-			<div>
-				<Grid container spacing={1} alignItems="flex-end">
-					<Grid item xs={12}>
-						<TextField
-							error={usernameExists}
-							helperText={usernameExists && 'A user with this username already exists.'}
-							className={formClasses.textField}
-							required
-							id="username"
-							label="Name"
-							onChange={(event) => setUsername(event.target.value)}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							size="small"
-							margin="dense"
-							InputProps={{
-								startAdornment: (
-									<InputAdornment position="start">
-										<AccountCircle/>
-									</InputAdornment>
-								)
-							}}
-						/>
-					</Grid>
+				<FormGroup>
+					<TextField
+						error={usernameExists}
+						helperText={usernameExists && 'A user with this username already exists.'}
+						className={formClasses.textField}
+						required
+						id="username"
+						label="Name"
+						onChange={(event) => setUsername(event.target.value)}
+						defaultValue=""
+						variant="outlined"
+						fullWidth
+						size="small"
+						margin="normal"
+						InputProps={{
+							startAdornment: (
+								<InputAdornment position="start">
+									<AccountCircle/>
+								</InputAdornment>
+							)
+						}}
+					/>
 
 					{backendParameters.ssoUsed ?
 						null
-						:
-						<>
-							<Grid item xs={12}>
-								<TextField
-									required
-									id="password"
-									label="Password"
-									error={!passwordsMatch}
-									helperText={!passwordsMatch && 'Passwords must match.'}
-									className={formClasses.textField}
-									onChange={(event) => setPassword(event.target.value)}
-									defaultValue=""
-									variant="outlined"
-									fullWidth
-									type="password"
-									size="small"
-									margin="dense"
-									InputProps={{
-										startAdornment: (
-											<InputAdornment position="start">
-												<PasswordIcon/>
-											</InputAdornment>
-										)
-									}}
-								/>
-							</Grid>
-							<Grid item xs={12}>
-								<TextField
-									required
-									id="password-confirm"
-									label="Password Confirm"
-									error={!passwordsMatch}
-									helperText={!passwordsMatch && 'Passwords must match.'}
-									className={formClasses.textField}
-									onChange={(event) => setPasswordConfirm(event.target.value)}
-									defaultValue=""
-									variant="outlined"
-									fullWidth
-									type="password"
-									size="small"
-									margin="dense"
-									InputProps={{
-										startAdornment: (
-											<InputAdornment position="start">
-												<PasswordIcon/>
-											</InputAdornment>
-										)
-									}}
-								/>
-							</Grid>
-						</>
+						: [
+							<TextField
+								required
+								id="password"
+								label="Password"
+								error={!passwordsMatch}
+								helperText={!passwordsMatch && 'Passwords must match.'}
+								className={formClasses.textField}
+								onChange={(event) => setPassword(event.target.value)}
+								defaultValue=""
+								variant="outlined"
+								fullWidth
+								type="password"
+								size="small"
+								margin="normal"
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position="start">
+											<PasswordIcon/>
+										</InputAdornment>
+									)
+								}}
+							/>,
+							<TextField
+								required
+								id="password-confirm"
+								label="Password Confirm"
+								error={!passwordsMatch}
+								helperText={!passwordsMatch && 'Passwords must match.'}
+								className={formClasses.textField}
+								onChange={(event) => setPasswordConfirm(event.target.value)}
+								defaultValue=""
+								variant="outlined"
+								fullWidth
+								type="password"
+								size="small"
+								margin="normal"
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position="start">
+											<PasswordIcon/>
+										</InputAdornment>
+									)
+								}}
+							/>]
 					}
 
-					<Grid item xs={12}>
-						<SelectList
-							variant="outlined"
-							className={formClasses.autoComplete}
-							label="Select Roles"
-							values={roles}
-							getValue={value => value}
-							onChange={(event, value) => {
-								setRoles((value && value.map((role) => role.value)) || []);
-							}}
-							disabled={false}
-							suggestions={roleSuggestions}
-						/>
-					</Grid>
-					<Grid container xs={12} alignItems="flex-start">
-						<Grid item xs={12}>
-							<SaveCancelButtons
-								onSave={onSaveUser}
-								saveDisabled={!validate()}
-								onCancel={onCancel}
-							/>
-						</Grid>
-					</Grid>
-				</Grid>
-			</div>}
-		</ContainerBox>
+					<SelectList
+						variant="outlined"
+						className={formClasses.autoComplete}
+						label="Select Roles"
+						values={roles}
+						getValue={value => value}
+						onChange={(event, value) => {
+							setRoles((value && value.map((role) => role.value)) || []);
+						}}
+						disabled={false}
+						suggestions={roleSuggestions}
+					/>
+					<SaveCancelButtons
+						onSave={onSaveUser}
+						saveDisabled={!validate()}
+						onCancel={onCancel}
+					/>
+				</FormGroup>}
+		</ContentContainer>
 	);
 };
 

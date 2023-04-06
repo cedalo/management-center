@@ -1,4 +1,5 @@
 import Button from '@material-ui/core/Button';
+import FormGroup from '@material-ui/core/FormGroup';
 import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
@@ -10,9 +11,9 @@ import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
-import ContainerBox from '../../../components/ContainerBox';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
+import ContentContainer from '../../../components/ContentContainer';
 import SelectList from '../../../components/SelectList';
 import {useFormStyles} from '../../../styles';
 import {WebSocketContext} from '../../../websockets/WebSocket';
@@ -115,16 +116,18 @@ const UserDetail = (props) => {
 		setEditMode(false);
 	};
 
-	return user ? (<ContainerBox>
-		<ContainerBreadCrumbs title={user.username} links={[{name: 'Home', route: '/home'},
-			{name: 'Users', route: '/users'}
-		]}/>
-		<ContainerHeader
-			title={`Edit User: ${user.username}`}
-			subTitle="Edit User properties"
-		/>
-		<Grid container spacing={1} alignItems="flex-end">
-			<Grid item xs={12}>
+	return user ? (
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title={user.username} links={[{name: 'Home', route: '/home'},
+				{name: 'Users', route: '/users'}
+			]}/>}
+
+		>
+			<ContainerHeader
+				title={`Edit User: ${user.username}`}
+				subTitle="Edit User properties"
+			/>
+			<FormGroup>
 				<TextField
 					required={editMode}
 					disabled={true}
@@ -135,7 +138,7 @@ const UserDetail = (props) => {
 					variant="outlined"
 					fullWidth
 					size="small"
-					margin="dense"
+					margin="normal"
 					className={formClasses.textField}
 					InputProps={{
 						startAdornment: (
@@ -145,54 +148,48 @@ const UserDetail = (props) => {
 						)
 					}}
 				/>
-			</Grid>
-			{backendParameters.ssoUsed ?
-				null
-				:
-				<>
-					<Grid item xs={12}>
-						<TextField
-							disabled={!editMode}
-							required
-							id="password"
-							label="Password (empty password will be ignored)"
-							helperText={passwordError}
-							value={updatedUser?.password}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							type="password"
-							className={formClasses.textField}
-							size="small"
-							margin="dense"
-							onChange={(event) => {
-								if (event.target.value) {
-									setPasswordError(null);
-								} else {
-									setPasswordError(PASSWORD_ERROR_MESSAGE);
-								}
-								if (editMode) {
-									setUpdatedUser({
-										...updatedUser,
-										password: event.target.value
-									});
-								}
-							}}
-							error={!!passwordError}
-							onFocus={() => {
-								if (!updatedUser?.password) {
-									setPasswordError(PASSWORD_ERROR_MESSAGE);
-								}
-							}}
-							onBlur={() => {
+				{backendParameters.ssoUsed ?
+					null
+					:
+					<TextField
+						disabled={!editMode}
+						required
+						id="password"
+						label="Password (empty password will be ignored)"
+						helperText={passwordError}
+						value={updatedUser?.password}
+						defaultValue=""
+						variant="outlined"
+						fullWidth
+						type="password"
+						className={formClasses.textField}
+						size="small"
+						margin="normal"
+						onChange={(event) => {
+							if (event.target.value) {
 								setPasswordError(null);
-							}}
-							inputRef={ref}
-						/>
-					</Grid>
-				</>
-			}
-			<Grid item xs={12} style={{paddingTop: '10px'}}>
+							} else {
+								setPasswordError(PASSWORD_ERROR_MESSAGE);
+							}
+							if (editMode) {
+								setUpdatedUser({
+									...updatedUser,
+									password: event.target.value
+								});
+							}
+						}}
+						error={!!passwordError}
+						onFocus={() => {
+							if (!updatedUser?.password) {
+								setPasswordError(PASSWORD_ERROR_MESSAGE);
+							}
+						}}
+						onBlur={() => {
+							setPasswordError(null);
+						}}
+						inputRef={ref}
+					/>
+				}
 				<SelectList
 					variant="outlined"
 					label="Roles"
@@ -213,53 +210,51 @@ const UserDetail = (props) => {
 					disabled={!editMode}
 					suggestions={roleSuggestions}
 				/>
-			</Grid>
-		</Grid>
-		{!editMode && (
-			<Grid item xs={12}>
-				<Button
-					disabled={updatedUser.editable === false}
-					variant="contained"
-					className={formClasses.buttonTop}
-					size="small"
-					color="primary"
-					startIcon={<EditIcon/>}
-					onClick={() => setEditMode(true)}
-				>
-					Edit
-				</Button>
-			</Grid>
-		)}
-		{editMode && (
-			<Grid item xs={12}>
-				<Button
-					variant="contained"
-					disabled={!validate()}
-					size="small"
-					color="primary"
-					className={formClasses.buttonTopRight}
-					startIcon={<SaveIcon/>}
-					onClick={(event) => {
-						event.stopPropagation();
-						onUpdateUserDetail();
-					}}
-				>
-					Save
-				</Button>
-				<Button
-					variant="contained"
-					size="small"
-					className={formClasses.buttonTop}
-					onClick={(event) => {
-						event.stopPropagation();
-						onCancelEdit();
-					}}
-				>
-					Cancel
-				</Button>
-			</Grid>
-		)}
-	</ContainerBox>) : null;
+				{!editMode && (
+					<Button
+						disabled={updatedUser.editable === false}
+						variant="contained"
+						className={formClasses.buttonTop}
+						style={{width: '120px'}}
+						size="small"
+						color="primary"
+						startIcon={<EditIcon/>}
+						onClick={() => setEditMode(true)}
+					>
+						Edit
+					</Button>
+				)}
+				{editMode && (
+					<Grid item xs={12}>
+						<Button
+							variant="contained"
+							disabled={!validate()}
+							size="small"
+							color="primary"
+							className={formClasses.buttonTopRight}
+							startIcon={<SaveIcon/>}
+							onClick={(event) => {
+								event.stopPropagation();
+								onUpdateUserDetail();
+							}}
+						>
+							Save
+						</Button>
+						<Button
+							variant="contained"
+							size="small"
+							className={formClasses.buttonTop}
+							onClick={(event) => {
+								event.stopPropagation();
+								onCancelEdit();
+							}}
+						>
+							Cancel
+						</Button>
+					</Grid>
+				)}
+			</FormGroup>
+		</ContentContainer>) : null;
 };
 
 UserDetail.propTypes = {

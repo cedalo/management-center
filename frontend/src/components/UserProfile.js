@@ -29,6 +29,8 @@ import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
+import ContainerHeader from './ContainerHeader';
+import ContentContainer from './ContentContainer';
 
 
 const userShape = PropTypes.shape({
@@ -137,96 +139,114 @@ const UserProfile = (props) => {
 
 
 	return userProfile ? (
-		<ContainerBox>
-			<ContainerBreadCrumbs title="Profile" links={[{name: 'Home', route: '/home'}]}/>
-			<div style={{marginTop: '10px'}}>
-				{(userProfile?.username === ROOT_USERNAME) ?
-					<Alert style={{marginBottom: '12px'}} severity="info">Note that you cannot edit a root
-						user</Alert> : <></>}
-				{backendParameters.ssoUsed ?
-					<Alert style={{marginBottom: '12px'}} severity="info">Note that you cannot edit password of
-						the SSO users</Alert> : <></>}
-				<Grid container spacing={1} alignItems="flex-end">
-					<Grid item xs={12}>
-						<TextField
-							required={editMode}
-							disabled={true}
-							id="username"
-							label="Username"
-							value={editMode ? updatedUser?.username : userProfile.username}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							size="small"
-							margin="dense"
-							className={formClasses.textField}
-							InputProps={{
-								startAdornment: (
-									<InputAdornment position="start">
-										<AccountCircle/>
-									</InputAdornment>
-								)
-							}}
-						/>
-					</Grid>
-
-					{backendParameters.ssoUsed ?
-						null
-						:
-						<>
-							<Grid item xs={12}>
-								<TextField
-									required
-									disabled={!editMode}
-									id="password"
-									label="Password Change"
-									error={!passwordsMatch}
-									helperText={!passwordsMatch && 'Passwords must match.'}
-									onChange={(event) => setPassword(event.target.value)}
-									defaultValue=""
-									variant="outlined"
-									fullWidth
-									type="password"
-									size="small"
-									margin="dense"
-									className={formClasses.textField}
-									InputProps={{
-										startAdornment: (
-											<InputAdornment position="start">
-												<PasswordIcon/>
-											</InputAdornment>
-										)
-									}}
-								/>
-							</Grid>
-							<Grid item xs={12}>
-								<TextField
-									required
-									disabled={!editMode}
-									id="password-confirm"
-									label="Password Confirm"
-									error={!passwordsMatch}
-									helperText={!passwordsMatch && 'Passwords must match.'}
-									onChange={(event) => setPasswordConfirm(event.target.value)}
-									defaultValue=""
-									variant="outlined"
-									fullWidth
-									type="password"
-									size="small"
-									margin="dense"
-									className={formClasses.textField}
-									InputProps={{
-										startAdornment: (
-											<InputAdornment position="start">
-												<PasswordIcon/>
-											</InputAdornment>
-										)
-									}}
-								/>
-							</Grid>
-						</>
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title="Profile" links={[{name: 'Home', route: '/home'}]}/>}
+			overFlowX="hidden"
+		>
+			<ContainerHeader
+				title="User Profle"
+				subTitle="View infos about the current user."
+				warnings={() => {
+					const alerts = [];
+					if (userProfile?.username === ROOT_USERNAME) {
+						alerts.push({
+							severity: 'info',
+							title: '',
+							error: 'Note that you cannot edit a root user'
+						});
 					}
-					{/* <Grid item xs={12}>
+					if (backendParameters.ssoUsed) {
+						alerts.push({
+							severity: 'info',
+							title: '',
+							error: 'Note that you cannot edit password of the SSO users'
+						});
+					}
+					return alerts;
+				}}
+			/>
+
+			<Grid container spacing={1} alignItems="flex-end">
+				<Grid item xs={12}>
+					<TextField
+						required={editMode}
+						disabled={true}
+						id="username"
+						label="Username"
+						value={editMode ? updatedUser?.username : userProfile.username}
+						defaultValue=""
+						variant="outlined"
+						fullWidth
+						size="small"
+						margin="dense"
+						className={formClasses.textField}
+						InputProps={{
+							startAdornment: (
+								<InputAdornment position="start">
+									<AccountCircle/>
+								</InputAdornment>
+							)
+						}}
+					/>
+				</Grid>
+
+				{backendParameters.ssoUsed ?
+					null
+					:
+					<>
+						<Grid item xs={12}>
+							<TextField
+								required
+								disabled={!editMode}
+								id="password"
+								label="Password Change"
+								error={!passwordsMatch}
+								helperText={!passwordsMatch && 'Passwords must match.'}
+								onChange={(event) => setPassword(event.target.value)}
+								defaultValue=""
+								variant="outlined"
+								fullWidth
+								type="password"
+								size="small"
+								margin="dense"
+								className={formClasses.textField}
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position="start">
+											<PasswordIcon/>
+										</InputAdornment>
+									)
+								}}
+							/>
+						</Grid>
+						<Grid item xs={12}>
+							<TextField
+								required
+								disabled={!editMode}
+								id="password-confirm"
+								label="Password Confirm"
+								error={!passwordsMatch}
+								helperText={!passwordsMatch && 'Passwords must match.'}
+								onChange={(event) => setPasswordConfirm(event.target.value)}
+								defaultValue=""
+								variant="outlined"
+								fullWidth
+								type="password"
+								size="small"
+								margin="dense"
+								className={formClasses.textField}
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position="start">
+											<PasswordIcon/>
+										</InputAdornment>
+									)
+								}}
+							/>
+						</Grid>
+					</>
+				}
+				{/* <Grid item xs={12}>
 							<AutoSuggest
 								disabled
 								values={userProfile?.roles?.map((role) => ({
@@ -235,9 +255,8 @@ const UserProfile = (props) => {
 								}))}
 							/>
 						</Grid> */}
-				</Grid>
+			</Grid>
 
-			</div>
 
 			{(!editMode && userProfile?.username !== ROOT_USERNAME && !backendParameters.ssoUsed) && (
 				<Grid item xs={12} className={classes.buttons}>
@@ -359,10 +378,8 @@ const UserProfile = (props) => {
 						</Grid>
 					</div>
 				</Grid>
-				<Grid item xs={6}>
-				</Grid>
 			</Grid>
-		</ContainerBox>) : null;
+		</ContentContainer>) : null;
 };
 
 UserProfile.propTypes = {

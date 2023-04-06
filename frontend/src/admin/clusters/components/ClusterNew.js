@@ -147,6 +147,7 @@ const ClusterNew = (props) => {
 							error: clusterManagementFeature.error.message
 						});
 					}
+					return alerts;
 				}}
 			/>
 			{!clusterManagementFeature?.error && (

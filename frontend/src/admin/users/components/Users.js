@@ -16,9 +16,9 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
-import ContainerBox from '../../../components/ContainerBox';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
+import ContentContainer from '../../../components/ContentContainer';
 import SelectList from '../../../components/SelectList';
 import {WebSocketContext} from '../../../websockets/WebSocket';
 import {updateUser, updateUsers} from '../actions/actions';
@@ -46,7 +46,7 @@ const USER_TABLE_COLUMNS = [
 ];
 
 const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles, onSelectUser) => {
-	const { userManagementFeature, userRoles = [], roles = [], onSort, sortBy, sortDirection } = props;
+	const {userManagementFeature, userRoles = [], roles = [], onSort, sortBy, sortDirection} = props;
 
 	const roleSuggestions = userRoles
 		.sort()
@@ -57,69 +57,69 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 
 	if (!userManagementFeature?.error && userManagementFeature?.supported !== false && users && users.length > 0) {
 		return (<div style={{height: '100%', overflowY: 'auto'}}>
-				<TableContainer>
-					<Table stickyHeader size="small" aria-label="sticky table">
-						<TableHead>
-							<TableRow>
-								{USER_TABLE_COLUMNS.map((column) => (
-									<TableCell
-										key={column.id}
-										sortDirection={sortBy === column.id ? sortDirection : false}
-										align={column.align}
-										style={{
-											width: column.width,
-										}}
-									>
-										{column.key}
+			<TableContainer>
+				<Table stickyHeader size="small" aria-label="sticky table">
+					<TableHead>
+						<TableRow>
+							{USER_TABLE_COLUMNS.map((column) => (
+								<TableCell
+									key={column.id}
+									sortDirection={sortBy === column.id ? sortDirection : false}
+									align={column.align}
+									style={{
+										width: column.width,
+									}}
+								>
+									{column.key}
+								</TableCell>
+							))}
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{users &&
+							users.map((user) => (
+								<StyledTableRow
+									disabled={user.editable === false}
+									hover
+									key={user.username}
+									onClick={(event) => {
+										if (event.target.nodeName?.toLowerCase() === 'td') {
+											onSelectUser(user.username);
+										}
+									}}
+									style={{cursor: 'pointer'}}
+								>
+									<TableCell>{user.username}</TableCell>
+									<TableCell className={classes.badges}>
+										<SelectList
+											values={user.roles}
+											getValue={value => value}
+											onChange={(event, value) => {
+												onUpdateUserRoles(user, value);
+											}}
+											disabled={user.editable === false}
+											suggestions={roleSuggestions}
+										/>
 									</TableCell>
-								))}
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{users &&
-								users.map((user) => (
-									<StyledTableRow
-										disabled={user.editable === false}
-										hover
-										key={user.username}
-										onClick={(event) => {
-											if (event.target.nodeName?.toLowerCase() === 'td') {
-												onSelectUser(user.username);
-											}
-										}}
-										style={{cursor: 'pointer'}}
-									>
-										<TableCell>{user.username}</TableCell>
-										<TableCell className={classes.badges}>
-											<SelectList
-												values={user.roles}
-												getValue={value => value}
-												onChange={(event, value) => {
-													onUpdateUserRoles(user, value);
-												}}
+									<TableCell align="center">
+										<Tooltip title="Delete user">
+											<IconButton
 												disabled={user.editable === false}
-												suggestions={roleSuggestions}
-											/>
-										</TableCell>
-										<TableCell align="center">
-											<Tooltip title="Delete user">
-												<IconButton
-													disabled={user.editable === false}
-													size="small"
-													onClick={(event) => {
-														event.stopPropagation();
-														onDeleteUser(user.username);
-													}}
-												>
-													<DeleteIcon fontSize="small"/>
-												</IconButton>
-											</Tooltip>
-										</TableCell>
-									</StyledTableRow>
-								))}
-						</TableBody>
-					</Table>
-				</TableContainer>
+												size="small"
+												onClick={(event) => {
+													event.stopPropagation();
+													onDeleteUser(user.username);
+												}}
+											>
+												<DeleteIcon fontSize="small"/>
+											</IconButton>
+										</Tooltip>
+									</TableCell>
+								</StyledTableRow>
+							))}
+					</TableBody>
+				</Table>
+			</TableContainer>
 		</div>)
 	} else if (userManagementFeature?.error) {
 		return null;
@@ -216,45 +216,43 @@ const Users = (props) => {
 	};
 
 	return (
-		<ContainerBox>
-			<ContainerBreadCrumbs title="Users" links={[{name: 'Home', route: '/home'}]}/>
-			<div style={{height: 'calc(100% - 26px)'}}>
-				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
-					<ContainerHeader
-						title="Users"
-						subTitle="List of users. You can configure different users and assign roles like 'admin', 'editor and 'viewer' to restrict or give access to specific features."
-						featureWarning={!userManagementFeature?.error && userManagementFeature?.supported === false ? "Users" : undefined}
-						warnings={() => {
-							const alerts = [];
-							if (userManagementFeature?.error) {
-								alerts.push({
-									severity: 'error',
-									title: userManagementFeature.error.title,
-									error: userManagementFeature.error.message
-								});
-							}
-							return alerts;
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title="Users" links={[{name: 'Home', route: '/home'}]}/>}
+			dataTour="page-users"
+		>
+			<ContainerHeader
+				title="Users"
+				subTitle="List of users. You can configure different users and assign roles like 'admin', 'editor and 'viewer' to restrict or give access to specific features."
+				featureWarning={!userManagementFeature?.error && userManagementFeature?.supported === false ? "Users" : undefined}
+				warnings={() => {
+					const alerts = [];
+					if (userManagementFeature?.error) {
+						alerts.push({
+							severity: 'error',
+							title: userManagementFeature.error.title,
+							error: userManagementFeature.error.message
+						});
+					}
+					return alerts;
+				}}
+			>
+				{!userManagementFeature?.error && userManagementFeature?.supported !== false && [
+					<Button
+						variant="outlined"
+						color="primary"
+						size="small"
+						startIcon={<AddIcon/>}
+						onClick={(event) => {
+							event.stopPropagation();
+							onNewUser();
 						}}
 					>
-						{!userManagementFeature?.error && userManagementFeature?.supported !== false && [
-							<Button
-								variant="outlined"
-								color="primary"
-								size="small"
-								startIcon={<AddIcon/>}
-								onClick={(event) => {
-									event.stopPropagation();
-									onNewUser();
-								}}
-								>
-									New User
-							</Button>,
-						]}
-					</ContainerHeader>
-					{createUserTable(users, classes, props, onDeleteUser, onUpdateUserRoles, onSelectUser)}
-				</div>
-			</div>
-		</ContainerBox>
+						New User
+					</Button>,
+				]}
+			</ContainerHeader>
+			{createUserTable(users, classes, props, onDeleteUser, onUpdateUserRoles, onSelectUser)}
+		</ContentContainer>
 	);
 };
 
