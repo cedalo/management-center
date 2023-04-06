@@ -492,7 +492,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 
 			<div className={(!tlsFeature?.supported) ? classes.notEnabledBlock : ''}>
 				<div style={{padding: '5px'}}></div>
-				<div className={`${classes.parent} ${classes.padTop}}`}>
+				<div className={`${classes.parent} ${classes.padTop}`}>
 					<div className={classes.overlayed}>
 						<Typography className={classes.smallFont}>
 							Server certificate
@@ -528,7 +528,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 								className={errors[customCACertificateFieldName] ? classes.verticallyPad : ''}
 								align="left">CA Certificate</Typography>
 						</Grid>
-						<Grid item xl={7} md={7} sm={7} xs={7}>
+						<Grid item xl={7} md={7} sm={7} xs={7} style={{marginTop: '8px'}}>
 							<FormGroup row>
 								<Button
 									size="small"
@@ -585,7 +585,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 							<Typography className={errors[clientCertificateFieldName] ? classes.verticallyPad : ''}
 										align="left">Certificate</Typography>
 						</Grid>
-						<Grid item xl={7} md={7} sm={7} xs={7}>
+						<Grid item xl={7} md={7} sm={7} xs={7} style={{marginTop: '8px'}}>
 							<FormGroup row>
 								<Button
 									size="small"
@@ -633,7 +633,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 							<Typography className={(errors[clientPrivateKeyFieldName]) ? classes.verticallyPad : ''}
 										align="left">Private Key</Typography>
 						</Grid>
-						<Grid item xl={7} md={7} sm={7} xs={7}>
+						<Grid item xl={7} md={7} sm={7} xs={7} style={{marginTop: '8px'}}>
 							<FormGroup row>
 								<Button
 									size="small"

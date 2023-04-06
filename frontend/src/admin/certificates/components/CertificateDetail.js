@@ -109,6 +109,7 @@ const CertificateDetail = () => {
 											   links={[{name: 'Home', route: '/home'},
 												   {name: 'Certificates', route: '/certs'}]}
 			/>}
+			overFlowX="hidden"
 		>
 			<ContainerHeader
 				title="Certificate"

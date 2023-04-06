@@ -634,7 +634,7 @@ const ConnectionDetailComponent = (props) => {
 							</Grid>
 							<Grid item xl={6} md={6} sm={6} xs={6}>
 							</Grid>
-							<Grid item xl={3} md={3} sm={4} xs={4}>
+							<Grid item xl={3} md={3} sm={4} xs={4} style={{marginTop: '8px'}}>
 								<Typography
 									className={errors[customCACertificateFieldName] ? classes.verticallyPad : ''}
 									align="left">CA Certificate</Typography>
@@ -707,7 +707,7 @@ const ConnectionDetailComponent = (props) => {
 								<Typography className={errors[clientCertificateFieldName] ? classes.verticallyPad : ''}
 											align="left">Certificate</Typography>
 							</Grid>
-							<Grid item xl={7} md={7} sm={7} xs={7}>
+							<Grid item xl={7} md={7} sm={7} xs={7} style={{marginTop: '8px'}}>
 								<FormGroup row>
 									<Button
 										disabled={!editMode || !tlsFeature?.supported}
@@ -766,7 +766,7 @@ const ConnectionDetailComponent = (props) => {
 								<Typography className={(errors[clientPrivateKeyFieldName]) ? classes.verticallyPad : ''}
 											align="left">Private Key</Typography>
 							</Grid>
-							<Grid item xl={7} md={7} sm={7} xs={7}>
+							<Grid item xl={7} md={7} sm={7} xs={7} style={{marginTop: '8px'}}>
 								<FormGroup row>
 									<Button
 										disabled={!editMode || !tlsFeature?.supported}
