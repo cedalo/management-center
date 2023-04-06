@@ -140,7 +140,7 @@ const UserProfile = (props) => {
 
 	return userProfile ? (
 		<ContentContainer
-			breadCrumbs={<ContainerBreadCrumbs title="Profile" links={[{name: 'Home', route: '/home'}]}/>}
+			breadCrumbs={<ContainerBreadCrumbs title="Profile" links={[{ name: 'Home', route: '/home' }]} />}
 			overFlowX="hidden"
 		>
 			<ContainerHeader
@@ -165,88 +165,86 @@ const UserProfile = (props) => {
 					return alerts;
 				}}
 			/>
+			<div>
+				<Grid container spacing={1} alignItems="flex-end">
+					<Grid item xs={12}>
+						<TextField
+							required={editMode}
+							disabled={true}
+							id="username"
+							label="Username"
+							value={editMode ? updatedUser?.username : userProfile.username}
+							defaultValue=""
+							variant="outlined"
+							fullWidth
+							size="small"
+							margin="dense"
+							className={formClasses.textField}
+							InputProps={{
+								startAdornment: (
+									<InputAdornment position="start">
+										<AccountCircle />
+									</InputAdornment>
+								)
+							}}
+						/>
+					</Grid>
 
-			<Grid container spacing={1} alignItems="flex-end">
-				<Grid item xs={12}>
-					<TextField
-						required={editMode}
-						disabled={true}
-						id="username"
-						label="Username"
-						value={editMode ? updatedUser?.username : userProfile.username}
-						defaultValue=""
-						variant="outlined"
-						fullWidth
-						size="small"
-						margin="dense"
-						className={formClasses.textField}
-						InputProps={{
-							startAdornment: (
-								<InputAdornment position="start">
-									<AccountCircle/>
-								</InputAdornment>
-							)
-						}}
-					/>
-				</Grid>
-
-				{backendParameters.ssoUsed ?
-					null
-					:
-					<>
-						<Grid item xs={12}>
-							<TextField
-								required
-								disabled={!editMode}
-								id="password"
-								label="Password Change"
-								error={!passwordsMatch}
-								helperText={!passwordsMatch && 'Passwords must match.'}
-								onChange={(event) => setPassword(event.target.value)}
-								defaultValue=""
-								variant="outlined"
-								fullWidth
-								type="password"
-								size="small"
-								margin="dense"
-								className={formClasses.textField}
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position="start">
-											<PasswordIcon/>
-										</InputAdornment>
-									)
-								}}
-							/>
-						</Grid>
-						<Grid item xs={12}>
-							<TextField
-								required
-								disabled={!editMode}
-								id="password-confirm"
-								label="Password Confirm"
-								error={!passwordsMatch}
-								helperText={!passwordsMatch && 'Passwords must match.'}
-								onChange={(event) => setPasswordConfirm(event.target.value)}
-								defaultValue=""
-								variant="outlined"
-								fullWidth
-								type="password"
-								size="small"
-								margin="dense"
-								className={formClasses.textField}
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position="start">
-											<PasswordIcon/>
-										</InputAdornment>
-									)
-								}}
-							/>
-						</Grid>
-					</>
-				}
-				{/* <Grid item xs={12}>
+					{backendParameters.ssoUsed ? null : (
+						<>
+							<Grid item xs={12}>
+								<TextField
+									required
+									disabled={!editMode}
+									id="password"
+									label="Password Change"
+									error={!passwordsMatch}
+									helperText={!passwordsMatch && 'Passwords must match.'}
+									onChange={(event) => setPassword(event.target.value)}
+									defaultValue=""
+									variant="outlined"
+									fullWidth
+									type="password"
+									size="small"
+									margin="dense"
+									className={formClasses.textField}
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position="start">
+												<PasswordIcon />
+											</InputAdornment>
+										)
+									}}
+								/>
+							</Grid>
+							<Grid item xs={12}>
+								<TextField
+									required
+									disabled={!editMode}
+									id="password-confirm"
+									label="Password Confirm"
+									error={!passwordsMatch}
+									helperText={!passwordsMatch && 'Passwords must match.'}
+									onChange={(event) => setPasswordConfirm(event.target.value)}
+									defaultValue=""
+									variant="outlined"
+									fullWidth
+									type="password"
+									size="small"
+									margin="dense"
+									className={formClasses.textField}
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position="start">
+												<PasswordIcon />
+											</InputAdornment>
+										)
+									}}
+								/>
+							</Grid>
+						</>
+					)}
+					{/* <Grid item xs={12}>
 							<AutoSuggest
 								disabled
 								values={userProfile?.roles?.map((role) => ({
@@ -255,131 +253,144 @@ const UserProfile = (props) => {
 								}))}
 							/>
 						</Grid> */}
-			</Grid>
-
-
-			{(!editMode && userProfile?.username !== ROOT_USERNAME && !backendParameters.ssoUsed) && (
-				<Grid item xs={12} className={classes.buttons}>
-					<Button
-						variant="contained"
-						color="primary"
-						className={classes.button}
-						startIcon={<EditIcon/>}
-						onClick={() => setEditMode(true)}
-					>
-						Edit
-					</Button>
 				</Grid>
-			)}
-			{editMode && (
-				<Grid item xs={12} className={classes.buttons}>
-					<Button
-						variant="contained"
-						disabled={!validate()}
-						color="primary"
-						className={classes.button}
-						startIcon={<SaveIcon/>}
-						onClick={(event) => {
-							event.stopPropagation();
-							onUpdateUserProfile();
-						}}
-					>
-						Save
-					</Button>
-					<Button
-						variant="contained"
-						onClick={(event) => {
-							event.stopPropagation();
-							onCancelEdit();
-						}}
-					>
-						Cancel
-					</Button>
-				</Grid>
-			)}
-			<Grid container style={{marginLeft: "10px", marginTop: "6px"}}>
 
-				<Grid item xs={6}>
-					<div>
-						{/* <Grid container style={{border: "1px solid", borderRadius: '10px'}}> */}
-						<Grid container>
-							<Grid item xs={6}>
-								<div style={{marginTop: "10px"}}>
-									<div style={{marginTop: "10px"}}></div>
-									<Typography sx={{mt: 0, mb: 0}} variant="p" component="div">
-										<Typography variant="subtitle2" display="inline">Roles: </Typography>
-										{(!userProfile.roles || (userProfile.roles && !userProfile.roles.length)) ?
-											<Box display="inline" sx={{fontStyle: 'italic', m: 1}}>
-												None
-											</Box>
-											: ''
-										}
-									</Typography>
-									<Divider/>
-									{userProfile.roles && userProfile.roles.length ? (
-										<List style={{marginTop: "0px"}} dense>
-											{userProfile.roles.map((role) => {
-												return <><ListItem align="center">
-													<ListItemIcon>
-														<Star/>
-													</ListItemIcon>
-													<ListItemText
-														primary={role}
-														// secondary="Secondary text"
-													/>
-												</ListItem>
-													<Divider/>
-												</>
-											})
-											}
-										</List>
-									) : (<></>)
-									}
-									{/* {userProfile.roles}<br/> */}
-									{/* {userProfile.groups.map((el) => ' ' + el)} */}
-								</div>
+				{!editMode && userProfile?.username !== ROOT_USERNAME && !backendParameters.ssoUsed && (
+					<Grid item xs={12} className={classes.buttons}>
+						<Button
+							variant="contained"
+							color="primary"
+							className={classes.button}
+							startIcon={<EditIcon />}
+							onClick={() => setEditMode(true)}
+						>
+							Edit
+						</Button>
+					</Grid>
+				)}
+				{editMode && (
+					<Grid item xs={12} className={classes.buttons}>
+						<Button
+							variant="contained"
+							disabled={!validate()}
+							color="primary"
+							className={classes.button}
+							startIcon={<SaveIcon />}
+							onClick={(event) => {
+								event.stopPropagation();
+								onUpdateUserProfile();
+							}}
+						>
+							Save
+						</Button>
+						<Button
+							variant="contained"
+							onClick={(event) => {
+								event.stopPropagation();
+								onCancelEdit();
+							}}
+						>
+							Cancel
+						</Button>
+					</Grid>
+				)}
+				<Grid container style={{ marginLeft: '10px', marginTop: '6px' }}>
+					<Grid item xs={6}>
+						<div>
+							{/* <Grid container style={{border: "1px solid", borderRadius: '10px'}}> */}
+							<Grid container>
+								<Grid item xs={6}>
+									<div style={{ marginTop: '10px' }}>
+										<div style={{ marginTop: '10px' }}></div>
+										<Typography sx={{ mt: 0, mb: 0 }} variant="p" component="div">
+											<Typography variant="subtitle2" display="inline">
+												Roles:{' '}
+											</Typography>
+											{!userProfile.roles || (userProfile.roles && !userProfile.roles.length) ? (
+												<Box display="inline" sx={{ fontStyle: 'italic', m: 1 }}>
+													None
+												</Box>
+											) : (
+												''
+											)}
+										</Typography>
+										<Divider />
+										{userProfile.roles && userProfile.roles.length ? (
+											<List style={{ marginTop: '0px' }} dense>
+												{userProfile.roles.map((role) => {
+													return (
+														<>
+															<ListItem align="center">
+																<ListItemIcon>
+																	<Star />
+																</ListItemIcon>
+																<ListItemText
+																	primary={role}
+																	// secondary="Secondary text"
+																/>
+															</ListItem>
+															<Divider />
+														</>
+													);
+												})}
+											</List>
+										) : (
+											<></>
+										)}
+										{/* {userProfile.roles}<br/> */}
+										{/* {userProfile.groups.map((el) => ' ' + el)} */}
+									</div>
+								</Grid>
+								<Grid item xs={6}>
+									<div>
+										<div style={{ marginTop: '10px' }}></div>
+										<Typography sx={{ mt: 0, mb: 0 }} variant="p" component="div">
+											<Typography variant="subtitle2" display="inline">
+												Groups:{' '}
+											</Typography>
+											{!userProfile.groups ||
+											(userProfile.groups && !userProfile.groups.length) ? (
+												<Box display="inline" sx={{ fontStyle: 'italic', m: 1 }}>
+													None
+												</Box>
+											) : (
+												''
+											)}
+										</Typography>
+										<Divider />
+										{userProfile.groups && userProfile.groups.length ? (
+											<List style={{ marginTop: '0px' }} dense>
+												{userProfile.groups.map((group) => {
+													return (
+														<>
+															<ListItem key={group.name}>
+																<ListItemIcon>
+																	<Adjust />
+																</ListItemIcon>
+																<ListItemText
+																	primary={group.name}
+																	// secondary="Secondary text"
+																/>
+															</ListItem>
+															<Divider />
+														</>
+													);
+												})}
+											</List>
+										) : (
+											<></>
+										)}
+										{/* {userProfile.roles}<br/> */}
+										{/* {userProfile.groups.map((el) => ' ' + el)} */}
+									</div>
+								</Grid>
 							</Grid>
-							<Grid item xs={6}>
-								<div>
-									<div style={{marginTop: "10px"}}></div>
-									<Typography sx={{mt: 0, mb: 0}} variant="p" component="div">
-										<Typography variant="subtitle2" display="inline">Groups: </Typography>
-										{(!userProfile.groups || (userProfile.groups && !userProfile.groups.length)) ?
-											<Box display="inline" sx={{fontStyle: 'italic', m: 1}}>
-												None
-											</Box>
-											: ''
-										}
-									</Typography>
-									<Divider/>
-									{userProfile.groups && userProfile.groups.length ? (
-										<List style={{marginTop: "0px"}} dense>
-											{userProfile.groups.map((group) => {
-												return <><ListItem key={group.name}>
-													<ListItemIcon>
-														<Adjust/>
-													</ListItemIcon>
-													<ListItemText
-														primary={group.name}
-														// secondary="Secondary text"
-													/>
-												</ListItem>
-													<Divider/>
-												</>
-											})
-											}
-										</List>
-									) : (<></>)
-									}
-									{/* {userProfile.roles}<br/> */}
-									{/* {userProfile.groups.map((el) => ' ' + el)} */}
-								</div>
-							</Grid>
-						</Grid>
-					</div>
+						</div>
+					</Grid>
 				</Grid>
-			</Grid>
-		</ContentContainer>) : null;
+			</div>
+		</ContentContainer>
+	) : null;
 };
 
 UserProfile.propTypes = {
