@@ -44,6 +44,7 @@ import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import ContentContainer from './ContentContainer';
 
 
 const StyledTableRow = withStyles((theme) => ({
@@ -510,101 +511,101 @@ const createTokenTable = (tokens, classes, props, onDeleteToken) => {
 
 	if (!applicationTokensFeature?.error && applicationTokensFeature?.supported !== false && tokens && tokens.length > 0) {
 		return <div style={{height: '100%', overflowY: 'auto'}}>
-				<TableContainer>
-					<Table size="small">
-						<TableHead>
-							<TableRow>
-								{USER_TABLE_COLUMNS.map((column) => (
-									<TableCell
-										key={column.id}
-										sortDirection={sortBy === column.id ? sortDirection : false}
-										align={column.align}
-										style={{
-											width: column.width,
-											display: (!small && !medium) ||
-												(column.id === 'name' && (small || medium)) ||
-												(column.id === 'hash' && medium) ||
-												(column.id === 'delete' && (small || medium))  ? undefined : 'none'
-										}}
-									>
-										{column.key}
+			<TableContainer>
+				<Table size="small">
+					<TableHead>
+						<TableRow>
+							{USER_TABLE_COLUMNS.map((column) => (
+								<TableCell
+									key={column.id}
+									sortDirection={sortBy === column.id ? sortDirection : false}
+									align={column.align}
+									style={{
+										width: column.width,
+										display: (!small && !medium) ||
+										(column.id === 'name' && (small || medium)) ||
+										(column.id === 'hash' && medium) ||
+										(column.id === 'delete' && (small || medium)) ? undefined : 'none'
+									}}
+								>
+									{column.key}
+								</TableCell>
+							))}
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{tokens &&
+							tokens.map((token) => (
+								<StyledTableRow
+									// hover
+									key={token.hash}
+									// onClick={(event) => {
+									// 	onSelectUser(token.hash;
+									// }}
+									// style={{ cursor: 'pointer' }}
+								>
+									<TableCell>
+										<Tooltip title={token.name}>
+											<InputBase
+												className={classes.copyField}
+												id="token-name"
+												value={token.name}
+												endAdornment={<InputAdornment position="end">
+													<IconButton
+														size="small"
+														className={classes.iconButton}
+														aria-label="copy token name"
+														onClick={() => copyText(token.name, enqueueSnackbar)}
+													>
+														<FileCopy fontSize="small"/>
+													</IconButton></InputAdornment>}
+											/>
+										</Tooltip>
 									</TableCell>
-								))}
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{tokens &&
-								tokens.map((token) => (
-									<StyledTableRow
-										// hover
-										key={token.hash}
-										// onClick={(event) => {
-										// 	onSelectUser(token.hash;
-										// }}
-										// style={{ cursor: 'pointer' }}
-									>
+									{small || medium ? null : [
+										<TableCell>{token.role}</TableCell>,
 										<TableCell>
-											<Tooltip title={token.name}>
+											{(token.requestedBy?.length > 18) ?
+												<Tooltip title={token.requestedBy}>
+													<div>
+														{token.requestedBy.substring(0, 18) + '...'}
+													</div>
+												</Tooltip> :
+												<>
+													{token.requestedBy}
+												</>
+											}
+										</TableCell>,
+										<TableCell>{token.issueDate ? getDateString(
+											new Date(token.issueDate)) : ''}
+										</TableCell>,
+										<TableCell>{token.validUntil ? getDateString(
+											new Date(token.validUntil)) : ''}
+										</TableCell>,
+										<TableCell>{token.lastUsed ? getDateString(
+											new Date(token.lastUsed)) : ''}
+										</TableCell>,
+									]}
+									{small ? null :
+										<TableCell className={classes.badges}>
+											<Tooltip title={token.hash}>
 												<InputBase
+													id="token-hash"
 													className={classes.copyField}
-													id="token-name"
-													value={token.name}
+													value={token.hash}
 													endAdornment={<InputAdornment position="end">
 														<IconButton
 															size="small"
 															className={classes.iconButton}
-															aria-label="copy token name"
-															onClick={() => copyText(token.name, enqueueSnackbar)}
+															aria-label="copy token hash"
+															onClick={() => copyText(token.hash, enqueueSnackbar)}
 														>
 															<FileCopy fontSize="small"/>
-														</IconButton></InputAdornment>}
+														</IconButton>
+													</InputAdornment>
+													}
 												/>
-											</Tooltip>
-										</TableCell>
-										{small || medium ? null : [
-											<TableCell>{token.role}</TableCell>,
-											<TableCell>
-												{(token.requestedBy?.length > 18) ?
-													<Tooltip title={token.requestedBy}>
-														<div>
-															{token.requestedBy.substring(0, 18) + '...'}
-														</div>
-													</Tooltip> :
-													<>
-														{token.requestedBy}
-													</>
-												}
-											</TableCell>,
-											<TableCell>{token.issueDate ? getDateString(
-												new Date(token.issueDate)) : ''}
-											</TableCell>,
-											<TableCell>{token.validUntil ? getDateString(
-												new Date(token.validUntil)) : ''}
-											</TableCell>,
-											<TableCell>{token.lastUsed ? getDateString(
-												new Date(token.lastUsed)) : ''}
-											</TableCell>,
-										]}
-										{small ? null :
-											<TableCell className={classes.badges}>
-												<Tooltip title={token.hash}>
-													<InputBase
-														id="token-hash"
-														className={classes.copyField}
-														value={token.hash}
-														endAdornment={<InputAdornment position="end">
-																<IconButton
-																	size="small"
-																	className={classes.iconButton}
-																	aria-label="copy token hash"
-																	onClick={() => copyText(token.hash, enqueueSnackbar)}
-																>
-																	<FileCopy fontSize="small"/>
-																</IconButton>
-														</InputAdornment>
-														}
-													/>
-													{/* <AutoSuggest
+												{/* <AutoSuggest
 														disabled={user.editable === false}
 														suggestions={roleSuggestions}
 														values={user.roles?.map((role) => ({
@@ -615,40 +616,40 @@ const createTokenTable = (tokens, classes, props, onDeleteToken) => {
 															onUpdateUserRoles(user, value);
 														}}
 													/> */}
-												</Tooltip>
-											</TableCell>
-										}
-										{small || medium ? null :
-											<TableCell align="center">
-												{token.validUntil && (new Date(token.validUntil)) > (new Date()) ?
-													<Tooltip title={"Token is valid"}>
-														<EnabledIcon fontSize="small" style={{color: green[500]}}/>
-													</Tooltip>
-													:
-													<Tooltip title={"Token has expired"}>
-														<DisabledIcon fontSize="small" style={{color: red[500]}}/>
-													</Tooltip>
-												}
-											</TableCell>
-										}
-										<TableCell align="center">
-											<Tooltip title="Revoke token">
-												<IconButton
-													size="small"
-													onClick={(event) => {
-														event.stopPropagation();
-														onDeleteToken(token.hash, token.name);
-													}}
-												>
-													<DeleteIcon fontSize="small"/>
-												</IconButton>
 											</Tooltip>
 										</TableCell>
-									</StyledTableRow>
-								))}
-						</TableBody>
-					</Table>
-				</TableContainer>
+									}
+									{small || medium ? null :
+										<TableCell align="center">
+											{token.validUntil && (new Date(token.validUntil)) > (new Date()) ?
+												<Tooltip title={"Token is valid"}>
+													<EnabledIcon fontSize="small" style={{color: green[500]}}/>
+												</Tooltip>
+												:
+												<Tooltip title={"Token has expired"}>
+													<DisabledIcon fontSize="small" style={{color: red[500]}}/>
+												</Tooltip>
+											}
+										</TableCell>
+									}
+									<TableCell align="center">
+										<Tooltip title="Revoke token">
+											<IconButton
+												size="small"
+												onClick={(event) => {
+													event.stopPropagation();
+													onDeleteToken(token.hash, token.name);
+												}}
+											>
+												<DeleteIcon fontSize="small"/>
+											</IconButton>
+										</Tooltip>
+									</TableCell>
+								</StyledTableRow>
+							))}
+					</TableBody>
+				</Table>
+			</TableContainer>
 		</div>
 	} else if (applicationTokensFeature?.error) {
 		return null;
@@ -714,46 +715,45 @@ const ApplicationTokens = (props) => {
 		dispatch(updateApplicationTokens(remainingApplicationTokens));
 	};
 
-	return (
-		<ContainerBox>
-			<ContainerBreadCrumbs title="Tokens" links={[{name: 'Home', route: '/home'}]}/>
-			<div style={{height: 'calc(100% - 26px)'}}>
-				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
-					<ContainerHeader
-						title="Tokens"
-						subTitle="Application tokens are mainly used in order to give other applications or scripts access to the MMC's functionality and REST APIs. After creating an application token put it inside the 'Authorization' header as 'Bearer *token*' or use it as a url query parameter (https://url.com?token=*token*) when making a request to the MMC"
-						featureWarning={applicationTokensFeature?.supported === false ? "Tokens" : undefined}
-						warnings={() => {
-							const alerts = [];
-							if (applicationTokensFeature?.error /*&& applicationTokensFeature?.supported === true*/) {
-								alerts.push({
-									severity: 'error',
-									title: applicationTokensFeature.error.title || 'An error has occured',
-									error: applicationTokensFeature.error.message || applicationTokensFeature.error
-								});
-							}
-							return alerts;
-						}}
-					>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="small"
-							startIcon={<AddIcon/>}
-							onClick={(event) => {
-								event.stopPropagation();
-								onNewToken();
-							}}
-						>
-							New Token
-						</Button>
-					</ContainerHeader>
-					{createTokenTable(tokens, classes, props, onDeleteToken)}
-				</div>
-			</div>
-			{createNewTokenDialog(dialogOpen, handleDialogClose, client, userRoles, tokens)}
-		</ContainerBox>
-	);
+	return [
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title="Tokens" links={[{name: 'Home', route: '/home'}]}/>}
+		>
+			<ContainerHeader
+				title="Tokens"
+				subTitle="Application tokens are mainly used in order to give other applications or scripts access to the MMC's functionality and REST APIs. After creating an application token put it inside the 'Authorization' header as 'Bearer *token*' or use it as a url query parameter (https://url.com?token=*token*) when making a request to the MMC"
+				featureWarning={applicationTokensFeature?.supported === false ? "Tokens" : undefined}
+				warnings={() => {
+					const alerts = [];
+					if (applicationTokensFeature?.error /*&& applicationTokensFeature?.supported === true*/) {
+						alerts.push({
+							severity: 'error',
+							title: applicationTokensFeature.error.title || 'An error has occured',
+							error: applicationTokensFeature.error.message || applicationTokensFeature.error
+						});
+					}
+					return alerts;
+				}}
+			>
+				<Button
+					variant="outlined"
+					color="primary"
+					size="small"
+					startIcon={<AddIcon/>}
+					onClick={(event) => {
+						event.stopPropagation();
+						onNewToken();
+					}}
+				>
+					New Token
+				</Button>
+			</ContainerHeader>
+			{createTokenTable(tokens, classes, props, onDeleteToken)}
+		</ContentContainer>,
+		<>
+		{createNewTokenDialog(dialogOpen, handleDialogClose, client, userRoles, tokens)}
+		</>
+	];
 };
 
 ApplicationTokens.propTypes = {

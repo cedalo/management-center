@@ -69,7 +69,7 @@ export default function SelectList({values, onChange, disabled, suggestions, get
 					{...params}
 					variant={variant || 'standard'}
 					label={label}
-					margin={variant ? 'dense' : 'none'}
+					margin={variant ? 'normal' : 'none'}
 					size="small"
 					placeholder=""
 				/>

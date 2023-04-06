@@ -10,6 +10,7 @@ import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import ContentContainer from './ContentContainer';
 
 const Settings = ({settings, onChangeTheme, sendMessage}) => {
 	const {enqueueSnackbar} = useSnackbar();
@@ -45,66 +46,63 @@ const Settings = ({settings, onChangeTheme, sendMessage}) => {
 	};
 
 	return (
-		<ContainerBox>
-			<ContainerBreadCrumbs title="Settings" links={[{name: 'Home', route: '/home'}]}/>
-			<div style={{height: 'calc(100% - 26px)'}}>
-				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
-					<ContainerHeader
-						title="Settings"
-						subTitle="Choose your favorite theme and allow or prohibit tracking user data. Also enable the topic tree. Once enabled the app collects all topics, that have been adressed within a broker. This information can then be used in the topic tree."
-					/>
-					<FormGroup>
-						<FormControlLabel
-							control={
-								<Switch
-									checked={darkMode === 'true'}
-									onChange={(event) => onChangeTheme(event.target.checked)}
-									name="darkMode"
-									color="primary"
-								/>
-							}
-							label="Dark Mode"
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title="Settings" links={[{name: 'Home', route: '/home'}]}/>}
+		>
+			<ContainerHeader
+				title="Settings"
+				subTitle="Choose your favorite theme and allow or prohibit tracking user data. Also enable the topic tree. Once enabled the app collects all topics, that have been adressed within a broker. This information can then be used in the topic tree."
+			/>
+			<FormGroup>
+				<FormControlLabel
+					control={
+						<Switch
+							checked={darkMode === 'true'}
+							onChange={(event) => onChangeTheme(event.target.checked)}
+							name="darkMode"
+							color="primary"
 						/>
-						<FormControlLabel
-							control={
-								<Switch
-									checked={settings?.allowTrackingUsageData === true}
-									onClick={(event) => {
-										event.stopPropagation();
-										if (event.target.checked) {
-											onChangeAllowTrackingUsageData(true);
-										} else {
-											onChangeAllowTrackingUsageData(false);
-										}
-									}}
-									name="allowTrackingUsageData"
-									color="primary"
-								/>
-							}
-							label="Allow tracking of usage data"
+					}
+					label="Dark Mode"
+				/>
+				<FormControlLabel
+					control={
+						<Switch
+							checked={settings?.allowTrackingUsageData === true}
+							onClick={(event) => {
+								event.stopPropagation();
+								if (event.target.checked) {
+									onChangeAllowTrackingUsageData(true);
+								} else {
+									onChangeAllowTrackingUsageData(false);
+								}
+							}}
+							name="allowTrackingUsageData"
+							color="primary"
 						/>
-						<FormControlLabel
-							control={
-								<Switch
-									checked={settings?.topicTreeEnabled === true}
-									onClick={(event) => {
-										event.stopPropagation();
-										if (event.target.checked) {
-											onChangeEnableTopicTree(true);
-										} else {
-											onChangeEnableTopicTree(false);
-										}
-									}}
-									name="topicTreeEnabled"
-									color="primary"
-								/>
-							}
-							label="Topic Tree"
+					}
+					label="Allow tracking of usage data"
+				/>
+				<FormControlLabel
+					control={
+						<Switch
+							checked={settings?.topicTreeEnabled === true}
+							onClick={(event) => {
+								event.stopPropagation();
+								if (event.target.checked) {
+									onChangeEnableTopicTree(true);
+								} else {
+									onChangeEnableTopicTree(false);
+								}
+							}}
+							name="topicTreeEnabled"
+							color="primary"
 						/>
-					</FormGroup>
-				</div>
-			</div>
-		</ContainerBox>
+					}
+					label="Topic Tree"
+				/>
+			</FormGroup>
+		</ContentContainer>
 	);
 };
 

@@ -21,6 +21,7 @@ import useFetch from '../helpers/useFetch';
 import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import ContentContainer from './ContentContainer';
 import Info from './Info';
 
 const useStyles = makeStyles((theme) => ({
@@ -71,40 +72,11 @@ const InfoPage = (props) => {
 	};
 
 	if (response) {
-		return (
-			<ContainerBox>
-				<Dialog
-					open={open}
-					onClose={handleClose}
-					aria-labelledby="alert-dialog-title"
-					aria-describedby="alert-dialog-description"
-				>
-					<DialogTitle id="alert-dialog-title">{'An update is available!'}</DialogTitle>
-					<DialogContent>
-						<DialogContentText id="alert-dialog-description">
-							<ul>
-								{response?.features?.map((feature) => {
-									return <li>{feature.title}</li>;
-								})}
-							</ul>
-						</DialogContentText>
-					</DialogContent>
-					<DialogActions>
-						<Button onClick={handleClose} color="secondary" autoFocus>
-							Cancel
-						</Button>
-						<Button
-							target="_href"
-							size="small"
-							variant="contained"
-							color="secondary"
-							href={response.updateURL}
-						>
-							Download now
-						</Button>
-					</DialogActions>
-				</Dialog>
-				<ContainerBreadCrumbs title="Info" links={[{name: 'Home', route: '/home'}]}/>
+		return [
+			<ContentContainer
+				breadCrumbs={<ContainerBreadCrumbs title="Info" links={[{name: 'Home', route: '/home'}]}/>}
+				overFlowX="hidden"
+			>
 				<ContainerHeader
 					title="Management Center License Information"
 					subTitle="Displays information about the currently active Management Center license and the features contained within."
@@ -192,7 +164,7 @@ const InfoPage = (props) => {
 								/>
 							</Grid> : null}
 						{license?.features && responsePlugIns ?
-							<Grid item lg={12} xs={12} >
+							<Grid item lg={12} xs={12}>
 								<Info
 									label="Management Center Features"
 									alignment="table"
@@ -208,11 +180,42 @@ const InfoPage = (props) => {
 									}, [])}
 									icon={<AppsIcon/>}
 								/>
-							</Grid>: null}
+							</Grid> : null}
 					</Grid>
 				</Container>
-			</ContainerBox>
-		);
+			</ContentContainer>,
+			<Dialog
+				open={open}
+				onClose={handleClose}
+				aria-labelledby="alert-dialog-title"
+				aria-describedby="alert-dialog-description"
+			>
+				<DialogTitle id="alert-dialog-title">{'An update is available!'}</DialogTitle>
+				<DialogContent>
+					<DialogContentText id="alert-dialog-description">
+						<ul>
+							{response?.features?.map((feature) => {
+								return <li>{feature.title}</li>;
+							})}
+						</ul>
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={handleClose} color="secondary" autoFocus>
+						Cancel
+					</Button>
+					<Button
+						target="_href"
+						size="small"
+						variant="contained"
+						color="secondary"
+						href={response.updateURL}
+					>
+						Download now
+					</Button>
+				</DialogActions>
+			</Dialog>
+		];
 	} else {
 		return null;
 	}

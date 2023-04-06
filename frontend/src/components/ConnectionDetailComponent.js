@@ -383,15 +383,12 @@ const ConnectionDetailComponent = (props) => {
 
 
 	return connection?.id ? (
-		<div>
-			<div>
-				<Grid container spacing={1} alignItems="flex-end">
-					<Grid item xs={12}>
+		<FormGroup>
 						<TextField
 							required={editMode}
 							disabled
 							size="small"
-							margin="dense"
+							margin="normal"
 							className={formClasses.textField}
 							onChange={(event) => {
 								if (editMode) {
@@ -415,14 +412,12 @@ const ConnectionDetailComponent = (props) => {
 								)
 							}}
 						/>
-					</Grid>
-					<Grid item xs={12}>
 						<TextField
 							required={editMode}
 							disabled
 							id="name"
 							size="small"
-							margin="dense"
+							margin="normal"
 							className={formClasses.textField}
 							label="Name"
 							value={updatedConnection.name}
@@ -438,8 +433,7 @@ const ConnectionDetailComponent = (props) => {
 								}
 							}}
 						/>
-					</Grid>
-					{ !connection.internalUrl ? <Grid item xs={12}>
+					{ !connection.internalUrl ?
 						<TextField
 							required={editMode}
 							disabled={!editMode}
@@ -447,7 +441,7 @@ const ConnectionDetailComponent = (props) => {
 							label="URL"
 							value={updatedConnection.url}
 							size="small"
-							margin="dense"
+							margin="normal"
 							className={formClasses.textField}
 							defaultValue=""
 							variant="outlined"
@@ -466,8 +460,8 @@ const ConnectionDetailComponent = (props) => {
 								}
 							}}
 						/>
-					</Grid> : null}
-					{ connection.internalUrl ? <Grid item xs={12}>
+					 : null}
+					{ connection.internalUrl ?
 						<TextField
 							disabled
 							id="external-url"
@@ -476,13 +470,13 @@ const ConnectionDetailComponent = (props) => {
 							// helperText="Not editable"
 							defaultValue=""
 							size="small"
-							margin="dense"
+							margin="normal"
 							variant="outlined"
 							fullWidth
 							className={formClasses.textField}
 						/>
-					</Grid> : null}
-					{ connection.externalEncryptedUrl ? <Grid item xs={12}>
+					 : null}
+					{ connection.externalEncryptedUrl ?
 						<TextField
 							disabled
 							id="external-url"
@@ -493,11 +487,11 @@ const ConnectionDetailComponent = (props) => {
 							variant="outlined"
 							fullWidth
 							size="small"
-							margin="dense"
+							margin="normal"
 							className={formClasses.textField}
 						/>
-					</Grid> : null}
-					{ connection.externalUnencryptedUrl ? <Grid item xs={12}>
+					 : null}
+					{ connection.externalUnencryptedUrl ?
 						<TextField
 							disabled
 							id="external-url"
@@ -508,11 +502,11 @@ const ConnectionDetailComponent = (props) => {
 							variant="outlined"
 							fullWidth
 							size="small"
-							margin="dense"
+							margin="normal"
 							className={formClasses.textField}
 						/>
-					</Grid> : null}
-					{ connection.websocketsUrl ? <Grid item xs={12}>
+					: null}
+					{ connection.websocketsUrl ?
 						<TextField
 							disabled
 							id="external-url"
@@ -523,12 +517,11 @@ const ConnectionDetailComponent = (props) => {
 							variant="outlined"
 							fullWidth
 							size="small"
-							margin="dense"
+							margin="normal"
 							className={formClasses.textField}
 							style={{paddingBottom: '10px'}}
 						/>
-					</Grid> : null}
-					<Grid item xs={12}>
+					: null}
 						<TextField
 							required={false}
 							disabled={!editMode}
@@ -536,7 +529,7 @@ const ConnectionDetailComponent = (props) => {
 							label="Username"
 							value={updatedConnection.credentials?.username}
 							size="small"
-							margin="dense"
+							margin="normal"
 							className={formClasses.textField}
 							defaultValue=""
 							variant="outlined"
@@ -554,8 +547,6 @@ const ConnectionDetailComponent = (props) => {
 								}
 							}}
 						/>
-					</Grid>
-					<Grid item xs={12}>
 						<TextField
 							required={false}
 							disabled={!editMode}
@@ -563,7 +554,7 @@ const ConnectionDetailComponent = (props) => {
 							type={showPassword ? "text" : "password"}
 							label="Password"
 							size="small"
-							margin="dense"
+							margin="normal"
 							className={formClasses.textField}
 							value={updatedConnection.credentials?.password}
 							defaultValue=""
@@ -596,8 +587,6 @@ const ConnectionDetailComponent = (props) => {
 								)
 							}}
 						/>
-					</Grid>
-				</Grid>
 
 				{!(tlsFeature?.supported) ?
 					(<>
@@ -611,13 +600,13 @@ const ConnectionDetailComponent = (props) => {
 
 				<div className={(!tlsFeature?.supported) ? classes.notEnabledBlock : ''}>
 					<div style={{padding: '5px'}}></div>
-					<div className={`${classes.parent} ${classes.padTop} ${classes.padSidesSmall}`}>
+					<div className={`${classes.parent} ${classes.padTop}`}>
 						<div className={classes.overlayed}>
 							<Typography className={classes.smallFont}>
 								Server certificate
 							</Typography>
 						</div>
-						<Grid container direction={'row'} spacing={1} alignItems="flex-end"
+						<Grid container direction={'row'} spacing={0} alignItems="flex-end"
 							  className={`${classes.container} ${classes.parent} ${classes.padTop2}`}>
 							<Grid item xl={6} md={6} sm={6} xs={6}>
 								<FormGroup>
@@ -645,7 +634,7 @@ const ConnectionDetailComponent = (props) => {
 							</Grid>
 							<Grid item xl={6} md={6} sm={6} xs={6}>
 							</Grid>
-							<Grid item xl={3} md={3} sm={4} xs={4}>
+							<Grid item xl={3} md={3} sm={4} xs={4} style={{marginTop: '8px'}}>
 								<Typography
 									className={errors[customCACertificateFieldName] ? classes.verticallyPad : ''}
 									align="left">CA Certificate</Typography>
@@ -706,19 +695,19 @@ const ConnectionDetailComponent = (props) => {
 						</Grid>
 					</div>
 					<div style={{padding: '7px'}}></div>
-					<div className={`${classes.parent} ${classes.padTop} ${classes.padSidesSmall}`}>
+					<div className={`${classes.parent} ${classes.padTop}`}>
 						<div className={classes.overlayed}>
 							<Typography className={classes.smallFont}>
 								Client certificate
 							</Typography>
 						</div>
-						<Grid container direction={'row'} spacing={1} alignItems="flex-end"
+						<Grid container direction={'row'} spacing={0} alignItems="flex-end"
 							  className={`${classes.container} ${classes.parent} ${classes.padTop2}`}>
 							<Grid item xl={3} md={3} sm={4} xs={4}>
 								<Typography className={errors[clientCertificateFieldName] ? classes.verticallyPad : ''}
 											align="left">Certificate</Typography>
 							</Grid>
-							<Grid item xl={7} md={7} sm={7} xs={7}>
+							<Grid item xl={7} md={7} sm={7} xs={7} style={{marginTop: '8px'}}>
 								<FormGroup row>
 									<Button
 										disabled={!editMode || !tlsFeature?.supported}
@@ -777,7 +766,7 @@ const ConnectionDetailComponent = (props) => {
 								<Typography className={(errors[clientPrivateKeyFieldName]) ? classes.verticallyPad : ''}
 											align="left">Private Key</Typography>
 							</Grid>
-							<Grid item xl={7} md={7} sm={7} xs={7}>
+							<Grid item xl={7} md={7} sm={7} xs={7} style={{marginTop: '8px'}}>
 								<FormGroup row>
 									<Button
 										disabled={!editMode || !tlsFeature?.supported}
@@ -835,7 +824,6 @@ const ConnectionDetailComponent = (props) => {
 							</Grid>
 						</Grid>
 					</div>
-				</div>
 			</div>
 			<Grid item xs={12} spacing={0} style={{paddingTop: '15px'}}>
 				{/* <Button
@@ -906,7 +894,7 @@ const ConnectionDetailComponent = (props) => {
 					</>
 				)}
 			</Grid>
-		</div>
+		</FormGroup>
 	) : (
 		<Redirect to="/connections" push/>
 	);

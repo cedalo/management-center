@@ -4,6 +4,7 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import {green, red} from '@material-ui/core/colors';
+import FormGroup from '@material-ui/core/FormGroup';
 import Grid from '@material-ui/core/Grid';
 import {makeStyles} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -24,6 +25,7 @@ import {Redirect} from 'react-router-dom';
 import ContainerBox from '../../../components/ContainerBox';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
+import ContentContainer from '../../../components/ContentContainer';
 import WaitDialog from '../../../components/WaitDialog';
 import {WebSocketContext} from '../../../websockets/WebSocket';
 import {updateCluster, updateClusters} from '../actions/actions';
@@ -176,199 +178,213 @@ const ClusterDetail = (props) => {
 		setEditMode(false);
 	};
 
-	return cluster ? (<ContainerBox>
-		<ContainerBreadCrumbs title={updatedCluster?.clustername}
-							  links={[{name: 'Home', route: '/home'}, {name: 'Cluster', route: '/clusters'}]}/>
-		<ContainerHeader
-			title={`Edit Cluster: ${updatedCluster?.clustername}`}
-			subTitle="View cluster settings and the assigned broker settings. Click on Edit to change the settings or add an additional broker."
-		/>
-		<Grid container spacing={2} alignItems="flex-end">
-			<Grid item xs={12} sm={4}>
-				<TextField
-					size="small"
-					required={editMode}
-					disabled={true}
-					id="clustername"
-					label="Clustername"
-					value={updatedCluster?.clustername}
-					defaultValue=""
-					variant="outlined"
-					fullWidth
-					className={classes.textField}
-				/>
-			</Grid>
-			<Grid item xs={12} sm={6}>
-				<TextField
-					size="small"
-					disabled={!editMode}
-					id="description"
-					label="Description"
-					value={updatedCluster?.description}
-					onChange={(event) => {
-						if (editMode) {
-							setUpdatedCluster({
-								...updatedCluster,
-								description: event.target.value
-							});
-						}
-					}}
-					defaultValue=""
-					variant="outlined"
-					fullWidth
-					className={classes.textField}
-				/>
-			</Grid>
-			<Grid item xs={12} sm={2}>
-				<TextField
-					size="small"
-					disabled={true}
-					id="syncmode"
-					label="Syncmode"
-					value={cluster.syncmode}
-					defaultValue="full"
-					variant="outlined"
-					fullWidth
-					className={classes.textField}
-				/>
-			</Grid>
-			<br/>
-		</Grid>
-		<br/>
-		<Grid container spacing={2} alignItems="flex-end">
-			{cluster?.nodes?.map((node, index) =>
-				<Grid item xs={12} sm={4}>
-					<Card variant="outlined">
-						<CardHeader
-							avatar={getNodeIcon(node)}
-							subheader={node.broker}
+	const getSyncModeLabel = (mode) => {
+		return mode === 'dynsec' ? 'Dynamic Security Sync' : 'Full Sync';
+	};
+
+	return cluster ? [
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title={updatedCluster?.clustername}
+											   links={[{name: 'Home', route: '/home'}, {
+												   name: 'Cluster',
+												   route: '/clusters'
+											   }]}/>}
+			overFlowX="hidden"
+		>
+			<ContainerHeader
+				title={`Edit Cluster: ${updatedCluster?.clustername}`}
+				subTitle="View cluster settings and the assigned broker settings. Click on Edit to change the settings or add an additional broker."
+			/>
+			<FormGroup>
+				<Grid container spacing={2} alignItems="flex-end">
+					<Grid item xs={12} sm={4}>
+						<TextField
+							size="small"
+							margin="normal"
+							required={editMode}
+							disabled={true}
+							id="clustername"
+							label="Name"
+							value={updatedCluster?.clustername}
+							defaultValue=""
+							variant="outlined"
+							fullWidth
+							className={classes.textField}
 						/>
-						<CardContent style={{paddingTop: '0px'}}>
-							<Grid container spacing={1} alignItems="flex-end">
-								<Grid item xs={12}>
-									<TextField
+					</Grid>
+					<Grid item xs={12} sm={5}>
+						<TextField
+							size="small"
+							margin="normal"
+							disabled={!editMode}
+							id="description"
+							label="Description"
+							value={updatedCluster?.description}
+							onChange={(event) => {
+								if (editMode) {
+									setUpdatedCluster({
+										...updatedCluster,
+										description: event.target.value
+									});
+								}
+							}}
+							defaultValue=""
+							variant="outlined"
+							fullWidth
+							className={classes.textField}
+						/>
+					</Grid>
+					<Grid item xs={12} sm={3}>
+						<TextField
+							size="small"
+							disabled={true}
+							margin="normal"
+							id="syncmode"
+							label="Sync Mode"
+							value={getSyncModeLabel(cluster.syncmode)}
+							defaultValue="full"
+							variant="outlined"
+							fullWidth
+							className={classes.textField}
+						/>
+					</Grid>
+					{cluster?.nodes?.map((node, index) =>
+						<Grid item xs={12} sm={4}>
+							<Card variant="outlined">
+								<CardHeader
+									avatar={getNodeIcon(node)}
+									subheader={node.broker}
+								/>
+								<CardContent style={{paddingTop: '0px'}}>
+									<Grid container spacing={1} alignItems="flex-end">
+										<Grid item xs={12}>
+											<TextField
+												size="small"
+												margin="dense"
+												disabled={true}
+												id={node?.nodeId}
+												label="Node ID"
+												value={node?.nodeId}
+												defaultValue=""
+												variant="outlined"
+												fullWidth
+											/>
+										</Grid>
+										<Grid item xs={12}>
+											<TextField
+												size="small"
+												margin="dense"
+												disabled={true}
+												id={node?.address}
+												label="Address"
+												value={node?.address}
+												defaultValue=""
+												variant="outlined"
+												fullWidth
+												className={classes.textField}
+											/>
+										</Grid>
+										<Grid item xs={12}>
+											<TextField
+												size="small"
+												margin="dense"
+												disabled={true}
+												label="Port"
+												value={node?.port}
+												defaultValue=""
+												variant="outlined"
+												fullWidth
+												className={classes.textField}
+											/>
+										</Grid>
+									</Grid>
+								</CardContent>
+								<CardActions>
+									<Button
+										disabled={!editMode || cluster?.nodes?.length <= 3}
 										size="small"
-										margin="dense"
-										disabled={true}
-										id={node?.nodeId}
-										label="Node ID"
-										value={node?.nodeId}
-										defaultValue=""
-										variant="outlined"
-										fullWidth
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<TextField
-										size="small"
-										margin="dense"
-										disabled={true}
-										id={node?.address}
-										label="Address"
-										value={node?.address}
-										defaultValue=""
-										variant="outlined"
-										fullWidth
-										className={classes.textField}
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<TextField
-										size="small"
-										margin="dense"
-										disabled={true}
-										label="Port"
-										value={node?.port}
-										defaultValue=""
-										variant="outlined"
-										fullWidth
-										className={classes.textField}
-									/>
-								</Grid>
-							</Grid>
-						</CardContent>
-						<CardActions>
+										onClick={() => removeNodeFromCluster(node.broker)}
+										startIcon={<RemoveNodeIcon/>}
+									>
+										Remove
+									</Button>
+								</CardActions>
+							</Card>
+						</Grid>
+					)}
+				</Grid>
+				{!editMode && (
+					<Grid item xs={12}>
+						<Button
+							variant="contained"
+							style={{marginTop: '20px'}}
+							size="small"
+							color="primary"
+							startIcon={<EditIcon/>}
+							onClick={() => setEditMode(true)}
+						>
+							Edit
+						</Button>
+					</Grid>
+				)}
+				{editMode && [
+					<div style={{display: 'flex', marginTop: '10px', justifyContent: 'space-between'}}>
+						<Grid item xs={12}>
 							<Button
-								disabled={!editMode || cluster?.nodes?.length <= 3}
+								variant="contained"
 								size="small"
-								onClick={() => removeNodeFromCluster(node.broker)}
-								startIcon={<RemoveNodeIcon/>}
+								disabled={!validate()}
+								color="primary"
+								style={{marginRight: '10px', marginTop: '10px'}}
+								startIcon={<SaveIcon/>}
+								onClick={(event) => {
+									event.stopPropagation();
+									onUpdateClusterDetail();
+								}}
 							>
-								Remove
+								Save
 							</Button>
-						</CardActions>
-					</Card>
-				</Grid>
-			)}
-		</Grid>
-		{!editMode && (
-			<Grid item xs={12}>
-				<Button
-					variant="contained"
-					style={{marginTop: '10px'}}
-					size="small"
-					color="primary"
-					startIcon={<EditIcon/>}
-					onClick={() => setEditMode(true)}
-				>
-					Edit
-				</Button>
-			</Grid>
-		)}
-		{editMode && [
-			<div style={{display: 'flex', justifyContent: 'space-between'}}>
-				<Grid item xs={12}>
-					<Button
-						variant="contained"
-						size="small"
-						disabled={!validate()}
-						color="primary"
-						style={{marginRight: '10px', marginTop: '10px'}}
-						startIcon={<SaveIcon/>}
-						onClick={(event) => {
-							event.stopPropagation();
-							onUpdateClusterDetail();
-						}}
-					>
-						Save
-					</Button>
-					<Button
-						variant="contained"
-						style={{marginTop: '10px'}}
-						size="small"
-						onClick={(event) => {
-							event.stopPropagation();
-							onCancelEdit();
-						}}
-					>
-						Cancel
-					</Button>
-				</Grid>
-				<Button
-					variant="contained"
-					size="small"
-					color="primary"
-					style={{marginTop: '10px', width: '150px'}}
-					startIcon={<AddIcon/>}
-					onClick={() => setSelectNodeDialogOpen(true)}
-				>
-					Add Node
-				</Button>
-			</div>
-		]
-		}
+							<Button
+								variant="contained"
+								style={{marginTop: '10px'}}
+								size="small"
+								onClick={(event) => {
+									event.stopPropagation();
+									onCancelEdit();
+								}}
+							>
+								Cancel
+							</Button>
+						</Grid>
+						<div>
+							<Button
+								variant="contained"
+								size="small"
+								color="primary"
+								style={{marginTop: '10px', width: '120px'}}
+								startIcon={<AddIcon/>}
+								onClick={() => setSelectNodeDialogOpen(true)}
+							>
+								Add Node
+							</Button>
+						</div>
+					</div>
+				]
+				}
+			</FormGroup>
+		</ContentContainer>,
 		<SelectNodeDialog
 			open={selectNodeDialogOpen}
 			handleClose={() => setSelectNodeDialogOpen(false)}
 			handleAddNode={(node) => addNodeToCluster(node)}
 			cluster={cluster}
-		/>
+		/>,
 		<WaitDialog
 			title='Update process of your cluster is in process'
 			open={progressDialogOpen}
 			handleClose={() => setProgressDialogOpen(false)}
 		/>
-	</ContainerBox>) : (
+	] : (
 		<Redirect to="/clusters" push/>
 	);
 };

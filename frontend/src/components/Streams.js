@@ -22,9 +22,9 @@ import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateStream, updateStreams} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
-import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import ContentContainer from './ContentContainer';
 import ReplayStreamDialog from './streams/ReplayStreamDialog';
 
 const StyledTableRow = withStyles((theme) => ({
@@ -225,216 +225,214 @@ const Streams = (props) => {
 	};
 
 	return (
-		<ContainerBox>
-			<ReplayStreamDialog
-				stream={replayStream}
-				open={replayStreamEditorOpen}
-				handleReplay={handleReplay}
-				handleClose={handleReplayStreamEditorClose}
-			/>
-			<ContainerBreadCrumbs title="Streams" links={[{name: 'Home', route: '/home'}]}/>
-			<div style={{height: 'calc(100% - 26px)'}}>
-				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
-					<ContainerHeader
-						title="Streams"
-						subTitle="List of all defined streams. Stream are used to transfer or persist topic payloads."
-						connectedWarning={!connected}
-						featureWarning={streamprocessingFeature?.supported === false ? "Streams" : undefined}
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title="Streams" links={[{name: 'Home', route: '/home'}]}/>}
+			dataTour="page-streams"
+		>
+			<ContainerHeader
+				title="Streams"
+				subTitle="List of all defined streams. Stream are used to transfer or persist topic payloads."
+				connectedWarning={!connected}
+				featureWarning={streamprocessingFeature?.supported === false ? "Streams" : undefined}
+			>
+				<ReplayStreamDialog
+					stream={replayStream}
+					open={replayStreamEditorOpen}
+					handleReplay={handleReplay}
+					handleClose={handleReplayStreamEditorClose}
+				/>
+				{streamprocessingFeature?.supported !== false ? [
+					<Button
+						variant="outlined"
+						color="primary"
+						size="small"
+						style={{marginRight: '10px'}}
+						startIcon={<AddIcon/>}
+						onClick={(event) => {
+							event.stopPropagation();
+							onNewStream();
+						}}
 					>
-						{streamprocessingFeature?.supported !== false ? [
-							<Button
-								variant="outlined"
-								color="primary"
-								size="small"
-								style={{marginRight: '10px'}}
-								startIcon={<AddIcon/>}
-								onClick={(event) => {
-									event.stopPropagation();
-									onNewStream();
-								}}
-							>
-								New Stream
-							</Button>,
-							<Button
-								variant="outlined"
-								color="primary"
-								size="small"
-								style={{paddingRight: '0px', minWidth: '30px'}}
-								startIcon={<ReloadIcon/>}
-								onClick={(event) => {
-									event.stopPropagation();
-									onReload();
-								}}
-							/>
-						] : null}
-					</ContainerHeader>
-					{streamprocessingFeature?.supported !== false && streams && streams.length > 0 ? (
-						<div style={{height: '100%', overflowY: 'auto'}}>
-							<TableContainer>
-								<Table size="small">
-									<TableHead>
-										<TableRow>
-											{STREAM_TABLE_COLUMNS.map((column) => (
-												<TableCell
-													key={column.id}
-													sortDirection={sortBy === column.id ? sortDirection : false}
-													align={column.align}
-													style={{
-														width: column.width,
-														display: (!small && !medium) ||
-														(column.id === 'name' && (small || medium)) ||
-														(column.id === 'sourcetopic' && (small || medium)) ||
-														(column.id === 'action' && (small || medium)) ||
-														(column.id === 'targettopic' && medium) ? undefined : 'none'
-													}}
-												>
+						New Stream
+					</Button>,
+					<Button
+						variant="outlined"
+						color="primary"
+						size="small"
+						style={{paddingRight: '0px', minWidth: '30px'}}
+						startIcon={<ReloadIcon/>}
+						onClick={(event) => {
+							event.stopPropagation();
+							onReload();
+						}}
+					/>
+				] : null}
+			</ContainerHeader>
+			{streamprocessingFeature?.supported !== false && streams && streams.length > 0 ? (
+				<div style={{height: '100%', overflowY: 'auto'}}>
+					<TableContainer>
+						<Table size="small">
+							<TableHead>
+								<TableRow>
+									{STREAM_TABLE_COLUMNS.map((column) => (
+										<TableCell
+											key={column.id}
+											sortDirection={sortBy === column.id ? sortDirection : false}
+											align={column.align}
+											style={{
+												width: column.width,
+												display: (!small && !medium) ||
+												(column.id === 'name' && (small || medium)) ||
+												(column.id === 'sourcetopic' && (small || medium)) ||
+												(column.id === 'action' && (small || medium)) ||
+												(column.id === 'targettopic' && medium) ? undefined : 'none'
+											}}
+										>
 													<span>
 													{column.key}
 														</span>
+										</TableCell>
+									))}
+								</TableRow>
+							</TableHead>
+							<TableBody>
+								{streams &&
+									streams.map((stream) => (
+										<StyledTableRow
+											hover
+											key={stream.streamname}
+											onClick={(event) => {
+												if (
+													event.target.nodeName?.toLowerCase() === 'td'
+												) {
+													onSelectStream(stream.streamname);
+												}
+											}}
+										>
+											<TableCell>{stream.streamname}</TableCell>
+											{small || medium ? null :
+												<TableCell>{stream.textdescription}</TableCell>
+											}
+											<TableCell>{stream.sourcetopic}</TableCell>
+											{small ? null :
+												<TableCell>{stream.targettopic}</TableCell>
+											}
+											{/*{small || medium ? null : [*/}
+											{/*	<TableCell>{stream.targetqos}</TableCell>,*/}
+											{/*	<TableCell>{stream.ttl}</TableCell>*/}
+											{/*]}*/}
+											{small || medium ? null : [
+												<TableCell align="center">
+													<Tooltip title="Process stream">
+														<Switch
+															color="primary"
+															checked={
+																typeof stream.process === 'undefined' ||
+																stream.process === true
+															}
+															onClick={(event) => {
+																event.stopPropagation();
+																if (event.target.checked) {
+																	onEnableProcessStream(
+																		stream.streamname);
+																} else {
+																	onDisableProcessStream(
+																		stream.streamname);
+																}
+															}}
+														/>
+													</Tooltip>
+												</TableCell>,
+												<TableCell align="center">
+													<Tooltip title="Persist stream">
+														<Switch
+															color="primary"
+															checked={
+																typeof stream.persist === 'undefined' ||
+																stream.persist === true
+															}
+															onClick={(event) => {
+																event.stopPropagation();
+																if (event.target.checked) {
+																	onEnablePersistStream(
+																		stream.streamname);
+																} else {
+																	onDisablePersistStream(
+																		stream.streamname);
+																}
+															}}
+														/>
+													</Tooltip>
+												</TableCell>,
+												<TableCell align="center">
+													<Tooltip title="Activate / Deactivate stream">
+														<Switch
+															color="primary"
+															checked={
+																typeof stream.active === 'undefined' ||
+																stream.active === true
+															}
+															onClick={(event) => {
+																event.stopPropagation();
+																if (event.target.checked) {
+																	onEnableStream(stream.streamname);
+																} else {
+																	onDisableStream(stream.streamname);
+																}
+															}}
+														/>
+													</Tooltip>
 												</TableCell>
-											))}
-										</TableRow>
-									</TableHead>
-									<TableBody>
-										{streams &&
-											streams.map((stream) => (
-												<StyledTableRow
-													hover
-													key={stream.streamname}
-													onClick={(event) => {
-														if (
-															event.target.nodeName?.toLowerCase() === 'td'
-														) {
-															onSelectStream(stream.streamname);
-														}
-													}}
-												>
-													<TableCell>{stream.streamname}</TableCell>
-													{small || medium ? null :
-														<TableCell>{stream.textdescription}</TableCell>
-													}
-													<TableCell>{stream.sourcetopic}</TableCell>
-													{small ? null :
-														<TableCell>{stream.targettopic}</TableCell>
-													}
-													{/*{small || medium ? null : [*/}
-													{/*	<TableCell>{stream.targetqos}</TableCell>,*/}
-													{/*	<TableCell>{stream.ttl}</TableCell>*/}
-													{/*]}*/}
-													{small || medium ? null : [
-														<TableCell align="center">
-															<Tooltip title="Process stream">
-																<Switch
-																	color="primary"
-																	checked={
-																		typeof stream.process === 'undefined' ||
-																		stream.process === true
-																	}
-																	onClick={(event) => {
-																		event.stopPropagation();
-																		if (event.target.checked) {
-																			onEnableProcessStream(
-																				stream.streamname);
-																		} else {
-																			onDisableProcessStream(
-																				stream.streamname);
-																		}
-																	}}
-																/>
-															</Tooltip>
-														</TableCell>,
-														<TableCell align="center">
-															<Tooltip title="Persist stream">
-																<Switch
-																	color="primary"
-																	checked={
-																		typeof stream.persist === 'undefined' ||
-																		stream.persist === true
-																	}
-																	onClick={(event) => {
-																		event.stopPropagation();
-																		if (event.target.checked) {
-																			onEnablePersistStream(
-																				stream.streamname);
-																		} else {
-																			onDisablePersistStream(
-																				stream.streamname);
-																		}
-																	}}
-																/>
-															</Tooltip>
-														</TableCell>,
-														<TableCell align="center">
-															<Tooltip title="Activate / Deactivate stream">
-																<Switch
-																	color="primary"
-																	checked={
-																		typeof stream.active === 'undefined' ||
-																		stream.active === true
-																	}
-																	onClick={(event) => {
-																		event.stopPropagation();
-																		if (event.target.checked) {
-																			onEnableStream(stream.streamname);
-																		} else {
-																			onDisableStream(stream.streamname);
-																		}
-																	}}
-																/>
-															</Tooltip>
-														</TableCell>
-													]}
-													<TableCell align="center">
-														<div style={{display: 'flex'}}>
-															<Tooltip title="Clear stream messages">
-																<IconButton
-																	disabled={!stream.persist}
-																	size="small"
-																	onClick={(event) => {
-																		event.stopPropagation();
-																		onClearStreamMessages(stream.streamname);
-																	}}
-																>
-																	<ClearStreamIcon fontSize="small"/>
-																</IconButton>
-															</Tooltip>
-															<Tooltip title="Replay stream">
-																<IconButton
-																	disabled={!stream.persist}
-																	size="small"
-																	onClick={(event) => {
-																		event.stopPropagation();
-																		onReplayStream(stream);
-																	}}
-																>
-																	<ReplayIcon fontSize="small"/>
-																</IconButton>
-															</Tooltip>
-															<Tooltip title="Delete stream">
-																<IconButton
-																	size="small"
-																	onClick={(event) => {
-																		event.stopPropagation();
-																		onDeleteStream(stream.streamname);
-																	}}
-																>
-																	<DeleteIcon fontSize="small"/>
-																</IconButton>
-															</Tooltip>
-														</div>
-													</TableCell>
-												</StyledTableRow>
-											))}
-									</TableBody>
-								</Table>
-							</TableContainer>
-						</div>
-					) : (
-						<div>No streams found</div>
-					)}
+											]}
+											<TableCell align="center">
+												<div style={{display: 'flex'}}>
+													<Tooltip title="Clear stream messages">
+														<IconButton
+															disabled={!stream.persist}
+															size="small"
+															onClick={(event) => {
+																event.stopPropagation();
+																onClearStreamMessages(stream.streamname);
+															}}
+														>
+															<ClearStreamIcon fontSize="small"/>
+														</IconButton>
+													</Tooltip>
+													<Tooltip title="Replay stream">
+														<IconButton
+															disabled={!stream.persist}
+															size="small"
+															onClick={(event) => {
+																event.stopPropagation();
+																onReplayStream(stream);
+															}}
+														>
+															<ReplayIcon fontSize="small"/>
+														</IconButton>
+													</Tooltip>
+													<Tooltip title="Delete stream">
+														<IconButton
+															size="small"
+															onClick={(event) => {
+																event.stopPropagation();
+																onDeleteStream(stream.streamname);
+															}}
+														>
+															<DeleteIcon fontSize="small"/>
+														</IconButton>
+													</Tooltip>
+												</div>
+											</TableCell>
+										</StyledTableRow>
+									))}
+							</TableBody>
+						</Table>
+					</TableContainer>
 				</div>
-			</div>
-		</ContainerBox>
+			) : (
+				<div>No streams found</div>
+			)}
+		</ContentContainer>
 	);
 };
 

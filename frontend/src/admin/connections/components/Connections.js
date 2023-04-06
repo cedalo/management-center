@@ -154,7 +154,7 @@ const CustomRow = (props) => {
 				{}
 			</TableCell>
 			{medium || small ? null :
-				<TableCell align={CONN_TABLE_COLUMNS[5].align} style={{padding: '6px'}} >
+				<TableCell align={CONN_TABLE_COLUMNS[5].align} style={{padding: '6px'}}>
 					<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}>
 						<Switch
 							color="primary"
@@ -419,50 +419,49 @@ const Connections = ({
 					</Button>
 				</ContainerHeader>
 				{brokerConnections && brokerConnections?.length > 0 ? (
-					<div style={{height: '100%', overflowY: 'auto'}}>
-						<TableContainer style={{maxHeight: '100%'}}>
-							<Table stickyHeader size="small" aria-label="sticky table">
-								<TableHead>
-									<TableRow>
-										{CONN_TABLE_COLUMNS.map((column) => (<TableCell
-											align={column.align}
-											style={{
-												padding: '6px',
-												width: column.width,
-												display: (!small && !medium) || (column.id === 'name' && (small || medium)) || (column.id === 'status' && (small || medium)) || (column.id === 'url' && medium) ? undefined : 'none'
-											}}
-											key={column.id}
-											// sortDirection={sortBy === column.id ? sortDirection : false}
-										>
-											{/* <TableSortLabel
+					<TableContainer style={{maxHeight: '100%'}}>
+						<Table stickyHeader size="small" aria-label="sticky table">
+							<TableHead>
+								<TableRow>
+									{CONN_TABLE_COLUMNS.map((column) => (<TableCell
+										align={column.align}
+										style={{
+											padding: '6px',
+											width: column.width,
+											display: (!small && !medium) || (column.id === 'name' && (small || medium)) || (column.id === 'status' && (small || medium)) || (column.id === 'url' && medium) ? undefined : 'none'
+										}}
+										key={column.id}
+										// sortDirection={sortBy === column.id ? sortDirection : false}
+									>
+										{/* <TableSortLabel
 														active={sortBy === column.id}
 														direction={sortDirection}
 														// onClick={() => onSort(column.id)}
 													>
 														{column.key}
 													</TableSortLabel> */}
-											{column.key}
-										</TableCell>))}
-									</TableRow>
-								</TableHead>
-								<TableBody>
-									{brokerConnections && brokerConnections
-										.sort((a, b) => a.name.localeCompare(b.name))
-										.map((brokerConnection) => (<CustomRow
-											small={small}
-											medium={medium}
-											hover
-											onClick={() => onSelectConnection(brokerConnection)}
-											brokerConnection={brokerConnection}
-											handleBrokerConnectionConnectDisconnect={handleBrokerConnectionConnectDisconnect}
-											onDeleteConnection={onDeleteConnection}
-											userProfile={userProfile}
-											classes={classes}
-										/>))}
-								</TableBody>
-							</Table>
-						</TableContainer>
-					</div>) : (<div>No connections found</div>)}
+										{column.key}
+									</TableCell>))}
+								</TableRow>
+							</TableHead>
+							<TableBody>
+								{brokerConnections && brokerConnections
+									.sort((a, b) => a.name.localeCompare(b.name))
+									.map((brokerConnection) => (<CustomRow
+										small={small}
+										medium={medium}
+										hover
+										onClick={() => onSelectConnection(brokerConnection)}
+										brokerConnection={brokerConnection}
+										handleBrokerConnectionConnectDisconnect={handleBrokerConnectionConnectDisconnect}
+										onDeleteConnection={onDeleteConnection}
+										userProfile={userProfile}
+										classes={classes}
+									/>))}
+							</TableBody>
+						</Table>
+					</TableContainer>
+				) : (<div>No connections found</div>)}
 			</div>
 		</div>
 	</ContainerBox>);

@@ -1,3 +1,4 @@
+import FormGroup from '@material-ui/core/FormGroup';
 import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
@@ -12,6 +13,7 @@ import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import ContentContainer from './ContentContainer';
 import SaveCancelButtons from './SaveCancelButtons';
 import {useFormStyles} from '../styles';
 
@@ -68,75 +70,66 @@ const GroupNew = (props) => {
 	};
 
 	return (
-		<ContainerBox>
-			<ContainerBreadCrumbs title="New" links={[{name: 'Home', route: '/home'},
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title="New" links={[{name: 'Home', route: '/home'},
 				{name: 'Groups', route: '/groups'}
-			]}/>
+			]}/>}
+		>
 			<ContainerHeader
 				title="New Group"
 				subTitle="Create a new group by entering a unique group name."
 			/>
-			<Grid container spacing={1} alignItems="flex-end">
-				<Grid item xs={12}>
-					<TextField
-						error={groupnameExists}
-						helperText={groupnameExists && 'A group with this name already exists.'}
-						required
-						id="groupname"
-						label="Name"
-						onChange={(event) => setGroupname(event.target.value)}
-						defaultValue=""
-						variant="outlined"
-						fullWidth
-						size="small"
-						margin="dense"
-						className={formClasses.textField}
-						InputProps={{
-							startAdornment: (
-								<InputAdornment position="start">
-									<AccountCircle/>
-								</InputAdornment>
-							)
-						}}
-					/>
-				</Grid>
-				<Grid item xs={12}>
-					<TextField
-						id="textname"
-						label="Text Name"
-						onChange={(event) => setTextname(event.target.value)}
-						defaultValue=""
-						size="small"
-						margin="dense"
-						className={formClasses.textField}
-						variant="outlined"
-						fullWidth
-					/>
-				</Grid>
-				<Grid item xs={12}>
-					<TextField
-						id="textdescription"
-						label="Description"
-						onChange={(event) => setTextdescription(event.target.value)}
-						defaultValue=""
-						size="small"
-						margin="dense"
-						variant="outlined"
-						className={formClasses.textField}
-						fullWidth
-					/>
-				</Grid>
-			</Grid>
-			<Grid container xs={12} alignItems="flex-start">
-				<Grid item xs={12}>
-					<SaveCancelButtons
-						onSave={onSaveGroup}
-						saveDisabled={!validate()}
-						onCancel={onCancel}
-					/>
-				</Grid>
-			</Grid>
-		</ContainerBox>
+			<FormGroup>
+				<TextField
+					error={groupnameExists}
+					helperText={groupnameExists && 'A group with this name already exists.'}
+					required
+					id="groupname"
+					label="Name"
+					onChange={(event) => setGroupname(event.target.value)}
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position="start">
+								<AccountCircle/>
+							</InputAdornment>
+						)
+					}}
+				/>
+				<TextField
+					id="textname"
+					label="Text Name"
+					onChange={(event) => setTextname(event.target.value)}
+					defaultValue=""
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+					variant="outlined"
+					fullWidth
+				/>
+				<TextField
+					id="textdescription"
+					label="Description"
+					onChange={(event) => setTextdescription(event.target.value)}
+					defaultValue=""
+					size="small"
+					margin="normal"
+					variant="outlined"
+					className={formClasses.textField}
+					fullWidth
+				/>
+				<SaveCancelButtons
+					onSave={onSaveGroup}
+					saveDisabled={!validate()}
+					onCancel={onCancel}
+				/>
+			</FormGroup>
+		</ContentContainer>
 	);
 };
 

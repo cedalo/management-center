@@ -23,6 +23,7 @@ import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import ContentContainer from './ContentContainer';
 import SelectList from './SelectList';
 
 const useStyles = makeStyles((theme) => ({
@@ -249,151 +250,150 @@ const UserGroups = (props) => {
 
 
 	return (
-		<ContainerBox>
-			<ContainerBreadCrumbs title="User Groups" links={[{name: 'Home', route: '/home'}]}/>
-			<div style={{height: 'calc(100% - 26px)'}}>
-				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
-					<ContainerHeader
-						title="User Groups"
-						subTitle="You can create user groups for specific connections. Only those connections that are in the group
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title="User Groups" links={[{name: 'Home', route: '/home'}]}/>}
+			dataTour="page-user-groups"
+
+		>
+			<ContainerHeader
+				title="User Groups"
+				subTitle="You can create user groups for specific connections. Only those connections that are in the group
 							will be accessible to the user. The role specified in the group will override the user's role for
 							the connections assigned to said group.
 							A user can be added to more than one group. In this case if some of the connections in two or more
 							groups are the same, a user will get the highest permissions among those overlapping connections"
-						featureWarning={userManagementFeature?.supported === false ? "User Groups" : undefined}
+				featureWarning={userManagementFeature?.supported === false ? "User Groups" : undefined}
+			>
+				{userManagementFeature?.supported !== false &&
+					<Button
+						variant="outlined"
+						color="primary"
+						size="small"
+						startIcon={<AddIcon/>}
+						onClick={(event) => {
+							event.stopPropagation();
+							onNewGroup();
+						}}
 					>
-						{userManagementFeature?.supported !== false &&
-							<Button
-								variant="outlined"
-								color="primary"
-								size="small"
-								startIcon={<AddIcon/>}
-								onClick={(event) => {
-									event.stopPropagation();
-									onNewGroup();
-								}}
-							>
-								New User Group
-							</Button>
-						}
-					</ContainerHeader>
-					{
-						userManagementFeature?.supported === false ? (
-							<></>
-						) : (
-							Object.keys(userGroups).length > 0 ? (
-								<div style={{height: '100%', overflowY: 'auto'}}>
-									<TableContainer>
-										<Table stickyHeader size="small" aria-label="sticky table">
-											<colgroup>
-												{GROUP_TABLE_COLUMNS.map((column) => (
-													<col style={{width: column.width}}/>
-												))}
-											</colgroup>
-											<TableHead>
-												<TableRow>
-													{GROUP_TABLE_COLUMNS.map((column) => (
-														<TableCell
-															key={column.id}
-															sortDirection={sortBy === column.id ? sortDirection : false}
-															align={column.align}
-															style={{
-																width: column.width,
-																display: (!small && !medium) ||
-																(column.id === 'name' && (small || medium)) ||
-																(column.id === 'delete' && (small || medium)) ||
-																(column.id === 'connections' && medium) ||
-																(column.id === 'users' && (small || medium))  ? undefined : 'none'
-															}}
+						New User Group
+					</Button>
+				}
+			</ContainerHeader>
+			{
+				userManagementFeature?.supported === false ? (
+					<></>
+				) : (
+					Object.keys(userGroups).length > 0 ? (
+						<div style={{height: '100%', overflowY: 'auto'}}>
+							<TableContainer>
+								<Table stickyHeader size="small" aria-label="sticky table">
+									<colgroup>
+										{GROUP_TABLE_COLUMNS.map((column) => (
+											<col style={{width: column.width}}/>
+										))}
+									</colgroup>
+									<TableHead>
+										<TableRow>
+											{GROUP_TABLE_COLUMNS.map((column) => (
+												<TableCell
+													key={column.id}
+													sortDirection={sortBy === column.id ? sortDirection : false}
+													align={column.align}
+													style={{
+														width: column.width,
+														display: (!small && !medium) ||
+														(column.id === 'name' && (small || medium)) ||
+														(column.id === 'delete' && (small || medium)) ||
+														(column.id === 'connections' && medium) ||
+														(column.id === 'users' && (small || medium)) ? undefined : 'none'
+													}}
+												>
+													{column.sortable ? <TableSortLabel
+															active={sortBy === column.id}
+															direction={sortDirection}
+															onClick={() => onSort(column.id)}
 														>
-															{column.sortable ? <TableSortLabel
-																	active={sortBy === column.id}
-																	direction={sortDirection}
-																	onClick={() => onSort(column.id)}
-																>
-																	{column.key}
-																</TableSortLabel> :
-																<>
-																	{column.key}
-																</>}
-														</TableCell>
-													))}
-												</TableRow>
-											</TableHead>
-											<TableBody>
-												{userGroupsEntriesPaginated &&
-													userGroupsEntriesPaginated.map((item) => {
-														const group = item[1];
+															{column.key}
+														</TableSortLabel> :
+														<>
+															{column.key}
+														</>}
+												</TableCell>
+											))}
+										</TableRow>
+									</TableHead>
+									<TableBody>
+										{userGroupsEntriesPaginated &&
+											userGroupsEntriesPaginated.map((item) => {
+												const group = item[1];
 
-														return <TableRow
-															hover
-															key={group.name}
-															onClick={(event) => {
-																if (event.target.nodeName?.toLowerCase() === 'td') {
-																	onSelectGroup(group.name);
-																}
+												return <TableRow
+													hover
+													key={group.name}
+													onClick={(event) => {
+														if (event.target.nodeName?.toLowerCase() === 'td') {
+															onSelectGroup(group.name);
+														}
+													}}
+													style={{cursor: 'pointer'}}
+												>
+													<TableCell>{group.name}</TableCell>
+													{small || medium ? null : [
+														<TableCell>{group.role}</TableCell>,
+														<TableCell>{group.description}</TableCell>
+													]}
+													<TableCell className={classes.badges}>
+														<SelectList
+															values={group?.users}
+															getValue={value => value}
+															onChange={(event, value) => {
+																onUpdateGroupUsers(group, value);
 															}}
-															style={{cursor: 'pointer'}}
-														>
-															<TableCell>{group.name}</TableCell>
-															{small || medium ? null : [
-																<TableCell>{group.role}</TableCell>,
-																<TableCell>{group.description}</TableCell>
-															]}
-															<TableCell className={classes.badges}>
-																<SelectList
-																	values={group?.users}
-																	getValue={value => value}
-																	onChange={(event, value) => {
-																		onUpdateGroupUsers(group, value);
-																	}}
-																	disabled={false}
-																	suggestions={userSuggestions}
-																/>
-															</TableCell>
-															{small ? null :
-																<TableCell className={classes.badges}>
-																	<SelectList
-																		values={group?.connections
-																			.filter(
-																				(brokerid) => !!connectionsMap.get(
-																					brokerid))}
-																		getValue={value => connectionsMap.get(value).id}
-																		getLabel={value => connectionsMap.get(value).name}
-																		onChange={(event, value) => {
-																			onUpdateGroupConnections(group, value);
-																		}}
-																		disabled={false}
-																		suggestions={connectionSuggestions}
-																	/>
-																</TableCell>}
-															<TableCell align="center">
-																<Tooltip title="Delete group">
-																	<IconButton
-																		size="small"
-																		onClick={(event) => {
-																			event.stopPropagation();
-																			onDeleteGroup(group.name);
-																		}}
-																	>
-																		<DeleteIcon fontSize="small"/>
-																	</IconButton>
-																</Tooltip>
-															</TableCell>
-														</TableRow>
-													})}
-											</TableBody>
-										</Table>
-									</TableContainer>
-								</div>
-							) : (
-								<div>No groups found</div>
-							)
-						)
-					}
-				</div>
-			</div>
-		</ContainerBox>
+															disabled={false}
+															suggestions={userSuggestions}
+														/>
+													</TableCell>
+													{small ? null :
+														<TableCell className={classes.badges}>
+															<SelectList
+																values={group?.connections
+																	.filter(
+																		(brokerid) => !!connectionsMap.get(
+																			brokerid))}
+																getValue={value => connectionsMap.get(value).id}
+																getLabel={value => connectionsMap.get(value).name}
+																onChange={(event, value) => {
+																	onUpdateGroupConnections(group, value);
+																}}
+																disabled={false}
+																suggestions={connectionSuggestions}
+															/>
+														</TableCell>}
+													<TableCell align="center">
+														<Tooltip title="Delete group">
+															<IconButton
+																size="small"
+																onClick={(event) => {
+																	event.stopPropagation();
+																	onDeleteGroup(group.name);
+																}}
+															>
+																<DeleteIcon fontSize="small"/>
+															</IconButton>
+														</Tooltip>
+													</TableCell>
+												</TableRow>
+											})}
+									</TableBody>
+								</Table>
+							</TableContainer>
+						</div>
+					) : (
+						<div>No groups found</div>
+					)
+				)
+			}
+		</ContentContainer>
 	);
 };
 
