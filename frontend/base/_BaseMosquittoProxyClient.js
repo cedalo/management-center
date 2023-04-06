@@ -209,6 +209,15 @@ module.exports = class BaseMosquittoProxyClient {
 	 * Methods for user management
 	 * ******************************************************************************************
 	 */
+	async validateSession() {
+		try {
+			const url = `${this._httpEndpointURL}/validate-session`;
+			const response = await axios.get(url, this._headers);
+			return response.data;
+		} catch (error) {
+			return { valid: false };
+		}
+	}
 
 	 async getUser(username) {
 		try {

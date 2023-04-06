@@ -107,8 +107,8 @@ const UserProfile = (props) => {
 			});
 			const userProfileObject = await brokerClient.getUserProfile();
 			dispatch(updateUserProfile(userProfileObject));
-			const users = await brokerClient.listUsers();
-			dispatch(updateUsers(users));
+			// const users = await brokerClient.listUsers();
+			// dispatch(updateUsers(users));
 			setEditMode(false);
 		} catch (error) {
 			enqueueSnackbar(`Error editing user profile. Reason: ${error.message ? error.message : error}`, {
