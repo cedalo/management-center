@@ -13,6 +13,7 @@
             height: 100vh;
             background-size: 100% 100%;
             background-color: rgb(27, 42, 50);
+            overflow: hidden;
         }
 
         h1 {
@@ -184,55 +185,6 @@
 
         <!-- </div> -->
     </div>
-    <script>
-
-        const styleTextField = (textField) => {
-            textField.onblur = function () {
-                if (this.value) {
-                    this.className = 'used'
-                } else {
-                    this.className = ''
-                }
-            }
-        }
-
-        const styleTextFields = () => {
-            const usernameField = document.getElementById('username');
-            const passwordField = document.getElementById('password');
-
-            styleTextField(usernameField);
-            styleTextField(passwordField);
-
-        }
-
-        const setThemeStyles = async (isDarkMode) => {
-            try {
-                const response = await fetch('/api/theme');
-                const body = await response.json();
-                const mode = isDarkMode ? 'dark' : 'light';
-                const theme = body[mode];
-                const { backgroundColor, logo } = theme.login;
-                document.getElementById('logo').src = logo.path;
-                document.querySelector('body').style.backgroundColor = backgroundColor;
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
-        const isDarkModeEnabled = () => {
-            const darkMode = window.localStorage.getItem('cedalo.managementcenter.darkMode');
-            return darkMode === 'true';
-        }
-
-        document.addEventListener("DOMContentLoaded", (event) => {
-            styleTextFields();
-            const isDarkMode = isDarkModeEnabled();
-            setThemeStyles(isDarkMode);
-            window.addEventListener('storage', () => {
-                setThemeStyles(isDarkModeEnabled());
-            });
-        });
-    </script>
 </body>
 
 </html>
