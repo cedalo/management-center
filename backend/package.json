@@ -1,6 +1,6 @@
 {
 	"name": "@cedalo/management-center-backend",
-	"version": "2.5.9",
+	"version": "2.5.10",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -11,6 +11,7 @@
 	"dependencies": {
 		"axios": "^0.27.2",
 		"content-type-parser": "^1.0.2",
+		"cookie-parser": "^1.4.6",
 		"cors": "^2.8.5",
 		"ejs": "^3.1.8",
 		"express": "^4.18.1",
