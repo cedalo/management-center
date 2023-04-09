@@ -125,6 +125,7 @@ module.exports = {
             height: 100vh;
             background-size: 100% 100%;
             background-color: rgb(27, 42, 50);
+            overflow: hidden;
         }
 
         h1 {
