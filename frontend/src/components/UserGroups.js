@@ -529,7 +529,7 @@ UserGroups.defaultProps = {
 
 const mapStateToProps = (state) => {
 	return {
-		users: state.users && state.users.users.filter(user => (!(user.editable === false) && !user.isRoot)),
+		users: state.users?.users?.filter(user => (!(user.editable === false) && !user.isRoot)),
 		connections: state.brokerConnections && state.brokerConnections.brokerConnections,
 		userGroups: state.userGroups && state.userGroups.userGroups,
 		userManagementFeature: state.systemStatus?.features?.usermanagement
