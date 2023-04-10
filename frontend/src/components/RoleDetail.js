@@ -176,15 +176,20 @@ const RoleDetail = (props) => {
 		// TODO: quick hack
 		delete updatedRole.groups;
 		delete updatedRole.roles;
-		await brokerClient.modifyRole(updatedRole);
-		enqueueSnackbar('Role successfully updated', {
-			variant: 'success'
-		});
-		const roleObject = await brokerClient.getRole(role.rolename);
-		dispatch(updateRole(roleObject));
-		const roles = await brokerClient.listRoles();
-		dispatch(updateRoles(roles));
-		setEditMode(false);
+		try {
+			await brokerClient.modifyRole(updatedRole);
+			enqueueSnackbar('Role successfully updated', {
+				variant: 'success'
+			});
+			const roleObject = await brokerClient.getRole(role.rolename);
+			dispatch(updateRole(roleObject));
+			const roles = await brokerClient.listRoles();
+			dispatch(updateRoles(roles));
+			setEditMode(false);
+		} catch (error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	};
 
 	const onCancelEdit = async () => {
@@ -226,7 +231,6 @@ const RoleDetail = (props) => {
 
 	const onAddACL = async (acl) => {
 		await showConfirm();
-
 		try {
 			await brokerClient.addRoleACL(role.rolename, acl);
 			const updatedRole = await brokerClient.getRole(role.rolename);
@@ -237,15 +241,14 @@ const RoleDetail = (props) => {
 				topic: '',
 				priority: 0
 			});
-		} catch (error) {
-			enqueueSnackbar(`ACL not added: ${error}`, {
-				variant: 'error'
-			});
+		} catch(error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
 		}
-
 		const roles = await brokerClient.listRoles();
 		dispatch(updateRoles(roles));
 	};
+
 
 	const onRemoveACL = async (acl) => {
 		// await confirm({
@@ -260,11 +263,16 @@ const RoleDetail = (props) => {
 		// 	}
 		// });
 		await showConfirm();
-		await brokerClient.removeRoleACL(role.rolename, acl);
-		const updatedRole = await brokerClient.getRole(role.rolename);
-		dispatch(updateRole(updatedRole));
-		const roles = await brokerClient.listRoles();
-		dispatch(updateRoles(roles));
+		try {
+			await brokerClient.removeRoleACL(role.rolename, acl);
+			const updatedRole = await brokerClient.getRole(role.rolename);
+			dispatch(updateRole(updatedRole));
+			const roles = await brokerClient.listRoles();
+			dispatch(updateRoles(roles));
+		} catch(error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	};
 
 	return role.rolename ? (

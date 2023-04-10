@@ -140,10 +140,15 @@ const Groups = (props) => {
 
 		const clientNames = clients.map((client) => client.value);
 		await client.updateGroupClients(group, clientNames);
-		const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
-		dispatch(updateGroups(groups));
-		const clientsUpdated = await client.listClients();
-		dispatch(updateClients(clientsUpdated));
+		try {
+			const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
+			dispatch(updateGroups(groups));
+			const clientsUpdated = await client.listClients();
+			dispatch(updateClients(clientsUpdated));
+		} catch (error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	};
 
 	const onUpdateGroupRoles = async (group, roles = []) => {
@@ -166,18 +171,28 @@ const Groups = (props) => {
 		}
 
 		const rolenames = roles.map((role) => role.value);
-		await client.updateGroupRoles(group, rolenames);
-		const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
-		dispatch(updateGroups(groups));
+		try {
+			await client.updateGroupRoles(group, rolenames);
+			const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
+			dispatch(updateGroups(groups));
+		} catch (error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	};
 
 	const onUpdateAnonymousGroup = async (groupname) => {
 		await client.setAnonymousGroup(groupname);
-		const group = await client.getAnonymousGroup();
-		dispatch(updateAnonymousGroup(group));
-		enqueueSnackbar('Anonymous Group successfully set', {
-			variant: 'success'
-		});
+		try {
+			const group = await client.getAnonymousGroup();
+			dispatch(updateAnonymousGroup(group));
+			enqueueSnackbar('Anonymous group successfully set', {
+				variant: 'success'
+			});
+		} catch(error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	}
 
 	const onSelectGroup = async (groupname) => {
@@ -202,20 +217,30 @@ const Groups = (props) => {
 				variant: 'contained'
 			}
 		});
-		await client.deleteGroup(groupname);
-		enqueueSnackbar(`Group "${groupname}" successfully deleted`, {
-			variant: 'success'
-		});
-		const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
-		dispatch(updateGroups(groups));
-		const clients = await client.listClients();
-		dispatch(updateClients(clients));
+		try {
+			await client.deleteGroup(groupname);
+			enqueueSnackbar(`Group "${groupname}" successfully deleted`, {
+				variant: 'success'
+			});
+			const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
+			dispatch(updateGroups(groups));
+			const clients = await client.listClients();
+			dispatch(updateClients(clients));
+		} catch(error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	};
 
 	const onRemoveClientFromGroup = async (username, group) => {
-		await client.removeGroupClient(username, group);
-		const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
-		dispatch(updateGroups(groups));
+		try {
+			await client.removeGroupClient(username, group);
+			const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
+			dispatch(updateGroups(groups));
+		} catch(error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	};
 
 	const {

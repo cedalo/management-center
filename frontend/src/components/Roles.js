@@ -99,20 +99,10 @@ const Roles = (props) => {
 	};
 
 	const onDeleteRole = async (rolename) => {
-		await confirm({
-			title: 'Confirm role deletion',
-			description: `Do you really want to delete the role "${rolename}"?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary', variant: 'contained'
-			}
-		});
-		if (rolename === 'admin') {
+		try {
 			await confirm({
-				title: 'Confirm default role deletion',
-				description: `Are you sure? You are about to delete the default role for the current Mosquitto instance.`,
+				title: 'Confirm role deletion',
+				description: `Do you really want to delete the role "${rolename}"?`,
 				cancellationButtonProps: {
 					variant: 'contained'
 				},
@@ -120,17 +110,42 @@ const Roles = (props) => {
 					color: 'primary', variant: 'contained'
 				}
 			});
+		} catch (_) {
+			return;
 		}
-		await client.deleteRole(rolename);
-		enqueueSnackbar('Role successfully deleted', {
-			variant: 'success'
-		});
-		const roles = await client.listRoles(true, rowsPerPage, page * rowsPerPage);
-		dispatch(updateRoles(roles));
-		const clients = await client.listClients();
-		dispatch(updateClients(clients));
-		const groups = await client.listGroups();
-		dispatch(updateGroups(groups));
+
+		if (rolename === 'admin') {
+			try {
+				await confirm({
+					title: 'Confirm default role deletion',
+					description: `Are you sure? You are about to delete the default role for the current Mosquitto instance.`,
+					cancellationButtonProps: {
+						variant: 'contained'
+					},
+					confirmationButtonProps: {
+						color: 'primary',
+						variant: 'contained'
+					}
+				});
+			} catch (_) {
+				return;
+			}
+		}
+		try {
+			await client.deleteRole(rolename);
+			enqueueSnackbar('Role successfully deleted', {
+				variant: 'success'
+			});
+			const roles = await client.listRoles(true, rowsPerPage, page * rowsPerPage);
+			dispatch(updateRoles(roles));
+			const clients = await client.listClients();
+			dispatch(updateClients(clients));
+			const groups = await client.listGroups();
+			dispatch(updateGroups(groups));
+		} catch(error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	};
 
 	const onSelectRole = async (rolename) => {
