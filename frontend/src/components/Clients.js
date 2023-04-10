@@ -143,11 +143,16 @@ const Clients = (props) => {
 			});
 		}
 		const groupnames = groups.map((group) => group.value);
-		await brokerClient.updateClientGroups(client, groupnames);
-		const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
-		dispatch(updateClients(clients));
-		const groupsUpdated = await brokerClient.listGroups();
-		dispatch(updateGroups(groupsUpdated));
+		try {
+			await brokerClient.updateClientGroups(client, groupnames);
+			const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
+			dispatch(updateClients(clients));
+			const groupsUpdated = await brokerClient.listGroups();
+			dispatch(updateGroups(groupsUpdated));
+		} catch(error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	};
 
 	const onUpdateClientRoles = async (client, roles = []) => {
@@ -155,9 +160,14 @@ const Clients = (props) => {
 			roles = [];
 		}
 		const rolenames = roles.map((role) => role.value);
-		await brokerClient.updateClientRoles(client, rolenames);
-		const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
-		dispatch(updateClients(clients));
+		try {
+			await brokerClient.updateClientRoles(client, rolenames);
+			const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
+			dispatch(updateClients(clients));
+		} catch(error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	};
 
 	const onSelectClient = async (username) => {
@@ -201,14 +211,19 @@ const Clients = (props) => {
 				}
 			});
 		}
-		await brokerClient.deleteClient(username);
-		enqueueSnackbar(`Client "${username}" successfully deleted`, {
-			variant: 'success'
-		});
-		const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
-		dispatch(updateClients(clients));
-		const groups = await brokerClient.listGroups();
-		dispatch(updateGroups(groups));
+		try {
+			await brokerClient.deleteClient(username);
+			enqueueSnackbar(`Client "${username}" successfully deleted`, {
+				variant: 'success'
+			});
+			const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
+			dispatch(updateClients(clients));
+			const groups = await brokerClient.listGroups();
+			dispatch(updateGroups(groups));
+		} catch(error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	};
 
 	const onDisableClient = async (username) => {
@@ -223,21 +238,31 @@ const Clients = (props) => {
 				variant: 'contained'
 			}
 		});
-		await brokerClient.disableClient(username);
-		const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
-		enqueueSnackbar('Client successfully disabled', {
-			variant: 'success'
-		});
-		dispatch(updateClients(clients));
+		try {
+			await brokerClient.disableClient(username);
+			const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
+			enqueueSnackbar('Client successfully disabled', {
+				variant: 'success'
+			});
+			dispatch(updateClients(clients));
+		} catch(error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	};
 
 	const onEnableClient = async (username) => {
-		await brokerClient.enableClient(username);
-		const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
-		enqueueSnackbar('Client successfully enabled', {
-			variant: 'success'
-		});
-		dispatch(updateClients(clients));
+		try {
+			await brokerClient.enableClient(username);
+			const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
+			enqueueSnackbar('Client successfully enabled', {
+				variant: 'success'
+			});
+			dispatch(updateClients(clients));
+		} catch(error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	};
 
 	const onRemoveClientFromGroup = async (client, group) => {
@@ -245,9 +270,14 @@ const Clients = (props) => {
 			title: 'Remove client from group',
 			description: `Do you really want to remove client "${client.username}" from group "${group}"?`
 		});
-		await client.removeGroupClient(client, group);
-		const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
-		dispatch(updateClients(clients));
+		try {
+			await client.removeGroupClient(client, group);
+			const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
+			dispatch(updateClients(clients));
+		} catch(error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	};
 
 	const { dynamicsecurityFeature, connectionID, defaultClient, groupsAll = [], rolesAll = [], clients = [], onSort, sortBy, sortDirection } = props;

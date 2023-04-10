@@ -42,7 +42,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { WebSocketContext } from '../websockets/WebSocket';
 import { makeStyles } from '@material-ui/core/styles';
-import moment from 'moment';
 import { useConfirm } from 'material-ui-confirm';
 import { useHistory } from 'react-router-dom';
 
@@ -126,10 +125,15 @@ const Groups = (props) => {
 		}
 		const clientNames = clients.map((client) => client.value);
 		await client.updateGroupClients(group, clientNames);
-		const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
-		dispatch(updateGroups(groups));
-		const clientsUpdated = await client.listClients();
-		dispatch(updateClients(clientsUpdated));
+		try {
+			const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
+			dispatch(updateGroups(groups));
+			const clientsUpdated = await client.listClients();
+			dispatch(updateClients(clientsUpdated));
+		} catch (error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	};
 
 	const onUpdateGroupRoles = async (group, roles = []) => {
@@ -137,18 +141,28 @@ const Groups = (props) => {
 			roles = [];
 		}
 		const rolenames = roles.map((role) => role.value);
-		await client.updateGroupRoles(group, rolenames);
-		const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
-		dispatch(updateGroups(groups));
+		try {
+			await client.updateGroupRoles(group, rolenames);
+			const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
+			dispatch(updateGroups(groups));
+		} catch (error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	};
 
 	const onUpdateAnonymousGroup = async (groupname) => {
 		await client.setAnonymousGroup(groupname);
-		const group = await client.getAnonymousGroup();
-		dispatch(updateAnonymousGroup(group));
-		enqueueSnackbar('Anonymous group successfully set', {
-			variant: 'success'
-		});
+		try {
+			const group = await client.getAnonymousGroup();
+			dispatch(updateAnonymousGroup(group));
+			enqueueSnackbar('Anonymous group successfully set', {
+				variant: 'success'
+			});
+		} catch(error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	}
 
 	const onSelectGroup = async (groupname) => {
@@ -173,20 +187,30 @@ const Groups = (props) => {
 				variant: 'contained'
 			}
 		});
-		await client.deleteGroup(groupname);
-		enqueueSnackbar(`Group "${groupname}" successfully deleted`, {
-			variant: 'success'
-		});
-		const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
-		dispatch(updateGroups(groups));
-		const clients = await client.listClients();
-		dispatch(updateClients(clients));
+		try {
+			await client.deleteGroup(groupname);
+			enqueueSnackbar(`Group "${groupname}" successfully deleted`, {
+				variant: 'success'
+			});
+			const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
+			dispatch(updateGroups(groups));
+			const clients = await client.listClients();
+			dispatch(updateClients(clients));
+		} catch(error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	};
 
 	const onRemoveClientFromGroup = async (username, group) => {
-		await client.removeGroupClient(username, group);
-		const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
-		dispatch(updateGroups(groups));
+		try {
+			await client.removeGroupClient(username, group);
+			const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
+			dispatch(updateGroups(groups));
+		} catch(error) {
+			console.error(error);
+			enqueueSnackbar(`${error}`, { variant: 'error' });
+		}
 	};
 
 	const { dynamicsecurityFeature, anonymousGroup, groups = [], rolesAll = [], clientsAll = [], onSort, sortBy, sortDirection } = props;
