@@ -48,6 +48,7 @@ const Settings = ({settings, onChangeTheme, sendMessage}) => {
 	return (
 		<ContentContainer
 			breadCrumbs={<ContainerBreadCrumbs title="Settings" links={[{name: 'Home', route: '/home'}]}/>}
+			dataTour="page-settings"
 		>
 			<ContainerHeader
 				title="Settings"

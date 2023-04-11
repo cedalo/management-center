@@ -56,7 +56,8 @@ export default [
 					At the bottom, you will find the pages for Management Center specific settings. Here you can
 					define Cluster settings and set up broker connections. If you cliok on the button with the three
 					dots, additional options are shown to organize Settings, Certificates, Topics and
-					Management Center security options. In addition infos about the Management Center License and available
+					Management Center security options. In addition infos about the Management Center License and
+					available
 					Features can be viewed.
 				</p>
 			</div>
@@ -69,7 +70,8 @@ export default [
 			<div style={{fontSize: '10pt'}}>
 				<p style={{fontSize: '13pt'}}>Home and Status</p>
 				<p>
-					The Home or Status page displays infos about some key figures of the active Broker Connection, you selected.
+					The Home or Status page displays infos about some key figures of the active Broker Connection, you
+					selected.
 				</p>
 			</div>
 		),
@@ -81,7 +83,8 @@ export default [
 			<div style={{fontSize: '10pt'}}>
 				<p>
 					At the left, you find infos about the accumulated traffic figures. In the middle the info about
-					clients and license related usage of client connection. At the right general license and broker infos.
+					clients and license related usage of client connection. At the right general license and broker
+					infos.
 				</p>
 			</div>
 		),
@@ -106,7 +109,8 @@ export default [
 		content: () => (
 			<div style={{fontSize: '10pt'}}>
 				<p>
-					You can investigate the tree with the latest topics by opening the tree leaves in the topic tree. If you click
+					You can investigate the tree with the latest topics by opening the tree leaves in the topic tree. If
+					you click
 					on a topic, infos about the topic are displayed. Here you can observe the latest payloads.
 				</p>
 				<p>
@@ -135,9 +139,135 @@ export default [
 			<div style={{fontSize: '10pt'}}>
 				<p>
 					The list of clients shows information about each client. You can reload this page to reflect the
-					latest changes. You can also disconnect a client from the broker. In the title bar you have the
+					latest changes. You can also disconnect a client from the broker. In the title bar, you have the
 					option to filter the client list by entering a filter string.
 				</p>
+			</div>
+		),
+	},
+	{
+		selector: '[data-tour="navbar-clients"]',
+		routing: '/clients',
+		content: () => (
+			<div style={{fontSize: '10pt'}}>
+				<p style={{fontSize: '13pt'}}>Clients</p>
+				<p>
+					Create or configure "Clients".
+				</p>
+			</div>
+		),
+	},
+	{
+		selector: '[data-tour="page-clients"]',
+		routing: '/clients',
+		content: () => (
+			<div style={{fontSize: '10pt'}}>
+				<p>
+					Clients are used as credentials for connecting to a Mosquitto Broker.
+					Define a username and password as credentials. It is possible to set a fixed ClientID to bind an
+					account to an id if necessary. If left open, all ClientIDs can be used by this Client.
+				</p>
+			</div>
+		),
+	},
+	{
+		selector: '[data-tour="navbar-groups"]',
+		routing: '/groups',
+		content: () => (
+			<div style={{fontSize: '10pt'}}>
+				<p style={{fontSize: '13pt'}}>Groups</p>
+				<p>
+					Create and configure groups.
+				</p>
+			</div>
+		),
+	},
+	{
+		selector: '[data-tour="page-groups"]',
+		routing: '/groups',
+		content: () => (
+			<div style={{fontSize: '10pt'}}>
+				<p>
+					Groups serve as a hub to gather multiple clients and roles. The more accounts are added to your
+					broker, the harder it gets to administer them. Groups can help you structure and quickly adjust your
+					current setup.
+				</p>
+			</div>
+		),
+	},
+	{
+		selector: '[data-tour="navbar-roles"]',
+		routing: '/roles',
+		content: () => (
+			<div style={{fontSize: '10pt'}}>
+				<p style={{fontSize: '13pt'}}>Roles</p>
+				<p>
+					Manage roles and ACLs.
+				</p>
+			</div>
+		),
+	},
+	{
+		selector: '[data-tour="page-roles"]',
+		routing: '/roles',
+		content: () => (
+			<div style={{fontSize: '10pt'}}>
+				<p>
+					A role contains a number of ACLs, which either specifically allow or deny an action. Add as many
+					ACLs as you need to a role and assign a priority in case ACLs conflict. A role can be assigned to a
+					client account.
+				</p>
+			</div>
+		),
+	},
+	{
+		selector: '[data-tour="navbar-streams"]',
+		routing: '/streams',
+		content: () => (
+			<div style={{fontSize: '10pt'}}>
+				<p style={{fontSize: '13pt'}}>Streams</p>
+				<p>
+					Create and configure Streams.
+				</p>
+			</div>
+		),
+	},
+	{
+		selector: '[data-tour="page-streams"]',
+		routing: '/streams',
+		content: () => (
+			<div style={{fontSize: '10pt'}}>
+				<p>
+					Streams allow for the continuous processing of topics. It is possible to remap, add aggregations and
+					even store and replay topics.
+				</p>
+			</div>
+		),
+	},
+	{
+		selector: '[data-tour="navbar-terminal"]',
+		routing: '/terminal',
+		content: () => (
+			<div style={{fontSize: '10pt'}}>
+				<p style={{fontSize: '13pt'}}>Terminal</p>
+				<p>
+					Allows to control the broker via commands.
+				</p>
+			</div>
+		),
+	},
+	{
+		selector: '[data-tour="page-terminal"]',
+		routing: '/terminal',
+		content: () => (
+			<div style={{fontSize: '10pt'}}>
+				<p>
+					Use commands to control certain parts of the broker via the terminal. Enter “help” for a full list
+					of commands.
+				</p>
+				<P>
+					Click on close to finish the tour.
+				</P>
 			</div>
 		),
 	},

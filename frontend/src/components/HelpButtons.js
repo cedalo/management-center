@@ -1,12 +1,17 @@
+import {MenuList} from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
+import MenuItem from '@material-ui/core/MenuItem';
+import Popover from '@material-ui/core/Popover';
 import {makeStyles} from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import HelpIcon from '@material-ui/icons/HelpOutline';
 import TourIcon from '@material-ui/icons/Slideshow';
-import React from 'react';
+import React, {useState} from 'react';
 import { useTour } from '@reactour/tour';
 import {getHelpBasePath} from '../utils/utils';
+import apptour from '../tutorial/apptour';
+import admintour from '../tutorial/admintour';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -20,7 +25,9 @@ export default function HelpButtons(props) {
 	const classes = useStyles();
 	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
 	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
-	const { setIsOpen, setCurrentStep } = useTour();
+	const { setIsOpen, setSteps, setCurrentStep } = useTour();
+	const [anchorEl, setAnchorEl] = useState(null);
+	const [popup, setPopup] = useState(false);
 
 	if (medium || small) {
 		return null;
@@ -75,17 +82,27 @@ export default function HelpButtons(props) {
 		return link;
 	}
 
+	const onShowPopup = (event) => {
+		// This prevents ghost click.
+		event.preventDefault();
+		setAnchorEl(event.currentTarget);
+		setPopup(true);
+	};
+
+	const onClosePopup = () => {
+		setAnchorEl(null);
+		setPopup(false);
+	};
+
 	return <>
-		<Tooltip title="Start tour">
+		<Tooltip title="Select an Introduction Tour">
 			<IconButton
 				edge="end"
 				aria-label="Tour"
 				aria-controls="tour"
 				aria-haspopup="true"
-				onClick={() => {
-					// props.onStartTour()
-					setCurrentStep(0);
-					setIsOpen(true);
+				onClick={(event) => {
+					onShowPopup(event, )
 				}}
 				className={classes.toolbarButton}
 			>
@@ -104,5 +121,43 @@ export default function HelpButtons(props) {
 				<HelpIcon fontSize="small"/>
 			</IconButton>
 		</Tooltip>
+		<Popover
+			key="popNumber"
+			open={popup}
+			anchorEl={anchorEl}
+			anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+			transformOrigin={{ horizontal: 'left', vertical: 'top' }}
+			onClose={onClosePopup}
+		>
+			<MenuList>
+				<MenuItem
+					key="tourbeginner"
+					dense
+					onClick={(event) => {
+						onClosePopup();
+						event.preventDefault();
+						setSteps(apptour);
+						setCurrentStep(0, apptour);
+						setIsOpen(true);
+					}}
+				>
+					Broker Configuration
+				</MenuItem>
+				<MenuItem
+					key="tourapps"
+					dense
+					onClick={(event) => {
+						onClosePopup();
+						event.preventDefault();
+						setSteps(admintour);
+						setCurrentStep(0, admintour);
+						setIsOpen(true);
+					}}
+				>
+					Management Center Configuration
+				</MenuItem>
+			</MenuList>
+		</Popover>
+
 	</>
 };

@@ -74,6 +74,7 @@ const InfoPage = (props) => {
 	if (response) {
 		return [
 			<ContentContainer
+				dataTour="page-info"
 				breadCrumbs={<ContainerBreadCrumbs title="Info" links={[{name: 'Home', route: '/home'}]}/>}
 				overFlowX="hidden"
 			>

@@ -173,7 +173,7 @@ const Certificates = ({ connections, isCertSupported }) => {
 	return (
 		<ContentContainer
 			breadCrumbs={<ContainerBreadCrumbs title="Certificates" links={[{name: 'Home', route: '/home'}]}/>}
-			dataTour="page-certifciates"
+			dataTour="page-certs"
 		>
 			{isCertSupported ? (
 				<>

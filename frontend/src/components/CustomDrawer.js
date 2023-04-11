@@ -167,7 +167,6 @@ const CustomDrawer = ({
 	}, [location.pathname]);
 
 	setShowFilter('/clientinspection' === location.pathname);
-	// '/clients' === location.pathname);
 
 	return <Drawer
 		data-tour="navigation"
@@ -250,11 +249,21 @@ const CustomDrawer = ({
 				<List id="menu-items-tools">
 					{open ? <ListSubheader className={classes.menuSubHeader}>Manage</ListSubheader> : null}
 					{atLeastAdmin(userProfile, currentConnectionName) &&
-						<ListItemLink classes={classes} to="/streams" primary="Streams"
-									  icon={<StreamsIcon fontSize="small"/>}/>}
+						<ListItemLink
+							tour="navbar-streams"
+							classes={classes}
+							to="/streams"
+							primary="Streams"
+							icon={<StreamsIcon fontSize="small"/>}
+						/>}
 					{atLeastAdmin(userProfile, currentConnectionName) &&
-						<ListItemLink classes={classes} to="/terminal" primary="Terminal"
-									  icon={<TerminalIcon fontSize="small"/>}/>}
+						<ListItemLink
+							tour="navbar-terminal"
+							classes={classes}
+							to="/terminal"
+							primary="Terminal"
+							icon={<TerminalIcon fontSize="small"/>}
+						/>}
 					{/*<ListItemLink*/}
 					{/*	classes={classes}*/}
 					{/*	to="/tools/streamsheets"*/}
@@ -277,29 +286,36 @@ const CustomDrawer = ({
 						<List style={{background: 'none'}}>
 							{open ? <ListSubheader className={classes.menuSubHeader}>Configuration</ListSubheader> : null}
 							<Divider style={{margin: "7px 0px"}}/>
-							{(atLeastAdmin(userProfile, currentConnectionName) && !hideConnections) ? <ListItemLink
-								classes={classes}
-								to="/connections"
-								primary="Broker Connections"
-								icon={<ConnectionsIcon fontSize="small"/>}
-							/> : null}
-							{atLeastAdmin(userProfile) && <ListItemLink
-								classes={classes}
-								to="/clusters"
-								primary="Cluster Management"
-								icon={<ClusterIcon fontSize="small"/>}
-							/>}
-							{atLeastAdmin(userProfile) && <ListItemLink
-								classes={classes}
-								to="/certs"
-								primary="Certificate Management"
-								icon={<CertificateIcon fontSize="small"/>}
-							/>}
+							{(atLeastAdmin(userProfile, currentConnectionName) && !hideConnections) ?
+								<ListItemLink
+									tour="navbar-connections"
+									classes={classes}
+									to="/connections"
+									primary="Broker Connections"
+									icon={<ConnectionsIcon fontSize="small"/>}
+								/> : null}
+							{atLeastAdmin(userProfile) &&
+								<ListItemLink
+									tour="navbar-clusters"
+									classes={classes}
+									to="/clusters"
+									primary="Cluster Management"
+									icon={<ClusterIcon fontSize="small"/>}
+								/>}
+							{atLeastAdmin(userProfile) &&
+								<ListItemLink
+									tour="navbar-certs"
+									classes={classes}
+									to="/certs"
+									primary="Certificate Management"
+									icon={<CertificateIcon fontSize="small"/>}
+								/>}
 						</List>
 						<Divider/>
 						{adminOpen ? <Divider/> : null}
 						{adminOpen ?
 							<ListItemLink
+								tour="navbar-info"
 								id="menu-item-info"
 								classes={classes}
 								to="/info"
@@ -316,25 +332,30 @@ const CustomDrawer = ({
 						{/*	/>}*/}
 						{adminOpen && atLeastAdmin(userProfile) && userManagementAccess(userManagementFeature) ?
 							<ListItemLink
+								tour="navbar-users"
 								classes={classes}
 								to="/users"
 								primary="User Management"
 								icon={<UsersIcon fontSize="small"/>}
 							/> : null}
 						{adminOpen && atLeastAdmin(userProfile) && <ListItemLink
+							tour="navbar-user-groups"
 							classes={classes}
 							to="/user-groups"
 							primary="User Groups"
 							icon={<UserGroupsIcon fontSize="small"/>}
 						/>}
-						{adminOpen && atLeastAdmin(userProfile) ? <ListItemLink
-							classes={classes}
-							to="/tokens"
-							primary="App Tokens"
-							icon={<SecurityIcon fontSize="small"/>}
-						/> : null}
+						{adminOpen && atLeastAdmin(userProfile) ?
+							<ListItemLink
+								tour="navbar-tokens"
+								classes={classes}
+								to="/tokens"
+								primary="App Tokens"
+								icon={<SecurityIcon fontSize="small"/>}
+							/> : null}
 						{adminOpen && atLeastAdmin(userProfile) &&
 							<ListItemLink
+								tour="navbar-settings"
 								classes={classes}
 								to="/settings"
 								primary="Settings"
