@@ -57,7 +57,6 @@ export default function getTheme(style) {
 				},
 				MuiAutocomplete: {
 					tagSizeSmall: {
-						backgroundColor: '#FD602E',
 						color: '#FFFFFF',
 					},
 					hasClearIcon: {
@@ -132,8 +131,7 @@ export default function getTheme(style) {
 				},
 				MuiAutocomplete: {
 					tagSizeSmall: {
-						backgroundColor: '#FD602E',
-							color: '#FFFFFF',
+						color: '#FFFFFF',
 					},
 					hasClearIcon: {
 						color: 'rgba(255, 255, 255, 0.7)',
