@@ -364,6 +364,7 @@ const init = async (licenseContainer) => {
 				}
 				sendConnectionsUpdate(brokerClient, user);
 				configManager.updateConnection(connection.id, connectionConfiguration);
+				context.handleDisconnectServerFromBroker(connection);
 			});
 			// this listener is applied only on reconnect (at the time we apply this listener the conenction had already been established and the first connect event alrady fired)
 			brokerClient.on('connect', () => {
