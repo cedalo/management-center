@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 		position: "absolute",
 		top: 0,
 		left: "10px",
-		backgroundColor: theme.palette.background.paper,
+		backgroundColor: theme.palette.background.default,
 		paddingLeft: "5px",
 		paddingRight: "5px",
 		zIndex: 3,

@@ -45,8 +45,6 @@ const useStyles = makeStyles((theme) => ({
 	margin: {
 		margin: theme.spacing(1)
 	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
 }));
 
 const DefaultACLAccess = ({defaultACLAccess}) => {

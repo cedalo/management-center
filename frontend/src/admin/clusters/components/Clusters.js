@@ -44,14 +44,7 @@ const useStyles = makeStyles((theme) => ({
 		'& > *': {
 			margin: theme.spacing(0.3)
 		}
-	},
-	// fab: {
-	// 	position: 'absolute',
-	// 	bottom: theme.spacing(2),
-	// 	right: theme.spacing(2)
-	// },
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+	}
 }));
 
 const getSyncModeLabel = (mode) => {

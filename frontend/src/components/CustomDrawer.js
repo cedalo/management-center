@@ -66,7 +66,7 @@ function ListItemLink(props) {
 					}}
 				>
 					{icon ? <ListItemIcon style={{
-						color: isSelected ? theme.palette.menuItem.color : ''
+						color: isSelected ? theme.palette.primary.main : ''
 					}}>{icon}</ListItemIcon> : null}
 					<ListItemText primary={primary} classes={{
 						root: classes.menuItem,
@@ -107,13 +107,10 @@ const useStyles = makeStyles((theme) => ({
 			backgroundColor: "inherit"
 		}
 	},
-	menuItemSelected: {
-		color: theme.palette.menuItem.color,
-	},
 	menuSubHeader: {
 		fontWeight: 'bold',
 		fontSize: '12px',
-		backgroundColor: theme.palette.background.paper,
+		background: 'none',
 		textTransform: 'uppercase',
 		lineHeight: '24px'
 	},
@@ -121,7 +118,7 @@ const useStyles = makeStyles((theme) => ({
 		width: drawerWidth,
 		flexShrink: 0,
 		whiteSpace: 'nowrap',
-		backgroundColor: theme.palette.drawer?.backgroundColor,
+		// backgroundColor: theme.palette.drawer?.backgroundColor,
 		'&::-webkit-scrollbar': {
 			width: "0",
 			display: "none"
@@ -273,10 +270,11 @@ const CustomDrawer = ({
 						bottom: '0px',
 						boxShadow: 'none',
 						width: '100%',
+						background: 'none'
 					}}
 				>
-					<List>
-						<List>
+					<List style={{background: 'none'}}>
+						<List style={{background: 'none'}}>
 							{open ? <ListSubheader className={classes.menuSubHeader}>Configuration</ListSubheader> : null}
 							<Divider style={{margin: "7px 0px"}}/>
 							{(atLeastAdmin(userProfile, currentConnectionName) && !hideConnections) ? <ListItemLink

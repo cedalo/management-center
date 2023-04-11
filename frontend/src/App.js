@@ -2,7 +2,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import IconButton from '@material-ui/core/IconButton';
-import {makeStyles, ThemeProvider} from '@material-ui/core/styles';
+import {createTheme, makeStyles, ThemeProvider} from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -30,8 +30,7 @@ import UpgradeButton from './components/UpgradeButton';
 import useFetch from './helpers/useFetch';
 import useLocalStorage from './helpers/useLocalStorage';
 import store from './store';
-import customTheme from './theme';
-import darkTheme from './theme-dark';
+import getTheme from './theme';
 import WebSocketProvider from './websockets/WebSocket';
 
 const drawerWidth = 240;
@@ -42,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 		height: '100%'
 	},
 	box: {
-		padding: '51px 0px 0px 0px',
+		padding: '50px 0px 0px 0px',
 		// padding: '60px 20px 20px 20px',
 		width: '100%',
 		height: '100%',
@@ -158,49 +157,88 @@ export default function (props) {
 	const [responseConfig, loadingConfig, hasErrorConfig] = useFetch(`${process.env.PUBLIC_URL}/api/config`);
 	const [title, setTitle] = useState('Management Center');
 	const [logo, setLogo] = useState('');
-	const appliedTheme = darkMode === 'true' ? darkTheme : customTheme;
+	const [appliedTheme, setAppliedTheme] = useState(createTheme(getTheme(darkMode === 'true' ? 'dark' : 'light')));
 
 	React.useEffect(() => {
 		if (response) {
-			customTheme.palette.primary.main = response?.light?.palette?.primary?.main;
-			customTheme.palette.secondary.main = response?.light?.palette?.secondary?.main;
-			darkTheme.palette.primary.main = response?.dark?.palette?.primary?.main;
-			darkTheme.palette.secondary.main = response?.dark?.palette?.secondary?.main;
-			if (response?.dark?.palette?.background?.default) {
-				darkTheme.palette.background.default = response?.dark?.palette?.background?.default;
-			}
-			if (response?.dark?.palette?.background?.paper) {
-				darkTheme.palette.background.paper = response?.dark?.palette?.background?.paper;
-			}
-			if (response?.dark?.palette?.text) {
-				darkTheme.palette.text.primary = response?.dark?.palette?.text?.primary;
-			}
-			if (response?.dark?.palette?.tables) {
-				darkTheme.palette.tables = response?.dark?.palette?.tables;
-			}
-			if (response?.dark?.palette?.dashboard) {
-				darkTheme.palette.dashboard = response?.dark?.palette?.dashboard;
-			}
-			if (response?.light?.palette?.dashboardIcons) {
-				customTheme.palette.dashboard = response?.light?.palette?.dashboard;
-			}
-			if (response?.dark?.palette?.drawer) {
-				darkTheme.palette.drawer = response?.dark?.palette?.drawer;
-			}
+			// customTheme.palette.primary.main = response?.light?.palette?.primary?.main;
+			// customTheme.palette.secondary.main = response?.light?.palette?.secondary?.main;
+			// darkTheme.palette.primary.main = response?.dark?.palette?.primary?.main;
+			// darkTheme.palette.secondary.main = response?.dark?.palette?.secondary?.main;
+			// if (response?.dark?.palette?.background?.paper) {
+			// 	darkTheme.palette.background.paper = response?.dark?.palette?.background?.paper;
+			// }
+			// if (response?.dark?.palette?.text) {
+			// 	darkTheme.palette.text.primary = response?.dark?.palette?.text?.primary;
+			// }
+			// if (response?.dark?.palette?.tables) {
+			// 	darkTheme.palette.tables = response?.dark?.palette?.tables;
+			// }
+			// if (response?.light?.palette?.dashboardIcons) {
+			// 	customTheme.palette.dashboard = response?.light?.palette?.dashboard;
+			// }
+			// if (response?.dark?.palette?.drawer) {
+			// 	darkTheme.palette.drawer = response?.dark?.palette?.drawer;
+			// }
+			// new
+			const dark = darkMode === 'true';
+			const theme = getTheme(dark  ? 'dark' : 'light');
+
 			if (response.title) {
 				setTitle(response.title);
 			}
-			if (response.titleBar === 'logo') {
-				darkTheme.logo = response?.dark?.logo;
-				customTheme.logo = response?.light?.logo;
-				setLogo(appliedTheme.logo);
-			}
-			if (response.light?.palette?.background) {
-				customTheme.palette.background.default = '#FF0000'; // response.light?.palette?.background;
 
+			if (dark) {
+				if (response?.dark?.logo) {
+					theme.logo = response?.dark?.logo;
+				}
+				if (response.dark?.palette?.primary) {
+					theme.palette.primary.main = response.dark?.palette?.primary;
+				}
+				if (response.dark?.palette?.text) {
+					theme.palette.text.primary = response.dark?.palette?.text;
+					theme.overrides.MuiTypography.root.color = response.dark?.palette?.text;
+				}
+				if (response.dark?.palette?.textSecondary) {
+					theme.palette.text.secondary = response.dark?.palette?.textSecondary;
+				}
+				if (response.dark?.palette?.backgroundTitleBar) {
+					theme.overrides.MuiAppBar.colorPrimary.backgroundColor = response.dark?.palette?.backgroundTitleBar;
+				}
+				if (response?.dark?.palette?.backgroundNavigation) {
+					theme.overrides.MuiDrawer.paper.backgroundColor = response?.dark?.palette?.backgroundNavigation;
+				}
+				if (response.dark?.palette?.background) {
+					theme.palette.background.default = response.dark?.palette?.background;
+				}
+			} else {
+				if (response?.light?.logo) {
+					theme.logo = response?.light?.logo;
+				}
+				if (response.light?.palette?.primary) {
+					theme.palette.primary.main = response.light?.palette?.primary;
+				}
+				if (response.light?.palette?.text) {
+					theme.palette.text.primary = response.light?.palette?.text;
+					theme.overrides.MuiTypography.root.color = response.light?.palette?.text;
+				}
+				if (response.light?.palette?.textSecondary) {
+					theme.palette.text.secondary = response.light?.palette?.textSecondary;
+				}
+				if (response.light?.palette?.backgroundTitleBar) {
+					theme.overrides.MuiAppBar.colorPrimary.backgroundColor = response.light?.palette?.backgroundTitleBar;
+				}
+				if (response?.light?.palette?.backgroundNavigation) {
+					theme.overrides.MuiDrawer.paper.backgroundColor = response?.light?.palette?.backgroundNavigation;
+				}
+				if (response.light?.palette?.background) {
+					theme.palette.background.default = response.light?.palette?.background;
+				}
 			}
+			setLogo(theme.logo);
+			setAppliedTheme(createTheme(theme));
 		}
-	}, [response]);
+	}, [response, darkMode]);
 
 	if (!hasErrorConfig && !responseConfig && !hasError && !response) {
 		return;
@@ -262,6 +300,9 @@ export default function (props) {
 											</Route>
 											<Route path="/">
 												<AppBar
+													style={{
+														backgroundColor: appliedTheme.overrides.MuiAppBar.colorPrimary.backgroundColor
+													}}
 													elevation={0}
 													position="fixed"
 													data-tour="appbar"
@@ -289,7 +330,7 @@ export default function (props) {
 															<MenuIcon/>
 														</IconButton>
 														{logo ?
-															<div style={{height: '75%'}}>
+															<div style={{height: '60%'}}>
 																<img style={{height: '100%'}} src={logo}/>
 															</div> :
 															<Typography noWrap>
