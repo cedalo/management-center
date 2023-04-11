@@ -1,72 +1,157 @@
-import { red } from '@material-ui/core/colors';
-import { createTheme } from '@material-ui/core/styles';
+import {red} from '@material-ui/core/colors';
 
 // A custom theme for this app
-const theme = createTheme({
-	palette: {
-		primary: {
-			main: '#FD602E',
-		},
-		secondary: {
-			main: '#7c88cc'
-		},
-		menuItem: {
-			color: '#FD602E',
-		},
-		error: {
-			main: red.A400
-		},
-		background: {
-			default: '#FFFFFF'
-		},
-		breadcrumbItem: {
-			fontSize: '0.7rem',
-			fontWeight: '500',
-			textTransform: 'uppercase'
-		},
-		breadcrumbLink: {
-			color: 'inherit',
-			textDecoration: 'none',
-			textTransform: 'uppercase',
-			fontSize: '0.7rem',
-			'&:hover': {
-				textDecoration: 'underline'
+
+export default function getTheme(style) {
+	switch (style) {
+	case 'light':
+		return {
+			palette: {
+				primary: {
+					main: '#FD602E',
+				},
+				text: {
+					primary: 'rgb(0, 0, 0)',
+				},
+				error: {
+					main: red.A400
+				},
+				background: {
+					default: '#FFFFFF'
+				},
+				breadcrumbItem: {
+					fontSize: '0.7rem',
+					fontWeight: '500',
+					textTransform: 'uppercase'
+				},
+				breadcrumbLink: {
+					color: 'inherit',
+					textDecoration: 'none',
+					textTransform: 'uppercase',
+					fontSize: '0.7rem',
+					'&:hover': {
+						textDecoration: 'underline'
+					}
+				}
+			},
+			overrides: {
+				MuiCard: {
+					root: {
+						background: 'none',
+					},
+				},
+				MuiTypography: {
+					root: {
+						color: 'rgb(0, 0, 0)',
+					},
+				},
+				MuiDrawer: {
+					paper: {
+						backgroundColor: 'rgb(255, 255, 255)',
+					},
+				},
+				MuiAppBar: {
+					colorPrimary: {
+						backgroundColor: '#F7F9FC',
+					},
+				},
+				MuiAutocomplete: {
+					tagSizeSmall: {
+						color: '#FFFFFF',
+					},
+					hasClearIcon: {
+						color: 'rgba(255, 255, 255, 0.7)',
+					},
+					inputRoot: {
+						'& .MuiAutocomplete-input': {
+							minWidth: '5px'
+						},
+						minWidth: '5px'
+					},
+					option: {
+						paddingTop: '0px',
+						paddingLeft: '0px',
+						paddingBottom: '0px',
+						paddingRight: '0px'
+					}
+				}
 			}
 		}
-	},
-	overrides: {
-		MuiCard: {
-			root: {
-				background: 'none',
-			},
-		},
-		MuiAppBar: {
-			colorPrimary: {
-				backgroundColor: '#F7F9FC',
-			},
-		},
-		MuiAutocomplete: {
-			tagSizeSmall: {
-				backgroundColor: '#FD602E',
-				color: '#FFFFFF',
-			},
-			hasClearIcon: {
-				color: 'rgba(255, 255, 255, 0.7)',
-			},
-			inputRoot: {
-				'& .MuiAutocomplete-input': {
-					minWidth: '5px'
+	case 'dark':
+		return {
+			palette: {
+				type: 'dark',
+				primary: {
+					main: '#FD602E',
 				},
-				minWidth: '5px'
+				text: {
+					primary: 'rgb(255, 255, 255)'
+				},
+				error: {
+					main: red.A400
+				},
+				background: {
+					default: '#303030'
+				},
+				breadcrumbItem: {
+					fontSize: '0.7rem',
+					fontWeight: '500',
+					textTransform: 'uppercase'
+				},
+				breadcrumbLink: {
+					color: 'inherit',
+					textDecoration: 'none',
+					textTransform: 'uppercase',
+					fontSize: '0.7rem',
+					'&:hover': {
+						textDecoration: 'underline'
+					}
+				}
 			},
-			option: {
-				paddingTop: '0px',
-				paddingLeft: '0px',
-				paddingBottom: '0px',
-				paddingRight: '0px'
+			overrides: {
+				MuiCard: {
+					root: {
+						background: 'none',
+					},
+				},
+				MuiTypography: {
+					root: {
+						color: 'rgb(255, 255, 255)',
+					},
+				},
+				MuiDrawer: {
+					paper: {
+						backgroundColor: '#424242',
+					},
+				},
+				MuiAppBar: {
+					colorPrimary: {
+						backgroundColor: '#212121',
+					},
+				},
+				MuiAutocomplete: {
+					tagSizeSmall: {
+						color: '#FFFFFF',
+					},
+					hasClearIcon: {
+						color: 'rgba(255, 255, 255, 0.7)',
+					},
+					inputRoot: {
+						'& .MuiAutocomplete-input': {
+							minWidth: '5px'
+						},
+						minWidth: '5px'
+					},
+					option: {
+						paddingTop: '0px',
+							paddingLeft: '0px',
+							paddingBottom: '0px',
+							paddingRight: '0px'
+					}
+				}
 			}
 		}
 	}
-});
+};
 
-export default theme;
+// export default theme;

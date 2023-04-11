@@ -30,6 +30,7 @@ import BrokerStatusIcon from '../../../components/BrokerStatusIcon';
 import ContainerBox from '../../../components/ContainerBox';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
+import ContentContainer from '../../../components/ContentContainer';
 import PremiumFeatureDialog from '../../../components/PremiumFeatureDialog';
 import {atLeastAdmin} from '../../../utils/accessUtils/access';
 import {handleConnectionChange} from '../../../utils/connectionUtils/connections';
@@ -394,77 +395,77 @@ const Connections = ({
 		}
 	};
 
-	return (<ContainerBox>
-		<PremiumFeatureDialog open={premiumFeatureDialogOpen} handleClose={handleClosePremiumFeatureDialog}/>
-		<ContainerBreadCrumbs title="Connections" links={[{name: 'Home', route: '/home'}]}/>
-		<div style={{height: 'calc(100% - 26px)'}}>
-			<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
-				<ContainerHeader
-					title="Broker Connections"
-					subTitle="List of Connections. Connections configure the access to an existing broker instance.
-					You have to be connected to a broker to view and manage its settings or inspect broker information"
+	return [
+		<PremiumFeatureDialog open={premiumFeatureDialogOpen} handleClose={handleClosePremiumFeatureDialog}/>,
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title="Connections" links={[{name: 'Home', route: '/home'}]}/>}
+			dataTour="page-connections"
+		>
+			<ContainerHeader
+				title="Broker Connections"
+				subTitle="List of Connections. Connections configure the access to an existing broker instance.
+				You have to be connected to a broker to view and manage its settings or inspect broker information"
+			>
+				<Button
+					variant="outlined"
+					color="primary"
+					size="small"
+					// className={classes.button}
+					startIcon={<AddIcon/>}
+					onClick={(event) => {
+						event.stopPropagation();
+						onNewConnection();
+					}}
 				>
-					<Button
-						variant="outlined"
-						color="primary"
-						size="small"
-						// className={classes.button}
-						startIcon={<AddIcon/>}
-						onClick={(event) => {
-							event.stopPropagation();
-							onNewConnection();
-						}}
-					>
-						New Connection
-					</Button>
-				</ContainerHeader>
-				{brokerConnections && brokerConnections?.length > 0 ? (
-					<TableContainer style={{maxHeight: '100%'}}>
-						<Table stickyHeader size="small" aria-label="sticky table">
-							<TableHead>
-								<TableRow>
-									{CONN_TABLE_COLUMNS.map((column) => (<TableCell
-										align={column.align}
-										style={{
-											padding: '6px',
-											width: column.width,
-											display: (!small && !medium) || (column.id === 'name' && (small || medium)) || (column.id === 'status' && (small || medium)) || (column.id === 'url' && medium) ? undefined : 'none'
-										}}
-										key={column.id}
-										// sortDirection={sortBy === column.id ? sortDirection : false}
-									>
-										{/* <TableSortLabel
-														active={sortBy === column.id}
-														direction={sortDirection}
-														// onClick={() => onSort(column.id)}
-													>
-														{column.key}
-													</TableSortLabel> */}
-										{column.key}
-									</TableCell>))}
-								</TableRow>
-							</TableHead>
-							<TableBody>
-								{brokerConnections && brokerConnections
-									.sort((a, b) => a.name.localeCompare(b.name))
-									.map((brokerConnection) => (<CustomRow
-										small={small}
-										medium={medium}
-										hover
-										onClick={() => onSelectConnection(brokerConnection)}
-										brokerConnection={brokerConnection}
-										handleBrokerConnectionConnectDisconnect={handleBrokerConnectionConnectDisconnect}
-										onDeleteConnection={onDeleteConnection}
-										userProfile={userProfile}
-										classes={classes}
-									/>))}
-							</TableBody>
-						</Table>
-					</TableContainer>
-				) : (<div>No connections found</div>)}
-			</div>
-		</div>
-	</ContainerBox>);
+					New Connection
+				</Button>
+			</ContainerHeader>
+			{brokerConnections && brokerConnections?.length > 0 ? (
+				<TableContainer style={{maxHeight: '100%'}}>
+					<Table stickyHeader size="small" aria-label="sticky table">
+						<TableHead>
+							<TableRow>
+								{CONN_TABLE_COLUMNS.map((column) => (<TableCell
+									align={column.align}
+									style={{
+										padding: '6px',
+										width: column.width,
+										display: (!small && !medium) || (column.id === 'name' && (small || medium)) || (column.id === 'status' && (small || medium)) || (column.id === 'url' && medium) ? undefined : 'none'
+									}}
+									key={column.id}
+									// sortDirection={sortBy === column.id ? sortDirection : false}
+								>
+									{/* <TableSortLabel
+													active={sortBy === column.id}
+													direction={sortDirection}
+													// onClick={() => onSort(column.id)}
+												>
+													{column.key}
+												</TableSortLabel> */}
+									{column.key}
+								</TableCell>))}
+							</TableRow>
+						</TableHead>
+						<TableBody>
+							{brokerConnections && brokerConnections
+								.sort((a, b) => a.name.localeCompare(b.name))
+								.map((brokerConnection) => (<CustomRow
+									small={small}
+									medium={medium}
+									hover
+									onClick={() => onSelectConnection(brokerConnection)}
+									brokerConnection={brokerConnection}
+									handleBrokerConnectionConnectDisconnect={handleBrokerConnectionConnectDisconnect}
+									onDeleteConnection={onDeleteConnection}
+									userProfile={userProfile}
+									classes={classes}
+								/>))}
+						</TableBody>
+					</Table>
+				</TableContainer>
+			) : (<div>No connections found</div>)}
+		</ContentContainer>
+	];
 };
 
 const mapStateToProps = (state) => {

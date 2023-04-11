@@ -94,7 +94,7 @@ const createClientsTable = (clients, classes, props, onDisconnectClient, onUpdat
 										width: column.width,
 										display: (!small && !medium) ||
 										(column.id === 'username' && (small || medium)) ||
-										(column.id === 'status' && (small || medium)) ||
+										(column.id === 'connected' && (small || medium)) ||
 										(column.id === 'clientid' && medium) ? (
 												(column.id === 'disconnect' && (clientControlFeature?.error || !clientControlFeature?.supported)) ? 'none' : undefined)
 											: 'none'

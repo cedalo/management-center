@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 		height: '100%'
 	},
 	avatar: {
-		backgroundColor: '#FD602E',  // theme.palette?.dashboard?.icons || , // colors.green[600],
+		backgroundColor: theme.palette?.primary.main,
 		height: 30,
 		width: 30
 	},

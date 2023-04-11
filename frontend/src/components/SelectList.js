@@ -16,6 +16,9 @@ const useStyles = makeStyles((theme) =>
 	createStyles({
 		disabled: {
 			color: theme.palette.text.disabled
+		},
+		tagSizeSmall: {
+
 		}
 	})
 );

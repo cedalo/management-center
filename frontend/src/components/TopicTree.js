@@ -20,7 +20,6 @@ import PropTypes from 'prop-types';
 import React, {useEffect} from 'react';
 import {connect} from 'react-redux';
 import {WebSocketContext} from '../websockets/WebSocket';
-import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import ContentContainer from './ContentContainer';
@@ -38,8 +37,10 @@ const useStyles = makeStyles((theme) => ({
 	},
 	payloadDetail: {
 		width: '100%',
+		background: 'none',
 		fontFamily: 'Roboto',
-		fontSize: '11px'
+		fontSize: '11px',
+		color: theme.palette.text.primary
 	},
 	paper: {
 		// padding: theme.spacing(2),
@@ -84,16 +85,6 @@ const isJSON = (text) => text?.startsWith('{') || text?.startsWith('[');
 const useTreeItemStyles = makeStyles((theme) => ({
 	root: {
 		color: theme.palette.text.primary
-		//   '&:hover > $content': {
-		// 	backgroundColor: theme.palette.action.hover,
-		//   },
-		//   '&:focus > $content, &$selected > $content': {
-		// 	backgroundColor: `var(--tree-view-bg-color, ${theme.palette.grey[400]})`,
-		// 	color: 'var(--tree-view-color)',
-		//   },
-		//   '&:focus > $content $label, &:hover > $content $label, &$selected > $content $label': {
-		// 	backgroundColor: 'transparent',
-		//   },
 	},
 	expanded: {},
 	selected: {},

@@ -718,6 +718,7 @@ const ApplicationTokens = (props) => {
 	return [
 		<ContentContainer
 			breadCrumbs={<ContainerBreadCrumbs title="Tokens" links={[{name: 'Home', route: '/home'}]}/>}
+			dataTour="page-tokens"
 		>
 			<ContainerHeader
 				title="Tokens"

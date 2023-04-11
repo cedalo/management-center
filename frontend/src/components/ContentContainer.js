@@ -13,7 +13,7 @@ const ContentContainer = ({children, breadCrumbs, dataTour, overFlowX}) => {
 
 	return (
 		<ContainerBox
-			data-tour={dataTour}
+			dataTour={dataTour}
 		>
 			{breadCrumbs}
 			<div style={{height: 'calc(100% - 26px)'}}>
