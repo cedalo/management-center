@@ -265,9 +265,9 @@ export default [
 					Use commands to control certain parts of the broker via the terminal. Enter “help” for a full list
 					of commands.
 				</p>
-				<P>
+				<p>
 					Click on close to finish the tour.
-				</P>
+				</p>
 			</div>
 		),
 	},
