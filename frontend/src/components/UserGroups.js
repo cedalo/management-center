@@ -1,28 +1,17 @@
 import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
 import {makeStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
-import TableFooter from '@material-ui/core/TableFooter';
 import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import {Alert, AlertTitle} from '@material-ui/lab';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
@@ -31,8 +20,10 @@ import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateUserGroup, updateUserGroups} from '../admin/users/actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import ContentContainer from './ContentContainer';
 import SelectList from './SelectList';
 
 const useStyles = makeStyles((theme) => ({
@@ -51,11 +42,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const GROUP_TABLE_COLUMNS = [
-	{id: 'name', key: 'Name', sortable: true, width: '10%'},
-	{id: 'role', key: 'Role', sortable: true, width: '10%'},
-	{id: 'description', key: 'Description', sortable: true, width: '20%'},
-	{id: 'users', key: 'Users', sortable: false, width: '25%'},
-	{id: 'connections', key: 'Connections', sortable: false, width: '25%'}
+	{id: 'name', key: 'Name', sortable: true, width: '10%', align: 'left'},
+	{id: 'role', key: 'Role', sortable: true, width: '10%', align: 'left'},
+	{id: 'description', key: 'Description', sortable: true, width: '20%', align: 'left'},
+	{id: 'users', key: 'Users', sortable: false, width: '25%', align: 'left'},
+	{id: 'connections', key: 'Connections', sortable: false, width: '25%', align: 'left'},
+	{id: 'delete', key: 'Delete', sortable: false, width: '5%', align: 'center'}
 ];
 
 const loadUserGroups = async (client, dispatch) => {
@@ -75,6 +67,8 @@ const UserGroups = (props) => {
 	const confirm = useConfirm();
 	const {enqueueSnackbar} = useSnackbar();
 	const {client} = context;
+	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
+	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
 
 	const {
 		userManagementFeature,
@@ -256,214 +250,150 @@ const UserGroups = (props) => {
 
 
 	return (
-		<div style={{height: '100%'}}>
-			<ContainerBreadCrumbs title="User Groups" links={[{name: 'Home', route: '/home'}]}/>
-			<div style={{height: 'calc(100% - 26px)'}}>
-				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
-					<ContainerHeader
-						title="User Groups"
-						subTitle="You can create user groups for specific connections. Only those connections that are in the group
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title="User Groups" links={[{name: 'Home', route: '/home'}]}/>}
+			dataTour="page-user-groups"
+
+		>
+			<ContainerHeader
+				title="User Groups"
+				subTitle="You can create user groups for specific connections. Only those connections that are in the group
 							will be accessible to the user. The role specified in the group will override the user's role for
 							the connections assigned to said group.
 							A user can be added to more than one group. In this case if some of the connections in two or more
 							groups are the same, a user will get the highest permissions among those overlapping connections"
-						featureWarning={userManagementFeature?.supported === false ? "User Groups" : undefined}
+				featureWarning={userManagementFeature?.supported === false ? "User Groups" : undefined}
+			>
+				{userManagementFeature?.supported !== false &&
+					<Button
+						variant="outlined"
+						color="primary"
+						size="small"
+						startIcon={<AddIcon/>}
+						onClick={(event) => {
+							event.stopPropagation();
+							onNewGroup();
+						}}
 					>
-						{userManagementFeature?.supported !== false &&
-							<Button
-								variant="outlined"
-								color="primary"
-								size="small"
-								startIcon={<AddIcon/>}
-								onClick={(event) => {
-									event.stopPropagation();
-									onNewGroup();
-								}}
-							>
-								New User Group
-							</Button>
-						}
-					</ContainerHeader>
-					{
-						userManagementFeature?.supported === false ? (
-							<></>
-						) : (
-							Object.keys(userGroups).length > 0 ? (
-								<div style={{height: '100%', overflowY: 'auto'}}>
-									<Hidden xsDown implementation="css">
-										<TableContainer>
-											<Table stickyHeader size="small" aria-label="sticky table">
-												<colgroup>
-													{GROUP_TABLE_COLUMNS.map((column) => (
-														<col style={{width: column.width}}/>
-													))}
-												</colgroup>
-												<TableHead>
-													<TableRow>
-														{GROUP_TABLE_COLUMNS.map((column) => (
-															<TableCell
-																key={column.id}
-																sortDirection={sortBy === column.id ? sortDirection : false}
-															>
-																{column.sortable ? <TableSortLabel
-																		active={sortBy === column.id}
-																		direction={sortDirection}
-																		onClick={() => onSort(column.id)}
-																	>
-																		{column.key}
-																	</TableSortLabel> :
-																	<>
-																		{column.key}
-																	</>}
-															</TableCell>
-														))}
-														<TableCell/>
-													</TableRow>
-												</TableHead>
-												<TableBody>
-													{userGroupsEntriesPaginated &&
-														userGroupsEntriesPaginated.map((item) => {
-															const group = item[1];
-
-															return <TableRow
-																hover
-																key={group.name}
-																onClick={(event) => {
-																	if (event.target.nodeName?.toLowerCase() === 'td') {
-																		onSelectGroup(group.name);
-																	}
-																}}
-																style={{cursor: 'pointer'}}
-															>
-																<TableCell>{group.name}</TableCell>
-																<TableCell>{group.role}</TableCell>
-																<TableCell>{group.description}</TableCell>
-																<TableCell className={classes.badges}>
-																	<SelectList
-																		values={group?.users}
-																		getValue={value => value}
-																		onChange={(event, value) => {
-																			onUpdateGroupUsers(group, value);
-																		}}
-																		disabled={false}
-																		suggestions={userSuggestions}
-																	/>
-																</TableCell>
-																<TableCell className={classes.badges}>
-																	<SelectList
-																		values={group?.connections
-																			.filter(
-																				(brokerid) => !!connectionsMap.get(
-																					brokerid))}
-																		getValue={value => connectionsMap.get(value).id}
-																		getLabel={value => connectionsMap.get(value).name}
-																		onChange={(event, value) => {
-																			onUpdateGroupConnections(group, value);
-																		}}
-																		disabled={false}
-																		suggestions={connectionSuggestions}
-																	/>
-																</TableCell>
-																<TableCell align="right">
-																	<Tooltip title="Delete group">
-																		<IconButton
-																			size="small"
-																			onClick={(event) => {
-																				event.stopPropagation();
-																				onDeleteGroup(group.name);
-																			}}
-																		>
-																			<DeleteIcon fontSize="small"/>
-																		</IconButton>
-																	</Tooltip>
-																</TableCell>
-															</TableRow>
-														})}
-												</TableBody>
-												{/*<TableFooter>*/}
-												{/*	<TableRow>*/}
-												{/*		<TablePagination*/}
-												{/*			rowsPerPageOptions={[5, 10, 25]}*/}
-												{/*			colSpan={8}*/}
-												{/*			count={userGroupsEntries.length}*/}
-												{/*			rowsPerPage={rowsPerPage}*/}
-												{/*			page={page}*/}
-												{/*			onPageChange={handleChangePage}*/}
-												{/*			onRowsPerPageChange={handleChangeRowsPerPage}*/}
-												{/*		/>*/}
-												{/*	</TableRow>*/}
-												{/*</TableFooter>*/}
-											</Table>
-										</TableContainer>
-									</Hidden>
-									<Hidden smUp implementation="css">
-										<Paper>
-											<List className={classes.root}>
-												{Object.entries(userGroups).map((el) => {
-													const group = el[1];
-													return <React.Fragment key={group.name}>
-														<ListItem
-															alignItems="flex-start"
-															onClick={(event) => onSelectGroup(group.name)}
-
+						New User Group
+					</Button>
+				}
+			</ContainerHeader>
+			{
+				userManagementFeature?.supported === false ? (
+					<></>
+				) : (
+					Object.keys(userGroups).length > 0 ? (
+						<div style={{height: '100%', overflowY: 'auto'}}>
+							<TableContainer>
+								<Table stickyHeader size="small" aria-label="sticky table">
+									<colgroup>
+										{GROUP_TABLE_COLUMNS.map((column) => (
+											<col style={{width: column.width}}/>
+										))}
+									</colgroup>
+									<TableHead>
+										<TableRow>
+											{GROUP_TABLE_COLUMNS.map((column) => (
+												<TableCell
+													key={column.id}
+													sortDirection={sortBy === column.id ? sortDirection : false}
+													align={column.align}
+													style={{
+														width: column.width,
+														display: (!small && !medium) ||
+														(column.id === 'name' && (small || medium)) ||
+														(column.id === 'delete' && (small || medium)) ||
+														(column.id === 'connections' && medium) ||
+														(column.id === 'users' && (small || medium)) ? undefined : 'none'
+													}}
+												>
+													{column.sortable ? <TableSortLabel
+															active={sortBy === column.id}
+															direction={sortDirection}
+															onClick={() => onSort(column.id)}
 														>
-															<ListItemText
-																primary={<span>{group.name}</span>}
-																secondary={
-																	<React.Fragment>
-																		<Typography
-																			component="span"
-																			variant="body2"
-																			className={classes.inline}
-																			color="textPrimary"
-																		>
-																			{group.role}
-																		</Typography>
-																		<span> — {group.description} </span>
-																	</React.Fragment>
-																}
-															/>
-															<ListItemSecondaryAction>
-																<IconButton
-																	edge="end"
-																	size="small"
-																	onClick={(event) => {
-																		event.stopPropagation();
-																		onSelectGroup(group.name);
-																	}}
-																	aria-label="edit"
-																>
-																	<EditIcon fontSize="small"/>
-																</IconButton>
+															{column.key}
+														</TableSortLabel> :
+														<>
+															{column.key}
+														</>}
+												</TableCell>
+											))}
+										</TableRow>
+									</TableHead>
+									<TableBody>
+										{userGroupsEntriesPaginated &&
+											userGroupsEntriesPaginated.map((item) => {
+												const group = item[1];
 
-																<IconButton
-																	edge="end"
-																	size="small"
-																	onClick={(event) => {
-																		event.stopPropagation();
-																		onDeleteGroup(group.name);
-																	}}
-																	aria-label="delete"
-																>
-																	<DeleteIcon fontSize="small"/>
-																</IconButton>
-															</ListItemSecondaryAction>
-														</ListItem>
-														<Divider/>
-													</React.Fragment>
-												})}
-											</List>
-										</Paper>
-									</Hidden>
-								</div>
-							) : (
-								<div>No groups found</div>
-							)
-						)
-					}
-				</div>
-			</div>
-		</div>
+												return <TableRow
+													hover
+													key={group.name}
+													onClick={(event) => {
+														if (event.target.nodeName?.toLowerCase() === 'td') {
+															onSelectGroup(group.name);
+														}
+													}}
+													style={{cursor: 'pointer'}}
+												>
+													<TableCell>{group.name}</TableCell>
+													{small || medium ? null : [
+														<TableCell>{group.role}</TableCell>,
+														<TableCell>{group.description}</TableCell>
+													]}
+													<TableCell className={classes.badges}>
+														<SelectList
+															values={group?.users}
+															getValue={value => value}
+															onChange={(event, value) => {
+																onUpdateGroupUsers(group, value);
+															}}
+															disabled={false}
+															suggestions={userSuggestions}
+														/>
+													</TableCell>
+													{small ? null :
+														<TableCell className={classes.badges}>
+															<SelectList
+																values={group?.connections
+																	.filter(
+																		(brokerid) => !!connectionsMap.get(
+																			brokerid))}
+																getValue={value => connectionsMap.get(value).id}
+																getLabel={value => connectionsMap.get(value).name}
+																onChange={(event, value) => {
+																	onUpdateGroupConnections(group, value);
+																}}
+																disabled={false}
+																suggestions={connectionSuggestions}
+															/>
+														</TableCell>}
+													<TableCell align="center">
+														<Tooltip title="Delete group">
+															<IconButton
+																size="small"
+																onClick={(event) => {
+																	event.stopPropagation();
+																	onDeleteGroup(group.name);
+																}}
+															>
+																<DeleteIcon fontSize="small"/>
+															</IconButton>
+														</Tooltip>
+													</TableCell>
+												</TableRow>
+											})}
+									</TableBody>
+								</Table>
+							</TableContainer>
+						</div>
+					) : (
+						<div>No groups found</div>
+					)
+				)
+			}
+		</ContentContainer>
 	);
 };
 

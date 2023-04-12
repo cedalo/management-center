@@ -1,5 +1,4 @@
 import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
 import {green, red} from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
 import {makeStyles, useTheme, withStyles} from '@material-ui/core/styles';
@@ -16,14 +15,15 @@ import DisabledIcon from '@material-ui/icons/Cancel';
 import CancelIcon from '@material-ui/icons/CancelOutlined';
 import EnabledIcon from '@material-ui/icons/CheckCircle';
 import ReloadIcon from '@material-ui/icons/Replay';
+import {useSnackbar} from 'notistack';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
+import ContentContainer from '../../../components/ContentContainer';
 import {WebSocketContext} from '../../../websockets/WebSocket';
 import {updateInspectClient, updateInspectClients} from '../actions/actions';
-import {useSnackbar} from 'notistack';
 
 
 const StyledTableRow = withStyles((theme) => ({
@@ -76,7 +76,6 @@ const dateToString = (date, separator = ' ') => {
 };
 
 
-
 const createClientsTable = (clients, classes, props, onDisconnectClient, onUpdateUserRoles,
 							onSelectClient, small, medium, clientControlFeature) => {
 	const {inspectFeature, onSort, sortBy, sortDirection, disableSort, doSort} = props;
@@ -94,9 +93,9 @@ const createClientsTable = (clients, classes, props, onDisconnectClient, onUpdat
 									style={{
 										width: column.width,
 										display: (!small && !medium) ||
-											(column.id === 'username' && (small || medium)) ||
-											(column.id === 'status' && (small || medium)) ||
-											(column.id === 'clientid' && medium) ? (
+										(column.id === 'username' && (small || medium)) ||
+										(column.id === 'connected' && (small || medium)) ||
+										(column.id === 'clientid' && medium) ? (
 												(column.id === 'disconnect' && (clientControlFeature?.error || !clientControlFeature?.supported)) ? 'none' : undefined)
 											: 'none'
 									}}
@@ -207,13 +206,15 @@ const Clients = (props) => {
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const {client: brokerClient} = context;
-	const {inspectFeature, clientControlFeature, userProfile, roles = [], clients = [],
-			filter, sortDirection, sortBy, doSort, connected } = props;
+	const {
+		inspectFeature, clientControlFeature, userProfile, roles = [], clients = [],
+		filter, sortDirection, sortBy, doSort, connected
+	} = props;
 	const [filteredClients, setFilteredClients] = useState(clients);
 	const theme = useTheme();
 	const small = useMediaQuery(theme.breakpoints.down('xs'));
 	const medium = useMediaQuery(theme.breakpoints.between('sm', 'sm'));
-	const { enqueueSnackbar } = useSnackbar();
+	const {enqueueSnackbar} = useSnackbar();
 
 	const onDisconnectClient = async (client) => {
 		try {
@@ -221,7 +222,7 @@ const Clients = (props) => {
 			enqueueSnackbar(`Disconnect sent to client "${client.clientid}"`, {
 				variant: 'success'
 			});
-		} catch(error) {
+		} catch (error) {
 			console.error(error);
 			enqueueSnackbar(`Error disconnecting client "${client.clientid}". Reason: ${error.message || error}`, {
 				variant: 'error'
@@ -248,7 +249,7 @@ const Clients = (props) => {
 	};
 
 	React.useEffect(() => {
-		let sortedClients ;
+		let sortedClients;
 
 		sortedClients = clients.filter(clientL => clientL.username.startsWith(filter));
 		sortedClients.forEach(cl => cl.queues ? cl.messagesOut = cl.queues.messagesOut : cl.messagesOut = 0);
@@ -263,65 +264,56 @@ const Clients = (props) => {
 
 	}, [clients, sortDirection, sortBy, filter]);
 
-	// React.useEffect(() => {
-	// 	setFilteredClients(clients.filter(clientL => clientL.username.startsWith(filter)));
-	// }, [filter]);
-	//
-	// React.useEffect(() => {
-	// 	setFilteredClients(clients);
-	// }, [clients]);
-
 	const onReload = async () => {
 		const clients = await brokerClient.inspectListClients();
 		dispatch(updateInspectClients(clients));
 	};
 
 	return (
-		<Box style={{height: '100%'}} data-tour="page-clientinspection">
-			<ContainerBreadCrumbs title="Client Inspection" links={[{name: 'Home', route: '/home'}]}/>
-			<div style={{height: 'calc(100% - 26px)'}}>
-				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
-					<ContainerHeader
-						title="Inspect Clients"
-						subTitle="List of all clients that have connected to the broker at least once."
-						connectedWarning={!connected}
-						featureWarning={(!clientControlFeature?.error && clientControlFeature?.supported === false) ? "Client Control" : null}
-						brokerFeatureWarning={(!inspectFeature?.error && inspectFeature?.supported === false) ? "Client Inspection" : null}
-						warnings={() => {
-							const alerts = [];
-							if (inspectFeature?.error) {
-								alerts.push({
-									severity: 'warning',
-									title: 'Client Inspect Error: ' + inspectFeature?.error?.title,
-									error: inspectFeature?.error?.message
-								});
-							}
-							if (clientControlFeature?.error) {
-								alerts.push({
-									severity: 'warning',
-									title: 'Client Control Error: ' + clientControlFeature?.error?.title,
-									error: clientControlFeature?.error?.message
-								});
-							}
-							return alerts;
-						}}
-					>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="small"
-							style={{paddingRight: '0px', minWidth: '30px'}}
-							startIcon={<ReloadIcon />}
-							onClick={(event) => {
-								event.stopPropagation();
-								onReload();
-							}}
-						/>
-					</ContainerHeader>
-					{connected ? createClientsTable(filteredClients, classes, props, onDisconnectClient, onUpdateUserRoles, onSelectClient, small, medium, clientControlFeature) : null}
-				</div>
-			</div>
-		</Box>
+		<ContentContainer
+			dataTour="page-clientinspection"
+			breadCrumbs={<ContainerBreadCrumbs title="Client Inspection" links={[{name: 'Home', route: '/home'}]}/>}
+		>
+			<ContainerHeader
+				title="Inspect Clients"
+				subTitle="List of all clients that have connected to the broker at least once."
+				connectedWarning={!connected}
+				featureWarning={(!clientControlFeature?.error && clientControlFeature?.supported === false) ? "Client Control" : null}
+				brokerFeatureWarning={(!inspectFeature?.error && inspectFeature?.supported === false) ? "Client Inspection" : null}
+				warnings={() => {
+					const alerts = [];
+					if (inspectFeature?.error) {
+						alerts.push({
+							severity: 'warning',
+							title: 'Client Inspect Error: ' + inspectFeature?.error?.title,
+							error: inspectFeature?.error?.message
+						});
+					}
+					if (clientControlFeature?.error) {
+						alerts.push({
+							severity: 'warning',
+							title: 'Client Control Error: ' + clientControlFeature?.error?.title,
+							error: clientControlFeature?.error?.message
+						});
+					}
+					return alerts;
+				}}
+			>
+				<Button
+					variant="outlined"
+					color="primary"
+					size="small"
+					style={{paddingRight: '0px', minWidth: '30px'}}
+					startIcon={<ReloadIcon/>}
+					onClick={(event) => {
+						event.stopPropagation();
+						onReload();
+					}}
+				/>
+			</ContainerHeader>
+			{connected ? createClientsTable(filteredClients, classes, props, onDisconnectClient, onUpdateUserRoles,
+				onSelectClient, small, medium, clientControlFeature) : null}
+		</ContentContainer>
 	);
 };
 

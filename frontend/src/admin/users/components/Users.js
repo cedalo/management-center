@@ -1,12 +1,5 @@
 import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
 import {makeStyles, withStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -15,11 +8,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import ReloadIcon from '@material-ui/icons/Replay';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
@@ -28,6 +18,7 @@ import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
+import ContentContainer from '../../../components/ContentContainer';
 import SelectList from '../../../components/SelectList';
 import {WebSocketContext} from '../../../websockets/WebSocket';
 import {updateUser, updateUsers} from '../actions/actions';
@@ -49,12 +40,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const USER_TABLE_COLUMNS = [
-	{id: 'username', key: 'Name'},
-	{id: 'roles', key: 'Roles'}
+	{id: 'username', key: 'Name', align: 'left', width: '25%'},
+	{id: 'roles', key: 'Roles', align: 'left', width: '65%'},
+	{id: 'delete', key: 'Delete', align: 'center', width: '5%'}
 ];
 
 const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles, onSelectUser) => {
-	const { userManagementFeature, userRoles = [], roles = [], onSort, sortBy, sortDirection } = props;
+	const {userManagementFeature, userRoles = [], roles = [], onSort, sortBy, sortDirection} = props;
 
 	const roleSuggestions = userRoles
 		.sort()
@@ -65,124 +57,69 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 
 	if (!userManagementFeature?.error && userManagementFeature?.supported !== false && users && users.length > 0) {
 		return (<div style={{height: '100%', overflowY: 'auto'}}>
-			<Hidden xsDown implementation="css">
-				<TableContainer>
-					<Table stickyHeader size="small" aria-label="sticky table">
-						<TableHead>
-							<TableRow>
-								{USER_TABLE_COLUMNS.map((column) => (
-									<TableCell
-										key={column.id}
-										sortDirection={sortBy === column.id ? sortDirection : false}
-									>
-										{column.key}
-									</TableCell>
-								))}
-								<TableCell/>
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{users &&
-								users.map((user) => (
-									<StyledTableRow
-										disabled={user.editable === false}
-										hover
-										key={user.username}
-										onClick={(event) => {
-											if (event.target.nodeName?.toLowerCase() === 'td') {
-												onSelectUser(user.username);
-											}
-										}}
-										style={{cursor: 'pointer'}}
-									>
-										<TableCell>{user.username}</TableCell>
-										<TableCell className={classes.badges}>
-											<SelectList
-												values={user.roles}
-												getValue={value => value}
-												onChange={(event, value) => {
-													onUpdateUserRoles(user, value);
-												}}
-												disabled={user.editable === false}
-												suggestions={roleSuggestions}
-											/>
-										</TableCell>
-										<TableCell align="right">
-											<Tooltip title="Delete user">
-												<IconButton
-													disabled={user.editable === false}
-													size="small"
-													onClick={(event) => {
-														event.stopPropagation();
-														onDeleteUser(user.username);
-													}}
-												>
-													<DeleteIcon fontSize="small"/>
-												</IconButton>
-											</Tooltip>
-										</TableCell>
-									</StyledTableRow>
-								))}
-						</TableBody>
-					</Table>
-				</TableContainer>
-			</Hidden>
-			<Hidden smUp implementation="css">
-				<Paper>
-					<List>
-						{users.map((user) => (
-							<React.Fragment>
-								<ListItem
-									alignItems="flex-start"
-									onClick={(event) => onSelectUser(user.username)}
+			<TableContainer>
+				<Table stickyHeader size="small" aria-label="sticky table">
+					<TableHead>
+						<TableRow>
+							{USER_TABLE_COLUMNS.map((column) => (
+								<TableCell
+									key={column.id}
+									sortDirection={sortBy === column.id ? sortDirection : false}
+									align={column.align}
+									style={{
+										width: column.width,
+									}}
 								>
-									<ListItemText
-										primary={<span>{user.username}</span>}
-										secondary={
-											<React.Fragment>
-												<Typography
-													component="span"
-													variant="body2"
-													color="textPrimary"
-												>
-													{user.textname}
-												</Typography>
-												<span> — {user.textdescription} </span>
-											</React.Fragment>
+									{column.key}
+								</TableCell>
+							))}
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{users &&
+							users.map((user) => (
+								<StyledTableRow
+									disabled={user.editable === false}
+									hover
+									key={user.username}
+									onClick={(event) => {
+										if (event.target.nodeName?.toLowerCase() === 'td') {
+											onSelectUser(user.username);
 										}
-									/>
-									<ListItemSecondaryAction>
-										<IconButton
-											edge="end"
-											size="small"
-											onClick={(event) => {
-												event.stopPropagation();
-												onSelectUser(user.username);
+									}}
+									style={{cursor: 'pointer'}}
+								>
+									<TableCell>{user.username}</TableCell>
+									<TableCell className={classes.badges}>
+										<SelectList
+											values={user.roles}
+											getValue={value => value}
+											onChange={(event, value) => {
+												onUpdateUserRoles(user, value);
 											}}
-											aria-label="edit"
-										>
-											<EditIcon fontSize="small"/>
-										</IconButton>
-
-										<IconButton
-											edge="end"
-											size="small"
-											onClick={(event) => {
-												event.stopPropagation();
-												onDeleteUser(user.username);
-											}}
-											aria-label="delete"
-										>
-											<DeleteIcon fontSize="small"/>
-										</IconButton>
-									</ListItemSecondaryAction>
-								</ListItem>
-								<Divider/>
-							</React.Fragment>
-						))}
-					</List>
-				</Paper>
-			</Hidden>
+											disabled={user.editable === false}
+											suggestions={roleSuggestions}
+										/>
+									</TableCell>
+									<TableCell align="center">
+										<Tooltip title="Delete user">
+											<IconButton
+												disabled={user.editable === false}
+												size="small"
+												onClick={(event) => {
+													event.stopPropagation();
+													onDeleteUser(user.username);
+												}}
+											>
+												<DeleteIcon fontSize="small"/>
+											</IconButton>
+										</Tooltip>
+									</TableCell>
+								</StyledTableRow>
+							))}
+					</TableBody>
+				</Table>
+			</TableContainer>
 		</div>)
 	} else if (userManagementFeature?.error) {
 		return null;
@@ -279,45 +216,43 @@ const Users = (props) => {
 	};
 
 	return (
-		<div style={{height: '100%'}}>
-			<ContainerBreadCrumbs title="Users" links={[{name: 'Home', route: '/home'}]}/>
-			<div style={{height: 'calc(100% - 26px)'}}>
-				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
-					<ContainerHeader
-						title="Users"
-						subTitle="List of users. You can configure different users and assign roles like 'admin', 'editor and 'viewer' to restrict or give access to specific features."
-						featureWarning={!userManagementFeature?.error && userManagementFeature?.supported === false ? "Users" : undefined}
-						warnings={() => {
-							const alerts = [];
-							if (userManagementFeature?.error) {
-								alerts.push({
-									severity: 'error',
-									title: userManagementFeature.error.title,
-									error: userManagementFeature.error.message
-								});
-							}
-							return alerts;
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title="Users" links={[{name: 'Home', route: '/home'}]}/>}
+			dataTour="page-users"
+		>
+			<ContainerHeader
+				title="Users"
+				subTitle="List of users. You can configure different users and assign roles like 'admin', 'editor and 'viewer' to restrict or give access to specific features."
+				featureWarning={!userManagementFeature?.error && userManagementFeature?.supported === false ? "Users" : undefined}
+				warnings={() => {
+					const alerts = [];
+					if (userManagementFeature?.error) {
+						alerts.push({
+							severity: 'error',
+							title: userManagementFeature.error.title,
+							error: userManagementFeature.error.message
+						});
+					}
+					return alerts;
+				}}
+			>
+				{!userManagementFeature?.error && userManagementFeature?.supported !== false && [
+					<Button
+						variant="outlined"
+						color="primary"
+						size="small"
+						startIcon={<AddIcon/>}
+						onClick={(event) => {
+							event.stopPropagation();
+							onNewUser();
 						}}
 					>
-						{!userManagementFeature?.error && userManagementFeature?.supported !== false && [
-							<Button
-								variant="outlined"
-								color="primary"
-								size="small"
-								startIcon={<AddIcon/>}
-								onClick={(event) => {
-									event.stopPropagation();
-									onNewUser();
-								}}
-								>
-									New User
-							</Button>,
-						]}
-					</ContainerHeader>
-					{createUserTable(users, classes, props, onDeleteUser, onUpdateUserRoles, onSelectUser)}
-				</div>
-			</div>
-		</div>
+						New User
+					</Button>,
+				]}
+			</ContainerHeader>
+			{createUserTable(users, classes, props, onDeleteUser, onUpdateUserRoles, onSelectUser)}
+		</ContentContainer>
 	);
 };
 

@@ -22,6 +22,7 @@ import {connect} from 'react-redux';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import ContentContainer from './ContentContainer';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -36,8 +37,10 @@ const useStyles = makeStyles((theme) => ({
 	},
 	payloadDetail: {
 		width: '100%',
+		background: 'none',
 		fontFamily: 'Roboto',
-		fontSize: '11px'
+		fontSize: '11px',
+		color: theme.palette.text.primary
 	},
 	paper: {
 		// padding: theme.spacing(2),
@@ -82,16 +85,6 @@ const isJSON = (text) => text?.startsWith('{') || text?.startsWith('[');
 const useTreeItemStyles = makeStyles((theme) => ({
 	root: {
 		color: theme.palette.text.primary
-		//   '&:hover > $content': {
-		// 	backgroundColor: theme.palette.action.hover,
-		//   },
-		//   '&:focus > $content, &$selected > $content': {
-		// 	backgroundColor: `var(--tree-view-bg-color, ${theme.palette.grey[400]})`,
-		// 	color: 'var(--tree-view-color)',
-		//   },
-		//   '&:focus > $content $label, &:hover > $content $label, &$selected > $content $label': {
-		// 	backgroundColor: 'transparent',
-		//   },
 	},
 	expanded: {},
 	selected: {},
@@ -282,7 +275,8 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 			//   bgColor="#fcefe3"
 		>
 			{/* <TreeItem key={node.id} nodeId={node.id} label={node.name}> */}
-			{Array.isArray(node.children) ? node.children.map((childNode) => renderTree(childNode, small, medium)) : null}
+			{Array.isArray(node.children) ? node.children.map(
+				(childNode) => renderTree(childNode, small, medium)) : null}
 			{/* </TreeItem> */}
 		</StyledTreeItem>
 	);
@@ -298,198 +292,210 @@ const TopicTree = ({topicTree, lastUpdated, currentConnectionName, settings, top
 	};
 
 	return (
-		<Box style={{height: '100%'}} data-tour="page-topics">
-			<ContainerBreadCrumbs title="Topic Tree"
-								  links={[{name: 'Home', route: '/home'}]}/>
-			<div style={{height: 'calc(100% - 26px)'}}>
-				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
-					<ContainerHeader
-						title="Inspect Topic Tree"
-						subTitle="Topic tree shows an overview of all topics that have been addressed by a client. If you
+		<ContentContainer
+			dataTour="page-topics"
+			overFlowX="hidden"
+			breadCrumbs={<ContainerBreadCrumbs title="Topic Tree"
+											   links={[{name: 'Home', route: '/home'}]}
+			/>}
+		>
+			<ContainerHeader
+				title="Inspect Topic Tree"
+				subTitle="Topic tree shows an overview of all topics that have been addressed by a client. If you
 						click on a topic, additional information for the topic will be displayed right to the tree."
-						connectedWarning={!connected}
-						warnings={() => {
-							const alerts = [];
-							if (settings?.topicTreeEnabled === false) {
-								alerts.push({
-									severity: 'warning',
-									title: 'Topic tree not enabled',
-									error: 'The MMC is currently not collecting topic tree data. If you want to collect data, please enable the topic tree feature in the settings page. Note that if you enable this setting and the MMC is collecting topic tree data, the performance of the MMC backend might decrease.'
-								});
-							}
-							if (error.occured) {
-								alerts.push({
-									severity: 'error',
-									title: 'An error has occured',
-									error: error.message
-								});
-							}
-							return alerts;
-						}}
+				connectedWarning={!connected}
+				warnings={() => {
+					const alerts = [];
+					if (settings?.topicTreeEnabled === false) {
+						alerts.push({
+							severity: 'warning',
+							title: 'Topic tree not enabled',
+							error: 'The MMC is currently not collecting topic tree data. If you want to collect data, please enable the topic tree feature in the settings page. Note that if you enable this setting and the MMC is collecting topic tree data, the performance of the MMC backend might decrease.'
+						});
+					}
+					if (error.occured) {
+						alerts.push({
+							severity: 'error',
+							title: 'An error has occured',
+							error: error.message
+						});
+					}
+					return alerts;
+				}}
+			>
+				{topicTree && <div style={{
+					fontSize: '0.9em',
+					position: 'absolute',
+					right: '15px',
+					top: '70px'
+				}}>
+					Topic tree last updated at: {moment(lastUpdated).format('hh:mm:ss a')}
+				</div>}
+				{(topicTreeRestFeature?.supported) ?
+					<Button
+						variant="outlined"
+						size="small"
+						color="primary"
+						onClick={clearTopicTreeCache}
+						startIcon={isLoading ?
+							<CircularProgress color="white" style={{width: "20px", height: "auto"}}/> :
+							<DeleteIcon/>}
 					>
-						{(topicTreeRestFeature?.supported) ?
-							<Button
-								variant="outlined"
-								size="small"
-								color="primary"
-								onClick={clearTopicTreeCache}
-								startIcon={isLoading ?
-									<CircularProgress color="white" style={{width: "20px", height: "auto"}}/> :
-									<DeleteIcon/>}
-							>
-								Clear Cache
-							</Button> : null}
-					</ContainerHeader>
-					{connected && settings?.topicTreeEnabled ?
-						<Grid container spacing={3}>
-							<Grid item xs={8}>
-								<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
-									{/*<div className={classes.paper}>*/}
-									<div className={classes.treeHeader}>
-										<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
-											Name
-										</Typography>
-										<Typography style={{display: medium || small ? 'none': undefined, fontWeight: '500', fontSize: '0.875rem'}}>
-											Last Payload
-										</Typography>
-										<Typography style={{display: medium || small ? 'none': undefined, fontWeight: '500', fontSize: '0.875rem'}}>
-											Subtopics
-										</Typography>
-										<Typography style={{display: medium || small ? 'none': undefined, fontWeight: '500', fontSize: '0.875rem'}}>
-											Messages
-										</Typography>
-									</div>
-									<Box style={{overflowY: 'auto'}}>
-										<TreeView
-											className={classes.root}
-											defaultCollapseIcon={<ExpandMoreIcon/>}
-											defaultExpandIcon={<ChevronRightIcon/>}
-											// defaultExpanded={["topic-tree-root"]}
-										>
-											{renderTree(data, small, medium)}
-										</TreeView>
-									</Box>
-									{/*</div>*/}
-								</div>
-							</Grid>
-							<Grid item xs={4}>
-								<Box className={classes.leftBorder}>
-									<FormGroup>
-										{selectedNode?._topic && (
-											<TextField
-												id="topicpath"
-												label="Topic Path"
-												value={selectedNode?._topic}
-												margin="normal"
-												variant="outlined"
-												fullWidth
-												size="small"
-												InputProps={{
-													readOnly: true,
-												}}
-											/>
-										)}
-										{selectedNode?._created && (
-											<TextField
-												id="created"
-												label="Created"
-												margin="normal"
-												value={moment(selectedNode?._created).format('LLL')}
-												variant="outlined"
-												fullWidth
-												size="small"
-												InputProps={{
-													readOnly: true,
-												}}
-											/>
-										)}
-										{selectedNode?._lastModified && (
-											<TextField
-												id="last"
-												label="Last Modified"
-												margin="normal"
-												value={moment(selectedNode?._lastModified).format('LLL')}
-												variant="outlined"
-												fullWidth
-												size="small"
-												InputProps={{
-													readOnly: true,
-												}}
-											/>
-										)}
-										{selectedNode?._message ? [
-											<Typography
-												style={{
-													fontWeight: '500',
-													margin: '4px 0px'
-												}}
-											>
-												Payload History
-											</Typography>,
-											<Paper variant="outlined" elevation={1} style={{maxHeight: '400px'}}>
-												<Box style={{padding: '8px', maxHeight: '390px', overflowY: 'auto'}}>
-													<Box>
+						Clear Cache
+					</Button> : null}
+			</ContainerHeader>
+			{connected && settings?.topicTreeEnabled ?
+				<Grid container spacing={3}>
+					<Grid item xs={8}>
+						<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
+							{/*<div className={classes.paper}>*/}
+							<div className={classes.treeHeader}>
+								<Typography style={{fontWeight: '500', fontSize: '0.875rem'}}>
+									Name
+								</Typography>
+								<Typography style={{
+									display: medium || small ? 'none' : undefined,
+									fontWeight: '500',
+									fontSize: '0.875rem'
+								}}>
+									Last Payload
+								</Typography>
+								<Typography style={{
+									display: medium || small ? 'none' : undefined,
+									fontWeight: '500',
+									fontSize: '0.875rem'
+								}}>
+									Subtopics
+								</Typography>
+								<Typography style={{
+									display: medium || small ? 'none' : undefined,
+									fontWeight: '500',
+									fontSize: '0.875rem'
+								}}>
+									Messages
+								</Typography>
+							</div>
+							<Box style={{overflowY: 'auto'}}>
+								<TreeView
+									className={classes.root}
+									defaultCollapseIcon={<ExpandMoreIcon/>}
+									defaultExpandIcon={<ChevronRightIcon/>}
+									// defaultExpanded={["topic-tree-root"]}
+								>
+									{renderTree(data, small, medium)}
+								</TreeView>
+							</Box>
+							{/*</div>*/}
+						</div>
+					</Grid>
+					<Grid item xs={4}>
+						<Box className={classes.leftBorder}>
+							<FormGroup>
+								{selectedNode?._topic && (
+									<TextField
+										id="topicpath"
+										label="Topic Path"
+										value={selectedNode?._topic}
+										margin="normal"
+										variant="outlined"
+										fullWidth
+										size="small"
+										InputProps={{
+											readOnly: true,
+										}}
+									/>
+								)}
+								{selectedNode?._created && (
+									<TextField
+										id="created"
+										label="Created"
+										margin="normal"
+										value={moment(selectedNode?._created).format('LLL')}
+										variant="outlined"
+										fullWidth
+										size="small"
+										InputProps={{
+											readOnly: true,
+										}}
+									/>
+								)}
+								{selectedNode?._lastModified && (
+									<TextField
+										id="last"
+										label="Last Modified"
+										margin="normal"
+										value={moment(selectedNode?._lastModified).format('LLL')}
+										variant="outlined"
+										fullWidth
+										size="small"
+										InputProps={{
+											readOnly: true,
+										}}
+									/>
+								)}
+								{selectedNode?._message ? [
+									<Typography
+										style={{
+											fontWeight: '500',
+											margin: '4px 0px'
+										}}
+									>
+										Payload History
+									</Typography>,
+									<Paper variant="outlined" elevation={1} style={{maxHeight: '400px', background: 'none'}}>
+										<Box style={{padding: '8px', maxHeight: '390px', overflowY: 'auto'}}>
+											<Box>
+												<Typography
+													style={{
+														fontSize: '9pt',
+														margin: '4px 0px'
+													}}
+												>
+													Last Payload
+												</Typography>
+												<TextareaAutosize
+													className={classes.payloadDetail}
+													maximumHeight={5}
+													value={
+														isJSON(selectedNode?._message)
+															? prettifyJSON(selectedNode?._message)
+															: selectedNode?._message
+													}
+												/>
+											</Box>
+											{messageHistory && messageHistory.map((entry, index) => {
+												if (index && entry?._message) {
+													return <Box>
 														<Typography
 															style={{
 																fontSize: '9pt',
 																margin: '4px 0px'
 															}}
 														>
-															Last Payload
+															{moment(entry._received).format(
+																'HH:mm:ss:SSS')}
 														</Typography>
 														<TextareaAutosize
 															className={classes.payloadDetail}
 															maximumHeight={5}
 															value={
-																isJSON(selectedNode?._message)
-																	? prettifyJSON(selectedNode?._message)
-																	: selectedNode?._message
+																isJSON(entry?._message)
+																	? prettifyJSON(entry?._message)
+																	: entry?._message
 															}
 														/>
 													</Box>
-													{messageHistory && messageHistory.map((entry, index) => {
-														if (index && entry?._message) {
-															return <Box>
-																<Typography
-																	style={{
-																		fontSize: '9pt',
-																		margin: '4px 0px'
-																	}}
-																>
-																	{moment(entry._received).format(
-																		'HH:mm:ss:SSS')}
-																</Typography>
-																<TextareaAutosize
-																	className={classes.payloadDetail}
-																	maximumHeight={5}
-																	value={
-																		isJSON(entry?._message)
-																			? prettifyJSON(entry?._message)
-																			: entry?._message
-																	}
-																/>
-															</Box>
-														}
-													})}
-												</Box>
-											</Paper>] : null
-										}
-									</FormGroup>
-								</Box>
-							</Grid>
-						</Grid> : null
-					}
-				</div>
-			</div>
-			{topicTree && <div style={{
-				fontSize: '0.9em',
-				position: 'absolute',
-				right: '15px',
-				top: '70px'
-			}}>
-				Topic tree last updated at: {moment(lastUpdated).format('hh:mm:ss a')}
-			</div>}
-		</Box>
+												}
+											})}
+										</Box>
+									</Paper>] : null
+								}
+							</FormGroup>
+						</Box>
+					</Grid>
+				</Grid> : null
+			}
+		</ContentContainer>
 	);
 };
 

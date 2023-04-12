@@ -66,7 +66,7 @@ function ListItemLink(props) {
 					}}
 				>
 					{icon ? <ListItemIcon style={{
-						color: isSelected ? theme.palette.menuItem.color : ''
+						color: isSelected ? theme.palette.primary.main : ''
 					}}>{icon}</ListItemIcon> : null}
 					<ListItemText primary={primary} classes={{
 						root: classes.menuItem,
@@ -107,13 +107,10 @@ const useStyles = makeStyles((theme) => ({
 			backgroundColor: "inherit"
 		}
 	},
-	menuItemSelected: {
-		color: theme.palette.menuItem.color,
-	},
 	menuSubHeader: {
 		fontWeight: 'bold',
 		fontSize: '12px',
-		backgroundColor: theme.palette.background.paper,
+		background: 'none',
 		textTransform: 'uppercase',
 		lineHeight: '24px'
 	},
@@ -121,7 +118,7 @@ const useStyles = makeStyles((theme) => ({
 		width: drawerWidth,
 		flexShrink: 0,
 		whiteSpace: 'nowrap',
-		backgroundColor: theme.palette.drawer?.backgroundColor,
+		// backgroundColor: theme.palette.drawer?.backgroundColor,
 		'&::-webkit-scrollbar': {
 			width: "0",
 			display: "none"
@@ -170,7 +167,6 @@ const CustomDrawer = ({
 	}, [location.pathname]);
 
 	setShowFilter('/clientinspection' === location.pathname);
-	// '/clients' === location.pathname);
 
 	return <Drawer
 		data-tour="navigation"
@@ -253,11 +249,21 @@ const CustomDrawer = ({
 				<List id="menu-items-tools">
 					{open ? <ListSubheader className={classes.menuSubHeader}>Manage</ListSubheader> : null}
 					{atLeastAdmin(userProfile, currentConnectionName) &&
-						<ListItemLink classes={classes} to="/streams" primary="Streams"
-									  icon={<StreamsIcon fontSize="small"/>}/>}
+						<ListItemLink
+							tour="navbar-streams"
+							classes={classes}
+							to="/streams"
+							primary="Streams"
+							icon={<StreamsIcon fontSize="small"/>}
+						/>}
 					{atLeastAdmin(userProfile, currentConnectionName) &&
-						<ListItemLink classes={classes} to="/terminal" primary="Terminal"
-									  icon={<TerminalIcon fontSize="small"/>}/>}
+						<ListItemLink
+							tour="navbar-terminal"
+							classes={classes}
+							to="/terminal"
+							primary="Terminal"
+							icon={<TerminalIcon fontSize="small"/>}
+						/>}
 					{/*<ListItemLink*/}
 					{/*	classes={classes}*/}
 					{/*	to="/tools/streamsheets"*/}
@@ -273,35 +279,43 @@ const CustomDrawer = ({
 						bottom: '0px',
 						boxShadow: 'none',
 						width: '100%',
+						background: 'none'
 					}}
 				>
-					<List>
-						<List>
+					<List style={{background: 'none'}}>
+						<List style={{background: 'none'}}>
 							{open ? <ListSubheader className={classes.menuSubHeader}>Configuration</ListSubheader> : null}
 							<Divider style={{margin: "7px 0px"}}/>
-							{(atLeastAdmin(userProfile, currentConnectionName) && !hideConnections) ? <ListItemLink
-								classes={classes}
-								to="/connections"
-								primary="Broker Connections"
-								icon={<ConnectionsIcon fontSize="small"/>}
-							/> : null}
-							{atLeastAdmin(userProfile) && <ListItemLink
-								classes={classes}
-								to="/clusters"
-								primary="Cluster Management"
-								icon={<ClusterIcon fontSize="small"/>}
-							/>}
-							{atLeastAdmin(userProfile) && <ListItemLink
-								classes={classes}
-								to="/certs"
-								primary="Certificate Management"
-								icon={<CertificateIcon fontSize="small"/>}
-							/>}
+							{(atLeastAdmin(userProfile, currentConnectionName) && !hideConnections) ?
+								<ListItemLink
+									tour="navbar-connections"
+									classes={classes}
+									to="/connections"
+									primary="Broker Connections"
+									icon={<ConnectionsIcon fontSize="small"/>}
+								/> : null}
+							{atLeastAdmin(userProfile) &&
+								<ListItemLink
+									tour="navbar-clusters"
+									classes={classes}
+									to="/clusters"
+									primary="Cluster Management"
+									icon={<ClusterIcon fontSize="small"/>}
+								/>}
+							{atLeastAdmin(userProfile) &&
+								<ListItemLink
+									tour="navbar-certs"
+									classes={classes}
+									to="/certs"
+									primary="Certificate Management"
+									icon={<CertificateIcon fontSize="small"/>}
+								/>}
 						</List>
 						<Divider/>
 						{adminOpen ? <Divider/> : null}
 						{adminOpen ?
 							<ListItemLink
+								tour="navbar-info"
 								id="menu-item-info"
 								classes={classes}
 								to="/info"
@@ -318,25 +332,30 @@ const CustomDrawer = ({
 						{/*	/>}*/}
 						{adminOpen && atLeastAdmin(userProfile) && userManagementAccess(userManagementFeature) ?
 							<ListItemLink
+								tour="navbar-users"
 								classes={classes}
 								to="/users"
 								primary="User Management"
 								icon={<UsersIcon fontSize="small"/>}
 							/> : null}
 						{adminOpen && atLeastAdmin(userProfile) && <ListItemLink
+							tour="navbar-user-groups"
 							classes={classes}
 							to="/user-groups"
 							primary="User Groups"
 							icon={<UserGroupsIcon fontSize="small"/>}
 						/>}
-						{adminOpen && atLeastAdmin(userProfile) ? <ListItemLink
-							classes={classes}
-							to="/tokens"
-							primary="App Tokens"
-							icon={<SecurityIcon fontSize="small"/>}
-						/> : null}
+						{adminOpen && atLeastAdmin(userProfile) ?
+							<ListItemLink
+								tour="navbar-tokens"
+								classes={classes}
+								to="/tokens"
+								primary="App Tokens"
+								icon={<SecurityIcon fontSize="small"/>}
+							/> : null}
 						{adminOpen && atLeastAdmin(userProfile) &&
 							<ListItemLink
+								tour="navbar-settings"
 								classes={classes}
 								to="/settings"
 								primary="Settings"

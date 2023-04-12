@@ -3,6 +3,7 @@ import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
+import FormGroup from '@material-ui/core/FormGroup';
 import Grid from '@material-ui/core/Grid';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
@@ -41,11 +42,14 @@ import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import {updateEditDefaultClient, updateRole, updateRoles} from '../actions/actions';
+import {getAdminRolesFromState} from '../helpers/utils';
 import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ACLTypesHelpDialog from './ACLTypesHelpDialog';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import ContentContainer from './ContentContainer';
+import StyledTypography from './StyledTypography';
 
 const ACL_TABLE_COLUMNS = [
 	{id: 'type', key: 'Type'},
@@ -127,7 +131,7 @@ const RoleDetail = (props) => {
 	const {client: brokerClient} = context;
 	const formClasses = useFormStyles();
 
-	const {defaultClient, role = {}, onSort, sortBy, sortDirection} = props;
+	const {adminRoles, defaultClient, role = {}, onSort, sortBy, sortDirection} = props;
 
 	const [aclTypesHelpDialogOpen, setACLTypesHelpDialogOpen] = React.useState(false);
 
@@ -151,6 +155,8 @@ const RoleDetail = (props) => {
 	const [updatedRole, setUpdatedRole] = React.useState({
 		...role
 	});
+
+	const isRoleUsedByAdmin = adminRoles.includes(role.rolename);
 
 	const validate = () => {
 		const valid = updatedRole.rolename !== '';
@@ -254,27 +260,32 @@ const RoleDetail = (props) => {
 	};
 
 	return role.rolename ? (
-		<div style={{height: '100%'}}>
-			<ACLTypesHelpDialog open={aclTypesHelpDialogOpen} handleClose={handleCloseACLTypesHelpDialog}/>
-			<ContainerBreadCrumbs title={role.rolename}
-								  links={[{name: 'Home', route: '/home'}, {name: 'Roles', route: '/roles'}]}/>
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs
+				title={role.rolename}
+				links={[
+					{name: 'Home', route: '/home'},
+					{name: 'Roles', route: '/roles'}
+				]}
+			/>}
+		>
 			<ContainerHeader
 				title={`Edit Role: ${role.rolename}`}
 				subTitle="Modify role properties and assign Access Control List Settings."
 			/>
-			<Tabs
-				value={selectedTab}
-				onChange={handleChange}
-				variant="scrollable"
-				scrollButtons="off"
-				aria-label="Role"
-			>
-				<Tab label="Details" icon={<RoleIcon/>} aria-label="details" {...a11yProps(0)} />
-				<Tab label="ACLs" icon={<ACLIcon/>} aria-label="acls" {...a11yProps(1)} />
-			</Tabs>
-			<TabPanel value={selectedTab} index={0}>
-				<Grid container spacing={1} alignItems="flex-end">
-					<Grid item xs={12}>
+			<>
+				<Tabs
+					value={selectedTab}
+					onChange={handleChange}
+					variant="scrollable"
+					scrollButtons="off"
+					aria-label="Role"
+				>
+					<Tab label="Details" icon={<RoleIcon/>} aria-label="details" {...a11yProps(0)} />
+					<Tab label="ACLs" icon={<ACLIcon/>} aria-label="acls" {...a11yProps(1)} />
+				</Tabs>
+				<TabPanel value={selectedTab} index={0}>
+					<FormGroup>
 						<TextField
 							required
 							disabled
@@ -285,7 +296,7 @@ const RoleDetail = (props) => {
 							variant="outlined"
 							fullWidth
 							size="small"
-							margin="dense"
+							margin="normal"
 							className={formClasses.textField}
 							InputProps={{
 								startAdornment: (
@@ -295,8 +306,6 @@ const RoleDetail = (props) => {
 								)
 							}}
 						/>
-					</Grid>
-					<Grid item xs={12}>
 						<TextField
 							disabled={!editMode}
 							onChange={(event) => {
@@ -314,11 +323,9 @@ const RoleDetail = (props) => {
 							variant="outlined"
 							fullWidth
 							size="small"
-							margin="dense"
+							margin="normal"
 							className={formClasses.textField}
 						/>
-					</Grid>
-					<Grid item xs={12}>
 						<TextField
 							disabled={!editMode}
 							onChange={(event) => {
@@ -336,288 +343,310 @@ const RoleDetail = (props) => {
 							variant="outlined"
 							fullWidth
 							size="small"
-							margin="dense"
+							margin="normal"
 							className={formClasses.textField}
 						/>
-					</Grid>
-				</Grid>
-			</TabPanel>
-			<TabPanel value={selectedTab} index={1}>
-				<Grid container spacing={1} alignItems="flex-end">
-					<Hidden xsDown implementation="css">
-						<div style={{height: '100%', overflowY: 'auto'}}>
-							<TableContainer>
-								<Table stickyHeader size="small" aria-label="sticky table">
-									<TableHead>
-										<TableRow>
-											{ACL_TABLE_COLUMNS.map((column) => (
-												<TableCell
-													key={column.id}
-													sortDirection={sortBy === column.id ? sortDirection : false}
-												>
-													<TableSortLabel
-														active={sortBy === column.id}
-														direction={sortDirection}
-														onClick={() => onSort(column.id)}
+					</FormGroup>
+				</TabPanel>
+				<TabPanel value={selectedTab} index={1}>
+						<Hidden xsDown implementation="css">
+							<div style={{height: '100%', overflowY: 'auto'}}>
+								<TableContainer>
+									<Table stickyHeader size="small" aria-label="sticky table">
+										<TableHead>
+											<TableRow>
+												{ACL_TABLE_COLUMNS.map((column) => (
+													<TableCell
+														key={column.id}
+														sortDirection={sortBy === column.id ? sortDirection : false}
 													>
-														{column.key}
-													</TableSortLabel>
-												</TableCell>
-											))}
-											<TableCell/>
-										</TableRow>
-									</TableHead>
-									<TableBody>
-										{role &&
-											role.acls &&
-											role.acls.map((acl) => (
+														<TableSortLabel
+															active={sortBy === column.id}
+															direction={sortDirection}
+															onClick={() => onSort(column.id)}
+														>
+															{column.key}
+														</TableSortLabel>
+													</TableCell>
+												))}
+												<TableCell/>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{role &&
+												role.acls &&
+												role.acls.map((acl) => (
+													<TableRow
+														hover
+														// TODO: add key
+														// key={role.rolename}
+													>
+														<TableCell>
+															<StyledTypography
+																disabled={isRoleUsedByAdmin}
+																text={acl.acltype}
+															/>
+														</TableCell>
+
+														<TableCell>
+															<StyledTypography
+																disabled={isRoleUsedByAdmin}
+																text={acl.topic}
+															/>
+														</TableCell>
+
+														<TableCell>
+															<StyledTypography
+																disabled={isRoleUsedByAdmin}
+																text={acl.priority}
+															/>
+														</TableCell>
+
+														<TableCell>
+															<Select disabled value={acl.allow ? 'allow' : 'deny'}>
+																<MenuItem value="allow">allow</MenuItem>
+																<MenuItem value="deny">deny</MenuItem>
+															</Select>
+														</TableCell>
+
+														<TableCell align="right">
+															<IconButton
+																size="small"
+																disabled={isRoleUsedByAdmin}
+																onClick={(event) => {
+																	event.stopPropagation();
+																	onRemoveACL(acl);
+																}}
+															>
+																<DeleteIcon fontSize="small"/>
+															</IconButton>
+														</TableCell>
+													</TableRow>
+												))}
+											{!isRoleUsedByAdmin && (
 												<TableRow
-													hover
 													// TODO: add key
 													// key={role.rolename}
 												>
-													<TableCell>{acl.acltype}</TableCell>
-
-													<TableCell>{acl.topic}</TableCell>
-
-													<TableCell>{acl.priority}</TableCell>
+													<TableCell>
+														<FormControl>
+															<InputLabel id="new-acl-type-label">ACL Type</InputLabel>
+															<Select
+																labelId="new-acl-type-label"
+																id="new-acl-type"
+																value={newACL.acltype}
+																defaultValue="publishClientToBroker"
+																onChange={(event) =>
+																	setNewACL({
+																		...newACL,
+																		acltype: event.target.value
+																	})
+																}
+															>
+																<MenuItem value={'publishClientSend'}>
+																	publishClientSend
+																</MenuItem>
+																<MenuItem value={'publishClientReceive'}>
+																	publishClientReceive
+																</MenuItem>
+																<MenuItem value={'subscribeLiteral'}>
+																	subscribeLiteral
+																</MenuItem>
+																<MenuItem value={'subscribePattern'}>
+																	subscribePattern
+																</MenuItem>
+																<MenuItem value={'unsubscribeLiteral'}>
+																	unsubscribeLiteral
+																</MenuItem>
+																<MenuItem value={'unsubscribePattern'}>
+																	unsubscribePattern
+																</MenuItem>
+															</Select>
+														</FormControl>
+														<IconButton
+															variant="contained"
+															edge="end"
+															aria-label="help"
+															onClick={handleOpenACLTypesHelpDialog}
+														>
+															<HelpIcon fontSize="small"/>
+														</IconButton>
+													</TableCell>
 
 													<TableCell>
-														<Select disabled value={acl.allow ? 'allow' : 'deny'}>
-															<MenuItem value="allow">allow</MenuItem>
-															<MenuItem value="deny">deny</MenuItem>
-														</Select>
+														<TextField
+															required
+															id="new-acl-topic"
+															label="Topic"
+															value={newACL.topic}
+															onChange={(event) =>
+																setNewACL({
+																	...newACL,
+																	topic: event.target.value
+																})
+															}
+														/>
+													</TableCell>
+
+													<TableCell>
+														<TextField
+															required
+															id="new-acl-priority"
+															label="Priority"
+															value={newACL.priority}
+															type="number"
+															onChange={(event) =>
+																setNewACL({
+																	...newACL,
+																	priority:
+																		event.target.value !== ''
+																			? parseInt(event.target.value)
+																			: ''
+																})
+															}
+														/>
+													</TableCell>
+													<TableCell>
+														<FormControl>
+															<InputLabel id="allow-deny-label"></InputLabel>
+															<Select
+																value={newACL.allow ? 'allow' : 'deny'}
+																onChange={(event) => {
+																	setNewACL({
+																		...newACL,
+																		allow: event.target.value === 'allow'
+																	});
+																}}
+															>
+																<MenuItem value="allow">allow</MenuItem>
+																<MenuItem value="deny">deny</MenuItem>
+															</Select>
+														</FormControl>
 													</TableCell>
 
 													<TableCell align="right">
-														<IconButton
-															size="small"
+														<Button
+															disabled={!validateACL()}
+															variant="contained"
+															color="primary"
+															startIcon={<SaveIcon/>}
 															onClick={(event) => {
 																event.stopPropagation();
-																onRemoveACL(acl);
+																onAddACL(newACL);
 															}}
 														>
-															<DeleteIcon fontSize="small"/>
-														</IconButton>
+															Add
+														</Button>
 													</TableCell>
 												</TableRow>
-											))}
-										<TableRow
-											// TODO: add key
-											// key={role.rolename}
-										>
-											<TableCell>
-												<FormControl>
-													<InputLabel id="new-acl-type-label">ACL Type</InputLabel>
-													<Select
-														labelId="new-acl-type-label"
-														id="new-acl-type"
-														value={newACL.acltype}
-														defaultValue="publishClientToBroker"
-														onChange={(event) =>
-															setNewACL({
-																...newACL,
-																acltype: event.target.value
-															})
+											)}
+										</TableBody>
+									</Table>
+								</TableContainer>
+							</div>
+						</Hidden>
+						<Hidden smUp implementation="css">
+							<Paper>
+								<List className={classes.root}>
+									{role &&
+										role.acls &&
+										role.acls.map((acl) => (
+											<React.Fragment>
+												<ListItem button>
+													<ListItemText
+														primary={acl.acltype}
+														secondary={
+															<React.Fragment>
+																<Typography
+																	component="span"
+																	variant="body2"
+																	className={classes.inline}
+																	color="textPrimary"
+																>
+																	Topic: {acl.topic}
+																</Typography>
+																<br/>
+																<Typography
+																	component="span"
+																	variant="body2"
+																	className={classes.inline}
+																	color="textPrimary"
+																>
+																	Priority: {acl.priority}
+																</Typography>
+																<br/>
+																<Typography
+																	component="span"
+																	variant="body2"
+																	className={classes.inline}
+																	color="textPrimary"
+																>
+																	Allow: <Checkbox checked={acl.allow} disabled/>
+																</Typography>
+															</React.Fragment>
 														}
-													>
-														<MenuItem value={'publishClientSend'}>
-															publishClientSend
-														</MenuItem>
-														<MenuItem value={'publishClientReceive'}>
-															publishClientReceive
-														</MenuItem>
-														<MenuItem value={'subscribeLiteral'}>
-															subscribeLiteral
-														</MenuItem>
-														<MenuItem value={'subscribePattern'}>
-															subscribePattern
-														</MenuItem>
-														<MenuItem value={'unsubscribeLiteral'}>
-															unsubscribeLiteral
-														</MenuItem>
-														<MenuItem value={'unsubscribePattern'}>
-															unsubscribePattern
-														</MenuItem>
-													</Select>
-												</FormControl>
-												<IconButton
-													variant="contained"
-													edge="end" aria-label="help"
-													onClick={handleOpenACLTypesHelpDialog}
-												>
-													<HelpIcon fontSize="small"/>
-												</IconButton>
-											</TableCell>
-
-											<TableCell>
-												<TextField
-													required
-													id="new-acl-topic"
-													label="Topic"
-													value={newACL.topic}
-													onChange={(event) =>
-														setNewACL({
-															...newACL,
-															topic: event.target.value
-														})
-													}
-												/>
-											</TableCell>
-
-											<TableCell>
-												<TextField
-													required
-													id="new-acl-priority"
-													label="Priority"
-													value={newACL.priority}
-													type="number"
-													onChange={(event) =>
-														setNewACL({
-															...newACL,
-															priority:
-																event.target.value !== ''
-																	? parseInt(event.target.value)
-																	: ''
-														})
-													}
-												/>
-											</TableCell>
-											<TableCell>
-												<FormControl>
-													<InputLabel id="allow-deny-label"></InputLabel>
-													<Select
-														value={newACL.allow ? 'allow' : 'deny'}
-														onChange={(event) => {
-															setNewACL({
-																...newACL,
-																allow: event.target.value === 'allow'
-															});
-														}}
-													>
-														<MenuItem value="allow">allow</MenuItem>
-														<MenuItem value="deny">deny</MenuItem>
-													</Select>
-												</FormControl>
-											</TableCell>
-
-											<TableCell align="right">
-												<Button
-													disabled={!validateACL()}
-													variant="contained"
-													color="primary"
-													startIcon={<SaveIcon/>}
-													onClick={(event) => {
-														event.stopPropagation();
-														onAddACL(newACL);
-													}}
-												>
-													Add
-												</Button>
-											</TableCell>
-										</TableRow>
-									</TableBody>
-								</Table>
-							</TableContainer>
-						</div>
-					</Hidden>
-					<Hidden smUp implementation="css">
-						<Paper>
-							<List className={classes.root}>
-								{role &&
-									role.acls &&
-									role.acls.map((acl) => (
-										<React.Fragment>
-											<ListItem button>
-												<ListItemText
-													primary={acl.acltype}
-													secondary={
-														<React.Fragment>
-															<Typography
-																component="span"
-																variant="body2"
-																className={classes.inline}
-																color="textPrimary"
-															>
-																Topic: {acl.topic}
-															</Typography>
-															<br/>
-															<Typography
-																component="span"
-																variant="body2"
-																className={classes.inline}
-																color="textPrimary"
-															>
-																Priority: {acl.priority}
-															</Typography>
-															<br/>
-															<Typography
-																component="span"
-																variant="body2"
-																className={classes.inline}
-																color="textPrimary"
-															>
-																Allow:{' '}
-																<Checkbox checked={acl.allow} disabled/>
-															</Typography>
-														</React.Fragment>
-													}
-												/>
-												<ListItemSecondaryAction>
-													<IconButton edge="end" aria-label="delete">
-														<DeleteIcon/>
-													</IconButton>
-												</ListItemSecondaryAction>
-											</ListItem>
-											<Divider variant="inset" component="li"/>
-										</React.Fragment>
-									))}
-							</List>
-						</Paper>
-					</Hidden>
-				</Grid>
-			</TabPanel>
-			{!editMode && selectedTab === 0 && (
-				<Grid item xs={12}>
-					<Button
-						variant="contained"
-						className={formClasses.buttonTop}
-						color="primary"
-						startIcon={<EditIcon/>}
-						onClick={() => setEditMode(true)}
-					>
-						Edit
-					</Button>
-				</Grid>
-			)}
-			{editMode && selectedTab === 0 && (
-				<Grid item xs={12}>
-					<Button
-						variant="contained"
-						disabled={!validate()}
-						color="primary"
-						className={formClasses.buttonTopRight}
-						startIcon={<SaveIcon/>}
-						onClick={(event) => {
-							event.stopPropagation();
-							onUpdateRole();
-						}}
-					>
-						Save
-					</Button>
-					<Button
-						variant="contained"
-						className={formClasses.buttonTop}
-						onClick={(event) => {
-							event.stopPropagation();
-							onCancelEdit();
-						}}
-					>
-						Cancel
-					</Button>
-				</Grid>
-			)}
-		</div>
+													/>
+													<ListItemSecondaryAction>
+														<IconButton edge="end" aria-label="delete">
+															<DeleteIcon/>
+														</IconButton>
+													</ListItemSecondaryAction>
+												</ListItem>
+												<Divider variant="inset" component="li"/>
+											</React.Fragment>
+										))}
+								</List>
+							</Paper>
+						</Hidden>
+				</TabPanel>
+				<FormGroup>
+					{!editMode && !isRoleUsedByAdmin && selectedTab === 0 && (
+						<Button
+							variant="contained"
+							className={formClasses.buttonTop}
+							style={{width: '120px'}}
+							size="small"
+							color="primary"
+							startIcon={<EditIcon/>}
+							disabled={isRoleUsedByAdmin}
+							onClick={() => setEditMode(true)}
+						>
+							Edit
+						</Button>
+					)}
+					{editMode && selectedTab === 0 && (
+						<Grid item xs={12}>
+							<Button
+								variant="contained"
+								disabled={!validate()}
+								size="small"
+								color="primary"
+								className={formClasses.buttonTopRight}
+								startIcon={<SaveIcon/>}
+								onClick={(event) => {
+									event.stopPropagation();
+									onUpdateRole();
+								}}
+							>
+								Save
+							</Button>
+							<Button
+								variant="contained"
+								className={formClasses.buttonTop}
+								size="small"
+								onClick={(event) => {
+									event.stopPropagation();
+									onCancelEdit();
+								}}
+							>
+								Cancel
+							</Button>
+						</Grid>
+					)}
+				</FormGroup>
+				<ACLTypesHelpDialog open={aclTypesHelpDialogOpen} handleClose={handleCloseACLTypesHelpDialog}/>
+			</>
+		</ContentContainer>
 	) : (
 		<Redirect to="/roles" push/>
 	);
@@ -631,6 +660,7 @@ const mapStateToProps = (state) => {
 	return {
 		role: state.roles?.role,
 		roles: state.roles?.roles,
+		adminRoles: getAdminRolesFromState(state),
 		defaultClient: state.brokerConnections?.defaultClient
 	};
 };

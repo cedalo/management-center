@@ -7,6 +7,7 @@ const BasePlugin = require('../../BasePlugin');
 const meta = require('./meta');
 const swagger = require('./swagger');
 const { createActions } = require('./actions');
+const { hasSession } = require('../../../../../../plugins/utils');
 
 const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 
@@ -79,6 +80,14 @@ module.exports = class Plugin extends BasePlugin {
 				response.redirect('/login');
 			});
 		});
+
+		router.get(
+			'/validate-session',
+			(request, response) => {
+				return response.send(hasSession(request) ? { valid: true } : { valid: false });
+				// return hasSession(request) ? next() : response.redirect(303, `${CEDALO_MC_PROXY_BASE_PATH}/login`);
+			}
+		);
 
 		router.post(
 			'/auth',

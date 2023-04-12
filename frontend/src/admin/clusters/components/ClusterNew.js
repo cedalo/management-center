@@ -1,10 +1,12 @@
+import FormGroup from '@material-ui/core/FormGroup';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
+import ContainerBox from '../../../components/ContainerBox';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
+import ContentContainer from '../../../components/ContentContainer';
 import {updateClusters} from '../actions/actions';
 import {useSnackbar} from 'notistack';
-
 import {Alert, AlertTitle} from '@material-ui/lab';
 import ClusterIcon from '@material-ui/icons/Storage';
 import Grid from '@material-ui/core/Grid';
@@ -21,7 +23,15 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 
 
-const SYNCMODES = ['full', 'dynsec'];
+const SYNCMODES = [
+	{
+		label: 'Full Sync',
+		value: 'full'
+	}, {
+		label: 'Dynamic Security Sync',
+		value: 'dynsec'
+	}
+];
 
 const ClusterNew = (props) => {
 	const {clusterManagementFeature} = props;
@@ -64,9 +74,9 @@ const ClusterNew = (props) => {
 
 	const validate = () => {
 		const valid = !clusternameExists && clustername !== ''
-					&& arePrivateAddressesPresent()
-					&& areBrokersPresent()
-					&& areNodeIdsUnique();
+			&& arePrivateAddressesPresent()
+			&& areBrokersPresent()
+			&& areNodeIdsUnique();
 		return valid;
 	};
 
@@ -115,138 +125,132 @@ const ClusterNew = (props) => {
 	};
 
 	return (
-		<div>
-			<ContainerBreadCrumbs
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs
 				title="New"
 				links={[
-					{ name: 'Home', route: '/home' },
-					{ name: 'Clusters', route: '/clusters' }
+					{name: 'Home', route: '/home'},
+					{name: 'Clusters', route: '/clusters'}
 				]}
+			/>}
+			overFlowX="hidden"
+		>
+			<ContainerHeader
+				title="New Cluster"
+				subTitle="Add a new cluster by assigning existing brokers to the cluster"
+				warnings={() => {
+					const alerts = [];
+					if (clusterManagementFeature?.error) {
+						alerts.push({
+							severity: 'warning',
+							title: clusterManagementFeature.error.title || 'An error has occured',
+							error: clusterManagementFeature.error.message
+						});
+					}
+					return alerts;
+				}}
 			/>
-			{/* TODO: Quick hack to detect whether feature is supported */}
-			{clusterManagementFeature?.error ? (
-				<>
-					<br />
-					<Alert severity="warning">
-						<AlertTitle>{clusterManagementFeature.error.title}</AlertTitle>
-						{clusterManagementFeature.error.message}
-					</Alert>
-				</>
-			) : null}
 			{!clusterManagementFeature?.error && (
-				<div style={{ height: 'calc(100% - 26px)' }}>
-					<div style={{ display: 'grid', gridTemplateRows: 'max-content auto', height: '100%' }}>
-						<ContainerHeader
-							title="New Cluster"
-							subTitle="Add a new cluster by assigning existing brokers to the cluster"
-						/>
-						<Grid container spacing={2} alignItems="flex-end">
-							<Grid item xs={12} sm={4}>
-								<TextField
-									error={clusternameExists}
-									helperText={clusternameExists && 'A cluster with this clustername already exists.'}
-									required
-									id="clustername"
-									size="small"
-									margin="normal"
-									label="Cluster name"
-									onChange={(event) => setClustername(event.target.value)}
-									defaultValue="Example"
-									variant="outlined"
-									fullWidth
-									InputProps={{
-										startAdornment: (
-											<InputAdornment position="start">
-												<ClusterIcon />
-											</InputAdornment>
-										)
-									}}
-								/>
-							</Grid>
-							<Grid item xs={12} sm={6}>
-								<TextField
-									required={false}
-									id="description"
-									size="small"
-									margin="normal"
-									label="Cluster description"
-									onChange={(event) => setClusterDescription(event.target.value)}
-									defaultValue="Example cluster"
-									variant="outlined"
-									fullWidth
-								/>
-							</Grid>
-							<Grid item xs={12} sm={2}>
-								<TextField
-									required={false}
-									id="syncmode"
-									size="small"
-									margin="normal"
-									label="Syncmode"
-									onChange={(event) => setSyncmode(event.target.value)}
-									defaultValue="full"
-									variant="outlined"
-									fullWidth
-									select
-								>
-									{SYNCMODES.map((mode) => (
-										<MenuItem value={mode}>{mode}</MenuItem>
-									))}
-								</TextField>
-							</Grid>
+				<FormGroup>
+					<Grid container spacing={2} alignItems="flex-end">
+						<Grid item xs={12} sm={4}>
+							<TextField
+								error={clusternameExists}
+								helperText={clusternameExists && 'A cluster with this name already exists.'}
+								required
+								id="clustername"
+								size="small"
+								margin="normal"
+								label="Name"
+								onChange={(event) => setClustername(event.target.value)}
+								defaultValue="Example"
+								variant="outlined"
+								fullWidth
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position="start">
+											<ClusterIcon/>
+										</InputAdornment>
+									)
+								}}
+							/>
 						</Grid>
-						<br />
-						<Grid container spacing={2} alignItems="flex-end">
-							<Grid item xs={12} sm={4}>
-								<Card variant="outlined">
-									<CardHeader subheader="Node 1" disableTypography />
-									<CardContent style={{ paddingTop: '0px' }}>
-										<SelectNodeComponent
-											defaultNode={node1}
-											setNode={setNode1}
-											checkAllNodeIds={areNodeIdsUnique}
-										/>
-									</CardContent>
-								</Card>
-							</Grid>
-							<Grid item xs={12} sm={4}>
-								<Card variant="outlined">
-									<CardHeader subheader="Node 2" disableTypography />
-									<CardContent style={{ paddingTop: '0px' }}>
-										<SelectNodeComponent
-											defaultNode={node2}
-											setNode={setNode2}
-											checkAllNodeIds={areNodeIdsUnique}
-										/>
-									</CardContent>
-								</Card>
-							</Grid>
-							<Grid item xs={12} sm={4}>
-								<Card variant="outlined">
-									<CardHeader subheader="Node 3" disableTypography />
-									<CardContent style={{ paddingTop: '0px' }}>
-										<SelectNodeComponent
-											defaultNode={node3}
-											setNode={setNode3}
-											checkAllNodeIds={areNodeIdsUnique}
-										/>
-									</CardContent>
-								</Card>
-							</Grid>
+						<Grid item xs={12} sm={5}>
+							<TextField
+								required={false}
+								id="description"
+								size="small"
+								margin="normal"
+								label="Description"
+								onChange={(event) => setClusterDescription(event.target.value)}
+								defaultValue="Example cluster"
+								variant="outlined"
+								fullWidth
+							/>
 						</Grid>
-						<Grid container xs={12} alignItems="flex-start">
-							<Grid item xs={12}>
-								<SaveCancelButtons
-									onSave={onSaveCluster}
-									saveDisabled={!validate()}
-									onCancel={onCancel}
-								/>
-							</Grid>
+						<Grid item xs={12} sm={3}>
+							<TextField
+								required={false}
+								id="syncmode"
+								size="small"
+								margin="normal"
+								label="Sync Mode"
+								onChange={(event) => setSyncmode(event.target.value)}
+								defaultValue="full"
+								variant="outlined"
+								fullWidth
+								select
+							>
+								{SYNCMODES.map((mode) => (
+									<MenuItem value={mode.value}>{mode.label}</MenuItem>
+								))}
+							</TextField>
 						</Grid>
-					</div>
-				</div>
+						<Grid item xs={12} sm={4}>
+							<Card variant="outlined">
+								<CardHeader subheader="Node 1" disableTypography/>
+								<CardContent style={{paddingTop: '0px'}}>
+									<SelectNodeComponent
+										defaultNode={node1}
+										setNode={setNode1}
+										checkAllNodeIds={areNodeIdsUnique}
+									/>
+								</CardContent>
+							</Card>
+						</Grid>
+						<Grid item xs={12} sm={4}>
+							<Card variant="outlined">
+								<CardHeader subheader="Node 2" disableTypography/>
+								<CardContent style={{paddingTop: '0px'}}>
+									<SelectNodeComponent
+										defaultNode={node2}
+										setNode={setNode2}
+										checkAllNodeIds={areNodeIdsUnique}
+									/>
+								</CardContent>
+							</Card>
+						</Grid>
+						<Grid item xs={12} sm={4}>
+							<Card variant="outlined">
+								<CardHeader subheader="Node 3" disableTypography/>
+								<CardContent style={{paddingTop: '0px'}}>
+									<SelectNodeComponent
+										defaultNode={node3}
+										setNode={setNode3}
+										checkAllNodeIds={areNodeIdsUnique}
+									/>
+								</CardContent>
+							</Card>
+						</Grid>
+					</Grid>
+					<SaveCancelButtons
+						onSave={onSaveCluster}
+						saveDisabled={!validate()}
+						onCancel={onCancel}
+					/>
+				</FormGroup>
 			)}
-		</div>
+		</ContentContainer>
 	);
 };
 

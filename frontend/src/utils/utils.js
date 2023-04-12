@@ -7,7 +7,6 @@ export const isAdminOpen = () => {
 		location.pathname.startsWith('/tokens') ||
 		location.pathname.startsWith('/info') ||
 		location.pathname.startsWith('/users') ||
-		location.pathname.startsWith('/tokens') ||
 		location.pathname.startsWith('/settings');
 };
 export const showConnections = () => {
@@ -16,8 +15,11 @@ export const showConnections = () => {
 		location.pathname.startsWith('/info') ||
 		location.pathname.startsWith('/users') ||
 		location.pathname.startsWith('/certs') ||
-		location.pathname.startsWith('/tokens') ||
 		location.pathname.startsWith('/connections') ||
 		location.pathname.startsWith('/clusters') ||
 		location.pathname.startsWith('/settings'));
 };
+
+export const getHelpBasePath = () => {
+	return 'https://cedalo.github.io/documentation-staging/';
+}

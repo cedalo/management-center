@@ -2,21 +2,24 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import ConnectionDetailComponent from './ConnectionDetailComponent';
+import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import ContentContainer from './ContentContainer';
 
 const ConnectionDetail = (props) => {
 	const { selectedConnectionToEdit: connection } = props;
 
 	return connection ? (
-		<div>
-			<ContainerBreadCrumbs title={connection.id} links={[{name: 'Home', route: '/home'},{name: 'Connections', route: '/connections'}]}/>
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title={connection.id} links={[{name: 'Home', route: '/home'},{name: 'Connections', route: '/connections'}]}/>}
+		>
 			<ContainerHeader
 				title="Edit Connection"
 				subTitle="View and modify connection settings. To modify click on the edit button below."
 			/>
 			<ConnectionDetailComponent />
-		</div>
+		</ContentContainer>
 	) : (
 		<Redirect to="/connections" push />
 	);

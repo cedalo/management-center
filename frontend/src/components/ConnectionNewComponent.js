@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 		position: "absolute",
 		top: 0,
 		left: "10px",
-		backgroundColor: theme.palette.background.paper,
+		backgroundColor: theme.palette.background.default,
 		paddingLeft: "5px",
 		paddingRight: "5px",
 		zIndex: 3,
@@ -280,15 +280,21 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 			setErrors({...errors, [clientCertificateFieldName]: null});
 			setErrors({...errors, [clientPrivateKeyFieldName]: null});
 		}
-		// the !clientCertificateFile part means that clientCertificate was not loaded because the respective input field hasn't been set with its name yet
+		// the !clientCertificateFile part means that clientCertificate was not loaded because the respective input
+		// field hasn't been set with its name yet
 		if (connection[clientPrivateKeyFieldName] && !connection[clientCertificateFileFieldName]) {
-			setErrors({...errors, [clientCertificateFieldName]: {message: 'You have provided a private key but no certificate'}});
-		}
-		else if (connection[clientCertificateFieldName] && !connection[clientPrivateKeyFileFieldName]) {
-			setErrors({...errors, [clientPrivateKeyFieldName]: {message: 'You have provided a certificate but no private key'}});
-		}
-		else if ((connection[clientCertificateFieldName] && connection[clientPrivateKeyFileFieldName]) || (!connection[clientCertificateFieldName] && !connection[clientPrivateKeyFileFieldName])) {
-			setErrors((prevState) => ({...prevState, [clientPrivateKeyFieldName]: null, [clientCertificateFieldName]: null}));
+			setErrors({
+				...errors,
+				[clientCertificateFieldName]: {message: 'You have provided a private key but no certificate'}
+			});
+		} else if (connection[clientCertificateFieldName] && !connection[clientPrivateKeyFileFieldName]) {
+			setErrors({
+				...errors,
+				[clientPrivateKeyFieldName]: {message: 'You have provided a certificate but no private key'}
+			});
+		} else if ((connection[clientCertificateFieldName] && connection[clientPrivateKeyFileFieldName]) || (!connection[clientCertificateFieldName] && !connection[clientPrivateKeyFileFieldName])) {
+			setErrors(
+				(prevState) => ({...prevState, [clientPrivateKeyFieldName]: null, [clientCertificateFieldName]: null}));
 		}
 	};
 
@@ -350,340 +356,327 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 
 
 	return connection ? (
-		<div>
-			<div>
-				<Grid container spacing={1} alignItems="flex-end">
-					<Grid item xs={12}>
-						<TextField
-							error={connectionExists}
-							helperText={connectionExists && 'A connection with this ID already exists.'}
-							required={true}
-							size="small"
-							margin="dense"
-							className={formClasses.textField}
-							onChange={(event) => {
-								setConnection({
-									...connection,
-									id: event.target.value
-								});
-							}}
-							id="id"
-							label="ID"
-							value={connection.id}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							InputProps={{
-								startAdornment: (
-									<InputAdornment position="start">
-										<AccountCircle/>
-									</InputAdornment>
-								)
-							}}
-						/>
-					</Grid>
-					<Grid item xs={12}>
-						<TextField
-							error={connectionWithNameExists}
-							helperText={connectionWithNameExists && 'A connection with this name already exists.'}
-							size="small"
-							margin="dense"
-							className={formClasses.textField}
-							required={true}
-							id="name"
-							label="Name"
-							value={connection.name}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							onChange={(event) => {
-								setConnection({
-									...connection,
-									name: event.target.value
-								});
-							}}
-						/>
-					</Grid>
-					<Grid item xs={12}>
-						<TextField
-							required={true}
-							id="url"
-							label="URL"
-							value={connection.url}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							size="small"
-							margin="dense"
-							className={formClasses.textField}
-							onChange={(event) => {
-								setConnection({
-									...connection,
-									url: event.target.value
-								});
-								setConnected(false);
-							}}
-						/>
-					</Grid>
-					<Grid item xs={12}>
-						<TextField
-							id="username"
-							label="Username"
-							value={connection.credentials?.username}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							size="small"
-							margin="dense"
-							className={formClasses.textField}
-							onChange={(event) => {
-								setConnection({
-									...connection,
-									credentials: {
-										...connection.credentials,
-										username: event.target.value
-									}
-								});
-								setConnected(false);
-							}}
-						/>
-					</Grid>
-					<Grid item xs={12}>
-						<TextField
-							id="password"
-							type={showPassword ? "text" : "password"}
-							label="Password"
-							value={connection.credentials?.password}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							size="small"
-							margin="dense"
-							className={formClasses.textField}
-							onChange={(event) => {
-								setConnection({
-									...connection,
-									credentials: {
-										...connection.credentials,
-										password: event.target.value
-									}
-								});
-								setConnected(false);
-							}}
-							InputProps={{ // <-- This is where the toggle button is added.
-								endAdornment: (
-									<InputAdornment position="end">
-										<IconButton
-											aria-label="toggle password visibility"
-											onClick={handleClickShowPassword}
-											onMouseDown={handleMouseDownPassword}
-										>
-											{showPassword ? <Visibility/> : <VisibilityOff/>}
-										</IconButton>
-									</InputAdornment>
-								)
-							}}
-						/>
-					</Grid>
-				</Grid>
+		<FormGroup>
+			<TextField
+				error={connectionExists}
+				helperText={connectionExists && 'A connection with this ID already exists.'}
+				required={true}
+				size="small"
+				margin="normal"
+				className={formClasses.textField}
+				onChange={(event) => {
+					setConnection({
+						...connection,
+						id: event.target.value
+					});
+				}}
+				id="id"
+				label="ID"
+				value={connection.id}
+				defaultValue=""
+				variant="outlined"
+				fullWidth
+				InputProps={{
+					startAdornment: (
+						<InputAdornment position="start">
+							<AccountCircle/>
+						</InputAdornment>
+					)
+				}}
+			/>
+			<TextField
+				error={connectionWithNameExists}
+				helperText={connectionWithNameExists && 'A connection with this name already exists.'}
+				size="small"
+				margin="normal"
+				className={formClasses.textField}
+				required={true}
+				id="name"
+				label="Name"
+				value={connection.name}
+				defaultValue=""
+				variant="outlined"
+				fullWidth
+				onChange={(event) => {
+					setConnection({
+						...connection,
+						name: event.target.value
+					});
+				}}
+			/>
+			<TextField
+				required={true}
+				id="url"
+				label="URL"
+				value={connection.url}
+				defaultValue=""
+				variant="outlined"
+				fullWidth
+				size="small"
+				margin="normal"
+				className={formClasses.textField}
+				onChange={(event) => {
+					setConnection({
+						...connection,
+						url: event.target.value
+					});
+					setConnected(false);
+				}}
+			/>
+			<TextField
+				id="username"
+				label="Username"
+				value={connection.credentials?.username}
+				defaultValue=""
+				variant="outlined"
+				fullWidth
+				size="small"
+				margin="normal"
+				className={formClasses.textField}
+				onChange={(event) => {
+					setConnection({
+						...connection,
+						credentials: {
+							...connection.credentials,
+							username: event.target.value
+						}
+					});
+					setConnected(false);
+				}}
+			/>
+			<TextField
+				id="password"
+				type={showPassword ? "text" : "password"}
+				label="Password"
+				value={connection.credentials?.password}
+				defaultValue=""
+				variant="outlined"
+				fullWidth
+				size="small"
+				margin="normal"
+				className={formClasses.textField}
+				onChange={(event) => {
+					setConnection({
+						...connection,
+						credentials: {
+							...connection.credentials,
+							password: event.target.value
+						}
+					});
+					setConnected(false);
+				}}
+				InputProps={{ // <-- This is where the toggle button is added.
+					endAdornment: (
+						<InputAdornment position="end">
+							<IconButton
+								aria-label="toggle password visibility"
+								onClick={handleClickShowPassword}
+								onMouseDown={handleMouseDownPassword}
+							>
+								{showPassword ? <Visibility/> : <VisibilityOff/>}
+							</IconButton>
+						</InputAdornment>
+					)
+				}}
+			/>
 
-				{!(tlsFeature?.supported) ?
-					(<>
-						<div style={{padding: '10px'}}></div>
-						<Alert severity="warning" className={classes.alert}>
-							<AlertTitle>TLS feature is not available</AlertTitle>
-							Make sure that support for custom TLS certificates is included in your MMC license.
-						</Alert>
-					</>) : (<></>)
-				}
+			{!(tlsFeature?.supported) ?
+				(<>
+					<div style={{padding: '10px'}}></div>
+					<Alert severity="warning" className={classes.alert}>
+						<AlertTitle>TLS feature is not available</AlertTitle>
+						Make sure that support for custom TLS certificates is included in your MMC license.
+					</Alert>
+				</>) : (<></>)
+			}
 
-				<div className={(!tlsFeature?.supported) ? classes.notEnabledBlock : ''}>
-					<div style={{padding: '5px'}}></div>
-					<div className={`${classes.parent} ${classes.padTop} ${classes.padSidesSmall}`}>
-						<div className={classes.overlayed}>
-							<Typography className={classes.smallFont}>
-								Server certificate
-							</Typography>
-						</div>
-						<Grid container direction={'row'} spacing={1} alignItems="flex-end"
-							  className={`${classes.container} ${classes.parent} ${classes.padTop2}`}>
-							<Grid item xl={6} md={6} sm={6} xs={6}>
-								<FormGroup>
-									<FormControlLabel
-										control={
-											<Switch
-												disabled={!tlsFeature?.supported}
+			<div className={(!tlsFeature?.supported) ? classes.notEnabledBlock : ''}>
+				<div style={{padding: '5px'}}></div>
+				<div className={`${classes.parent} ${classes.padTop}`}>
+					<div className={classes.overlayed}>
+						<Typography className={classes.smallFont}>
+							Server certificate
+						</Typography>
+					</div>
+					<Grid container direction={'row'} spacing={0} alignItems="flex-end"
+						  className={`${classes.container} ${classes.parent} ${classes.padTop2}`}>
+						<Grid item xl={6} md={6} sm={6} xs={6}>
+							<FormGroup>
+								<FormControlLabel
+									control={
+										<Switch
+											color="primary"
+											disabled={!tlsFeature?.supported}
+											size="small"
+											checked={connection[verifyServerCertificateFieldName]}
+											onChange={(event) => {
+												setConnection({
+													...connection,
+													[verifyServerCertificateFieldName]: event.target.checked
+												});
+												setConnected(false);
+											}}
+										/>
+									}
+									label="Verify server certificate"
+								/>
+							</FormGroup>
+						</Grid>
+						<Grid item xl={6} md={6} sm={6} xs={6}>
+						</Grid>
+						<Grid item xl={3} md={3} sm={4} xs={4}>
+							<Typography
+								className={errors[customCACertificateFieldName] ? classes.verticallyPad : ''}
+								align="left">CA Certificate</Typography>
+						</Grid>
+						<Grid item xl={7} md={7} sm={7} xs={7} style={{marginTop: '8px'}}>
+							<FormGroup row>
+								<Button
+									size="small"
+									onChange={handleFileUpload}
+									variant="contained"
+									className={`${classes.button} ${classes.restrictButtonHeight}`}
+									color="primary"
+									startIcon={<CloudUpload/>}
+									component="label"
+									disabled={!tlsFeature?.supported}
+								>
+									Choose File
+									<input name={customCACertificateFieldName} hidden type="file"/>
+								</Button>
+								<TextField
+									className={(errors[customCACertificateFieldName]) ? classes.filenameFieldExpanded : classes.filenameField}
+									size="small"
+									inputProps={{readOnly: true,}}
+									id="standard-basic"
+									label=""
+									variant="standard"
+									value={connection[customCACertificateFileFieldName]}
+									error={!!errors[customCACertificateFieldName]}
+									helperText={errors[customCACertificateFieldName]?.message}
+									InputProps={{
+										endAdornment:
+											<IconButton
+												className={(connection[customCACertificateFileFieldName]) ? classes.crossButton : classes.invisible}
 												size="small"
-												checked={connection[verifyServerCertificateFieldName]}
-												onChange={(event) => {
-													setConnection({
-														...connection,
-														[verifyServerCertificateFieldName]: event.target.checked
-													});
-													setConnected(false);
-												}}
-											/>
-										}
-										label="Verify server certificate"
-									/>
-								</FormGroup>
-							</Grid>
-							<Grid item xl={6} md={6} sm={6} xs={6}>
-							</Grid>
-							<Grid item xl={3} md={3} sm={4} xs={4}>
-								<Typography
-									className={errors[customCACertificateFieldName] ? classes.verticallyPad : ''}
-									align="left">CA Certificate</Typography>
-							</Grid>
-							<Grid item xl={7} md={7} sm={7} xs={7}>
-								<FormGroup row>
-									<Button
-										size="small"
-										onChange={handleFileUpload}
-										variant="contained"
-										className={`${classes.button} ${classes.restrictButtonHeight}`}
-										color="primary"
-										startIcon={<CloudUpload/>}
-										component="label"
-										disabled={!tlsFeature?.supported}
-									>
-										Choose File
-										<input name={customCACertificateFieldName} hidden type="file"/>
-									</Button>
-									<TextField
-										className={(errors[customCACertificateFieldName]) ? classes.filenameFieldExpanded : classes.filenameField}
-										size="small"
-										inputProps={{readOnly: true,}}
-										id="standard-basic"
-										label=""
-										variant="standard"
-										value={connection[customCACertificateFileFieldName]}
-										error={!!errors[customCACertificateFieldName]}
-										helperText={errors[customCACertificateFieldName]?.message}
-										InputProps={{
-											endAdornment:
-												<IconButton
-													className={(connection[customCACertificateFileFieldName]) ? classes.crossButton : classes.invisible}
-													size="small"
-													onClick={() => deleteFile(customCACertificateFieldName)}
-													disabled={!tlsFeature?.supported}
-												>
-													<Close className={classes.closeIcon}/>
-												</IconButton>,
-										}}
-										disabled={!tlsFeature?.supported}
-									/>
-								</FormGroup>
-							</Grid>
-							<Grid item xl={2} md={2} sm={1} xs={1}>
-							</Grid>
+												onClick={() => deleteFile(customCACertificateFieldName)}
+												disabled={!tlsFeature?.supported}
+											>
+												<Close className={classes.closeIcon}/>
+											</IconButton>,
+									}}
+									disabled={!tlsFeature?.supported}
+								/>
+							</FormGroup>
 						</Grid>
+						<Grid item xl={2} md={2} sm={1} xs={1}>
+						</Grid>
+					</Grid>
+				</div>
+				<div style={{padding: '7px'}}></div>
+				<div className={`${classes.parent} ${classes.padTop}`}>
+					<div className={classes.overlayed}>
+						<Typography className={classes.smallFont}>
+							Client certificate
+						</Typography>
 					</div>
-					<div style={{padding: '7px'}}></div>
-					<div className={`${classes.parent} ${classes.padTop} ${classes.padSidesSmall}`}>
-						<div className={classes.overlayed}>
-							<Typography className={classes.smallFont}>
-								Client certificate
-							</Typography>
-						</div>
-						<Grid container direction={'row'} spacing={1} alignItems="flex-end"
-							  className={`${classes.container} ${classes.parent} ${classes.padTop2}`}>
-							<Grid item xl={3} md={3} sm={4} xs={4}>
-								<Typography className={errors[clientCertificateFieldName] ? classes.verticallyPad : ''}
-											align="left">Certificate</Typography>
-							</Grid>
-							<Grid item xl={7} md={7} sm={7} xs={7}>
-								<FormGroup row>
-									<Button
-										size="small"
-										onChange={handleFileUpload}
-										variant="contained"
-										color="primary"
-										className={`${classes.button} ${classes.restrictButtonHeight}`}
-										startIcon={<CloudUpload/>}
-										component="label"
-										disabled={!tlsFeature?.supported}
-									>
-										Choose File
-										<input name={clientCertificateFieldName} hidden type="file"/>
-									</Button>
-									<TextField
-										className={(errors[clientCertificateFieldName]) ? classes.filenameFieldExpanded : classes.filenameField}
-										size="small"
-										inputProps={{readOnly: true,}}
-										id="standard-basic"
-										label=""
-										variant="standard"
-										value={connection[clientCertificateFileFieldName]}
-										error={!!errors[clientCertificateFieldName]}
-										helperText={errors[clientCertificateFieldName]?.message}
-										InputProps={{
-											endAdornment:
-												<IconButton
-													className={(connection[clientCertificateFileFieldName]) ? classes.crossButton : classes.invisible}
-													size="small"
-													onClick={() => deleteFile(clientCertificateFieldName)}
-													disabled={!tlsFeature?.supported}
-												>
-													<Close className={classes.closeIcon}/>
-												</IconButton>,
-										}}
-										disabled={!tlsFeature?.supported}
-									/>
-								</FormGroup>
-							</Grid>
-							<Grid item xl={2} md={2} sm={1} xs={1}>
-							</Grid>
+					<Grid container direction={'row'} spacing={0} alignItems="flex-end"
+						  className={`${classes.container} ${classes.parent} ${classes.padTop2}`}>
+						<Grid item xl={3} md={3} sm={4} xs={4}>
+							<Typography className={errors[clientCertificateFieldName] ? classes.verticallyPad : ''}
+										align="left">Certificate</Typography>
+						</Grid>
+						<Grid item xl={7} md={7} sm={7} xs={7} style={{marginTop: '8px'}}>
+							<FormGroup row>
+								<Button
+									size="small"
+									onChange={handleFileUpload}
+									variant="contained"
+									color="primary"
+									className={`${classes.button} ${classes.restrictButtonHeight}`}
+									startIcon={<CloudUpload/>}
+									component="label"
+									disabled={!tlsFeature?.supported}
+								>
+									Choose File
+									<input name={clientCertificateFieldName} hidden type="file"/>
+								</Button>
+								<TextField
+									className={(errors[clientCertificateFieldName]) ? classes.filenameFieldExpanded : classes.filenameField}
+									size="small"
+									inputProps={{readOnly: true,}}
+									id="standard-basic"
+									label=""
+									variant="standard"
+									value={connection[clientCertificateFileFieldName]}
+									error={!!errors[clientCertificateFieldName]}
+									helperText={errors[clientCertificateFieldName]?.message}
+									InputProps={{
+										endAdornment:
+											<IconButton
+												className={(connection[clientCertificateFileFieldName]) ? classes.crossButton : classes.invisible}
+												size="small"
+												onClick={() => deleteFile(clientCertificateFieldName)}
+												disabled={!tlsFeature?.supported}
+											>
+												<Close className={classes.closeIcon}/>
+											</IconButton>,
+									}}
+									disabled={!tlsFeature?.supported}
+								/>
+							</FormGroup>
+						</Grid>
+						<Grid item xl={2} md={2} sm={1} xs={1}>
+						</Grid>
 
 
-							<Grid item xl={3} md={3} sm={4} xs={4}>
-								<Typography className={(errors[clientPrivateKeyFieldName]) ? classes.verticallyPad : ''}
-											align="left">Private Key</Typography>
-							</Grid>
-							<Grid item xl={7} md={7} sm={7} xs={7}>
-								<FormGroup row>
-									<Button
-										size="small"
-										onChange={handleFileUpload}
-										variant="contained"
-										color="primary"
-										className={`${classes.button} ${classes.restrictButtonHeight}`}
-										startIcon={<CloudUpload/>}
-										component="label"
-										disabled={!tlsFeature?.supported}
-									>
-										Choose File
-										<input name={clientPrivateKeyFieldName} hidden type="file"/>
-									</Button>
-									<TextField
-										className={(errors[clientPrivateKeyFieldName]) ? classes.filenameFieldExpanded : classes.filenameField}
-										size="small"
-										inputProps={{readOnly: true,}}
-										id="standard-basic"
-										label=""
-										variant="standard"
-										value={connection[clientPrivateKeyFileFieldName]}
-										error={!!errors[clientPrivateKeyFieldName]}
-										helperText={errors[clientPrivateKeyFieldName]?.message}
-										InputProps={{
-											endAdornment:
-												<IconButton
-													className={(connection[clientPrivateKeyFileFieldName]) ? classes.crossButton : classes.invisible}
-													size="small"
-													onClick={() => deleteFile(clientPrivateKeyFieldName)}
-													disabled={!tlsFeature?.supported}
-												>
-													<Close className={classes.closeIcon}/>
-												</IconButton>,
-										}}
-										disabled={!tlsFeature?.supported}
-									/>
-								</FormGroup>
-							</Grid>
-							<Grid item xl={2} md={2} sm={1} xs={1}>
-							</Grid>
+						<Grid item xl={3} md={3} sm={4} xs={4}>
+							<Typography className={(errors[clientPrivateKeyFieldName]) ? classes.verticallyPad : ''}
+										align="left">Private Key</Typography>
 						</Grid>
-					</div>
+						<Grid item xl={7} md={7} sm={7} xs={7} style={{marginTop: '8px'}}>
+							<FormGroup row>
+								<Button
+									size="small"
+									onChange={handleFileUpload}
+									variant="contained"
+									color="primary"
+									className={`${classes.button} ${classes.restrictButtonHeight}`}
+									startIcon={<CloudUpload/>}
+									component="label"
+									disabled={!tlsFeature?.supported}
+								>
+									Choose File
+									<input name={clientPrivateKeyFieldName} hidden type="file"/>
+								</Button>
+								<TextField
+									className={(errors[clientPrivateKeyFieldName]) ? classes.filenameFieldExpanded : classes.filenameField}
+									size="small"
+									inputProps={{readOnly: true,}}
+									id="standard-basic"
+									label=""
+									variant="standard"
+									value={connection[clientPrivateKeyFileFieldName]}
+									error={!!errors[clientPrivateKeyFieldName]}
+									helperText={errors[clientPrivateKeyFieldName]?.message}
+									InputProps={{
+										endAdornment:
+											<IconButton
+												className={(connection[clientPrivateKeyFileFieldName]) ? classes.crossButton : classes.invisible}
+												size="small"
+												onClick={() => deleteFile(clientPrivateKeyFieldName)}
+												disabled={!tlsFeature?.supported}
+											>
+												<Close className={classes.closeIcon}/>
+											</IconButton>,
+									}}
+									disabled={!tlsFeature?.supported}
+								/>
+							</FormGroup>
+						</Grid>
+						<Grid item xl={2} md={2} sm={1} xs={1}>
+						</Grid>
+					</Grid>
 				</div>
 			</div>
 			{/* <Grid item xs={12} className={classes.buttons}>
@@ -702,7 +695,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 						Test connection
 					</Button>
 				</Grid> */}
-			<Grid item xs={12} spacing={0} >
+			<Grid item xs={12} spacing={0}>
 				<Button
 					variant="contained"
 					disabled={!validate()}
@@ -743,7 +736,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 					Cancel
 				</Button>
 			</Grid>
-		</div>
+		</FormGroup>
 	) : (
 		<Redirect to="/connections" push/>
 	);

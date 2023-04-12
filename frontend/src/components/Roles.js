@@ -22,9 +22,12 @@ import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateClients, updateGroups, updateRole, updateRoles} from '../actions/actions';
+import {getAdminRolesFromState} from '../helpers/utils';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import ContentContainer from './ContentContainer';
+import StyledTypography from './StyledTypography';
 
 const useStyles = makeStyles((theme) => ({
 	button: {
@@ -40,7 +43,7 @@ const ROLE_TABLE_COLUMNS = [
 	{id: 'name', key: 'Name'},
 	{id: 'textname', key: 'Text Name'},
 	{id: 'textdescription', key: 'Description'},
-	{ id: "action", key: "" },
+	{id: "action", key: ""},
 ];
 
 const FormattedGroupType = (props) => {
@@ -136,20 +139,22 @@ const Roles = (props) => {
 		history.push(`/roles/${rolename}`);
 	};
 
-	const {dynamicsecurityFeature, defaultACLAccess, roles = [], onSort, sortBy, sortDirection} = props;
+	const {dynamicsecurityFeature, defaultACLAccess, adminRoles, roles = [], onSort, sortBy, sortDirection} = props;
 
-	return (<div style={{height: '100%'}}>
-		<ContainerBreadCrumbs title="Roles" links={[{name: 'Home', route: '/home'}]}/>
-		<div style={{height: 'calc(100% - 26px)'}}>
-			<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
-				<ContainerHeader
-					title="Roles"
-					buttonsWidth="420px"
-					subTitle="List of existing roles. A role contains a number of ACLs, which either specifically allow or deny an action. Add as many ACLs as you need to a role."
-					connectedWarning={!props.connected}
-					brokerFeatureWarning={dynamicsecurityFeature?.supported === false ? "dynamic security" : null}
-				>
-					{dynamicsecurityFeature?.supported !== false && <Button
+	return (
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title="Roles" links={[{name: 'Home', route: '/home'}]}/>}
+			dataTour="page-roles"
+		>
+			<ContainerHeader
+				title="Roles"
+				buttonsWidth="420px"
+				subTitle="List of existing roles. A role contains a number of ACLs, which either specifically allow or deny an action. Add as many ACLs as you need to a role."
+				connectedWarning={!props.connected}
+				brokerFeatureWarning={dynamicsecurityFeature?.supported === false ? 'dynamic security' : null}
+			>
+				{dynamicsecurityFeature?.supported !== false && (
+					<Button
 						variant="outlined"
 						color="primary"
 						style={{marginRight: '10px'}}
@@ -161,109 +166,133 @@ const Roles = (props) => {
 						}}
 					>
 						New Role
-					</Button>}
+					</Button>
+				)}
+				<Button
+					variant="outlined"
+					color="primary"
+					style={{marginRight: '10px'}}
+					size="small"
+					startIcon={<EditIcon/>}
+					onClick={onEditDefaultACLAccess}
+				>
+					Edit default ACL access
+				</Button>
+				{dynamicsecurityFeature?.supported !== false && (
 					<Button
 						variant="outlined"
 						color="primary"
-						style={{marginRight: '10px'}}
 						size="small"
-						startIcon={<EditIcon/>}
-						onClick={onEditDefaultACLAccess}
-					>
-						Edit default ACL access
-					</Button>
-					{dynamicsecurityFeature?.supported !== false &&
-						<Button
-							variant="outlined"
-							color="primary"
-							size="small"
-							style={{paddingRight: '0px', minWidth: '30px'}}
-							startIcon={<ReloadIcon />}
-							onClick={(event) => {
-								event.stopPropagation();
-								onReload();
-							}}
-						/>
-					}
-				</ContainerHeader>
-				{dynamicsecurityFeature?.supported !== false && roles?.roles?.length > 0 ? (
+						style={{paddingRight: '0px', minWidth: '30px'}}
+						startIcon={<ReloadIcon/>}
+						onClick={(event) => {
+							event.stopPropagation();
+							onReload();
+						}}
+					/>
+				)}
+			</ContainerHeader>
+			{dynamicsecurityFeature?.supported !== false && roles?.roles?.length > 0 ? (
+				<div style={{height: '100%', overflowY: 'auto'}}>
 					<div style={{height: '100%', overflowY: 'auto'}}>
-							<div style={{height: '100%', overflowY: 'auto'}}>
-								<TableContainer>
-									<Table stickyHeader size="small" aria-label="sticky table">
-										<TableHead>
-											<TableRow>
-												{ROLE_TABLE_COLUMNS.map((column) => (<TableCell
-													key={column.id}
-													style={{
-														display: (!small && !medium) ||
+						<TableContainer>
+							<Table stickyHeader size="small" aria-label="sticky table">
+								<TableHead>
+									<TableRow>
+										{ROLE_TABLE_COLUMNS.map((column) => (
+											<TableCell
+												key={column.id}
+												style={{
+													display:
+														(!small && !medium) ||
 														(column.id === 'name' && (small || medium)) ||
 														(column.id === 'action' && (small || medium)) ||
 														(column.id === 'textdescription' && (small || medium))
-															? undefined : 'none'
-													}}
-													sortDirection={sortBy === column.id ? sortDirection : false}
-												>
-													{/*<TableSortLabel*/}
-													{/*	active={sortBy === column.id}*/}
-													{/*	direction={sortDirection}*/}
-													{/*	onClick={() => onSort(column.id)}*/}
-													{/*>*/}
-														{column.key}
-													{/*</TableSortLabel>*/}
-												</TableCell>))}
-											</TableRow>
-										</TableHead>
-										<TableBody>
-											{roles.roles.map((role) => (<TableRow
-												hover
-												key={role.rolename}
-												onClick={() => onSelectRole(role.rolename)}
-												style={{cursor: 'pointer'}}
+															? undefined
+															: 'none'
+												}}
+												sortDirection={sortBy === column.id ? sortDirection : false}
 											>
-												<TableCell>{role.rolename}</TableCell>
-												{small || medium ? null :
-													<TableCell>{role.textname}</TableCell>
-												}
-												<TableCell>{role.textdescription}</TableCell>
-													<TableCell align="right">
-														<Tooltip title="Delete role">
-															<IconButton
-																size="small"
-																onClick={(event) => {
-																	event.stopPropagation();
-																	onDeleteRole(role.rolename);
-																}}
-															>
-																<DeleteIcon fontSize="small"/>
-															</IconButton>
-														</Tooltip>
-													</TableCell>
-											</TableRow>))}
-										</TableBody>
-										<TableFooter>
-											<TableRow>
-												<TablePagination
-													rowsPerPageOptions={[5, 10, 25]}
-													colSpan={8}
-													count={roles?.totalCount}
-													rowsPerPage={rowsPerPage}
-													page={page}
-													onChangePage={handleChangePage}
-													onChangeRowsPerPage={handleChangeRowsPerPage}
+												{/*<TableSortLabel*/}
+												{/*	active={sortBy === column.id}*/}
+												{/*	direction={sortDirection}*/}
+												{/*	onClick={() => onSort(column.id)}*/}
+												{/*>*/}
+												{column.key}
+												{/*</TableSortLabel>*/}
+											</TableCell>
+										))}
+									</TableRow>
+								</TableHead>
+								<TableBody>
+									{roles.roles.map((role) => (
+										<TableRow
+											hover
+											key={role.rolename}
+											onClick={() => onSelectRole(role.rolename)}
+											style={{cursor: 'pointer'}}
+										>
+											<TableCell>
+												<StyledTypography
+													disabled={adminRoles.includes(role.rolename)}
+													text={role.rolename}
 												/>
-											</TableRow>
-										</TableFooter>
-									</Table>
-								</TableContainer>
-							</div>
+											</TableCell>
+											{small || medium ? null : (
+												<TableCell>
+													<StyledTypography
+														disabled={adminRoles.includes(role.rolename)}
+														text={role.textname}
+													/>
+												</TableCell>
+											)}
+
+											<TableCell>
+												<StyledTypography
+													disabled={adminRoles.includes(role.rolename)}
+													text={role.textdescription}
+												/>
+											</TableCell>
+
+											<TableCell align="right">
+												<Tooltip title="Delete role">
+													<IconButton
+														size="small"
+														disabled={adminRoles.includes(role.rolename)}
+														onClick={(event) => {
+															event.stopPropagation();
+															onDeleteRole(role.rolename);
+														}}
+													>
+														<DeleteIcon fontSize="small"/>
+													</IconButton>
+												</Tooltip>
+											</TableCell>
+										</TableRow>
+									))}
+								</TableBody>
+								<TableFooter>
+									<TableRow>
+										<TablePagination
+											rowsPerPageOptions={[5, 10, 25]}
+											colSpan={8}
+											count={roles?.totalCount}
+											rowsPerPage={rowsPerPage}
+											page={page}
+											onChangePage={handleChangePage}
+											onChangeRowsPerPage={handleChangeRowsPerPage}
+										/>
+									</TableRow>
+								</TableFooter>
+							</Table>
+						</TableContainer>
 					</div>
-					) : (
-						props.connected ? <div>No roles found</div> : null
-					)}
-			</div>
-		</div>
-	</div>);
+				</div>
+			) : props.connected ? (
+				<div>No roles found</div>
+			) : null}
+		</ContentContainer>
+	);
 };
 
 Roles.propTypes = {
@@ -280,6 +309,7 @@ Roles.defaultProps = {
 const mapStateToProps = (state) => {
 	return {
 		roles: state.roles?.roles,
+		adminRoles: getAdminRolesFromState(state),
 		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity,
 		connected: state.brokerConnections?.connected,
 	};

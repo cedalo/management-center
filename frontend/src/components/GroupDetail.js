@@ -1,11 +1,8 @@
-import Box from '@material-ui/core/Box';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
+import FormGroup from '@material-ui/core/FormGroup';
 import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import {makeStyles} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
@@ -14,12 +11,13 @@ import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
-import {Link as RouterLink, Redirect} from 'react-router-dom';
+import {Redirect} from 'react-router-dom';
 import {updateGroup, updateGroups} from '../actions/actions';
+import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
-import {useFormStyles} from '../styles';
+import ContentContainer from './ContentContainer';
 
 const clientShape = PropTypes.shape({
 	username: PropTypes.string,
@@ -84,136 +82,130 @@ const GroupDetail = (props) => {
 	};
 
 	return group.groupname ? (
-		<div>
-			<ContainerBreadCrumbs title={updatedGroup.groupname} links={[{name: 'Home', route: '/home'},
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title={updatedGroup.groupname} links={[{name: 'Home', route: '/home'},
 				{name: 'Groups', route: '/groups'}
-			]}/>
+			]}/>}
+		>
 			<ContainerHeader
 				title={`Edit Group: ${updatedGroup.groupname}`}
 				subTitle="Here you can modify the properties of a group. The group name can not be changed."
 			/>
-			<Grid container spacing={1} alignItems="flex-end">
-				<Grid item xs={12}>
-					<TextField
-						required
-						disabled
-						onChange={(event) => {
-							if (editMode) {
-								setUpdatedGroup({
-									...updatedGroup,
-									groupname: event.target.value
-								});
-							}
-						}}
-						id="groupname"
-						size="small"
-						margin="dense"
-						className={formClasses.textField}
-						value={updatedGroup.groupname}
-						label="Name"
-						defaultValue=""
-						variant="outlined"
-						fullWidth
-						InputProps={{
-							startAdornment: (
-								<InputAdornment position="start">
-									<AccountCircle/>
-								</InputAdornment>
-							)
-						}}
-					/>
-				</Grid>
-				<Grid item xs={12}>
-					<TextField
-						disabled={!editMode}
-						onChange={(event) => {
-							if (editMode) {
-								setUpdatedGroup({
-									...updatedGroup,
-									textname: event.target.value
-								});
-							}
-						}}
-						id="textname"
-						label="Text Name"
-						size="small"
-						margin="dense"
-						className={formClasses.textField}
-						value={updatedGroup.textname}
-						//   onChange={(event) => setTextName(event.target.value)}
-						defaultValue=""
-						variant="outlined"
-						fullWidth
-					/>
-				</Grid>
-				<Grid item xs={12}>
-					<TextField
-						disabled={!editMode}
-						onChange={(event) => {
-							if (editMode) {
-								setUpdatedGroup({
-									...updatedGroup,
-									textdescription: event.target.value
-								});
-							}
-						}}
-						id="textdescription"
-						label="Description"
-						size="small"
-						margin="dense"
-						className={formClasses.textField}
-						value={updatedGroup.textdescription}
-						//   onChange={(event) => setTextDescription(event.target.value)}
-						defaultValue=""
-						variant="outlined"
-						fullWidth
-					/>
-				</Grid>
-			</Grid>
-			{!editMode && (
-				<Grid item xs={12}>
+			<FormGroup>
+				<TextField
+					required
+					disabled
+					onChange={(event) => {
+						if (editMode) {
+							setUpdatedGroup({
+								...updatedGroup,
+								groupname: event.target.value
+							});
+						}
+					}}
+					id="groupname"
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+					value={updatedGroup.groupname}
+					label="Name"
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position="start">
+								<AccountCircle/>
+							</InputAdornment>
+						)
+					}}
+				/>
+				<TextField
+					disabled={!editMode}
+					onChange={(event) => {
+						if (editMode) {
+							setUpdatedGroup({
+								...updatedGroup,
+								textname: event.target.value
+							});
+						}
+					}}
+					id="textname"
+					label="Text Name"
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+					value={updatedGroup.textname}
+					//   onChange={(event) => setTextName(event.target.value)}
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+				/>
+				<TextField
+					disabled={!editMode}
+					onChange={(event) => {
+						if (editMode) {
+							setUpdatedGroup({
+								...updatedGroup,
+								textdescription: event.target.value
+							});
+						}
+					}}
+					id="textdescription"
+					label="Description"
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+					value={updatedGroup.textdescription}
+					//   onChange={(event) => setTextDescription(event.target.value)}
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+				/>
+				{!editMode && (
 					<Button
 						variant="contained"
 						size="small"
 						className={formClasses.buttonTop}
+						style={{width: '120px'}}
 						color="primary"
 						startIcon={<EditIcon/>}
 						onClick={() => setEditMode(true)}
 					>
 						Edit
 					</Button>
-				</Grid>
-			)}
-			{editMode && (
-				<Grid item xs={12}>
-					<Button
-						variant="contained"
-						disabled={!validate()}
-						size="small"
-						color="primary"
-						className={formClasses.buttonTopRight}
-						startIcon={<SaveIcon/>}
-						onClick={(event) => {
-							event.stopPropagation();
-							onUpdateGroup();
-						}}
-					>
-						Save
-					</Button>
-					<Button
-						variant="contained"
-						size="small"
-						className={formClasses.buttonTop}
-						onClick={(event) => {
-							event.stopPropagation();
-							onCancelEdit();
-						}}
-					>
-						Cancel
-					</Button>
-				</Grid>
-			)}
-		</div>
+				)}
+				{editMode && (
+					<Grid item xs={12}>
+						<Button
+							variant="contained"
+							disabled={!validate()}
+							size="small"
+							color="primary"
+							className={formClasses.buttonTopRight}
+							startIcon={<SaveIcon/>}
+							onClick={(event) => {
+								event.stopPropagation();
+								onUpdateGroup();
+							}}
+						>
+							Save
+						</Button>
+						<Button
+							variant="contained"
+							size="small"
+							className={formClasses.buttonTop}
+							onClick={(event) => {
+								event.stopPropagation();
+								onCancelEdit();
+							}}
+						>
+							Cancel
+						</Button>
+					</Grid>
+				)}
+			</FormGroup>
+		</ContentContainer>
 	) : (
 		<Redirect to="/groups" push/>
 	);

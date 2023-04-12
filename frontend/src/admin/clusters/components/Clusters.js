@@ -1,13 +1,5 @@
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
 import {makeStyles, withStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -16,23 +8,19 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import CheckHealthStatusIcon from '@material-ui/icons/Favorite';
 // import Fab from '@material-ui/core/Fab';
-import {Alert, AlertTitle} from '@material-ui/lab';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
-import {Link as RouterLink, useHistory} from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
+import ContentContainer from '../../../components/ContentContainer';
 import WaitDialog from '../../../components/WaitDialog';
 import {WebSocketContext} from '../../../websockets/WebSocket';
 import {updateCluster, updateClusters} from '../actions/actions';
@@ -56,20 +44,17 @@ const useStyles = makeStyles((theme) => ({
 		'& > *': {
 			margin: theme.spacing(0.3)
 		}
-	},
-	// fab: {
-	// 	position: 'absolute',
-	// 	bottom: theme.spacing(2),
-	// 	right: theme.spacing(2)
-	// },
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+	}
 }));
+
+const getSyncModeLabel = (mode) => {
+	return mode === 'dynsec' ? 'Dynamic Security Sync' : 'Full Sync';
+};
 
 const CLUSTER_TABLE_COLUMNS = [
 	{id: 'name', key: 'Name', align: 'left'},
 	{id: 'description', key: 'Description', align: 'left'},
-	{id: 'syncmode', key: 'Syncmode', align: 'left', width: '10%'},
+	{id: 'syncmode', key: 'Sync Mode', align: 'left', width: '15%'},
 	{id: 'nodes', key: 'Nodes', align: 'center', width: '5%'},
 	{id: 'delete', key: 'Delete', align: 'center', width: '5%'},
 ];
@@ -80,52 +65,51 @@ const createClusterTable = (clusters, classes, props, onCheckHealthStatus, onDel
 	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
 
 	if (!clusterManagementFeature?.error && clusterManagementFeature?.supported !== false && clusters && clusters.length > 0) {
-		return <div>
-			<TableContainer>
-				<Table stickyHeader size="small" aria-label="sticky table">
-					<TableHead>
-						<TableRow>
-							{CLUSTER_TABLE_COLUMNS.map((column) => (
+		return (<TableContainer>
+			<Table stickyHeader size="small" aria-label="sticky table">
+				<TableHead>
+					<TableRow>
+						{CLUSTER_TABLE_COLUMNS.map((column) => (
+							<TableCell
+								key={column.id}
+								style={{
+									width: column.width,
+									display: (!small && !medium) ||
+									(column.id === 'name' && (small || medium)) ||
+									(column.id === 'nodes' && (small || medium)) ||
+									(column.id === 'syncmode' && (small || medium)) ||
+									(column.id === 'delete' && (small || medium)) ||
+									(column.id === 'description' && medium) ? undefined : 'none'
+								}}
+								sortDirection={sortBy === column.id ? sortDirection : false}
+							>
+								{column.key}
+							</TableCell>
+						))}
+					</TableRow>
+				</TableHead>
+				<TableBody>
+					{clusters &&
+						clusters.map((cluster) => (
+							<StyledTableRow
+								hover
+								key={cluster.clustername}
+								onClick={(event) => {
+									onSelectCluster(cluster.clustername, cluster.nodes?.length);
+								}}
+								style={{cursor: 'pointer'}}
+							>
+								<TableCell align={CLUSTER_TABLE_COLUMNS[0].align}>{cluster.clustername}</TableCell>
+								{small ? null :
+									<TableCell
+										align={CLUSTER_TABLE_COLUMNS[1].align}>{cluster.description}</TableCell>
+								}
 								<TableCell
-									key={column.id}
-									style={{
-										width: column.width,
-										display: (!small && !medium) ||
-										(column.id === 'name' && (small || medium)) ||
-										(column.id === 'nodes' && (small || medium)) ||
-										(column.id === 'syncmode' && (small || medium)) ||
-										(column.id === 'delete' && (small || medium)) ||
-										(column.id === 'description' && medium) ? undefined : 'none'
-									}}
-									sortDirection={sortBy === column.id ? sortDirection : false}
-								>
-									{column.key}
-								</TableCell>
-							))}
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{clusters &&
-							clusters.map((cluster) => (
-								<StyledTableRow
-									hover
-									key={cluster.clustername}
-									onClick={(event) => {
-										onSelectCluster(cluster.clustername, cluster.nodes?.length);
-									}}
-									style={{cursor: 'pointer'}}
-								>
-									<TableCell align={CLUSTER_TABLE_COLUMNS[0].align}>{cluster.clustername}</TableCell>
-									{small ? null :
-										<TableCell
-											align={CLUSTER_TABLE_COLUMNS[1].align}>{cluster.description}</TableCell>
-									}
-									<TableCell
-										align={CLUSTER_TABLE_COLUMNS[2].align}>{cluster.syncmode || 'full'}</TableCell>
-									<TableCell
-										align={CLUSTER_TABLE_COLUMNS[3].align}>{cluster.nodes?.length || 0}</TableCell>
-									<TableCell align={CLUSTER_TABLE_COLUMNS[4].align}>
-										{/* <Tooltip title="Check health status">
+									align={CLUSTER_TABLE_COLUMNS[2].align}>{getSyncModeLabel(cluster.syncmode)}</TableCell>
+								<TableCell
+									align={CLUSTER_TABLE_COLUMNS[3].align}>{cluster.nodes?.length || 0}</TableCell>
+								<TableCell align={CLUSTER_TABLE_COLUMNS[4].align}>
+									{/* <Tooltip title="Check health status">
 												<IconButton
 													size="small"
 													onClick={(event) => {
@@ -136,24 +120,23 @@ const createClusterTable = (clusters, classes, props, onCheckHealthStatus, onDel
 													<CheckHealthStatusIcon fontSize="small" />
 												</IconButton>
 											</Tooltip> */}
-										<Tooltip title="Delete cluster">
-											<IconButton
-												size="small"
-												onClick={(event) => {
-													event.stopPropagation();
-													onDeleteCluster(cluster.clustername);
-												}}
-											>
-												<DeleteIcon fontSize="small"/>
-											</IconButton>
-										</Tooltip>
-									</TableCell>
-								</StyledTableRow>
-							))}
-					</TableBody>
-				</Table>
-			</TableContainer>
-		</div>
+									<Tooltip title="Delete cluster">
+										<IconButton
+											size="small"
+											onClick={(event) => {
+												event.stopPropagation();
+												onDeleteCluster(cluster.clustername);
+											}}
+										>
+											<DeleteIcon fontSize="small"/>
+										</IconButton>
+									</Tooltip>
+								</TableCell>
+							</StyledTableRow>
+						))}
+				</TableBody>
+			</Table>
+		</TableContainer>);
 	} else if (clusterManagementFeature?.error) {
 		return null;
 	} else {
@@ -237,8 +220,10 @@ const Clusters = (props) => {
 	};
 
 	return (
-		<div>
-			<ContainerBreadCrumbs title="Clusters" links={[{name: 'Home', route: '/home'}]}/>
+		<ContentContainer
+			dataTour="page-clusters"
+			breadCrumbs={<ContainerBreadCrumbs title="Clusters" links={[{name: 'Home', route: '/home'}]}/>}
+		>
 			<ContainerHeader
 				title="Clusters"
 				subTitle="Clusters enable Mosquitto High Availabiliy. Here you can and modify the cluster setup by creating or deleting a cluster, adding or deleting a node in a cluster and more."
@@ -269,17 +254,16 @@ const Clusters = (props) => {
 						New&nbsp;Cluster
 					</Button>}
 			</ContainerHeader>
-			{!clusterManagementFeature?.error && clusterManagementFeature?.supported !== false && <>
+			{createClusterTable(clusters, classes, props, onCheckHealthStatus, onDeleteCluster, onSelectCluster)}
+			{(progressDialogOpen && !clusterManagementFeature?.error && clusterManagementFeature?.supported !== false) ?
 				<WaitDialog
 					title='Loading cluster details'
 					message='Note that this can take a while depending on the size and status of your cluster.'
 					open={progressDialogOpen}
 					handleClose={() => setProgressDialogOpen(false)}
-				/>
-			</>}
-
-			{createClusterTable(clusters, classes, props, onCheckHealthStatus, onDeleteCluster, onSelectCluster)}
-		</div>
+				/> : null
+			}
+		</ContentContainer>
 	);
 };
 

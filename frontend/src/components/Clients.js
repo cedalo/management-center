@@ -22,9 +22,11 @@ import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateClient, updateClients, updateGroups} from '../actions/actions';
+import {isAdminClient} from '../helpers/utils';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import ContentContainer from './ContentContainer';
 import SelectList from './SelectList';
 
 const StyledTableRow = withStyles((theme) => ({
@@ -241,8 +243,8 @@ const Clients = (props) => {
 
 	const {
 		dynamicsecurityFeature,
+		isAdminClient,
 		connectionID,
-		defaultClient,
 		groupsAll = [],
 		rolesAll = [],
 		clients = [],
@@ -274,196 +276,189 @@ const Clients = (props) => {
 		}));
 
 
-
-	const getClassForCell = (client) => {
-		return `${(defaultClient?.username === client.username) ? classes.disabled : ''}`;
-	}
+	const getClassForCell = (client) => `${isAdminClient(client) ? classes.disabled : ''}`;
 
 	return (
-		<div style={{height: '100%'}}>
-			<ContainerBreadCrumbs title="Clients" links={[{name: 'Home', route: '/home'}]}/>
-			<div style={{height: 'calc(100% - 26px)'}}>
-				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
-					<ContainerHeader
-						title="Clients"
-						subTitle="List of existing clients. A client is any device that connects to a broker and sends or
+		<ContentContainer
+			dataTour="page-clients"
+			breadCrumbs={<ContainerBreadCrumbs title="Clients" links={[{name: 'Home', route: '/home'}]}/>}
+		>
+			<ContainerHeader
+				title="Clients"
+				subTitle="List of existing clients. A client is any device that connects to a broker and sends or
 						receives messages. Add a client by clicking on the button to the right or modify it by
 								clicking on one of the existing clients."
-						connectedWarning={!props.connected}
-						brokerFeatureWarning={dynamicsecurityFeature?.supported === false ? "dynamic security" : null}
+				connectedWarning={!props.connected}
+				brokerFeatureWarning={dynamicsecurityFeature?.supported === false ? "dynamic security" : null}
+			>
+				{dynamicsecurityFeature?.supported !== false && [
+					<Button
+						variant="outlined"
+						color="primary"
+						size="small"
+						className={classes.button}
+						style={{marginRight: '10px'}}
+						startIcon={<AddIcon/>}
+						onClick={(event) => {
+							event.stopPropagation();
+							onNewClient();
+						}}
 					>
-						{dynamicsecurityFeature?.supported !== false && [
-							<Button
-								variant="outlined"
-								color="primary"
-								size="small"
-								className={classes.button}
-								style={{marginRight: '10px'}}
-								startIcon={<AddIcon/>}
-								onClick={(event) => {
-									event.stopPropagation();
-									onNewClient();
-								}}
-							>
-								New Client
-							</Button>,
-							<Button
-								variant="outlined"
-								color="primary"
-								size="small"
-								style={{paddingRight: '0px', minWidth: '30px'}}
-								startIcon={<ReloadIcon/>}
-								onClick={(event) => {
-									event.stopPropagation();
-									onReload();
-								}}
-							/>
-						]}
-					</ContainerHeader>
-					{dynamicsecurityFeature?.supported !== false && clients?.clients?.length > 0 ? (
-						<div style={{height: '100%', overflowY: 'auto'}}>
-							<TableContainer>
-								<Table stickyHeader size="small" aria-label="sticky table">
-									<TableHead>
-										<TableRow>
-											{USER_TABLE_COLUMNS.map((column) => (
-												<TableCell
-													key={column.id}
-													style={{
-														width: column.width,
-														display: (!small && !medium) ||
-														(column.id === 'name' && (small || medium)) ||
-														(column.id === 'groups' && (small || medium)) ||
-														(column.id === 'action' && (small || medium)) ||
-														(column.id === 'roles' && medium) ? undefined : 'none'
-													}}
-													sortDirection={sortBy === column.id ? sortDirection : false}
-												>
-													{column.key}
-												</TableCell>
-											))}
-										</TableRow>
-									</TableHead>
-									<TableBody>
-										{clients &&
-											clients.clients.map((client) => (
-												<Tooltip
-													enterDelay={0}
-													disableHoverListener={defaultClient?.username !== client.username}
-													disableFocusListener={defaultClient?.username !== client.username}
-													disableTouchListener={defaultClient?.username !== client.username}
-													title={<span style={{fontSize: '13px'}}>User used for connection cannot be edited</span>}
-												>
-													<StyledTableRow
-														hover
-														key={client.username}
-														onClick={(event) => {
-															if (
-																event.target.nodeName?.toLowerCase() === 'td' ||
-																defaultClient?.username === client.username
-															) {
-																onSelectClient(client.username);
-															}
+						New Client
+					</Button>,
+					<Button
+						variant="outlined"
+						color="primary"
+						size="small"
+						style={{paddingRight: '0px', minWidth: '30px'}}
+						startIcon={<ReloadIcon/>}
+						onClick={(event) => {
+							event.stopPropagation();
+							onReload();
+						}}
+					/>
+				]}
+			</ContainerHeader>
+			{dynamicsecurityFeature?.supported !== false && clients?.clients?.length > 0 ? (
+					<TableContainer>
+						<Table stickyHeader size="small" aria-label="sticky table">
+							<TableHead>
+								<TableRow>
+									{USER_TABLE_COLUMNS.map((column) => (
+										<TableCell
+											key={column.id}
+											style={{
+												width: column.width,
+												display: (!small && !medium) ||
+												(column.id === 'name' && (small || medium)) ||
+												(column.id === 'groups' && (small || medium)) ||
+												(column.id === 'action' && (small || medium)) ||
+												(column.id === 'roles' && medium) ? undefined : 'none'
+											}}
+											sortDirection={sortBy === column.id ? sortDirection : false}
+										>
+											{column.key}
+										</TableCell>
+									))}
+								</TableRow>
+							</TableHead>
+							<TableBody>
+								{clients &&
+									clients.clients.map((client) => (
+										<Tooltip
+											enterDelay={0}
+											disableHoverListener={!isAdminClient(client)}
+											disableFocusListener={!isAdminClient(client)}
+											disableTouchListener={!isAdminClient(client)}
+											title={<span style={{fontSize: '13px'}}>User used for connection cannot be edited</span>}
+										>
+											<StyledTableRow
+												hover
+												key={client.username}
+												onClick={(event) => {
+													if (
+														event.target.nodeName?.toLowerCase() === 'td' ||
+														isAdminClient(client)
+													) {
+														onSelectClient(client.username);
+													}
+												}}
+												style={{cursor: 'pointer'}}
+											>
+												<TableCell className={getClassForCell(
+													client)}>{client.username}</TableCell>
+												{small || medium ? null : [
+													<TableCell className={getClassForCell(
+														client)}>{client.clientid}</TableCell>,
+													<TableCell className={getClassForCell(
+														client)}>{client.textname}</TableCell>,
+													<TableCell className={getClassForCell(
+														client)}>{client.textdescription}</TableCell>
+												]}
+												<TableCell className={`${classes.badges} ${getClassForCell(
+													client)}`}>
+													<SelectList
+														values={client.groups}
+														getValue={value => value.groupname}
+														onChange={(event, value) => {
+															onUpdateClientGroups(client, value);
 														}}
-														style={{cursor: 'pointer'}}
-													>
-														<TableCell className={getClassForCell(
-															client)}>{client.username}</TableCell>
-														{small || medium ? null : [
-															<TableCell className={getClassForCell(
-																client)}>{client.clientid}</TableCell>,
-															<TableCell className={getClassForCell(
-																client)}>{client.textname}</TableCell>,
-															<TableCell className={getClassForCell(
-																client)}>{client.textdescription}</TableCell>
-														]}
-														<TableCell className={`${classes.badges} ${getClassForCell(
-															client)}`}>
-															<SelectList
-																values={client.groups}
-																getValue={value => value.groupname}
-																onChange={(event, value) => {
-																	onUpdateClientGroups(client, value);
+														disabled={isAdminClient(client)}
+														suggestions={groupSuggestions}
+													/>
+												</TableCell>
+												{small ? null :
+													<TableCell className={`${classes.badges} ${getClassForCell(
+														client)}`}>
+														<SelectList
+															values={client.roles}
+															getValue={value => value.rolename}
+															onChange={(event, value) => {
+																onUpdateClientRoles(client, value);
+															}}
+															disabled={isAdminClient(client)}
+															suggestions={roleSuggestions}
+														/>
+													</TableCell>
+												}
+												{small || medium ? null :
+													<TableCell style={{padding: '0px'}} align="center">
+														<Tooltip title="Enable / disable client">
+															<Checkbox
+																color="primary"
+																disabled={isAdminClient(client)}
+																checked={
+																	typeof client.disabled === 'undefined' ||
+																	client.disabled === false
+																}
+																onChange={(event) => {
+																	event.stopPropagation();
+																	if (event.target.checked) {
+																		onEnableClient(client.username);
+																	} else {
+																		onDisableClient(client.username);
+																	}
 																}}
-																disabled={defaultClient?.username === client.username}
-																suggestions={groupSuggestions}
+																inputProps={{'aria-label': 'Enable plugin at next startup'}}
 															/>
-														</TableCell>
-														{small ? null :
-															<TableCell className={`${classes.badges} ${getClassForCell(
-																client)}`}>
-																<SelectList
-																	values={client.roles}
-																	getValue={value => value.rolename}
-																	onChange={(event, value) => {
-																		onUpdateClientRoles(client, value);
-																	}}
-																	disabled={defaultClient?.username === client.username}
-																	suggestions={roleSuggestions}
-																/>
-															</TableCell>
-														}
-														{small || medium ? null :
-															<TableCell style={{padding: '0px'}} align="center">
-																<Tooltip title="Enable / disable client">
-																	<Checkbox
-																		color="primary"
-																		disabled={defaultClient?.username === client.username}
-																		checked={
-																			typeof client.disabled === 'undefined' ||
-																			client.disabled === false
-																		}
-																		onChange={(event) => {
-																			event.stopPropagation();
-																			if (event.target.checked) {
-																				onEnableClient(client.username);
-																			} else {
-																				onDisableClient(client.username);
-																			}
-																		}}
-																		inputProps={{'aria-label': 'Enable plugin at next startup'}}
-																	/>
-																</Tooltip>
-																<Tooltip title="Delete client">
-																	<IconButton
-																		disabled={defaultClient?.username === client.username}
-																		size="small"
-																		onClick={(event) => {
-																			event.stopPropagation();
-																			onDeleteClient(client.username);
-																		}}
-																	>
-																		<DeleteIcon fontSize="small"/>
-																	</IconButton>
-																</Tooltip>
-															</TableCell>
-														}
-													</StyledTableRow>
-												</Tooltip>
-											))}
-									</TableBody>
-									<TableFooter>
-										<TableRow>
-											<TablePagination
-												rowsPerPageOptions={[5, 10, 25]}
-												colSpan={8}
-												count={clients?.totalCount}
-												rowsPerPage={rowsPerPage}
-												page={page}
-												onChangePage={handleChangePage}
-												onChangeRowsPerPage={handleChangeRowsPerPage}
-											/>
-										</TableRow>
-									</TableFooter>
-								</Table>
-							</TableContainer>
-						</div>
-					) : (
-						props.connected ? <div>No clients found</div> : null
-					)}
-				</div>
-			</div>
-		</div>
+														</Tooltip>
+														<Tooltip title="Delete client">
+															<IconButton
+																disabled={isAdminClient(client)}
+																size="small"
+																onClick={(event) => {
+																	event.stopPropagation();
+																	onDeleteClient(client.username);
+																}}
+															>
+																<DeleteIcon fontSize="small"/>
+															</IconButton>
+														</Tooltip>
+													</TableCell>
+												}
+											</StyledTableRow>
+										</Tooltip>
+									))}
+							</TableBody>
+							<TableFooter>
+								<TableRow>
+									<TablePagination
+										rowsPerPageOptions={[5, 10, 25]}
+										colSpan={8}
+										count={clients?.totalCount}
+										rowsPerPage={rowsPerPage}
+										page={page}
+										onChangePage={handleChangePage}
+										onChangeRowsPerPage={handleChangeRowsPerPage}
+									/>
+								</TableRow>
+							</TableFooter>
+						</Table>
+					</TableContainer>
+			) : (
+				props.connected ? <div>No clients found</div> : null
+			)}
+		</ContentContainer>
 	);
 };
 
@@ -487,9 +482,9 @@ const mapStateToProps = (state) => {
 		roles: state.roles?.roles?.roles,
 		rolesAll: state.roles?.rolesAll?.roles,
 		clients: state.clients?.clients,
-		defaultClient: state.brokerConnections?.defaultClient,
 		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity,
 		connected: state.brokerConnections?.connected,
+		isAdminClient: isAdminClient(state)
 	};
 };
 

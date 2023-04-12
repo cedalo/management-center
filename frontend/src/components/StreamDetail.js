@@ -1,9 +1,8 @@
 import Button from '@material-ui/core/Button';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
 import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import {makeStyles} from '@material-ui/core/styles';
-import {useFormStyles} from '../styles';
 import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -24,9 +23,11 @@ import {connect, useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import {updateStream, updateStreams} from '../actions/actions';
 import useLocalStorage from '../helpers/useLocalStorage';
+import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import ContentContainer from './ContentContainer';
 import './jsoneditor-fix.css';
 
 
@@ -51,10 +52,10 @@ const StreamDetail = (props) => {
 	const [value, setValue] = React.useState(0);
 	const [showPassword, setShowPassword] = React.useState(false);
 	const [editMode, setEditMode] = React.useState(false);
-	const { enqueueSnackbar } = useSnackbar();
+	const {enqueueSnackbar} = useSnackbar();
 	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
 	const formClasses = useFormStyles();
-	const { stream = {}, defaultStream } = props;
+	const {stream = {}, defaultStream} = props;
 	const [updatedStream, setUpdatedStream] = React.useState({
 		...stream
 	});
@@ -62,7 +63,7 @@ const StreamDetail = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
-	const { client: brokerClient } = context;
+	const {client: brokerClient} = context;
 
 	const validate = () => {
 		if (editMode) {
@@ -143,165 +144,157 @@ const StreamDetail = (props) => {
 	};
 	const {
 		match: {
-			params: { streamName }
+			params: {streamName}
 		}
 	} = props;
 	// TODO: get stream by streamname if current stream is not defined
 
 	return stream.streamname ? (
-		<div>
-			<ContainerBreadCrumbs title={stream.streamname} links={[{name: 'Home', route: '/home'},{name: 'Streams', route: '/streams'}]}/>
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title={stream.streamname} links={[{name: 'Home', route: '/home'}, {
+				name: 'Streams',
+				route: '/streams'
+			}]}/>}
+		>
 			<ContainerHeader
 				title={`Edit Stream: ${stream.streamname}`}
 				subTitle="View or modify Stream Settings or change state flags. Click on 'Edit' to modify the settings. The stream definition is only visible in edit mode."
 			/>
-				<Grid container spacing={1} alignItems="flex-end">
-					<Grid item xs={12}>
-						<TextField
-							required={editMode}
-							disabled={true}
-							onChange={(event) => {
-								if (editMode) {
-									setUpdatedStream({
-										...updatedStream,
-										streamname: event.target.value
-									});
-								}
-							}}
-							id="streamname"
-							label="Stream Name"
-							value={updatedStream.streamname}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							size="small"
-							margin="dense"
-							className={formClasses.textField}
-							InputProps={{
-								startAdornment: (
-									<InputAdornment position="start">
-										<AccountCircle />
-									</InputAdornment>
-								)
-							}}
-						/>
-					</Grid>
-					<Grid item xs={12}>
-						<TextField
-							disabled={!editMode}
-							id="textdescription"
-							label="Description"
-							value={updatedStream.textdescription}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							size="small"
-							margin="dense"
-							className={formClasses.textField}
-							onChange={(event) => {
-								if (editMode) {
-									setUpdatedStream({
-										...updatedStream,
-										textdescription: event.target.value
-									});
-								}
-							}}
-						/>
-					</Grid>
-					<Grid item xs={12}>
-						<TextField
-							required={editMode}
-							disabled={!editMode}
-							id="source-topic"
-							label="Source Topic"
-							value={updatedStream.sourcetopic}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							size="small"
-							margin="dense"
-							className={formClasses.textField}
-							onChange={(event) => {
-								if (editMode) {
-									setUpdatedStream({
-										...updatedStream,
-										sourcetopic: event.target.value
-									});
-								}
-							}}
-						/>
-					</Grid>
-					<Grid item xs={12}>
-						<TextField
-							disabled={!editMode}
-							id="target-topic"
-							label="Target Topic"
-							value={updatedStream.targettopic}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							size="small"
-							margin="dense"
-							className={formClasses.textField}
-							onChange={(event) => {
-								if (editMode) {
-									setUpdatedStream({
-										...updatedStream,
-										targettopic: event.target.value
-									});
-								}
-							}}
-						/>
-					</Grid>
-					<Grid item xs={12}>
-						<TextField
-							disabled={!editMode}
-							id="target-qos"
-							label="Target QoS"
-							value={updatedStream.targetqos}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							type="number"
-							InputProps={{ inputProps: { min: 0, max: 2 } }}
-							size="small"
-							margin="dense"
-							className={formClasses.textField}
-							onChange={(event) => {
-								if (editMode) {
-									setUpdatedStream({
-										...updatedStream,
-										targetqos: parseInt(event.target.value)
-									});
-								}
-							}}
-						/>
-					</Grid>
-					<Grid item xs={12}>
-						<TextField
-							disabled={!editMode}
-							id="ttl"
-							label="TTL"
-							value={updatedStream.ttl}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							type="number"
-							InputProps={{ inputProps: { min: 0 } }}
-							size="small"
-							margin="dense"
-							className={formClasses.textField}
-							onChange={(event) => {
-								if (editMode) {
-									setUpdatedStream({
-										...updatedStream,
-										ttl: parseInt(event.target.value)
-									});
-								}
-							}}
-						/>
-					</Grid>
-					{/* <Grid item xs={12}>
+			<FormGroup>
+				<TextField
+					required={editMode}
+					disabled={true}
+					onChange={(event) => {
+						if (editMode) {
+							setUpdatedStream({
+								...updatedStream,
+								streamname: event.target.value
+							});
+						}
+					}}
+					id="streamname"
+					label="Stream Name"
+					value={updatedStream.streamname}
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position="start">
+								<AccountCircle/>
+							</InputAdornment>
+						)
+					}}
+				/>
+				<TextField
+					disabled={!editMode}
+					id="textdescription"
+					label="Description"
+					value={updatedStream.textdescription}
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+					onChange={(event) => {
+						if (editMode) {
+							setUpdatedStream({
+								...updatedStream,
+								textdescription: event.target.value
+							});
+						}
+					}}
+				/>
+				<TextField
+					required={editMode}
+					disabled={!editMode}
+					id="source-topic"
+					label="Source Topic"
+					value={updatedStream.sourcetopic}
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+					onChange={(event) => {
+						if (editMode) {
+							setUpdatedStream({
+								...updatedStream,
+								sourcetopic: event.target.value
+							});
+						}
+					}}
+				/>
+				<TextField
+					disabled={!editMode}
+					id="target-topic"
+					label="Target Topic"
+					value={updatedStream.targettopic}
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+					onChange={(event) => {
+						if (editMode) {
+							setUpdatedStream({
+								...updatedStream,
+								targettopic: event.target.value
+							});
+						}
+					}}
+				/>
+				<TextField
+					disabled={!editMode}
+					id="target-qos"
+					label="Target QoS"
+					value={updatedStream.targetqos}
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					type="number"
+					InputProps={{inputProps: {min: 0, max: 2}}}
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+					onChange={(event) => {
+						if (editMode) {
+							setUpdatedStream({
+								...updatedStream,
+								targetqos: parseInt(event.target.value)
+							});
+						}
+					}}
+				/>
+				<TextField
+					disabled={!editMode}
+					id="ttl"
+					label="TTL"
+					value={updatedStream.ttl}
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					type="number"
+					InputProps={{inputProps: {min: 0}}}
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+					onChange={(event) => {
+						if (editMode) {
+							setUpdatedStream({
+								...updatedStream,
+								ttl: parseInt(event.target.value)
+							});
+						}
+					}}
+				/>
+				{/* <Grid item xs={12}>
 						<TextField
 							disabled={!editMode}
 							id="key"
@@ -321,111 +314,107 @@ const StreamDetail = (props) => {
 							}}
 						/>
 					</Grid> */}
-					{ editMode && <Grid item xs={12}>
-						<Editor
-							ace={ace}
-							ajv={ajv}
-							// schema={schema}
-							value={updatedStream.query || {}}
-							theme={darkMode === 'true' ? "ace/theme/monokai" : "ace/theme/github"}
-							onChange={(query) => {
-								if (editMode) {
-									setUpdatedStream({
-										...updatedStream,
-										query
-									});
-								} else {
-									enqueueSnackbar('Please enable edit mode before editing the query', {
-										variant: 'error'
-									});
+				{editMode &&
+					<Editor
+						ace={ace}
+						ajv={ajv}
+						// schema={schema}
+						value={updatedStream.query || {}}
+						theme={darkMode === 'true' ? "ace/theme/monokai" : "ace/theme/github"}
+						onChange={(query) => {
+							if (editMode) {
+								setUpdatedStream({
+									...updatedStream,
+									query
+								});
+							} else {
+								enqueueSnackbar('Please enable edit mode before editing the query', {
+									variant: 'error'
+								});
+							}
+						}}
+						mode="code"
+						navigationBar={false}
+						search={false}
+						allowedModes={['code', 'view', 'form', 'tree']}
+					/>
+				}
+				<Grid>
+					<FormControlLabel
+						control={
+							<Switch
+								color="primary"
+								disabled={!editMode}
+								checked={
+									typeof updatedStream.process === 'undefined' ||
+									updatedStream.process === true
 								}
-							}}
-							mode="code"
-							navigationBar={false}
-							search={false}
-							allowedModes={[ 'code', 'view', 'form', 'tree']}
-						/>
-					</Grid>
-					}
-					<Grid item xs={12}>
-						<FormControlLabel
-							control={
-								<Switch
-									color="primary"
-									disabled={!editMode}
-									checked={
-										typeof updatedStream.process === 'undefined' ||
-										updatedStream.process === true
+								onClick={(event) => {
+									if (editMode) {
+										setUpdatedStream({
+											...updatedStream,
+											process: event.target.checked
+										});
 									}
-									onClick={(event) => {
-										if (editMode) {
-											setUpdatedStream({
-												...updatedStream,
-												process: event.target.checked
-											});
-										}
-									}}
-								/>
-							}
-							label="Process"
-						/>
-						<FormControlLabel
-							control={
-								<Switch
-									disabled={!editMode}
-									color="primary"
-									checked={
-										typeof updatedStream.persist === 'undefined' ||
-										updatedStream.persist === true
+								}}
+							/>
+						}
+						label="Process"
+					/>
+					<FormControlLabel
+						control={
+							<Switch
+								disabled={!editMode}
+								color="primary"
+								checked={
+									typeof updatedStream.persist === 'undefined' ||
+									updatedStream.persist === true
+								}
+								onClick={(event) => {
+									if (editMode) {
+										setUpdatedStream({
+											...updatedStream,
+											persist: event.target.checked
+										});
 									}
-									onClick={(event) => {
-										if (editMode) {
-											setUpdatedStream({
-												...updatedStream,
-												persist: event.target.checked
-											});
-										}
-									}}
-								/>
-							}
-							label="Persist"
-						/>
-						<FormControlLabel
-							control={
-								<Switch
-									disabled={!editMode}
-									color="primary"
-									checked={
-										typeof updatedStream.active === 'undefined' ||
-										updatedStream.active === true
+								}}
+							/>
+						}
+						label="Persist"
+					/>
+					<FormControlLabel
+						control={
+							<Switch
+								disabled={!editMode}
+								color="primary"
+								checked={
+									typeof updatedStream.active === 'undefined' ||
+									updatedStream.active === true
+								}
+								onClick={(event) => {
+									if (editMode) {
+										setUpdatedStream({
+											...updatedStream,
+											active: event.target.checked
+										});
 									}
-									onClick={(event) => {
-										if (editMode) {
-											setUpdatedStream({
-												...updatedStream,
-												active: event.target.checked
-											});
-										}
-									}}
-								/>
-							}
-							label="Active"
-						/>
-					</Grid>
+								}}
+							/>
+						}
+						label="Active"
+					/>
 				</Grid>
 				{!editMode && (
-					<Grid item xs={12}>
-						<Button
-							style={{marginTop: '10px'}}
-							variant="contained"
-							color="primary"
-							size="small"
-							startIcon={<EditIcon />}
-							onClick={() => setEditMode(true)}
-						>
-							Edit
-						</Button>
-					</Grid>
+					<Button
+						style={{marginTop: '15px', width: '120px'}}
+						variant="contained"
+						color="primary"
+						size="small"
+						startIcon={<EditIcon/>}
+						onClick={() => setEditMode(true)}
+					>
+						Edit
+					</Button>
 				)}
 				{editMode && (
 					<Grid item xs={12}>
@@ -435,7 +424,7 @@ const StreamDetail = (props) => {
 							style={{marginRight: '10px', marginTop: '10px', marginBottom: '15px'}}
 							size="small"
 							color="primary"
-							startIcon={<SaveIcon />}
+							startIcon={<SaveIcon/>}
 							onClick={(event) => {
 								event.stopPropagation();
 								onUpdateStream();
@@ -456,9 +445,10 @@ const StreamDetail = (props) => {
 						</Button>
 					</Grid>
 				)}
-		</div>
+			</FormGroup>
+		</ContentContainer>
 	) : (
-		<Redirect to="/streams" push />
+		<Redirect to="/streams" push/>
 	);
 };
 

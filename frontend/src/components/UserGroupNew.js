@@ -1,4 +1,4 @@
-import Grid from '@material-ui/core/Grid';
+import FormGroup from '@material-ui/core/FormGroup';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
@@ -9,11 +9,12 @@ import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {updateUserGroups} from '../admin/users/actions/actions';
+import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
+import ContentContainer from './ContentContainer';
 import SaveCancelButtons from './SaveCancelButtons';
-import {useFormStyles} from '../styles';
 
 const UserGroupNew = (props) => {
 	const [groupname, setGroupname] = useState('');
@@ -64,85 +65,76 @@ const UserGroupNew = (props) => {
 	};
 
 	return (
-		<div>
-			<ContainerBreadCrumbs title="New" links={[{name: 'Home', route: '/home'},
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title="New" links={[{name: 'Home', route: '/home'},
 				{name: 'User Groups', route: '/user-groups'}
-			]}/>
+			]}/>}
+		>
 			<ContainerHeader
 				title="New User Group"
 				subTitle="Create a new user group by entering a unique group name and assigning a role."
 			/>
-			<Grid container spacing={1} alignItems="flex-end">
-				<Grid item xs={12}>
-					<TextField
-						error={!!props?.userGroups[groupname]}
-						required
-						id="groupname"
-						label="Name"
-						onChange={(event) => setGroupname(event.target.value)}
-						defaultValue=""
-						variant="outlined"
-						fullWidth
-						className={formClasses.textField}
-						size="small"
-						margin="dense"
-						InputProps={{
-							startAdornment: (
-								<InputAdornment position="start">
-									<UsersIcon/>
-								</InputAdornment>
-							)
-						}}
-					/>
-				</Grid>
-				<Grid item xs={12}>
-					<TextField
-						id="textdescription"
-						label="Description"
-						onChange={(event) => setTextdescription(event.target.value)}
-						defaultValue=""
-						variant="outlined"
-						fullWidth
-						className={formClasses.textField}
-						size="small"
-						margin="dense"
-					/>
-				</Grid>
-				<Grid item xs={12}>
-					<TextField
-						select
-						fullWidth
-						name="role-select"
-						id="role-select"
-						value={role}
-						variant="outlined"
-						label="Role of the users in the group"
-						onChange={(event) => setRole(event.target.value)}
-						className={formClasses.textField}
-						size="small"
-						margin="dense"
-					>
-						{roles.map((role) => (
-							<MenuItem
-								key={role}
-								value={role}
-							>
-								{role}
-							</MenuItem>
-						))}
-					</TextField>
-				</Grid>
-			</Grid>
-			<Grid container xs={12} alignItems="flex-start">
-				<Grid item xs={12}>
-					<SaveCancelButtons
-						onSave={onSaveGroup}
-						saveDisabled={!validate()}
-						onCancel={onCancel}
-					/>
-				</Grid>
-			</Grid>
-		</div>
+			<FormGroup>
+				<TextField
+					error={!!props?.userGroups[groupname]}
+					required
+					id="groupname"
+					label="Name"
+					onChange={(event) => setGroupname(event.target.value)}
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					className={formClasses.textField}
+					size="small"
+					margin="normal"
+					InputProps={{
+						startAdornment: (
+							<InputAdornment position="start">
+								<UsersIcon/>
+							</InputAdornment>
+						)
+					}}
+				/>
+				<TextField
+					id="textdescription"
+					label="Description"
+					onChange={(event) => setTextdescription(event.target.value)}
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					className={formClasses.textField}
+					size="small"
+					margin="normal"
+				/>
+				<TextField
+					select
+					fullWidth
+					name="role-select"
+					id="role-select"
+					value={role}
+					variant="outlined"
+					label="Role of the users in the group"
+					onChange={(event) => setRole(event.target.value)}
+					className={formClasses.textField}
+					size="small"
+					margin="normal"
+				>
+					{roles.map((role) => (
+						<MenuItem
+							key={role}
+							value={role}
+						>
+							{role}
+						</MenuItem>
+					))}
+				</TextField>
+				<SaveCancelButtons
+					onSave={onSaveGroup}
+					saveDisabled={!validate()}
+					onCancel={onCancel}
+				/>
+			</FormGroup>
+		</ContentContainer>
 	);
 };
 

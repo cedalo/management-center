@@ -31,11 +31,12 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import EnabledIcon from '@material-ui/icons/Check';
 import DisabledIcon from '@material-ui/icons/Cancel';
 import { useSnackbar } from 'notistack';
+import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import SaveCancelButtons from '../../../components/SaveCancelButtons';
 import ContainerHeader from '../../../components/ContainerHeader';
 import { WebSocketContext } from '../../../websockets/WebSocket';
 import { ErrorHint } from './AlertHint';
-import ContentContainer from './ContentContainer';
+import ContentContainer from '../../../components/ContentContainer';
 import { getConnectionInfo } from './certutils';
 
 const CustomInput = withStyles((theme) => ({
@@ -286,7 +287,12 @@ const CertificateDeploy = ({ connections = [] }) => {
 	};
 
 	return (
-		<ContentContainer path={[{ route: '/home', name:'Home' }, { route: '/certs', name: 'Certificates' }, { name: 'Deploy' }]}>
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title="Deploy"
+											   links={[{name: 'Home', route: '/home'},
+												   {name: 'Certificates', route: '/certs'}]}
+			/>}
+		>
 			<ContainerHeader
 				title={`Deploy client CA certificate: ${certificate.name}`}
 				subTitle={

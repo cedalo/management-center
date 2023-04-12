@@ -10,11 +10,12 @@ import ExpandIcon from '@material-ui/icons/KeyboardArrowDown';
 import CollapseIcon from '@material-ui/icons/KeyboardArrowUp';
 import { useConfirm } from 'material-ui-confirm';
 import { useSnackbar } from 'notistack';
+import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
 import { WebSocketContext } from '../../../websockets/WebSocket';
 import { WarningHint } from './AlertHint';
 import ChipsList from './ChipsList';
-import ContentContainer from './ContentContainer';
+import ContentContainer from '../../../components/ContentContainer';
 import ContentTable from './ContentTable';
 import { getUsedConnections } from './certutils';
 import CertificateInfo from './CertificateInfo';
@@ -170,7 +171,10 @@ const Certificates = ({ connections, isCertSupported }) => {
 	}, []);
 
 	return (
-		<ContentContainer path={[{ route: '/home', name: 'Home' }, { name: 'Certificates' }]}>
+		<ContentContainer
+			breadCrumbs={<ContainerBreadCrumbs title="Certificates" links={[{name: 'Home', route: '/home'}]}/>}
+			dataTour="page-certs"
+		>
 			{isCertSupported ? (
 				<>
 					<ContainerHeader

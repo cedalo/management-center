@@ -407,6 +407,12 @@ export default ({ children }) => {
 				}
 			});
 		});
+		client.on('sessions-destroyed', async (/* message */) => {
+			// logout if session is not valid anymore:
+			const { valid } = await client.validateSession();
+			if (!valid) window.location.href = '/logout';
+		});
+
 		client.on('error', (message) => {
 			console.error(message);
 		});

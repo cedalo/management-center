@@ -6,9 +6,10 @@ import Close from '@material-ui/icons/Close';
 import CollapseIcon from '@material-ui/icons/KeyboardArrowUp';
 import ExpandIcon from '@material-ui/icons/KeyboardArrowDown';
 import {useSnackbar} from 'notistack';
+import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import SaveCancelButtons from '../../../components/SaveCancelButtons';
 import {WebSocketContext} from '../../../websockets/WebSocket';
-import ContentContainer from './ContentContainer';
+import ContentContainer from '../../../components/ContentContainer';
 import UploadButton from './UploadButton';
 import CertificateInfo from './CertificateInfo';
 import {loadCertificateInfo} from './certutils';
@@ -104,7 +105,11 @@ const CertificateDetail = () => {
 
 	return (
 		<ContentContainer
-			path={[{route: '/home', name: 'Home'}, {route: '/certs', name: 'Certificates'}, {name: 'CA Certificate'}]}
+			breadCrumbs={<ContainerBreadCrumbs title="CA Certificate"
+											   links={[{name: 'Home', route: '/home'},
+												   {name: 'Certificates', route: '/certs'}]}
+			/>}
+			overFlowX="hidden"
 		>
 			<ContainerHeader
 				title="Certificate"
