@@ -21,17 +21,8 @@ import SelectNodeComponent from './SelectNodeComponent';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
+import { getSyncModes } from './clusterutils';
 
-
-const SYNCMODES = [
-	{
-		label: 'Full Sync',
-		value: 'full'
-	}, {
-		label: 'Dynamic Security Sync',
-		value: 'dynsec'
-	}
-];
 
 const ClusterNew = (props) => {
 	const {clusterManagementFeature} = props;
@@ -194,14 +185,14 @@ const ClusterNew = (props) => {
 								id="syncmode"
 								size="small"
 								margin="normal"
-								label="Sync Mode"
+								label="Cluster Mode"
 								onChange={(event) => setSyncmode(event.target.value)}
 								defaultValue="full"
 								variant="outlined"
 								fullWidth
 								select
 							>
-								{SYNCMODES.map((mode) => (
+								{getSyncModes().map((mode) => (
 									<MenuItem value={mode.value}>{mode.label}</MenuItem>
 								))}
 							</TextField>

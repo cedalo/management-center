@@ -30,6 +30,7 @@ import WaitDialog from '../../../components/WaitDialog';
 import {WebSocketContext} from '../../../websockets/WebSocket';
 import {updateCluster, updateClusters} from '../actions/actions';
 import SelectNodeDialog from './SelectNodeDialog';
+import { getSyncModeLabel } from './clusterutils';
 
 const clusterShape = PropTypes.shape({
 	clustername: PropTypes.string,
@@ -178,10 +179,6 @@ const ClusterDetail = (props) => {
 		setEditMode(false);
 	};
 
-	const getSyncModeLabel = (mode) => {
-		return mode === 'dynsec' ? 'Dynamic Security Sync' : 'Full Sync';
-	};
-
 	return cluster ? [
 		<ContentContainer
 			breadCrumbs={<ContainerBreadCrumbs title={updatedCluster?.clustername}
@@ -240,7 +237,7 @@ const ClusterDetail = (props) => {
 							disabled={true}
 							margin="normal"
 							id="syncmode"
-							label="Sync Mode"
+							label="Cluster Mode"
 							value={getSyncModeLabel(cluster.syncmode)}
 							defaultValue="full"
 							variant="outlined"
