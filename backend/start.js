@@ -306,6 +306,7 @@ const init = async (licenseContainer) => {
 		}
 	});
 
+
 	const connections = initConnections(config);
 
 	config.connections = connections;
@@ -594,12 +595,13 @@ const init = async (licenseContainer) => {
 			}
 			case 'disconnectFromBroker': {
 				const { brokerName } = message;
-				if (context.security.acl.isConnectionAuthorized(user, null, brokerName)) {
-					const response = await disconnectFromBroker(brokerName, client);
-					return response;
-				} else {
-					throw new NotAuthorizedError();
-				}
+				// if (context.security.acl.isConnectionAuthorized(user, null, brokerName)) {
+				// we don't have to check if user is authorized to disconnect from broker, because he is already connected to it (might be that he lost permissions while being connected to the broker)
+				const response = await disconnectFromBroker(brokerName, client);
+				return response;
+				// } else {
+					// throw new NotAuthorizedError();
+				// }
 			}
 			case 'getBrokerConnections': {
 				// const connections = context.brokerManager.getBrokerConnections();
@@ -919,7 +921,6 @@ const init = async (licenseContainer) => {
 
 	// TODO: handle disconnect of clients
 	wss.on('connection', (ws, request) => {
-		const user = request.session?.passport?.user;
 		context.brokerManager.handleNewClientWebSocketConnection(ws);
 		broadcastWebSocketConnectionConnected();
 		broadcastWebSocketConnections();
@@ -946,10 +947,22 @@ const init = async (licenseContainer) => {
 				}
 			})
 		);
+
+		context.eventEmitter.on('user-updated', (updatedUser) => {
+			if (updatedUser.username !== request.session?.passport?.user?.username) {
+				return;
+			}
+			if (request.session?.passport?.user) {
+				request.session.passport.user = {...request.session.passport.user, updatedUser}; // sync user
+				request.user = request.session.passport.user;
+				context.actions.preprocessUser(request, false); // reprocess user and generate valid connections properties
+			}
+		});
+
 		ws.on('message', (message) => {
 			try {
 				const messageObject = JSON.parse(message);
-				handleClientMessage(messageObject, ws, user);
+				handleClientMessage(messageObject, ws, request.session?.passport?.user);
 			} catch (error) {
 				console.error(error);
 			}
@@ -990,6 +1003,9 @@ const init = async (licenseContainer) => {
 			sendTopicTreeUpdate,
 			preprocessUser: actions.actions.preprocessUser
 		},
+		middleware: {
+			preprocessUser: actions.actions.middleware.preprocessUser
+		},
 		preprocessUserFunctions: actions.preprocessUserFunctions
 	};
 
@@ -1015,9 +1031,6 @@ const init = async (licenseContainer) => {
 			// set up a route to redirect http to https
 			httpPlainApp.get('*', function(request, response) {  
 				response.redirect('https://' + request.headers.host + `:${port}` + request.url);
-
-				// Or, if you don't want to automatically detect the domain name from the request header, you can hard code it:
-				// res.redirect('https://example.com' + req.url);
 			});
 			httpPlainServer =  http.createServer(httpPlainApp);
 			// have it listen on 80

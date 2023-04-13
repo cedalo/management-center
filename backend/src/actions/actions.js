@@ -1,19 +1,34 @@
 const preprocessUserFunctions = [];
 
+const preprocessUser = async (request) => {
+    for (const preprocessUserFunction of preprocessUserFunctions) {
+        try {
+            await preprocessUserFunction(request);
+        } catch(error) {
+            console.error('Error during user processing:', error);
+            throw error;
+        }
+    }
+
+    return request;
+}
+
+
 module.exports = {
     preprocessUserFunctions,
     actions: {
-        preprocessUser: async (request, response, next) => {
-            for (const preprocessUserFunction of preprocessUserFunctions) {
+        middleware: {
+            preprocessUser: async (request, response, next) => {
                 try {
-                    await preprocessUserFunction(request);
+                    await preprocessUser(request);
                 } catch(error) {
-                    console.error('Error during user processing:', error);
                     return next(error);
                 }
+        
+                return next();
             }
-    
-            return next();
-        }
-    }
+        },
+        preprocessUser
+
+    },
 };
