@@ -7,7 +7,8 @@ const BasePlugin = require('../../BasePlugin');
 const meta = require('./meta');
 const swagger = require('./swagger');
 const { createActions } = require('./actions');
-const { hasSession } = require('../../../../../../plugins/utils');
+const { hasSession } = require('../../../utils/utils');
+
 
 const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 

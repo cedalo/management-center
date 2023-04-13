@@ -1,9 +1,11 @@
-const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 const crypto = require('crypto');
+
+const sessions = require('./sessions');
+
 
 const getBaseDirectory = (dirname) => {
 	// if (process.env.CEDALO_MC_SINGLE_BACKUP_DIRECTORY) {
@@ -121,5 +123,6 @@ module.exports = {
     stringToBool,
     getBaseDirectory,
     stripConnectionsCredentials,
-    generateSecret
+    generateSecret,
+    ...sessions
 };
