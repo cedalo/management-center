@@ -24,6 +24,7 @@ import ContentContainer from '../../../components/ContentContainer';
 import WaitDialog from '../../../components/WaitDialog';
 import {WebSocketContext} from '../../../websockets/WebSocket';
 import {updateCluster, updateClusters} from '../actions/actions';
+import { getSyncModeLabel } from './clusterutils';
 
 const StyledTableRow = withStyles((theme) => ({
 	root: {
@@ -47,14 +48,10 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-const getSyncModeLabel = (mode) => {
-	return mode === 'dynsec' ? 'Dynamic Security Sync' : 'Full Sync';
-};
-
 const CLUSTER_TABLE_COLUMNS = [
 	{id: 'name', key: 'Name', align: 'left'},
 	{id: 'description', key: 'Description', align: 'left'},
-	{id: 'syncmode', key: 'Sync Mode', align: 'left', width: '15%'},
+	{id: 'syncmode', key: 'Cluster Mode', align: 'left', width: '15%'},
 	{id: 'nodes', key: 'Nodes', align: 'center', width: '5%'},
 	{id: 'delete', key: 'Delete', align: 'center', width: '5%'},
 ];
