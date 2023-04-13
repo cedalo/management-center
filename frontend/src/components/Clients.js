@@ -140,6 +140,20 @@ const Clients = (props) => {
 		if (!roles) {
 			roles = [];
 		}
+		if (roles.length === 0) {
+			await confirm({
+				title: 'Remove all roles from client',
+				description: `Do you really want to remove all roles from client "${client.username}"?`,
+				cancellationButtonProps: {
+					variant: 'contained'
+				},
+				confirmationButtonProps: {
+					color: 'primary',
+					variant: 'contained'
+				}
+			});
+		}
+
 		const rolenames = roles.map((role) => role.value);
 		await brokerClient.updateClientRoles(client, rolenames);
 		const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
