@@ -214,11 +214,21 @@ export default function (props) {
 					theme.logo = response?.light?.logo;
 				}
 				if (response.light?.palette?.primary) {
-					theme.palette.primary.main = response.light?.palette?.primary;
+					const color = response.light?.palette?.primary?.main ?
+						response.light?.palette?.primary?.main :
+						response.light?.palette?.primary;
+					if (color) {
+						theme.palette.primary.main = color;
+					}
 				}
 				if (response.light?.palette?.text) {
-					theme.palette.text.primary = response.light?.palette?.text;
-					theme.overrides.MuiTypography.root.color = response.light?.palette?.text;
+					const color = response.light?.palette?.text?.primary ?
+						response.light?.palette?.text?.primary :
+						response.light?.palette?.text
+					if (color) {
+						theme.palette.text.primary = color;
+						theme.overrides.MuiTypography.root.color = color;
+					}
 				}
 				if (response.light?.palette?.textSecondary) {
 					theme.palette.text.secondary = response.light?.palette?.textSecondary;
@@ -233,7 +243,9 @@ export default function (props) {
 					theme.palette.background.default = response.light?.palette?.background;
 				}
 			}
-			setLogo(theme.logo?.path ? theme.logo?.path : theme.logo);
+			if (response.titleBar === 'logo') {
+				setLogo(theme.logo?.path ? theme.logo?.path : theme.logo);
+			}
 			setAppliedTheme(createTheme(theme));
 		}
 	}, [response, darkMode]);
