@@ -279,7 +279,7 @@ const CustomDrawer = ({
 						bottom: '0px',
 						boxShadow: 'none',
 						width: '100%',
-						background: 'none'
+						background: theme.overrides.MuiDrawer.paper.backgroundColor
 					}}
 				>
 					<List style={{background: 'none'}}>
