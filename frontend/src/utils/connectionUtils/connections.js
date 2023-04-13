@@ -43,6 +43,7 @@ export const handleConnectionChange = async (dispatch, client, newConnectionName
             await client.connectToBroker(newConnectionName);
             dispatch(updateBrokerConnected(true, newConnectionName));
         } catch (error) {
+            console.error(error);
             dispatch(updateBrokerConnected(false, newConnectionName));
             return;
         }
