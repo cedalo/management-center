@@ -487,7 +487,10 @@ const init = async (licenseContainer) => {
 	const connectServerToAllBrokers = () => {
 		for (let i = 0; i < connections.length; i++) {
 			if (i < maxBrokerConnections) {
-				const connection = connections[i];
+				// preprocess connection to insert any external urls coming from env variables
+				const connection = context.configManager.preprocessConnection(connections[i], true);
+				context.configManager.saveConnection(connection);
+
 				const wasConnected = connection.status && connection.status.connected;
 				const closedByUser =
 					connection.status &&
@@ -496,9 +499,10 @@ const init = async (licenseContainer) => {
 					connection.status.error.code === 'ECONNCLOSED' &&
 					!connection.status.error.interrupted;
 				const hadError = connection.status && connection.status.error && !closedByUser;
+
 				if (wasConnected || hadError || connection.status === undefined) {
 					// Note that we don't connect in case broker was manually disconnected. We connect only in the three cases descirbed in if
-					handleConnectServerToBroker(connections[i]);
+					handleConnectServerToBroker(connection);
 				}
 			}
 		}
