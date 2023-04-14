@@ -90,7 +90,8 @@ const Status = ({
 					defaultClient,
 					currentConnection,
 					currentConnectionName,
-					connected
+					connected,
+					backendParameters
 				}) => {
 	const classes = useStyles();
 	const theme = useTheme();
@@ -213,14 +214,14 @@ const Status = ({
 	}
 
 	const getBrokerInfos = () => {
-		const host = process.env.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING === 'undefined' ?
-			undefined : process.env.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING;
-		const mqtt = process.env.CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING === 'undefined' ?
-			false : process.env.CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING === 'mosquitto:true';
-		const mqtts = process.env.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING === 'undefined' ?
-			false : process.env.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING === 'mosquitto:true';
-		const ws = process.env.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING === 'undefined' ?
-			false : process.env.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING === 'mosquitto:true';
+		const host = backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING ?
+			undefined : backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING;
+		const mqtt = backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING ?
+			false : backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING === 'mosquitto:true';
+		const mqtts = backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING ?
+			false : backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING === 'mosquitto:true';
+		const ws = backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING ?
+			false : backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING === 'mosquitto:true';
 		// const connInfo = parseUrl('mqtt://mosquitto:1883');
 		const connInfo = parseUrl(currentConnection.url); //  === "mosquitto";
 		const hostInfo = parseUrl(host);
@@ -530,6 +531,7 @@ const mapStateToProps = (state) => {
 		currentConnection: state.brokerConnections?.currentConnection,
 		currentConnectionName: state.brokerConnections?.currentConnectionName,
 		connected: state.brokerConnections?.connected,
+		backendParameters: state.backendParameters?.backendParameters,
 	};
 };
 
