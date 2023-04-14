@@ -385,7 +385,7 @@ const Streams = (props) => {
 												</TableCell>
 											]}
 											<TableCell align="center">
-												<div style={{display: 'flex'}}>
+												<div style={{display: 'flex', justifyContent: 'center'}}>
 													<Tooltip title="Clear stream messages">
 														<IconButton
 															disabled={!stream.persist}
