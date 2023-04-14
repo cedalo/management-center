@@ -160,7 +160,7 @@ const CertificateDetail = () => {
 						inputProps={{readOnly: true}}
 						// InputLabelProps={{ shrink: true }}
 						InputProps={{
-							startAdornment: <UploadButton name="ca" onUpload={onCertUpload}/>,
+							startAdornment: <UploadButton onUpload={onCertUpload}/>,
 							endAdornment: (
 								<IconButton
 									className={classes.crossButton}
