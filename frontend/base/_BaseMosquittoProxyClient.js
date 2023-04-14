@@ -59,7 +59,7 @@ const timeoutHandler = (requestId, requests) => {
 const createID = () => uuid();
 
 
-
+// TODO: refactor error handling!
 module.exports = class BaseMosquittoProxyClient {
 	constructor({ name, logger, defaultListener } = {}, { socketEndpointURL, httpEndpointURL } = {}, headers=undefined, version=undefined) {
 		if (!version) {
