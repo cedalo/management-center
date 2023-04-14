@@ -1,16 +1,13 @@
 import FormGroup from '@material-ui/core/FormGroup';
-import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import PasswordIcon from '@material-ui/icons/VpnKey';
-import {Alert, AlertTitle} from '@material-ui/lab';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
-import ContainerBox from '../../../components/ContainerBox';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
 import ContentContainer from '../../../components/ContentContainer';
@@ -68,7 +65,7 @@ const UserNew = (props) => {
 			await client.createUser(username, pwd, roles);
 			const users = await client.listUsers();
 			dispatch(updateUsers(users));
-			history.push(`/admin/users`);
+			history.push(`/users`);
 			enqueueSnackbar(`User "${username}" successfully created.`, {
 				variant: 'success'
 			});

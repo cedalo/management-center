@@ -12,7 +12,7 @@ const CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING = process.env.CEDALO_MC_BR
 const CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING = process.env.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING;
 const CEDALO_MC_BROKER_CONNECTION_MQTT_PORT = process.env.CEDALO_MC_BROKER_CONNECTION_MQTT_PORT;
 const CEDALO_MC_BROKER_CONNECTION_MQTTS_PORT = process.env.CEDALO_MC_BROKER_CONNECTION_MQTTS_PORT;
-const CEDALO_MC_BROKER_CONNECTION_WEBSOCKET_PATH = process.env.CEDALO_MC_BROKER_CONNECTION_WEBSOCKET_PATH;
+const CEDALO_MC_BROKER_CONNECTION_WEBSOCKET_PATH = process.env.CEDALO_MC_BROKER_CONNECTION_WEBSOCKET_PATH || '/mqtt';
 const configFile = process.env.CEDALO_MC_PROXY_CONFIG || path.join(process.env.CEDALO_MC_PROXY_CONFIG_DIR || getBaseDirectory(__dirname), 'config.json');
 
 const adapter = new FileSync(configFile);
@@ -115,7 +115,7 @@ module.exports = class ConfigManager {
 		return connection;
 	}
 
-	filterConnectionObject(connection) {
+	filterConnectionObject(connection) { // tls plugin injects its own fucntion here
 		return {
 			id: connection.id,
 			name: connection.name,
@@ -173,13 +173,13 @@ module.exports = class ConfigManager {
 	}
 
 
-	preprocessConnection(connection) {
+	preprocessConnection(connection, keepStatusProperty=false) {
 		if (!isObject(connection)) {
 			throw new Error('Connection is of invalid type/empty/not provided');
 		}
 		connection = removeCircular(connection);
 
-		let newConnection = this.filterConnectionObject(connection);
+		let newConnection = this.filterConnectionObject(connection, keepStatusProperty);
 		if (newConnection.url && this.hostMappingString) {
 			newConnection = this.processInternalExternalURLs(newConnection);
 		}
@@ -198,6 +198,14 @@ module.exports = class ConfigManager {
 		return result;
 	}
 
+
+	saveConnection(connection, connectionId) {
+		const result = db.get('connections')
+			.find({ id: connectionId ? connectionId : connection.id })
+			.assign({...connection})
+			.write();
+		return result;	
+	}
 
 
 	createConnection(connection) {

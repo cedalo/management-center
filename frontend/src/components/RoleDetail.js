@@ -226,15 +226,23 @@ const RoleDetail = (props) => {
 
 	const onAddACL = async (acl) => {
 		await showConfirm();
-		await brokerClient.addRoleACL(role.rolename, acl);
-		const updatedRole = await brokerClient.getRole(role.rolename);
-		dispatch(updateRole(updatedRole));
-		setNewACL({
-			acltype: 'publishClientReceive',
-			allow: true,
-			topic: '',
-			priority: 0
-		});
+
+		try {
+			await brokerClient.addRoleACL(role.rolename, acl);
+			const updatedRole = await brokerClient.getRole(role.rolename);
+			dispatch(updateRole(updatedRole));
+			setNewACL({
+				acltype: 'publishClientReceive',
+				allow: true,
+				topic: '',
+				priority: 0
+			});
+		} catch (error) {
+			enqueueSnackbar(`ACL not added: ${error}`, {
+				variant: 'error'
+			});
+		}
+
 		const roles = await brokerClient.listRoles();
 		dispatch(updateRoles(roles));
 	};

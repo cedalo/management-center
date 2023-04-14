@@ -280,7 +280,13 @@ const init = async (licenseContainer) => {
 	config.parameters = {
 		showFeedbackForm: CEDALO_MC_SHOW_FEEDBACK_FORM,
 		rootUsername: CEDALO_MC_USERNAME,
-		ssoUsed: false
+		ssoUsed: false,
+		urlMappings: {
+			CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING: process.env.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING,
+			CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING: process.env.CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING,
+			CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING: process.env.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING,
+			CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING: process.env.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING
+		}
 	};
 
 	let server;
@@ -487,7 +493,10 @@ const init = async (licenseContainer) => {
 	const connectServerToAllBrokers = () => {
 		for (let i = 0; i < connections.length; i++) {
 			if (i < maxBrokerConnections) {
-				const connection = connections[i];
+				// preprocess connection to insert any external urls coming from env variables
+				const connection = context.configManager.preprocessConnection(connections[i], true);
+				context.configManager.saveConnection(connection);
+
 				const wasConnected = connection.status && connection.status.connected;
 				const closedByUser =
 					connection.status &&
@@ -496,9 +505,10 @@ const init = async (licenseContainer) => {
 					connection.status.error.code === 'ECONNCLOSED' &&
 					!connection.status.error.interrupted;
 				const hadError = connection.status && connection.status.error && !closedByUser;
+
 				if (wasConnected || hadError || connection.status === undefined) {
 					// Note that we don't connect in case broker was manually disconnected. We connect only in the three cases descirbed in if
-					handleConnectServerToBroker(connections[i]);
+					handleConnectServerToBroker(connection);
 				}
 			}
 		}

@@ -123,6 +123,21 @@ const Groups = (props) => {
 		if (!clients) {
 			clients = [];
 		}
+
+		if (clients.length === 0) {
+			await confirm({
+				title: 'Remove all clients',
+				description: `Do you really want to remove all clients from group "${group.groupname}"?`,
+				cancellationButtonProps: {
+					variant: 'contained'
+				},
+				confirmationButtonProps: {
+					color: 'primary',
+					variant: 'contained'
+				}
+			});
+		}
+
 		const clientNames = clients.map((client) => client.value);
 		await client.updateGroupClients(group, clientNames);
 		const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
@@ -135,6 +150,21 @@ const Groups = (props) => {
 		if (!roles) {
 			roles = [];
 		}
+
+		if (roles.length === 0) {
+			await confirm({
+				title: 'Remove all roles from group',
+				description: `Do you really want to remove all roles from group "${group.groupname}"?`,
+				cancellationButtonProps: {
+					variant: 'contained'
+				},
+				confirmationButtonProps: {
+					color: 'primary',
+					variant: 'contained'
+				}
+			});
+		}
+
 		const rolenames = roles.map((role) => role.value);
 		await client.updateGroupRoles(group, rolenames);
 		const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);

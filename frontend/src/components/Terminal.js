@@ -549,6 +549,7 @@ Topic:      ${acl.topic}
 					addGroupClient: 'Add a client to a group',
 					addGroupRole: 'Add a role to a group',
 					addRoleACL: 'Add ACL to role',
+					clear: 'Clear the Screen',
 					createClient: 'Create a new client',
 					createGroup: 'Create a new group',
 					createRole: 'Create a new role',
@@ -572,7 +573,8 @@ Topic:      ${acl.topic}
 					removeGroupRole: 'Remove a role from a group',
 					removeRoleACL: 'Remove an ACL from a role',
 					setAnonymousGroup: 'Set anonymous group',
-					setDefaultACLAccess: 'Set the default ACL access'
+					setDefaultACLAccess: 'Set the default ACL access',
+					show: false
 				}}
 			/>
 		</ContentContainer>
