@@ -21,7 +21,7 @@ const UsageTracker = require('./src/usage/UsageTracker');
 const InstallationManager = require('./src/usage/InstallationManager');
 const ConfigManager = require('./src/config/ConfigManager');
 const SettingsManager = require('./src/settings/SettingsManager');
-const { loadInstallation, stripConnectionsCredentials, generateSecret } = require('./src/utils/utils');
+const { loadInstallation, generateSecret } = require('./src/utils/utils');
 const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
 const swaggerDocument = require('./swagger.js');
 const Logger = require('./src/utils/Logger');
@@ -536,12 +536,14 @@ const init = async (licenseContainer) => {
 
 	const handleRequestMessage = async (message, client, user = {}) => {
 		const { request, type, id, ...data } = message;
+		const brokerId = context.brokerManager.getBrokerConnectionByClient(client)?.connection?.id;
+
 		if (!context.security.acl.noRestrictedRoles(user)) {
 			throw new NotAuthorizedError();
 		}
 		const actionName = context.requestHandlers.get(request);
 		if (actionName) {
-			const result = await context.runAction(user, actionName, data, { client });
+			const result = await context.runAction(user, actionName, data, { client, brokerId });
 			return result;
 		} else {
 			throw new Error(`Unsupported request: ${request}`);
