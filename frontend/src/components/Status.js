@@ -214,18 +214,18 @@ const Status = ({
 	}
 
 	const getBrokerInfos = () => {
-		const host = backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING ?
+		const host = !backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING ?
 			undefined : backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING;
-		const mqtt = backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING ?
-			false : backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING === 'mosquitto:true';
-		const mqtts = backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING ?
-			false : backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING === 'mosquitto:true';
-		const ws = backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING ?
-			false : backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING === 'mosquitto:true';
+		const mqtt = !backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING ?
+			false : backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING === 'dev2.cedalo.cloud:true';
+		const mqtts = !backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING ?
+			false : backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING === 'dev2.cedalo.cloud:true';
+		const ws = !backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING ?
+			false : backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING === 'dev2.cedalo.cloud:true';
 		// const connInfo = parseUrl('mqtt://mosquitto:1883');
 		const connInfo = parseUrl(currentConnection.url); //  === "mosquitto";
 		const hostInfo = parseUrl(host);
-		const ver1 = connInfo && connInfo.hostname === 'mosquitto';
+		const ver1 = connInfo && connInfo.hostname === 'dev2.cedalo.cloud';
 
 		const infos = [{
 			label: "Uptime",
