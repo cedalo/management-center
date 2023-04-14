@@ -149,6 +149,20 @@ const UserGroups = (props) => {
 			users: [...users.map(el => el.value)]
 		};
 
+		if (users.length === 0) {
+			await confirm({
+				title: 'Remove all users from group',
+				description: `Do you really want to remove all users from group "${group.name}"?`,
+				cancellationButtonProps: {
+					variant: 'contained'
+				},
+				confirmationButtonProps: {
+					color: 'primary',
+					variant: 'contained'
+				}
+			});
+		}
+
 		try {
 			const groups = await client.updateUserGroup(updatedGroup);
 			dispatch(updateUserGroups(groups));
@@ -168,6 +182,20 @@ const UserGroups = (props) => {
 			...group,
 			connections: [...connections.map(el => el.value)]
 		};
+
+		if (connections.length === 0) {
+			await confirm({
+				title: 'Remove all connections from group',
+				description: `Do you really want to remove all connections from group "${group.name}"?`,
+				cancellationButtonProps: {
+					variant: 'contained'
+				},
+				confirmationButtonProps: {
+					color: 'primary',
+					variant: 'contained'
+				}
+			});
+		}
 
 		try {
 			const groups = await client.updateUserGroup(updatedGroup);
