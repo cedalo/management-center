@@ -19,6 +19,7 @@ import {useSnackbar} from 'notistack';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
+import {useConfirm} from 'material-ui-confirm';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
 import ContentContainer from '../../../components/ContentContainer';
@@ -205,6 +206,7 @@ const Clients = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
+	const confirm = useConfirm();
 	const {client: brokerClient} = context;
 	const {
 		inspectFeature, clientControlFeature, userProfile, roles = [], clients = [],
@@ -217,6 +219,22 @@ const Clients = (props) => {
 	const {enqueueSnackbar} = useSnackbar();
 
 	const onDisconnectClient = async (client) => {
+		try {
+			await confirm({
+				title: 'Confirm client disconnect',
+				description: `Are you sure you want to issue a disconnect signal to "${client.clientid}" client?`,
+				cancellationButtonProps: {
+					variant: 'contained'
+				},
+				confirmationButtonProps: {
+					color: 'primary',
+					variant: 'contained'
+				}
+			});
+		} catch(_) {
+			return;
+		}
+
 		try {
 			await brokerClient.disconnectClient(client.clientid);
 			enqueueSnackbar(`Disconnect sent to client "${client.clientid}"`, {
