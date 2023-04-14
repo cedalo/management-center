@@ -173,13 +173,13 @@ module.exports = class ConfigManager {
 	}
 
 
-	preprocessConnection(connection) {
+	preprocessConnection(connection, keepStatusProperty=false) {
 		if (!isObject(connection)) {
 			throw new Error('Connection is of invalid type/empty/not provided');
 		}
 		connection = removeCircular(connection);
 
-		let newConnection = this.filterConnectionObject(connection);
+		let newConnection = this.filterConnectionObject(connection, keepStatusProperty);
 		if (newConnection.url && this.hostMappingString) {
 			newConnection = this.processInternalExternalURLs(newConnection);
 		}
@@ -198,6 +198,14 @@ module.exports = class ConfigManager {
 		return result;
 	}
 
+
+	saveConnection(connection, connectionId) {
+		const result = db.get('connections')
+			.find({ id: connectionId ? connectionId : connection.id })
+			.assign({...connection})
+			.write();
+		return result;	
+	}
 
 
 	createConnection(connection) {
