@@ -47,8 +47,7 @@ export default [
 			<div style={{fontSize: '10pt'}}>
 				<p>
 					A cluster connects multiple brokers. To be able to set up a cluster, the brokers need to be
-					configured to work as cluster nodes. At least three brokers form a cluster. The cluster type can
-					either be a dynamic-security cluster or a high-availability cluster.
+					configured to work as cluster nodes. At least three brokers form a cluster. The cluster mode can either be “dynamic-security sync” or “full sync”.
 				</p>
 			</div>
 		),
@@ -71,8 +70,7 @@ export default [
 		content: () => (
 			<div style={{fontSize: '10pt'}}>
 				<p>
-					Management Center users can upload CA certificates to the Management Center and deploy them to a
-					connected broker instances.
+					Management Center users can upload CA certificates to the Management Center and deploy them to connected broker instances. Uploaded CA certificates allow for client certificate connections. To deploy a CA certificate to a broker, ensure the broker configuration is set accordingly.
 				</p>
 			</div>
 		),
@@ -118,7 +116,7 @@ export default [
 		content: () => (
 			<div style={{fontSize: '10pt'}}>
 				<p>
-					Assign different roles to different users.
+					Define different users to give access to the Management Center. The users can acquire rights by having an assigned role. The users can further be grouped to User Groups.
 				</p>
 			</div>
 		),
@@ -141,7 +139,7 @@ export default [
 		content: () => (
 			<div style={{fontSize: '10pt'}}>
 				<p>
-					User groups add an extra layer of user management on top of the regular user management.
+					User Groups allow the grouping of users and define group access management. In addition, Groups allow defining, which connections can be accessed by group members. Using these restrictions, you can limit users to only the functionality they need ensuring higher levels of security, knowing that users as part of a group will not be able to see or touch anything they are not supposed to.
 				</p>
 			</div>
 		),
@@ -164,7 +162,7 @@ export default [
 		content: () => (
 			<div style={{fontSize: '10pt'}}>
 				<p>
-					Create tokens to be used for the Management Center API.
+					Application tokens enable accessing Management Center features through the Rest APIs. This offers and alternative authorization method to control the MMC Rest APIs.
 				</p>
 				<p>
 					Click on Close to finish the Tour.
