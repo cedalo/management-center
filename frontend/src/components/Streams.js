@@ -107,14 +107,7 @@ const Streams = (props) => {
 	const onDisableStream = async (streamname) => {
 		await confirm({
 			title: 'Confirm stream disable',
-			description: `Do you really want to disable stream "${streamname}"?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to disable stream "${streamname}"?`
 		});
 		await brokerClient.disableStream(streamname);
 		const streams = await brokerClient.listStreams();
@@ -178,14 +171,7 @@ const Streams = (props) => {
 	const onClearStreamMessages = async (streamname) => {
 		await confirm({
 			title: 'Confirm clear all stream messages',
-			description: `Do you really want to clear all messages in the stream "${streamname}"?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to clear all messages in the stream "${streamname}"?`
 		});
 		try {
 			await brokerClient.clearStreamMessages(streamname);
@@ -207,14 +193,7 @@ const Streams = (props) => {
 	const onDeleteStream = async (streamname) => {
 		await confirm({
 			title: 'Confirm stream deletion',
-			description: `Do you really want to delete stream "${streamname}"?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to delete stream "${streamname}"?`
 		});
 		await brokerClient.deleteStream(streamname);
 		enqueueSnackbar(`Stream "${streamname}" successfully deleted`, {

@@ -6,7 +6,6 @@ import TextField from '@material-ui/core/TextField';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
-import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
@@ -18,6 +17,7 @@ import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import ContentContainer from './ContentContainer';
+import { useConfirmCancel } from '../helpers/useConfirmDialog';
 
 const clientShape = PropTypes.shape({
 	username: PropTypes.string,
@@ -27,7 +27,7 @@ const clientShape = PropTypes.shape({
 const GroupDetail = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
-	const confirm = useConfirm();
+	const confirmCancel = useConfirmCancel();
 	const {enqueueSnackbar} = useSnackbar();
 	const {client: brokerClient} = context;
 	const [value, setValue] = React.useState(0);
@@ -64,16 +64,9 @@ const GroupDetail = (props) => {
 	};
 
 	const onCancelEdit = async () => {
-		await confirm({
+		await confirmCancel({
 			title: 'Cancel group editing',
-			description: `Do you really want to cancel editing this group?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to cancel editing this group?`
 		});
 		setUpdatedGroup({
 			...group

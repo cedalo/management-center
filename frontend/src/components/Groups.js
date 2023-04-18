@@ -127,14 +127,7 @@ const Groups = (props) => {
 		if (clients.length === 0) {
 			await confirm({
 				title: 'Remove all clients',
-				description: `Do you really want to remove all clients from group "${group.groupname}"?`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary',
-					variant: 'contained'
-				}
+				description: `Do you really want to remove all clients from group "${group.groupname}"?`
 			});
 		}
 
@@ -154,14 +147,7 @@ const Groups = (props) => {
 		if (roles.length === 0) {
 			await confirm({
 				title: 'Remove all roles from group',
-				description: `Do you really want to remove all roles from group "${group.groupname}"?`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary',
-					variant: 'contained'
-				}
+				description: `Do you really want to remove all roles from group "${group.groupname}"?`
 			});
 		}
 
@@ -193,14 +179,7 @@ const Groups = (props) => {
 	const onDeleteGroup = async (groupname) => {
 		await confirm({
 			title: 'Confirm group deletion',
-			description: `Do you really want to delete the group "${groupname}"?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to delete the group "${groupname}"?`
 		});
 		await client.deleteGroup(groupname);
 		enqueueSnackbar(`Group "${groupname}" successfully deleted`, {

@@ -18,7 +18,6 @@ import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import {Alert, AlertTitle} from '@material-ui/lab';
 import {Buffer} from 'buffer';
-import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import React, {useContext, useEffect} from 'react';
 import {connect, useDispatch} from 'react-redux';
@@ -27,6 +26,7 @@ import {updateBrokerConfigurations, updateBrokerConnections} from '../actions/ac
 import {handleConnectionChange} from '../utils/connectionUtils/connections';
 import {WebSocketContext} from '../websockets/WebSocket';
 import {useFormStyles} from '../styles';
+import { useConfirmCancel } from '../helpers/useConfirmDialog';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -178,7 +178,7 @@ const ConnectionDetailComponent = (props) => {
 
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
-	const confirm = useConfirm();
+	const confirmCancel = useConfirmCancel();
 	const history = useHistory();
 	const {client: brokerClient} = context;
 
@@ -278,16 +278,9 @@ const ConnectionDetailComponent = (props) => {
 	};
 
 	const onCancelEdit = async () => {
-		await confirm({
+		await confirmCancel({
 			title: 'Cancel editing connection',
-			description: `Do you really want to cancel editing this connection?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to cancel editing this connection?`
 		});
 		setUpdatedConnection({
 			...connection
