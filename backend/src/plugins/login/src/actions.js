@@ -9,7 +9,7 @@ const createActions = (plugin) => ({
 	loginAction: {
 		type: 'user/login',
 		isModifying: true,
-		fn: (context, { username, password }) => {
+		fn: async (context, { username, password }) => {
 			if (username === USERNAME && password === PASSWORD) {
 				return addSessionId({
 					username,
@@ -18,7 +18,7 @@ const createActions = (plugin) => ({
 			}
 			const valid =
 				(username === USERNAME && password === PASSWORD) ||
-				context.security?.usersManager?.checkUser(username, password);
+				(await context.security?.usersManager?.checkUser(username, password));
 			if (!valid) {
 				throw new Error('Invalid credentials');
 			}
