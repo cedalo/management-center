@@ -50,6 +50,7 @@ import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import ContentContainer from './ContentContainer';
 import StyledTypography from './StyledTypography';
+import { useConfirmCancel } from '../helpers/useConfirmDialog';
 
 const ACL_TABLE_COLUMNS = [
 	{id: 'type', key: 'Type'},
@@ -127,6 +128,7 @@ const RoleDetail = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
+	const confirmCancel = useConfirmCancel();
 	const {enqueueSnackbar} = useSnackbar();
 	const {client: brokerClient} = context;
 	const formClasses = useFormStyles();
@@ -188,16 +190,9 @@ const RoleDetail = (props) => {
 	};
 
 	const onCancelEdit = async () => {
-		await confirm({
+		await confirmCancel({
 			title: 'Cancel role editing',
-			description: `Do you really want to cancel editing this role?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to cancel editing this role?`
 		});
 		setUpdatedRole({
 			...role
@@ -211,14 +206,7 @@ const RoleDetail = (props) => {
 			await confirm({
 				title: 'Edit role',
 				description: `You are about to edit a role associated with the user that is used by the Management Center server to connect to your broker instance. 
-				The Management Center server will therefore be disconnected from the broker and automatically reconnected when the changes are applied.`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary',
-					variant: 'contained'
-				}
+				The Management Center server will therefore be disconnected from the broker and automatically reconnected when the changes are applied.`
 			});
 			dispatch(updateEditDefaultClient(true));
 		}
@@ -250,14 +238,7 @@ const RoleDetail = (props) => {
 	const onRemoveACL = async (acl) => {
 		// await confirm({
 		// 	title: 'Confirm ACL deletion',
-		// 	description: `Do you really want to delete the ACL "${acl.topic}"?`,
-		// 	cancellationButtonProps: {
-		// 		variant: 'contained'
-		// 	},
-		// 	confirmationButtonProps: {
-		// 		color: 'primary',
-		// 		variant: 'contained'
-		// 	}
+		// 	description: `Do you really want to delete the ACL "${acl.topic}"?`
 		// });
 		await showConfirm();
 		await brokerClient.removeRoleACL(role.rolename, acl);

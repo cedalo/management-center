@@ -193,14 +193,7 @@ const Clusters = (props) => {
 	const onDeleteCluster = async (clustername) => {
 		await confirm({
 			title: 'Confirm cluster deletion',
-			description: `Do you really want to delete cluster "${clustername}"?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to delete cluster "${clustername}"?`
 		});
 		try {
 			await brokerClient.deleteCluster(clustername);

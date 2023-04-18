@@ -3,7 +3,6 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import UsersIcon from '@material-ui/icons/People';
-import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
@@ -25,7 +24,7 @@ const UserGroupNew = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
-	const confirm = useConfirm();
+	const confirmCancel = useConfirmCancel();
 	const {client} = context;
 	const formClasses = useFormStyles();
 
@@ -50,16 +49,9 @@ const UserGroupNew = (props) => {
 	};
 
 	const onCancel = async () => {
-		await confirm({
+		await confirmCancel({
 			title: 'Cancel group creation',
-			description: `Do you really want to cancel creating this group?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to cancel creating this group?`
 		});
 		history.goBack();
 	};

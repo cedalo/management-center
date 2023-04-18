@@ -6,7 +6,6 @@ import TextField from '@material-ui/core/TextField';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
-import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
@@ -18,6 +17,7 @@ import SelectList from '../../../components/SelectList';
 import {useFormStyles} from '../../../styles';
 import {WebSocketContext} from '../../../websockets/WebSocket';
 import {updateUser, updateUsers} from '../actions/actions';
+import { useConfirmCancel } from '../../../helpers/useConfirmDialog';
 
 
 const PASSWORD_ERROR_MESSAGE = 'Password should not be empty';
@@ -60,7 +60,7 @@ const UserDetail = (props) => {
 
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
-	const confirm = useConfirm();
+	const confirmCancel = useConfirmCancel();
 	const {client: brokerClient} = context;
 
 	const validate = () => {
@@ -99,16 +99,9 @@ const UserDetail = (props) => {
 	};
 
 	const onCancelEdit = async () => {
-		await confirm({
+		await confirmCancel({
 			title: 'Cancel user editing',
-			description: `Do you really want to cancel editing this user?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to cancel editing this user?`
 		});
 		setUpdatedUser({
 			...user

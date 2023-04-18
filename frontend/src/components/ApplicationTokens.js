@@ -237,14 +237,7 @@ const createNewTokenDialog = (dialogOpen, handleDialogClose, client, userRoles, 
 			try {
 				await confirm({
 					title: 'Don\'t forget to copy the token!',
-					description: `Do you want to close this dialog without copying the token? It will never be shown again`,
-					cancellationButtonProps: {
-						variant: 'contained'
-					},
-					confirmationButtonProps: {
-						color: 'primary',
-						variant: 'contained'
-					}
+					description: `Do you want to close this dialog without copying the token? It will never be shown again`
 				});
 			} catch (error) {
 				return;
@@ -686,14 +679,7 @@ const ApplicationTokens = (props) => {
 		try {
 			await confirm({
 				title: 'Revoking the token',
-				description: `The token will be revoked and deleted`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary',
-					variant: 'contained'
-				}
+				description: `The token will be revoked and deleted`
 			});
 		} catch (error) {
 			return;

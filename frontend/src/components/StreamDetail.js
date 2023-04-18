@@ -29,6 +29,7 @@ import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import ContentContainer from './ContentContainer';
 import './jsoneditor-fix.css';
+import { useConfirmCancel } from '../helpers/useConfirmDialog';
 
 
 const ajv = new Ajv({
@@ -63,6 +64,7 @@ const StreamDetail = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
+	const confirmCancel = useConfirmCancel();
 	const {client: brokerClient} = context;
 
 	const validate = () => {
@@ -77,14 +79,7 @@ const StreamDetail = (props) => {
 	const onDisableStream = async (streamname) => {
 		await confirm({
 			title: 'Confirm stream disable',
-			description: `Do you really want to disable stream "${streamname}"?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to disable stream "${streamname}"?`
 		});
 		await brokerClient.disableStream(streamname);
 		const stream = await brokerClient.getStream(streamname);
@@ -126,16 +121,9 @@ const StreamDetail = (props) => {
 	};
 
 	const onCancelEdit = async () => {
-		await confirm({
+		await confirmCancel({
 			title: 'Cancel editing stream',
-			description: `Do you really want to cancel editing this stream?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to cancel editing this stream?`
 		});
 		setUpdatedStream({
 			...stream

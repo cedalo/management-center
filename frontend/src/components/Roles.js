@@ -101,24 +101,12 @@ const Roles = (props) => {
 	const onDeleteRole = async (rolename) => {
 		await confirm({
 			title: 'Confirm role deletion',
-			description: `Do you really want to delete the role "${rolename}"?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary', variant: 'contained'
-			}
+			description: `Do you really want to delete the role "${rolename}"?`
 		});
 		if (rolename === 'admin') {
 			await confirm({
 				title: 'Confirm default role deletion',
-				description: `Are you sure? You are about to delete the default role for the current Mosquitto instance.`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary', variant: 'contained'
-				}
+				description: `Are you sure? You are about to delete the default role for the current Mosquitto instance.`
 			});
 		}
 		await client.deleteRole(rolename);

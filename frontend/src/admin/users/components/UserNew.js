@@ -3,7 +3,6 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import PasswordIcon from '@material-ui/icons/VpnKey';
-import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
@@ -16,6 +15,7 @@ import SelectList from '../../../components/SelectList';
 import {useFormStyles} from '../../../styles';
 import {WebSocketContext} from '../../../websockets/WebSocket';
 import {updateUsers} from '../actions/actions';
+import { useConfirmCancel } from '../../../helpers/useConfirmDialog';
 
 const UserNew = (props) => {
 	const {users, userRoles = [], userManagementFeature, backendParameters} = props;
@@ -53,7 +53,7 @@ const UserNew = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
-	const confirm = useConfirm();
+	const confirmCancel = useConfirmCancel();
 	const {client} = context;
 
 	const onSaveUser = async () => {
@@ -78,16 +78,9 @@ const UserNew = (props) => {
 	};
 
 	const onCancel = async () => {
-		await confirm({
+		await confirmCancel({
 			title: 'Cancel user creation',
-			description: `Do you really want to cancel creating this user?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to cancel creating this user?`
 		});
 		history.goBack();
 	};

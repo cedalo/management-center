@@ -92,14 +92,7 @@ const Plugins = (props) => {
 		if (load) {
 			await confirm({
 				title: 'Confirm enabling of plugin',
-				description: `Do you really want to enable the plugin "${pluginId}"?`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary',
-					variant: 'contained'
-				}
+				description: `Do you really want to enable the plugin "${pluginId}"?`
 			});
 			try {
 				await client.loadPlugin(pluginId);
@@ -112,14 +105,7 @@ const Plugins = (props) => {
 		} else {
 			await confirm({
 				title: 'Confirm disabling of plugin',
-				description: `Do you really want to disable the plugin "${pluginId}"?`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary',
-					variant: 'contained'
-				}
+				description: `Do you really want to disable the plugin "${pluginId}"?`
 			});
 			try {
 				await client.unloadPlugin(pluginId);

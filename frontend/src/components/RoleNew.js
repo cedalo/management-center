@@ -2,7 +2,6 @@ import FormGroup from '@material-ui/core/FormGroup';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
@@ -14,6 +13,7 @@ import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import ContentContainer from './ContentContainer';
 import SaveCancelButtons from './SaveCancelButtons';
+import { useConfirmCancel } from '../helpers/useConfirmDialog';
 
 const RoleNew = () => {
 	const [rolename, setRolename] = useState('');
@@ -23,7 +23,7 @@ const RoleNew = () => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
-	const confirm = useConfirm();
+	const confirmCancel = useConfirmCancel();
 	const {client} = context;
 	const formClasses = useFormStyles();
 
@@ -49,16 +49,9 @@ const RoleNew = () => {
 	};
 
 	const onCancel = async () => {
-		await confirm({
+		await confirmCancel({
 			title: 'Cancel role creation',
-			description: `Do you really want to cancel creating this role?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to cancel creating this role?`
 		});
 		history.goBack();
 	};

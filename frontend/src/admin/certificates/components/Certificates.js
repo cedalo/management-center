@@ -49,7 +49,7 @@ const isLicensed = hasLicenseFeature('cert-management');
 const failedDeleteMessage = (cert, error) =>
 	`Failed to delete certificate "${cert.name}"! Reason: ${error.message || error}`;
 
-const CustomTableRow = ({ cert, connections, handleDelete }) => {
+const CustomTableRow = ({ cert, connections, handleDelete, names }) => {
 	const history = useHistory();
 	const [isExpanded, setIsExpanded] = useState(false);
 
@@ -63,7 +63,8 @@ const CustomTableRow = ({ cert, connections, handleDelete }) => {
 	};
 	const onSelect = (event) => {
 		event.stopPropagation();
-		history.push(`/certs/detail/${cert.id}`, cert);
+		// push names to state as well...
+		history.push(`/certs/detail/${cert.id}`, { cert, certNames: names });
 	};
 	const onDeploy = (event) => {
 		event.stopPropagation();
@@ -122,6 +123,7 @@ const Certificates = ({ connections, isCertSupported }) => {
 	const { enqueueSnackbar } = useSnackbar();
 	const { client } = useContext(WebSocketContext);
 	const [certs, setCerts] = useState([]);
+	const certNames = certs.map((cert) => cert.name);
 
 	const loadCerts = async () => {
 		if (isCertSupported) {
@@ -141,14 +143,7 @@ const Certificates = ({ connections, isCertSupported }) => {
 			// throws on cancel
 			await confirm({
 				title: 'Confirm delete',
-				description: `Do you really want to delete certificate "${cert.name}" and remove it from all brokers?`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary',
-					variant: 'contained'
-				}
+				description: `Do you really want to delete certificate "${cert.name}" and remove it from all brokers?`
 			});
 			await client
 				.deleteCertificate(cert.id)
@@ -163,7 +158,7 @@ const Certificates = ({ connections, isCertSupported }) => {
 	const onAddNewCertificate = (event) => {
 		event.stopPropagation();
 		// navigate('/certs/detail/new');
-		history.push('/certs/detail/new', { name: '', filename: '', connections: [] });
+		history.push('/certs/detail/new', { name: '', filename: '', certNames });
 	};
 
 	useEffect(() => {
@@ -193,7 +188,7 @@ const Certificates = ({ connections, isCertSupported }) => {
 					</ContainerHeader>
 					<ContentTable columns={CERT_TABLE_COLUMNS}>
 						{certs.map((cert) => (
-							<CustomTableRow cert={cert} connections={connections} handleDelete={handleDeleteCert} />
+							<CustomTableRow cert={cert} names={certNames} connections={connections} handleDelete={handleDeleteCert} />
 						))}
 					</ContentTable>
 				</>

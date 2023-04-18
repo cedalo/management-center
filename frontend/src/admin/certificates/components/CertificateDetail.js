@@ -57,14 +57,18 @@ const CertificateDetail = () => {
 	const {enqueueSnackbar} = useSnackbar();
 	const [canSave, setCanSave] = useState(false);
 	const [isExpanded, setIsExpanded] = useState(false);
-	const [cert, setCert] = useState(history.location.state);
+	// read initial state from history location
+	const { cert: selectedCert = {}, certNames = []} = history.location.state;
+	const [cert, setCert] = useState(selectedCert);
 	const context = useContext(WebSocketContext);
 	const {client} = context;
 	const initial = useRef(false);
 	const formClasses = useFormStyles();
 
+	const isNameUsed = cert.name !== selectedCert.name && certNames.includes(cert.name);
+
 	useEffect(() => {
-		if (initial.current) setCanSave(isValid(cert));
+		if (initial.current) setCanSave(isValid(cert) && !isNameUsed);
 		else initial.current = true;
 	}, [cert]);
 
@@ -134,6 +138,8 @@ const CertificateDetail = () => {
 						id="caname"
 						label="Descriptive Name"
 						variant="outlined"
+						error={isNameUsed}
+						helperText={isNameUsed && 'Certificate name already used!'}		
 						InputLabelProps={{shrink: true}}
 						fullWidth
 						size="small"
