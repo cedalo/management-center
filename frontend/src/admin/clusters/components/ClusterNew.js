@@ -14,7 +14,6 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import {WebSocketContext} from '../../../websockets/WebSocket';
-import {useConfirm} from 'material-ui-confirm';
 import {useHistory} from 'react-router-dom';
 import SaveCancelButtons from '../../../components/SaveCancelButtons';
 import SelectNodeComponent from './SelectNodeComponent';
@@ -22,6 +21,7 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import { getSyncModes } from './clusterutils';
+import { useConfirmCancel } from '../../../helpers/useConfirmDialog';
 
 
 const ClusterNew = (props) => {
@@ -75,7 +75,7 @@ const ClusterNew = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
-	const confirm = useConfirm();
+	const confirmCancel = useConfirmCancel();
 	const {client} = context;
 
 	const onSaveCluster = async () => {
@@ -101,16 +101,9 @@ const ClusterNew = (props) => {
 	};
 
 	const onCancel = async () => {
-		await confirm({
+		await confirmCancel({
 			title: 'Cancel cluster creation',
-			description: `Do you really want to cancel creating this cluster?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to cancel creating this cluster?`
 		});
 		history.goBack();
 	};

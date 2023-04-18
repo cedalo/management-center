@@ -143,14 +143,7 @@ const Certificates = ({ connections, isCertSupported }) => {
 			// throws on cancel
 			await confirm({
 				title: 'Confirm delete',
-				description: `Do you really want to delete certificate "${cert.name}" and remove it from all brokers?`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary',
-					variant: 'contained'
-				}
+				description: `Do you really want to delete certificate "${cert.name}" and remove it from all brokers?`
 			});
 			await client
 				.deleteCertificate(cert.id)

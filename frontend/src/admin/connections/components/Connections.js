@@ -333,13 +333,7 @@ const Connections = ({
 
 			await confirm({
 				title: 'Confirm disconnecting',
-				description: `Do you really want to disconnect the connection "${id}"?`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary', variant: 'contained'
-				}
+				description: `Do you really want to disconnect the connection "${id}"?`
 			});
 
 			await brokerClient.disconnectServerFromBroker(id);
@@ -371,13 +365,7 @@ const Connections = ({
 		try {
 			await confirm({
 				title: 'Confirm connection deletion',
-				description: `Do you really want to delete connection "${id}"?`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary', variant: 'contained'
-				}
+				description: `Do you really want to delete connection "${id}"?`
 			});
 			await brokerClient.deleteConnection(id);
 			enqueueSnackbar(`Connection "${id}" successfully deleted`, {

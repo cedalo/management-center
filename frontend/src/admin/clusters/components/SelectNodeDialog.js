@@ -49,10 +49,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
+const isValid = (node) => {
+	const { port, address, broker } = node;
+	return port && address && broker;
+};
 
 const getDialogContent = ({
 	brokerConnections, 
+	cluster,
 	node, 
+	setNode,
 	handleAddNode, 
 	classes, 
 	handleClose
@@ -75,23 +81,31 @@ const getDialogContent = ({
 			</DialogContent>
 		</>
 	} else {
-		return <>
-			<DialogTitle align="center" id="add-node-dialog-title">
-				Select the broker to add as node
-			</DialogTitle>
-			<DialogContent>
-				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
-					<SelectNodeComponent defaultNode={node} />
-				</Grid>
-			</DialogContent>
-			<DialogActions>
-				<Button
-					disabled={node?.address === ''}
-					onClick={() => handleAddNode(node)}>
-					Add node
-				</Button>
-			</DialogActions>
-		</>
+		const isUniqueNodeId = (nodeId) => nodeId && !cluster.nodes.map(({ nodeId }) => nodeId).includes(nodeId);
+		return (
+			<>
+				<DialogTitle align="center" id="add-node-dialog-title">
+					Select the broker to add as node
+				</DialogTitle>
+				<DialogContent>
+					<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
+						<SelectNodeComponent
+							defaultNode={node}
+							setNode={setNode}
+							checkAllNodeIds={() => isUniqueNodeId(node.nodeId)}
+						/>
+					</Grid>
+				</DialogContent>
+				<DialogActions>
+					<Button
+						disabled={!isValid(node) || !isUniqueNodeId(node.nodeId)}
+						onClick={() => handleAddNode(node)}
+					>
+						Add node
+					</Button>
+				</DialogActions>
+			</>
+		);
 	} 
 }
 const SelectNodeDialog = ({ brokerConnections, cluster, open, handleClose, handleAddNode }) => {
@@ -109,8 +123,10 @@ const SelectNodeDialog = ({ brokerConnections, cluster, open, handleClose, handl
 		>
 			{
 				getDialogContent({
-					brokerConnections, 
+					brokerConnections,
+					cluster,
 					node, 
+					setNode,
 					handleAddNode, 
 					classes, 
 					handleClose

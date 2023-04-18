@@ -31,6 +31,7 @@ import {WebSocketContext} from '../../../websockets/WebSocket';
 import {updateCluster, updateClusters} from '../actions/actions';
 import SelectNodeDialog from './SelectNodeDialog';
 import { getSyncModeLabel } from './clusterutils';
+import { useConfirmCancel } from '../../../helpers/useConfirmDialog';
 
 const clusterShape = PropTypes.shape({
 	clustername: PropTypes.string,
@@ -76,6 +77,7 @@ const ClusterDetail = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const confirm = useConfirm();
+	const confirmCancel = useConfirmCancel();
 	const {client: brokerClient} = context;
 
 	const validate = () => {
@@ -110,14 +112,7 @@ const ClusterDetail = (props) => {
 	const removeNodeFromCluster = async (nodeId) => {
 		await confirm({
 			title: 'Confirm node removal',
-			description: `Do you really want to remove the node "${nodeId}" from this cluster?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to remove the node "${nodeId}" from this cluster?`
 		});
 
 		setProgressDialogOpen(true);
@@ -162,16 +157,9 @@ const ClusterDetail = (props) => {
 	};
 
 	const onCancelEdit = async () => {
-		await confirm({
+		await confirmCancel({
 			title: 'Cancel cluster editing',
-			description: `Do you really want to cancel editing this cluster?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to cancel editing this cluster?`
 		});
 		setUpdatedCluster({
 			...cluster
