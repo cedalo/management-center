@@ -124,7 +124,7 @@ module.exports = {
             width: 100vw;
             height: 100vh;
             background-size: 100% 100%;
-            background-color: rgb(27, 42, 50);
+            background-color: #d4d6da;
             overflow: hidden;
         }
 
