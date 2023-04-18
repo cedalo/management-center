@@ -246,8 +246,8 @@ export default function (props) {
 			if (response.titleBar === 'logo') {
 				setLogo(theme.logo?.path ? theme.logo?.path : theme.logo);
 			}
-			setAppliedTheme(createTheme(theme));
 		}
+		setAppliedTheme(createTheme(theme));
 	}, [response, darkMode]);
 
 	if (!hasErrorConfig && !responseConfig && !hasError && !response) {
