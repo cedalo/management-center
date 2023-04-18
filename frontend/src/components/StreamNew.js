@@ -13,7 +13,6 @@ import 'brace/theme/github'
 import 'brace/theme/monokai'
 import {JsonEditor as Editor} from 'jsoneditor-react';
 import 'jsoneditor-react/es/editor.min.css';
-import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
@@ -26,6 +25,7 @@ import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import ContentContainer from './ContentContainer';
 import './jsoneditor-fix.css';
+import { useConfirmCancel } from '../helpers/useConfirmDialog';
 
 const ajv = new Ajv({
 	allErrors: true,
@@ -79,7 +79,7 @@ const StreamNew = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
-	const confirm = useConfirm();
+	const confirmCancel = useConfirmCancel();
 	const {client} = context;
 
 	const onSaveStream = async () => {
@@ -108,16 +108,9 @@ const StreamNew = (props) => {
 	};
 
 	const onCancel = async () => {
-		await confirm({
+		await confirmCancel({
 			title: 'Cancel stream creation',
-			description: `Do you really want to cancel creating this stream?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to cancel creating this stream?`
 		});
 		history.goBack();
 	};

@@ -118,14 +118,7 @@ const Clients = (props) => {
 		if (groups.length === 0) {
 			await confirm({
 				title: 'Confirm remove client from all groups',
-				description: `Do you really want to remove client "${client.username}" from all groups?`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary',
-					variant: 'contained'
-				}
+				description: `Do you really want to remove client "${client.username}" from all groups?`
 			});
 		}
 		const groupnames = groups.map((group) => group.value);
@@ -148,14 +141,7 @@ const Clients = (props) => {
 		if (roles.length === 0) {
 			await confirm({
 				title: 'Remove all roles from client',
-				description: `Do you really want to remove all roles from client "${client.username}"?`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary',
-					variant: 'contained'
-				}
+				description: `Do you really want to remove all roles from client "${client.username}"?`
 			});
 		}
 
@@ -194,26 +180,12 @@ const Clients = (props) => {
 	const onDeleteClient = async (username) => {
 		await confirm({
 			title: 'Confirm client deletion',
-			description: `Do you really want to delete client "${username}"?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to delete client "${username}"?`
 		});
 		if (username === 'cedalo') {
 			await confirm({
 				title: 'Confirm default client deletion',
-				description: `Are you sure? You are about to delete the default client for the current Mosquitto instance.`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary',
-					variant: 'contained'
-				}
+				description: `Are you sure? You are about to delete the default client for the current Mosquitto instance.`
 			});
 		}
 		try {
@@ -234,14 +206,7 @@ const Clients = (props) => {
 	const onDisableClient = async (username) => {
 		await confirm({
 			title: 'Confirm client disable',
-			description: `Do you really want to disable client "${username}"?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to disable client "${username}"?`
 		});
 		try {
 			await brokerClient.disableClient(username);

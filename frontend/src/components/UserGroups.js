@@ -152,14 +152,7 @@ const UserGroups = (props) => {
 		if (users.length === 0) {
 			await confirm({
 				title: 'Remove all users from group',
-				description: `Do you really want to remove all users from group "${group.name}"?`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary',
-					variant: 'contained'
-				}
+				description: `Do you really want to remove all users from group "${group.name}"?`
 			});
 		}
 
@@ -186,14 +179,7 @@ const UserGroups = (props) => {
 		if (connections.length === 0) {
 			await confirm({
 				title: 'Remove all connections from group',
-				description: `Do you really want to remove all connections from group "${group.name}"?`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary',
-					variant: 'contained'
-				}
+				description: `Do you really want to remove all connections from group "${group.name}"?`
 			});
 		}
 
@@ -221,14 +207,7 @@ const UserGroups = (props) => {
 	const onDeleteGroup = async (groupname) => {
 		await confirm({
 			title: 'Confirm group deletion',
-			description: `Do you really want to delete the group "${groupname}"?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to delete the group "${groupname}"?`
 		});
 
 		let groups;

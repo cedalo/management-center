@@ -55,9 +55,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
+const isValid = (node) => {
+	const { port, address, broker } = node;
+	return port && address && broker;
+};
 
 const getDialogContent = ({
 	brokerConnections, 
+	cluster,
 	node, 
 	setNode,
 	handleAddNode, 
@@ -99,7 +104,12 @@ const getDialogContent = ({
 			</DialogTitle>
 			<DialogContent>
 				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
-					<SelectNodeComponent defaultNode={node} cluster={cluster} setNode={setNode} checkAllNodeIds={areNodeIdsUnique} />
+					<SelectNodeComponent
+						defaultNode={node}
+						cluster={cluster}
+						setNode={setNode}
+						checkAllNodeIds={areNodeIdsUnique}
+					/>
 				</Grid>
 			</DialogContent>
 			<DialogActions>

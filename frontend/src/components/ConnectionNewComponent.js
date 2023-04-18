@@ -15,7 +15,6 @@ import SaveIcon from '@material-ui/icons/Save';
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import {Alert, AlertTitle} from '@material-ui/lab';
-import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import React, {useContext, useEffect} from 'react';
 import {connect, useDispatch} from 'react-redux';
@@ -23,6 +22,7 @@ import {Redirect, useHistory} from 'react-router-dom';
 import {updateBrokerConfigurations, updateBrokerConnections} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
 import {useFormStyles} from '../styles';
+import { useConfirmCancel } from '../helpers/useConfirmDialog';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -160,7 +160,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 	const history = useHistory();
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
-	const confirm = useConfirm();
+	const confirmCancel = useConfirmCancel();
 	const {client: brokerClient} = context;
 
 	const connectionExists = connections?.find((searchConnection) => {
@@ -255,16 +255,9 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 
 
 	const onCancel = async () => {
-		await confirm({
+		await confirmCancel({
 			title: 'Cancel connection creation',
-			description: `Do you really want to cancel creating this connection?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to cancel creating this connection?`
 		});
 
 		if (handleCloseDialog) {

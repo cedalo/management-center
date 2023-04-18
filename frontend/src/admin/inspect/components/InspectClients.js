@@ -222,14 +222,7 @@ const Clients = (props) => {
 		try {
 			await confirm({
 				title: 'Confirm client disconnect',
-				description: `Are you sure you want to issue a disconnect signal to "${client.clientid}" client?`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary',
-					variant: 'contained'
-				}
+				description: `Are you sure you want to issue a disconnect signal to "${client.clientid}" client?`
 			});
 		} catch(_) {
 			return;

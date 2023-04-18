@@ -22,14 +22,7 @@ const LogoutButton = (props) => {
 	const handleLogout = async () => {
 		await confirm({
 			title: 'Confirm logout',
-			description: `Do you really want to logout?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to logout?`
 		});
 		window.location.href = '/logout';
 	};

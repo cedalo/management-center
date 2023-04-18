@@ -33,6 +33,17 @@ import store from './store';
 import getTheme from './theme';
 import WebSocketProvider from './websockets/WebSocket';
 
+
+const CONFIRM_OPTS = {
+	cancellationButtonProps: {
+		variant: 'contained'
+	},
+	confirmationButtonProps: {
+		color: 'primary',
+		variant: 'contained'
+	}
+};
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -246,8 +257,8 @@ export default function (props) {
 			if (response.titleBar === 'logo') {
 				setLogo(theme.logo?.path ? theme.logo?.path : theme.logo);
 			}
-			setAppliedTheme(createTheme(theme));
 		}
+		setAppliedTheme(createTheme(theme));
 	}, [response, darkMode]);
 
 	if (!hasErrorConfig && !responseConfig && !hasError && !response) {
@@ -274,7 +285,7 @@ export default function (props) {
 	return (
 		<ThemeProvider theme={appliedTheme}>
 			<SnackbarProvider>
-				<ConfirmProvider>
+				<ConfirmProvider defaultOptions={CONFIRM_OPTS}>
 					<CssBaseline/>
 					<Router basename={process.env.PUBLIC_URL}>
 						<Tour>

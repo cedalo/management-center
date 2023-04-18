@@ -10,7 +10,6 @@ import EditIcon from '@material-ui/icons/Edit';
 import ClientIDIcon from '@material-ui/icons/Fingerprint';
 import SaveIcon from '@material-ui/icons/Save';
 import PasswordIcon from '@material-ui/icons/VpnKey';
-import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
@@ -23,6 +22,7 @@ import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import ContentContainer from './ContentContainer';
+import { useConfirmCancel } from '../helpers/useConfirmDialog';
 
 const PASSWORD_ERROR_MESSAGE = 'Password should not be empty';
 
@@ -90,7 +90,7 @@ const ClientDetail = (props) => {
 
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
-	const confirm = useConfirm();
+	const confirmCancel = useConfirmCancel();
 	const {client: brokerClient} = context;
 
 	const validate = () => {
@@ -124,16 +124,9 @@ const ClientDetail = (props) => {
 	};
 
 	const onCancelEdit = async () => {
-		await confirm({
+		await confirmCancel({
 			title: 'Cancel client editing',
-			description: `Do you really want to cancel editing this client?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to cancel editing this client?`
 		});
 		setUpdatedClient({
 			...client

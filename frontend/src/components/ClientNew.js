@@ -7,7 +7,6 @@ import ClientIDIcon from '@material-ui/icons/Fingerprint';
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import PasswordIcon from '@material-ui/icons/VpnKey';
-import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
@@ -45,7 +44,7 @@ const ClientNew = (props) => {
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
 	const history = useHistory();
-	const confirm = useConfirm();
+	const confirmCancel = useConfirmCancel();
 	const {client} = context;
 
 	const onSaveClient = async () => {
@@ -66,16 +65,9 @@ const ClientNew = (props) => {
 	};
 
 	const onCancel = async () => {
-		await confirm({
+		await confirmCancel({
 			title: 'Cancel client creation',
-			description: `Do you really want to cancel creating this client?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to cancel creating this client?`
 		});
 		history.goBack();
 	};

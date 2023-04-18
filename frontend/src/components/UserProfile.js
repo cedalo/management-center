@@ -18,7 +18,6 @@ import SaveIcon from '@material-ui/icons/Save';
 import Star from '@material-ui/icons/Star';
 import PasswordIcon from '@material-ui/icons/VpnKey';
 import Alert from '@material-ui/lab/Alert';
-import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
@@ -31,6 +30,7 @@ import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import ContentContainer from './ContentContainer';
+import { useConfirmCancel } from '../helpers/useConfirmDialog';
 
 
 const userShape = PropTypes.shape({
@@ -81,7 +81,7 @@ const UserProfile = (props) => {
 
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
-	const confirm = useConfirm();
+	const confirmCancel = useConfirmCancel();
 	const formClasses = useFormStyles();
 	const {client: brokerClient} = context;
 
@@ -120,16 +120,9 @@ const UserProfile = (props) => {
 	};
 
 	const onCancelEdit = async () => {
-		await confirm({
+		await confirmCancel({
 			title: 'Cancel user editing',
-			description: `Do you really want to cancel editing this user?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to cancel editing this user?`
 		});
 		setUpdatedUser({
 			...userProfile

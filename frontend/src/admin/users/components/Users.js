@@ -179,26 +179,12 @@ const Users = (props) => {
 	const onDeleteUser = async (username) => {
 		await confirm({
 			title: 'Confirm user deletion',
-			description: `Do you really want to delete user "${username}"?`,
-			cancellationButtonProps: {
-				variant: 'contained'
-			},
-			confirmationButtonProps: {
-				color: 'primary',
-				variant: 'contained'
-			}
+			description: `Do you really want to delete user "${username}"?`
 		});
 		if (username === userProfile.username) {
 			await confirm({
 				title: 'Confirm user deletion',
-				description: `Are you sure? You are about to delete the user that you are currently using. If you proceed you will be logged out and cannot access the system any longer with that user.`,
-				cancellationButtonProps: {
-					variant: 'contained'
-				},
-				confirmationButtonProps: {
-					color: 'primary',
-					variant: 'contained'
-				}
+				description: `Are you sure? You are about to delete the user that you are currently using. If you proceed you will be logged out and cannot access the system any longer with that user.`
 			});
 			window.location.href = '/logout';
 		}
