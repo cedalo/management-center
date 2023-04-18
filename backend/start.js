@@ -713,7 +713,6 @@ const init = async (licenseContainer) => {
 
 	// TODO: handle disconnect of clients
 	wss.on('connection', (ws, request) => {
-		const user = request.session?.passport?.user;
 		context.brokerManager.handleNewClientWebSocketConnection(ws);
 		broadcastWebSocketConnectionConnected();
 		broadcastWebSocketConnections();
@@ -740,10 +739,22 @@ const init = async (licenseContainer) => {
 				}
 			})
 		);
+
+		context.eventEmitter.on('user-updated', (updatedUser) => {
+			if (updatedUser.username !== request.session?.passport?.user?.username) {
+				return;
+			}
+			if (request.session?.passport?.user) {
+				request.session.passport.user = {...request.session.passport.user, updatedUser}; // sync user
+				request.user = request.session.passport.user;
+				context.preprocessUser(request, false); // reprocess user and generate valid connections properties
+			}
+		});
+
 		ws.on('message', (message) => {
 			try {
 				const messageObject = JSON.parse(message);
-				handleClientMessage(messageObject, ws, user);
+				handleClientMessage(messageObject, ws, request.session?.passport?.user);
 			} catch (error) {
 				console.error(error);
 			}
@@ -757,6 +768,19 @@ const init = async (licenseContainer) => {
 
 	const router = express.Router();
 	app.use(CEDALO_MC_PROXY_BASE_PATH, router);
+
+	const preprocessUserFunctions = [];
+	const preprocessUser = async (request) => {
+		for (const preprocessUserFunction of preprocessUserFunctions) {
+			try {
+				await preprocessUserFunction(request);
+			} catch(error) {
+				console.error('Error during user processing:', error);
+				throw error;
+			}
+		}
+		return request;
+	}
 
 	context = {
 		...context,
@@ -826,6 +850,7 @@ const init = async (licenseContainer) => {
 		loadConfig,
 		handleConnectServerToBroker,
 		handleDisconnectServerFromBroker,
+		preprocessUser,
 		actions: {},
 		middleware: {
 			isPluginLoaded: (plugin) => (request, response, next) => {
@@ -834,19 +859,17 @@ const init = async (licenseContainer) => {
 				}
 				response.status(404).send('Plugin not enabled');
 			},
-			preprocessUser: async (request, response, next) => {
-				for (const preprocessUserFunction of context.preprocessUserFunctions) {
-					try {
-						await preprocessUserFunction(request);
-					} catch (error) {
-						console.error('Error during user processing:', error);
-						return next(error);
-					}
-				}
-				return next();
-			}
+			preprocessUser: async (request, _response, next) => {
+                try {
+                    await preprocessUser(request);
+                } catch(error) {
+                    return next(error);
+                }
+        
+                return next();
+            }
 		},
-		preprocessUserFunctions: []
+		preprocessUserFunctions: preprocessUserFunctions
 	};
 
 	context.pluginManager.init(config.plugins, context, swaggerDocument);

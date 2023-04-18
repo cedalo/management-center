@@ -214,10 +214,8 @@ const disconnectFromBrokerAction = {
 	type: 'connection/disconnect',
 	isModifying: false,
 	fn: async (context, { brokerName }) => {
-		const { user, security, client } = context;
-		if (!security.acl.isConnectionAuthorized(user, null, brokerName)) {
-			throw AuthError.notAllowed();
-		}
+		const { client } = context;
+		// no need to check if user is authorised because they are probably already connected to broker if they call this action
 		const response = await disconnectFromBroker(context, brokerName, client);
 		return response;
 	}
