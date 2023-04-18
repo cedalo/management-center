@@ -34,7 +34,7 @@ const onChange = (onUpload) => (event) => {
 	}
 };
 
-const UploadButton = ({ name, disabled, onUpload }) => {
+const UploadButton = ({ disabled, onUpload }) => {
 	const classes = useStyles();
 	return (
 		<Button
@@ -49,7 +49,7 @@ const UploadButton = ({ name, disabled, onUpload }) => {
 			variant="contained"
 		>
 			Choose File
-			<input name={name} hidden type="file" />
+			<input hidden type="file" value="" />
 		</Button>
 	);
 };

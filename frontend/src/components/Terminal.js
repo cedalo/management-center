@@ -510,7 +510,7 @@ Topic:      ${acl.topic}
 					.then(() => {
 						brokerClient.getDefaultACLAccess()
 							.then((defaultAccess) => {
-								dispatch(updateDefaultACLAccess(defaultACLAccess));
+								dispatch(updateDefaultACLAccess(defaultAccess));
 								print(
 									`${defaultAccess.acls.map(acl => `${acl.acltype}: ${acl.allow}`).join('\n')}`);
 							})

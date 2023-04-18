@@ -224,7 +224,6 @@ const Status = ({
 			false : backendParameters.urlMappings.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING === 'mosquitto:true';
 		// const connInfo = parseUrl('mqtt://mosquitto:1883');
 		const connInfo = parseUrl(currentConnection.url); //  === "mosquitto";
-		const hostInfo = parseUrl(host);
 		const ver1 = connInfo && connInfo.hostname === 'mosquitto';
 
 		const infos = [{
@@ -236,6 +235,8 @@ const Status = ({
 		}];
 
 		if (ver1) {
+			// remove mosquitto: prefix from host
+			const hostInfo = host ? parseUrl(host.substring(0, 10)) : connInfo;
 			const wsListener = listeners && listeners.find(listener => listener.port === 8090);
 			const requireCerts = wsListener && wsListener.requireCertificate;
 			infos.push({

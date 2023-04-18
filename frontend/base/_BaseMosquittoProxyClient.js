@@ -59,7 +59,7 @@ const timeoutHandler = (requestId, requests) => {
 const createID = () => uuid();
 
 
-
+// TODO: refactor error handling!
 module.exports = class BaseMosquittoProxyClient {
 	constructor({ name, logger, defaultListener } = {}, { socketEndpointURL, httpEndpointURL } = {}, headers=undefined, version=undefined) {
 		if (!version) {
@@ -269,6 +269,8 @@ module.exports = class BaseMosquittoProxyClient {
 				throw new APINotFoundError();
 			} else if (error?.response?.status === 400) {
 				throw new APIError('400', error.response.data?.message || 'Invalid request');
+			} else if (error?.response?.status === 500) {
+				throw new APIError('500', error.response.data || 'Invalid request');
 			} else {
 				throw new NotAuthorizedError();
 			}
@@ -334,6 +336,8 @@ module.exports = class BaseMosquittoProxyClient {
 				throw new APINotFoundError();
 			} else if (error?.response?.status === 400) {
 				throw new APIError('400', error.response.data?.message || 'Invalid request');
+			} else if (error?.response?.status === 500) {
+				throw new APIError('500', error.response.data || 'Invalid request');
 			} else {
 				throw new NotAuthorizedError();
 			}
@@ -581,7 +585,7 @@ module.exports = class BaseMosquittoProxyClient {
 			this.logger.error(error);
 			switch (error.response?.status) {
 				case 400:
-					throw new APIError('400', error.response.data?.message || 'Invalid request');
+					throw new APIError('400', error.response.data || 'Invalid request');
 				case 404:
 					throw new APINotFoundError();
 				case 500:
