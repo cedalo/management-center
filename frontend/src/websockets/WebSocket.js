@@ -218,7 +218,6 @@ const init = async (client, dispatch, connectionConfiguration) => {
 
 	try {
 		const isEnabled = await client.checkClientControlEnabled();
-		console.log('client.checkClientControlEnabled::::::::::::::::::::::::', isEnabled)
 		if (isEnabled) {
 		  	dispatch(updateFeatures({
 				feature: 'clientcontrol',
@@ -238,6 +237,21 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		}));
 	}
 
+	try {
+		const clusters = await client.listClusters();
+		dispatch(updateClusters(clusters));
+		dispatch(updateFeatures({
+			feature: 'clustermanagement',
+			status: 'ok'
+		}));
+	} catch (error) {
+		console.error('Error listing clusters:', error);
+		dispatch(updateFeatures({
+			feature: 'clustermanagement',
+			status: 'failed',
+			error
+		}));
+	}
 
 	if (brokerConnected) {
 		try {
@@ -246,22 +260,6 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		} catch (error) {
 			// TODO: handle error
 			console.log('Test collections:', error);
-		}
-
-
-		try {
-			const clusters = await client.listClusters();
-			dispatch(updateClusters(clusters));
-			dispatch(updateFeatures({
-				feature: 'clustermanagement',
-				status: 'ok'
-			}));
-		} catch (error) {
-			dispatch(updateFeatures({
-				feature: 'clustermanagement',
-				status: 'failed',
-				error
-			}));
 		}
 
 		try {
