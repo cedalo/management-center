@@ -239,10 +239,10 @@ const RoleDetail = (props) => {
 
 
 	const onRemoveACL = async (acl) => {
-		// await confirm({
-		// 	title: 'Confirm ACL deletion',
-		// 	description: `Do you really want to delete the ACL "${acl.topic}"?`
-		// });
+		await confirm({
+			title: 'Confirm ACL deletion',
+			description: `Do you really want to delete the ACL for Topic: "${acl.topic}"?`
+		});
 		await showConfirm();
 		try {
 			await brokerClient.removeRoleACL(role.rolename, acl);
