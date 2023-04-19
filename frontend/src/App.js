@@ -179,9 +179,9 @@ export default function (props) {
 	const [appliedTheme, setAppliedTheme] = useState(createTheme(getTheme(darkMode === 'true' ? 'dark' : 'light')));
 
 	React.useEffect(() => {
+		const dark = darkMode === 'true';
+		const theme = getTheme(dark  ? 'dark' : 'light');
 		if (response) {
-			const dark = darkMode === 'true';
-			const theme = getTheme(dark  ? 'dark' : 'light');
 
 			if (response.title) {
 				setTitle(response.title);
