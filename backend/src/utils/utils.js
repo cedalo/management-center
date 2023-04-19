@@ -8,9 +8,9 @@ const sessions = require('./sessions');
 
 
 const getBaseDirectory = (dirname) => {
-	// if (process.env.CEDALO_MC_SINGLE_BACKUP_DIRECTORY) {
-	// 	return process.env.CEDALO_MC_SINGLE_BACKUP_DIRECTORY;
-	// }
+	if (process.env.CEDALO_MC_DATA_DIRECTORY_PATH) {
+		return process.env.CEDALO_MC_DATA_DIRECTORY_PATH;
+	}
 	
 	// if (dirname.includes('snapshot')) { // for packaged executables
 	// 	if (process.env.CEDALO_MC_DIRECTORY_SETTINGS) {
