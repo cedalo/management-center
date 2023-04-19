@@ -67,8 +67,7 @@ const getDialogContent = ({
 	setNode,
 	handleAddNode, 
 	classes, 
-	handleClose,
-	cluster
+	handleClose
 }) => {
 	const areNodeIdsUnique = getNodeIdsUniqueValidator([...cluster.nodes, node]);
 	const arePrivateAddressesPresent = getPrivateAddressesPresentValidator([...cluster.nodes, node]);
