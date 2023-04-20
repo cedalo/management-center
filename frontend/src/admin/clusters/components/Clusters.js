@@ -159,13 +159,13 @@ const Clusters = (props) => {
 		try {
 			const cluster = await brokerClient.getCluster(clustername, numberOfNodes);
 			dispatch(updateCluster(cluster));
-			setProgressDialogOpen(false);
 			history.push(`/clusters/${clustername}`);
 		} catch (error) {
 			enqueueSnackbar(`Cluster loading failed. Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
 		}
+		setProgressDialogOpen(false);
 	};
 
 	const onNewCluster = () => {
@@ -271,7 +271,7 @@ const Clusters = (props) => {
 		dispatch(updateClusters(clusters));
 	};
 
-	return (
+	return [
 		<ContentContainer
 			dataTour="page-clusters"
 			breadCrumbs={<ContainerBreadCrumbs title="Clusters" links={[{name: 'Home', route: '/home'}]}/>}
@@ -307,16 +307,16 @@ const Clusters = (props) => {
 					</Button>}
 			</ContainerHeader>
 			{createClusterTable(clusters, classes, props, onCheckHealthStatus, onDeleteCluster, onSelectCluster)}
-			{(progressDialogOpen && !clusterManagementFeature?.error && clusterManagementFeature?.supported !== false) ?
-				<WaitDialog
+		</ContentContainer>,
+		(progressDialogOpen && !clusterManagementFeature?.error && clusterManagementFeature?.supported !== false)
+			? <WaitDialog
 					title='Loading cluster details'
 					message='Note that this can take a while depending on the size and status of your cluster.'
 					open={progressDialogOpen}
 					handleClose={() => setProgressDialogOpen(false)}
-				/> : null
-			}
-		</ContentContainer>
-	);
+				/>
+			: null
+		];
 };
 
 Clusters.propTypes = {

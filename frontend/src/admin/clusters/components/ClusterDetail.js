@@ -365,7 +365,7 @@ const ClusterDetail = (props) => {
 			cluster={cluster}
 		/>,
 		<WaitDialog
-			title='Update process of your cluster is in process'
+			title='Updating your cluster...'
 			open={progressDialogOpen}
 			handleClose={() => setProgressDialogOpen(false)}
 		/>
