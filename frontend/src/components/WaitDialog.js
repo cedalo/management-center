@@ -1,15 +1,12 @@
 import React from 'react';
 
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
-import { connect } from 'react-redux';
 
-// import MessagePage from './MessagePage';
-
-const WaitDialog = ({ actions, open, title, message, handleClose }) => {
+const WaitDialog = ({ open, title, message, handleClose }) => {
 
 	return (
 		<Dialog
@@ -22,22 +19,17 @@ const WaitDialog = ({ actions, open, title, message, handleClose }) => {
 				{title}
 			</DialogTitle>
 			<DialogContent>
-				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
+				<Grid container spacing={2} justifyContent="center" style={{maxWidth: '100%'}}>
 					<Grid item xs={12} align="center">
 						{message}
-						{message ? <><br/><br/></> : null}
-						<img src="/inprogress.png" />
+					</Grid>
+					<Grid item xs={12} align="center">
+						<CircularProgress color="secondary" size="3rem"/>
 					</Grid>
 				</Grid>
 			</DialogContent>
-			<DialogActions>{ actions ? actions : null}</DialogActions>
 		</Dialog>
 	);
 };
 
-const mapStateToProps = (state) => {
-	return {
-	};
-};
-
-export default connect(mapStateToProps)(WaitDialog);
+export default WaitDialog;
