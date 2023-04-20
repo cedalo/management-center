@@ -102,22 +102,22 @@ const ClusterDetail = (props) => {
 			const clusters = await brokerClient.listClusters();
 			dispatch(updateClusters(clusters));
 		} catch (error) {
-			enqueueSnackbar(`Error adding node "${node.nodeId}" to cluster. Reason: ${error.message || error}`, {
+			enqueueSnackbar(`Error adding node "${node.nodeid}" to cluster. Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
 		}
 		setProgressDialogOpen(false);
 	}
 
-	const removeNodeFromCluster = async (nodeId) => {
+	const removeNodeFromCluster = async (nodeid) => {
 		await confirm({
 			title: 'Confirm node removal',
-			description: `Do you really want to remove the node "${nodeId}" from this cluster?`
+			description: `Do you really want to remove the node "${nodeid}" from this cluster?`
 		});
 
 		setProgressDialogOpen(true);
 		try {
-			await brokerClient.leaveCluster(cluster.clustername, nodeId);
+			await brokerClient.leaveCluster(cluster.clustername, nodeid);
 			enqueueSnackbar('Node successfully removed from cluster', {
 				variant: 'success'
 			});
@@ -129,7 +129,7 @@ const ClusterDetail = (props) => {
 			const clusters = await brokerClient.listClusters();
 			dispatch(updateClusters(clusters));
 		} catch (error) {
-			enqueueSnackbar(`Error removing node "${nodeId}" from cluster. Reason: ${error.message || error}`, {
+			enqueueSnackbar(`Error removing node "${nodeid}" from cluster. Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
 		}
@@ -247,9 +247,9 @@ const ClusterDetail = (props) => {
 												size="small"
 												margin="dense"
 												disabled={true}
-												id={node?.nodeId}
+												id={node?.nodeid}
 												label="Node ID"
-												value={node?.nodeId}
+												value={node?.nodeid}
 												defaultValue=""
 												variant="outlined"
 												fullWidth

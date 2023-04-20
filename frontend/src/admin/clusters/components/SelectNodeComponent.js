@@ -35,8 +35,8 @@ const clusterDoesNotContainNode = (brokerConnection, cluster) => {
 	return result ? false : true;
 }
 
-const validNodeIdRange = (nodeId) => {
-	return nodeId >= 1 && nodeId <= 1023;
+const validNodeIdRange = (nodeid) => {
+	return nodeid >= 1 && nodeid <= 1023;
 };
 
 const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, defaultNode = {}, setNode, checkAllNodeIds }) => {
@@ -65,16 +65,16 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 					label="Node ID"
 					InputProps={{ inputProps: { min: 1, max: 1023 } }}
 					onChange={(event) => {
-						const nodeId = parseInt(event.target.value);
-						const valid = validNodeIdRange(nodeId);
+						const nodeid = parseInt(event.target.value);
+						const valid = validNodeIdRange(nodeid);
 						setValidNodeId(valid);
 						if (valid) {
-							setNode({...defaultNode, nodeId: parseInt(event.target.value)});
+							setNode({...defaultNode, nodeid: parseInt(event.target.value)});
 						}
 					}}
 					error={!validNodeId}
 					helperText={!validNodeId && 'Node ID must be a unique number from 1 to 1023.'}
-					defaultValue={defaultNode.nodeId}
+					defaultValue={defaultNode.nodeid}
 					variant="outlined"
 					fullWidth
 					className={classes.textField}

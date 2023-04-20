@@ -112,7 +112,7 @@ const getDialogContent = ({
 const SelectNodeDialog = ({ brokerConnections, cluster, open, handleClose, handleAddNode }) => {
 	const classes = useStyles();
 	const [node, setNode] = React.useState({
-		nodeId: (cluster && cluster.nodes && cluster.nodes[cluster.nodes.length - 1].nodeId + 1) || undefined, // last cluster nodes' id + 1
+		nodeid: (cluster && cluster.nodes && cluster.nodes[cluster.nodes.length - 1].nodeid + 1) || undefined, // last cluster nodes' id + 1
 		port: 7000
 	});
 

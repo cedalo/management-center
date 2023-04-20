@@ -1,6 +1,6 @@
 
 const getNodeIdsUniqueValidator = (nodes) => {
-    const listOfNodeIds = nodes.map(node => node.nodeId);
+    const listOfNodeIds = nodes.map(node => node.nodeid);
     
     const areNodeIdsUnique = () => {
         return (new Set(listOfNodeIds)).size === listOfNodeIds.length;

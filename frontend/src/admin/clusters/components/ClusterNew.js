@@ -37,15 +37,15 @@ const ClusterNew = (props) => {
 	const [clusterDescription, setClusterDescription] = useState('Example cluster');
 	const [syncmode, setSyncmode] = useState('full');
 	const [node1, setNode1] = useState({
-		nodeId: 1,
+		nodeid: 1,
 		port: 7000
 	});
 	const [node2, setNode2] = useState({
-		nodeId: 2,
+		nodeid: 2,
 		port: 7000
 	});
 	const [node3, setNode3] = useState({
-		nodeId: 3,
+		nodeid: 3,
 		port: 7000
 	});
 
@@ -61,7 +61,7 @@ const ClusterNew = (props) => {
 	const arePrivateAddressesPresent = getPrivateAddressesPresentValidator(nodes);
 	const areBrokersPresent = getBrokersPresentValidator(nodes);
 	// const areNodeIdsUnique = () => {
-	// 	return (new Set([node1.nodeId, node2.nodeId, node3.nodeId])).size === 3;
+	// 	return (new Set([node1.nodeid, node2.nodeid, node3.nodeid])).size === 3;
 	// };
 
 	// const arePrivateAddressesPresent = () => {
