@@ -204,7 +204,7 @@
                     <img id="logo" src="images/cedalo.png" width="75px" />
                 </a>
             </div>
-            <div id="title">Management Center</div>
+            <div id="title">Mosquitto Management Center</div>
             <div id="error-container"></div>
             <div class="group">
                 <input id="username" type="text" name="username">
@@ -254,7 +254,7 @@
                 const theme = themes[mode];
                 const { palette, logo } = theme;
                 document.getElementById('logo').src = logo?.path ? logo?.path : logo;
-                document.getElementById('title').innerText = themes.title || 'Management Center';
+                document.getElementById('title').innerText = themes.title || 'Mosquitto Management Center';
 				if (palette.backgroundLogin) {
 					document.querySelector('body').style.backgroundColor = palette.backgroundLogin;
                 } else {
