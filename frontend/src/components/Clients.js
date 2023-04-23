@@ -303,8 +303,6 @@ const Clients = (props) => {
 
 	const getClassForCell = (client) => `${isAdminClient(client) ? classes.disabled : ''}`;
 
-	console.log('Rerender component:::')
-
 	return (
 		<ContentContainer
 			dataTour="page-clients"
