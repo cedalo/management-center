@@ -21,8 +21,8 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
-import {updateClients, updateGroups, updateRole, updateRoles} from '../actions/actions';
-import {getAdminRolesFromState} from '../helpers/utils';
+import {updateRole, updateRoles} from '../actions/actions';
+import {getAdminRoles} from '../helpers/utils';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
@@ -98,6 +98,14 @@ const Roles = (props) => {
 		history.push('/roles/new');
 	};
 
+	React.useEffect(() => {
+		const fetchData = async () => {
+			const roles = await client.listRoles(true, rowsPerPage, page * rowsPerPage);
+			dispatch(updateRoles(roles));
+		};
+		fetchData().catch(error => console.error(error));
+	}, []);
+
 	const onDeleteRole = async (rolename) => {
 		try {
 			await confirm({
@@ -138,10 +146,10 @@ const Roles = (props) => {
 			});
 			const roles = await client.listRoles(true, rowsPerPage, page * rowsPerPage);
 			dispatch(updateRoles(roles));
-			const clients = await client.listClients();
-			dispatch(updateClients(clients));
-			const groups = await client.listGroups();
-			dispatch(updateGroups(groups));
+			// const clients = await client.listClients();
+			// dispatch(updateClients(clients));
+			// const groups = await client.listGroups();
+			// dispatch(updateGroups(groups));
 		} catch(error) {
 			console.error(error);
 			enqueueSnackbar(`${error}`, { variant: 'error' });
@@ -154,7 +162,16 @@ const Roles = (props) => {
 		history.push(`/roles/${rolename}`);
 	};
 
-	const {dynamicsecurityFeature, defaultACLAccess, adminRoles, roles = [], onSort, sortBy, sortDirection} = props;
+	const {dynamicsecurityFeature,
+			roles = [],
+			onSort,
+			sortBy,
+			sortDirection,
+			clients,
+			defaultClient
+		} = props;
+	
+	const adminRoles = getAdminRoles(defaultClient, clients);
 
 	return (
 		<ContentContainer
@@ -324,7 +341,8 @@ Roles.defaultProps = {
 const mapStateToProps = (state) => {
 	return {
 		roles: state.roles?.roles,
-		adminRoles: getAdminRolesFromState(state),
+		defaultClient: state.brokerConnections?.defaultClient,
+		clients: state.clients?.clients?.clients,
 		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity,
 		connected: state.brokerConnections?.connected,
 	};

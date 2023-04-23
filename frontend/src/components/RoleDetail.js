@@ -42,7 +42,7 @@ import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import {updateEditDefaultClient, updateRole, updateRoles} from '../actions/actions';
-import {getAdminRolesFromState} from '../helpers/utils';
+import {getAdminRoles} from '../helpers/utils';
 import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ACLTypesHelpDialog from './ACLTypesHelpDialog';
@@ -133,7 +133,9 @@ const RoleDetail = (props) => {
 	const {client: brokerClient} = context;
 	const formClasses = useFormStyles();
 
-	const {adminRoles, defaultClient, role = {}, onSort, sortBy, sortDirection} = props;
+	const {role = {}, onSort, sortBy, sortDirection, defaultClient, clients} = props;
+
+	const adminRoles = getAdminRoles(defaultClient, clients);
 
 	const [aclTypesHelpDialogOpen, setACLTypesHelpDialogOpen] = React.useState(false);
 
@@ -657,7 +659,8 @@ const mapStateToProps = (state) => {
 	return {
 		role: state.roles?.role,
 		roles: state.roles?.roles,
-		adminRoles: getAdminRolesFromState(state),
+		defaultClient: state.brokerConnections?.defaultClient,
+		clients: state.clients?.clients?.clients,
 		defaultClient: state.brokerConnections?.defaultClient
 	};
 };

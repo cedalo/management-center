@@ -21,8 +21,8 @@ import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
-import {updateClient, updateClients, updateGroups} from '../actions/actions';
-import {isAdminClient} from '../helpers/utils';
+import {updateClient, updateClients, updateGroups, updateRoles, updateRolesAll, updateGroupsAll} from '../actions/actions';
+import {getIsAdminClient} from '../helpers/utils';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
@@ -126,8 +126,8 @@ const Clients = (props) => {
 			await brokerClient.updateClientGroups(client, groupnames);
 			const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
 			dispatch(updateClients(clients));
-			const groupsUpdated = await brokerClient.listGroups();
-			dispatch(updateGroups(groupsUpdated));
+			// const groupsUpdated = await brokerClient.listGroups(); //?????
+			// dispatch(updateGroups(groupsUpdated));
 		} catch(error) {
 			console.error(error);
 			enqueueSnackbar(`${error}`, { variant: 'error' });
@@ -195,8 +195,8 @@ const Clients = (props) => {
 			});
 			const clients = await brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
 			dispatch(updateClients(clients));
-			const groups = await brokerClient.listGroups();
-			dispatch(updateGroups(groups));
+			// const groups = await brokerClient.listGroups(); //?????
+			// dispatch(updateGroups(groups));
 		} catch(error) {
 			console.error(error);
 			enqueueSnackbar(`${error}`, { variant: 'error' });
@@ -252,7 +252,7 @@ const Clients = (props) => {
 
 	const {
 		dynamicsecurityFeature,
-		isAdminClient,
+		// getIsAdminClient,
 		connectionID,
 		groupsAll = [],
 		rolesAll = [],
@@ -260,8 +260,24 @@ const Clients = (props) => {
 		onSort,
 		sortBy,
 		sortDirection,
-		filter
+		filter,
+		defaultClient
 	} = props;
+
+	const isAdminClient = getIsAdminClient(defaultClient);
+
+	React.useEffect(() => {
+		const fetchData = async () => {
+			const promiseClients = brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
+			const promiseGroups = brokerClient.listGroups(false);
+			const promiseRoles = brokerClient.listRoles(false);
+			const [clientsAll, groups, rolesAll] = await Promise.all([promiseClients, promiseGroups, promiseRoles]);
+			dispatch(updateClients(clientsAll));
+			dispatch(updateGroupsAll(groups));
+			dispatch(updateRolesAll(rolesAll));
+		};
+		fetchData().catch(error => console.error(error));
+	}, []);
 
 	React.useEffect(() => {
 		// setFilteredClients(clients.filter(clientL => clientL.username.startsWith(filter)));
@@ -286,6 +302,8 @@ const Clients = (props) => {
 
 
 	const getClassForCell = (client) => `${isAdminClient(client) ? classes.disabled : ''}`;
+
+	console.log('Rerender component:::')
 
 	return (
 		<ContentContainer
@@ -352,7 +370,7 @@ const Clients = (props) => {
 								</TableRow>
 							</TableHead>
 							<TableBody>
-								{clients &&
+								{clients && //clients.clients && clients.clients.length &&
 									clients.clients.map((client) => (
 										<Tooltip
 											enterDelay={0}
@@ -493,7 +511,8 @@ const mapStateToProps = (state) => {
 		clients: state.clients?.clients,
 		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity,
 		connected: state.brokerConnections?.connected,
-		isAdminClient: isAdminClient(state)
+		// isAdminClient: getIsAdminClient(state)
+		defaultClient: state.brokerConnections?.defaultClient
 	};
 };
 

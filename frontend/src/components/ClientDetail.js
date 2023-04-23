@@ -16,7 +16,7 @@ import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import {updateClient, updateClients} from '../actions/actions';
-import {isAdminClient} from '../helpers/utils';
+import {getIsAdminClient} from '../helpers/utils';
 import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
@@ -83,7 +83,9 @@ const ClientDetail = (props) => {
 		}
 	}, []);
 
-	const {client = {}, isAdminClient} = props;
+	const {client = {}, defaultClient} = props;
+	const isAdminClient = getIsAdminClient(defaultClient);
+
 	const [updatedClient, setUpdatedClient] = React.useState({
 		...client
 	});
@@ -356,7 +358,7 @@ ClientDetail.propTypes = {
 const mapStateToProps = (state) => {
 	return {
 		client: state.clients?.client,
-		isAdminClient: isAdminClient(state)
+		defaultClient: state.brokerConnections?.defaultClient
 	};
 };
 

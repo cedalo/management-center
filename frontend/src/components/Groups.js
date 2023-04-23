@@ -22,7 +22,6 @@ import Typography from '@material-ui/core/Typography';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
 import ReloadIcon from '@material-ui/icons/Replay';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
@@ -30,15 +29,14 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
-import {updateAnonymousGroup, updateClients, updateGroup, updateGroups} from '../actions/actions';
+import {updateAnonymousGroup, updateGroup, updateGroups, updateRoles, updateClientsAll, updateRolesAll} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
 import AnonymousGroupSelect from './AnonymousGroupSelect';
-import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import ContentContainer from './ContentContainer';
 import SelectList from './SelectList';
-import {isAdminClient} from '../helpers/utils';
+import { getIsAdminClient } from '../helpers/utils';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -136,8 +134,8 @@ const Groups = (props) => {
 		try {
 			const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
 			dispatch(updateGroups(groups));
-			const clientsUpdated = await client.listClients();
-			dispatch(updateClients(clientsUpdated));
+			// const clientsUpdated = await client.listClients(); //??????????
+			// dispatch(updateClients(clientsUpdated));
 		} catch (error) {
 			console.error(error);
 			enqueueSnackbar(`${error}`, { variant: 'error' });
@@ -203,8 +201,8 @@ const Groups = (props) => {
 			});
 			const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
 			dispatch(updateGroups(groups));
-			const clients = await client.listClients();
-			dispatch(updateClients(clients));
+			// const clients = await client.listClients(); //??????
+			// dispatch(updateClients(clients));
 		} catch(error) {
 			console.error(error);
 			enqueueSnackbar(`${error}`, { variant: 'error' });
@@ -224,21 +222,25 @@ const Groups = (props) => {
 
 	const {
 		dynamicsecurityFeature,
-		isAdminClient,
 		anonymousGroup,
 		groups = [],
 		rolesAll = [],
-		clients = [],
+		clientsAll = [],
 		onSort,
 		sortBy,
-		sortDirection
+		sortDirection,
+		defaultClient,
 	} = props;
 
+
 	// TODO: probably extract into reducer
-	const clientSuggestions = clients.sort(byUserName).map((client) => ({
-		label: client.username,
-		value: client.username,
-		disabled: isAdminClient(client)
+
+	const isAdminClient = getIsAdminClient(defaultClient);
+
+	const clientSuggestions = clientsAll.sort(byUserName).map((clientname) => ({
+		label: clientname,
+		value: clientname,
+		disabled: isAdminClient(clientname)
 	}));
 
 	const roleSuggestions = rolesAll
@@ -247,6 +249,20 @@ const Groups = (props) => {
 			label: rolename,
 			value: rolename
 		}));
+
+
+	React.useEffect(() => {
+		const fetchData = async () => {
+			const promiseClients = client.listClients(false);
+			const promiseGroups = client.listGroups(true, rowsPerPage, page * rowsPerPage);
+			const promiseRoles = client.listRoles(false);
+			const [clientsAll, groups, rolesAll] = await Promise.all([promiseClients, promiseGroups, promiseRoles]);
+			dispatch(updateClientsAll(clientsAll));
+			dispatch(updateGroups(groups));
+			dispatch(updateRolesAll(rolesAll));
+		};
+		fetchData().catch(error => console.error(error));
+	}, []);
 
 	return (
 		<ContentContainer
@@ -322,7 +338,7 @@ const Groups = (props) => {
 							</TableRow>
 						</TableHead>
 						<TableBody>
-							{groups &&
+							{groups && //groups.groups && groups.groups.length &&
 								groups.groups.map((group) => (
 									<TableRow
 										hover
@@ -419,10 +435,11 @@ const mapStateToProps = (state) => {
 		groups: state.groups?.groups,
 		roles: state.roles?.roles?.roles,
 		rolesAll: state.roles?.rolesAll?.roles,
+		clientsAll: state.clients?.clientsAll?.clients,
 		clients: state.clients?.clients?.clients,
 		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity,
 		connected: state.brokerConnections?.connected,
-		isAdminClient: isAdminClient(state)
+		defaultClient: state.brokerConnections?.defaultClient
 	};
 };
 

@@ -28,14 +28,20 @@ export default function brokerConnections(state = {}, action) {
 			newState.selectedConnectionToEdit = action.update;
 			break;
 		default:
+			// console.log('DEFAULT called!!!', action.type);
 	}
-	if (newState.currentConnectionName && newState.brokerConnections) {
-		newState.currentConnection = newState.brokerConnections?.find((brokerConnection) => {
-			return brokerConnection.name === newState.currentConnectionName;
-		});
-		newState.defaultClient = {
-			username: newState.currentConnection?.credentials?.username
-		};
+	if ([ActionTypes.UPDATE_BROKER_CONNECTED,
+		ActionTypes.UPDATE_EDIT_DEFAULT_CLIENT,
+		ActionTypes.UPDATE_SELECTED_CONNECTION
+		].includes(action.type)) {
+		if (newState.currentConnectionName && newState.brokerConnections) {
+			newState.currentConnection = newState.brokerConnections?.find((brokerConnection) => {
+				return brokerConnection.name === newState.currentConnectionName;
+			});
+			newState.defaultClient = {
+				username: newState.currentConnection?.credentials?.username
+			};
+		}
 	}
 
 	return newState;
