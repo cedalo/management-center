@@ -252,7 +252,6 @@ const Clients = (props) => {
 
 	const {
 		dynamicsecurityFeature,
-		// getIsAdminClient,
 		connectionID,
 		groupsAll = [],
 		rolesAll = [],
@@ -509,7 +508,6 @@ const mapStateToProps = (state) => {
 		clients: state.clients?.clients,
 		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity,
 		connected: state.brokerConnections?.connected,
-		// isAdminClient: getIsAdminClient(state)
 		defaultClient: state.brokerConnections?.defaultClient
 	};
 };
