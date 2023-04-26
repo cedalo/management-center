@@ -72,7 +72,7 @@ export default function HelpButtons(props) {
 			link += `administration/mc-${path[1]}`;
 			break;
 		case 'info':
-			link += `admimistration/mc-information`;
+			link += `administration/mc-information`;
 			break;
 		default:
 			link = `${basePath}mosquitto/next/management-center/introduction/`;
