@@ -9,7 +9,6 @@ import InputBase from '@material-ui/core/InputBase';
 
 
 const AnonymousGroupSelect = ({ anonymousGroup, groupsAll = [], onUpdateAnonymousGroup }) => {
-
 	const groupSuggestions = groupsAll
 		.sort()
 		.map((groupname) => ({

@@ -41,7 +41,7 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
-import {updateEditDefaultClient, updateRole, updateRoles, updateRolesAll} from '../actions/actions';
+import {updateEditDefaultClient, updateRole, updateRoles} from '../actions/actions';
 import {getAdminRoles} from '../helpers/utils';
 import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
@@ -193,9 +193,6 @@ const RoleDetail = (props) => {
 			brokerClient.listRoles(true, count, offset).then((roles) => {
 				dispatch(updateRoles(roles));
 			}).catch((error) => console.error(error));
-			brokerClient.listRoles(false).then((rolesAll) => {
-				dispatch(updateRolesAll(rolesAll));
-			}).catch((error) => console.error(error));
 
 			setEditMode(false);
 		} catch (error) {
@@ -243,7 +240,7 @@ const RoleDetail = (props) => {
 			console.error(error);
 			enqueueSnackbar(`${error}`, { variant: 'error' });
 		}
-		brokerClient.listRoles(true, count, offset).then((roles) => { //? Not sure if I should fetch the roles if ACL is added
+		brokerClient.listRoles(true, count, offset).then((roles) => { //? Not sure if we should fetch the roles if ACL is added
 			dispatch(updateRoles(roles));
 		}).catch((error) => console.error(error));
 	};
@@ -260,7 +257,7 @@ const RoleDetail = (props) => {
 			const updatedRole = await brokerClient.getRole(role.rolename);
 			dispatch(updateRole(updatedRole));
 
-			brokerClient.listRoles(true, count, offset).then((roles) => { //? Not sure if I should fetch the roles if ACL is added
+			brokerClient.listRoles(true, count, offset).then((roles) => { //? Not sure if we should fetch the roles if ACL is added
 				dispatch(updateRoles(roles));
 			}).catch((error) => console.error(error));
 		} catch(error) {

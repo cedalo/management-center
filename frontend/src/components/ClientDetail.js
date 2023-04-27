@@ -15,7 +15,7 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
-import {updateClient, updateClients, updateClientsAll} from '../actions/actions';
+import {updateClient, updateClients} from '../actions/actions';
 import {getIsAdminClient} from '../helpers/utils';
 import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
@@ -126,9 +126,6 @@ const ClientDetail = (props) => {
 
 		brokerClient.listClients(true, count, offset).then((clients) => {
 			dispatch(updateClients(clients));
-		}).catch((error) => console.error(error));
-		brokerClient.listClients(false).then((clientsAll) => {
-			dispatch(updateClientsAll(clientsAll));
 		}).catch((error) => console.error(error));
 
 		setEditMode(false);

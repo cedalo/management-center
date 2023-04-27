@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
-import {updateGroup, updateGroups, updateGroupsAll} from '../actions/actions';
+import {updateGroup, updateGroups} from '../actions/actions';
 import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
@@ -64,9 +64,6 @@ const GroupDetail = (props) => {
 
 		brokerClient.listGroups(true, count, offset).then((groups) => {
 			dispatch(updateGroups(groups));
-		}).catch((error) => console.error(error));
-		brokerClient.listGroups(false).then((groupsAll) => {
-			dispatch(updateGroupsAll(groupsAll));
 		}).catch((error) => console.error(error));
 
 		setEditMode(false);
