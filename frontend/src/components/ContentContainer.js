@@ -7,7 +7,7 @@ const getHeaderContent = (children) => {
 	const [header, content] = children?.length ? children : [children];
 	return {header: content && header, content: content || header};
 };
-const ContentContainer = ({children, breadCrumbs, dataTour, overFlowX}) => {
+const ContentContainer = ({children, breadCrumbs, dataTour, overFlowX, overFlowY = 'auto'}) => {
 	// expecting header and content
 	const {header, content} = getHeaderContent(children);
 
@@ -19,7 +19,7 @@ const ContentContainer = ({children, breadCrumbs, dataTour, overFlowX}) => {
 			<div style={{height: 'calc(100% - 26px)'}}>
 				<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
 					{header}
-					<div style={{height: '100%', overflowY: 'auto', overflowX: overFlowX}}>
+					<div style={{height: '100%', overflowY: overFlowY, overflowX: overFlowX}}>
 						{content}
 					</div>
 				</div>
