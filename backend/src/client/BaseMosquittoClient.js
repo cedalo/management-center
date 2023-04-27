@@ -44,6 +44,18 @@ module.exports = class BaseMosquittoClient {
 		this._timeout = 10000;
 	}
 
+
+	// abstract method to be overwritten in subclass
+	_createConnectionHandler() {
+		return Promise.reject(new Error('No implementation of abstract method _createConnectionHandler() in subclass.'));
+	}
+
+
+	async createConnectionHandler() {
+		this._createConnectionHandler(...arguments);
+	}
+
+
 	// eslint-disable-next-line consistent-return
 	async connect({ mqttEndpointURL, options } = {}) {
 		if (this._isConnected || this._isConnecting) {

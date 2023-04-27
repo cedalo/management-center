@@ -342,10 +342,37 @@ const init = async (licenseContainer) => {
 			configManager.updateConnection(connection.id, connectionConfiguration);
 		}
 		try {
-			await brokerClient.connect({
-				mqttEndpointURL: connection.url,
-				options: NodeMosquittoClient.createOptions(connection)
+			brokerClient.createConnectionHandler(connection.url,
+												NodeMosquittoClient.createOptions(connection)
+											);
+
+			brokerClient.on('message', (topic, message, packet) => {
+				if (topic.startsWith('$SYS')) {
+					updateSystemTopics(system, topic, message, packet);
+					sendSystemStatusUpdate(system, brokerClient, connection);
+				} else if (
+					// TODO: change topic
+					topic.startsWith('$CONTROL/dynamic-security/v1/response')
+				) {
+					// TODO: this is already handle by the Mosquitto client
+					if (CEDALO_MC_ENABLE_FULL_LOG) {
+						console.log('topic');
+						console.log(topic);
+						console.log(message.toString());
+					}
+				} else if (topic.startsWith('$CONTROL')) {
+					// Nothing to do
+				}
 			});
+
+			brokerClient.on('error', (error) => {
+				// TODO: add proper error handling (errors should be sent to client)
+			});
+			brokerClient.on('information', (information) => {
+				// TODO: add proper (handling maybe reemit with context.eventEmitter)
+			});
+
+			await brokerClient.connect();
 			context.eventEmitter.emit('connect', connectionConfiguration);
 
 			topicTreeManager.start();
@@ -413,64 +440,17 @@ const init = async (licenseContainer) => {
 			};
 			sendConnectionsUpdate(brokerClient, user);
 			configManager.updateConnection(connection.id, connectionConfiguration);
-			// brokerClient.subscribe('$SYS/#', (error) => {
-			// 	console.log(`Subscribed to system topics for '${connection.name}'`);
-			// 	if (error) {
-			// 		console.error(error);
-			// 	}
-			// });
-			// brokerClient.subscribe('$CONTROL/dynamic-security/v1/#', (error) => {
-			// 	console.log(`Subscribed to dynamic-security topics for '${connection.name}'`);
-			// 	if (error) {
-			// 		console.error(error);
-			// 	}
-			// });
-			//   });
-
-			brokerClient.on('message', (topic, message, packet) => {
-				if (topic.startsWith('$SYS')) {
-					updateSystemTopics(system, topic, message, packet);
-					sendSystemStatusUpdate(system, brokerClient, connection);
-				} else if (
-					// TODO: change topic
-					topic.startsWith('$CONTROL/dynamic-security/v1/response')
-				) {
-					// TODO: this is already handle by the Mosquitto client
-					if (CEDALO_MC_ENABLE_FULL_LOG) {
-						console.log('topic');
-						console.log(topic);
-						console.log(message.toString());
-					}
-				} else if (topic.startsWith('$CONTROL')) {
-					// Nothing to do
-				}
-			});
 		} else {
 			error = connectionConfiguration.status.error;
 		}
 
-		// const proxyClient = new NodeMosquittoProxyClient({
-		// 	name: `Proxy client for "${connection.name}"`,
-		// 	logger: console
-		// });
-		// proxyClient.on('error', (message) => {
-		// 	console.error(message);
-		// });
 		context.brokerManager.handleNewBrokerConnection(
 			connection,
 			brokerClient,
 			system,
 			topicTreeManager /*, proxyClient */
 		);
-		// configManager.updateConnection(connection.id, connectionConfiguration);
 
-		// try {
-		// 	await proxyClient.connect({ socketEndpointURL: 'ws://localhost:8088' });
-		// 	await proxyClient.connectToBroker(connection.name);
-		// 	console.log("connected");
-		// } catch (error) {
-		// 	console.error(error);
-		// }
 		return error;
 	};
 

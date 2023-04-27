@@ -21,6 +21,22 @@ const BACKOFF_RATE =  (process.env.CEDALO_MC_MQTT_CONNECT_BACKOFF_INCREASE_RATE
 						) || 1.5;
 const CONNECT_TIMEOUT_MS = 5000;
 
+const TOPIC_NAME = 'brokerReconnect';
+
+
+//TODO: move to utils or something
+const generateEventMessage = (topicName, message, rest) => {
+	if (!rest) {
+		rest = {};
+	}
+
+	return {
+		topic: topicName,
+		payload: { message, ...rest },
+		datetime: (new Date()).toString()
+	};
+};
+
 
 module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 	constructor({ name = 'Node Mosquitto Client', logger } = {}) {
@@ -50,107 +66,150 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		};
 	}
 
+
+	_createConnectionHandler(url, options) {
+		if (options) {
+			options.reconnectPeriod = 0;
+			options.connectTimeout = CONNECT_TIMEOUT_MS;
+		}
+
+		let timeoutID = undefined;
+		let wasConnected = false; // maybe delete this
+		let attemptNumber = 1;
+		let attemptBackoffMs = ATTEMPT_BACKOFF_MS;
+		// an ugly way to make mqttClient throw openssl errors instead of silencing them
+		const brokerClient = mqtt.connect(url, options);
+
+		this._client = brokerClient;
+		this._url = url;
+
+		brokerClient.stream.on('error', (error) => {
+			if (!socketErrors.includes(error.code) && error.code.startsWith('ERR_SSL')) {
+				console.error('Caught SSL error:', error.code, 'Emitting error');
+				brokerClient.emit('error', error);
+			}
+		});
+
+		brokerClient.on('offline', function(){
+			if (!wasConnected) {
+				brokerClient.end();
+				this.logger.error('Connection offline due to a timeout');
+				console.error('Connection offline due to a timeout');
+				brokerClient.emit('error', new Error('Connection offline due to a timeout'));
+			}
+		});
+
+		brokerClient.on('error', (error) => {
+			this.logger.error(error);
+			console.error(error);
+			// reject && reject((error.reason && new Error(error.reason)) || (error.code && new Error(error.code)) || error);
+		});
+
+		brokerClient.on('connect', () => {
+			attemptNumber = 1;
+			attemptBackoffMs = ATTEMPT_BACKOFF_MS;
+			wasConnected = true;
+			clearInterval(timeoutID);
+			this.connected = true;
+			this.logger.log(`Connected to ${url}`);
+		});
+
+		brokerClient.on('disconnect', () => {
+			console.log(`Disonnected from ${url}`);
+			this.logger.log(`Disonnected from ${url}`);
+		});
+
+		brokerClient.on('close', () => {
+			this.connected = false;
+			if (attemptNumber === 1) {
+				console.log(`Closing connection to ${url}`);
+				this.logger.log(`Closing connection to ${url}`);
+			} else if (attemptNumber === MAX_NUMBER_OF_ATTEMPTS + 1) {
+				this.logger.log(`Maximum reconnection attempts reached for ${url}`);
+				console.log(`Maximum reconnection attempts reached for ${url}`);
+				// brokerClient.end(); // has no effect
+				brokerClient.emit('information', generateEventMessage(
+						TOPIC_NAME,
+						'Maximum reconnection attempts reached',
+						{ brokerId: 'todo' }
+					)
+				);
+				return;
+			}
+			if (!wasConnected) {
+				this.logger.error(`${url} closed before connect`);
+				console.error(`${url} closed before connect`);
+				// brokerClient.end(); // has no effect
+				brokerClient.emit('error', new Error(`Could not connect to ${url}. Connection closed`));
+				return;
+			}
+			if (this._disconnectedByUser) {
+				this.logger.log(`Connection to ${url} closed by the user`);
+				console.log(`Connection to ${url} closed by the user`);
+				return;
+			}
+			timeoutID = setTimeout(() => { // kill set timeout in connect hanlder!!!
+				this.logger.log(`Reconnecting to ${url}: attempt ${attemptNumber}; current backoff interval was: ${attemptBackoffMs} ms`);
+				console.log(`Reconnecting to ${url}: attempt ${attemptNumber}; current backoff interval was: ${attemptBackoffMs} ms`);
+				brokerClient.emit('information', generateEventMessage(
+						TOPIC_NAME,
+						`Reconnecting to ${url}: attempt ${attemptNumber}; current backoff interval was: ${attemptBackoffMs} ms`,
+						{ attemptNumber, attemptBackoffMs, brokerId: 'todo' }
+					)
+				);
+				brokerClient.reconnect();
+				attemptNumber += 1;
+				attemptBackoffMs = parseInt(attemptBackoffMs * BACKOFF_RATE);
+			}, attemptBackoffMs);
+		});
+
+		return brokerClient;
+	}
+
+
 	_connectBroker(url, options) {
 		return new Promise((resolve, reject) => {
-			if (options) {
-				options.reconnectPeriod = 0;
-				options.connectTimeout = CONNECT_TIMEOUT_MS;
+			let brokerClient = this._client;
+
+			if (!brokerClient) {
+				try {
+					brokerClient = this._createConnectionHandler(url, options);
+				} catch(error) {
+					reject(error);
+				}
 			}
 
-			let timeoutID = undefined;
-			let wasConnected = false; // maybe delete this
-			let attemptNumber = 1;
-			let attemptBackoffMs = ATTEMPT_BACKOFF_MS;
-			// an ugly way to make mqttClient throw openssl errors instead of silencing them
-			const brokerClient = mqtt.connect(url, options);
-			brokerClient.stream.on('error', (error) => {
-				if (!socketErrors.includes(error.code) && error.code.startsWith('ERR_SSL')) {
-					console.log('Caught SSL error:', error.code, 'Emitting error');
-					brokerClient.emit('error', error);
-				}
-			});
-
-			brokerClient.on('offline', function(){
-				if (!wasConnected) {
-					brokerClient.end();
-					reject(new Error('Connection offline due to timeout'));
-				}
-		    });
-
-			brokerClient.on('error', (error) => {
-				this.logger.error(error);
-				reject((error.reason && new Error(error.reason)) || (error.code && new Error(error.code)) || error);
-			});
-
-			this._client = brokerClient;
-
 			brokerClient.on('connect', () => {
-				attemptNumber = 1;
-				attemptBackoffMs = ATTEMPT_BACKOFF_MS;
-				wasConnected = true;
-				clearInterval(timeoutID);
-				this.connected = true;
-				this.logger.log(`Connected to ${url}`);
-
-				brokerClient.subscribe('$CONTROL/#', (error) => {
-					console.log(`Subscribed to control topics for ${url}`);
+				brokerClient.subscribe('$CONTROL/#', (error) => { // critical topics, reject if unsucessful
+					console.log(`Subscribed to control topics for ${this._url}`);
 					if (error) {
 						this.logger.error(error);
 						reject(error);
 					}
-					resolve(brokerClient);
 				});
-
-				brokerClient.subscribe('$SYS/#', (error) => {
-					console.log(`Subscribed to system topics for '${url}'`);
+	
+				brokerClient.subscribe('$SYS/#', (error) => { // critical topics, reject if unsucessful
+					console.log(`Subscribed to system topics for '${this._url}'`);
 					if (error) {
 						console.error(error);
+						reject(error);
 					}
 				});
-				brokerClient.subscribe('$CONTROL/dynamic-security/v1/#', (error) => {
-					console.log(`Subscribed to dynamic-security topics for '${url}'`);
+				brokerClient.subscribe('$CONTROL/dynamic-security/v1/#', (error) => { // critical topics, reject if unsucessful
+					console.log(`Subscribed to dynamic-security topics for '${this._url}'`);
 					if (error) {
 						console.error(error);
+						reject(error);
 					}
 				});
-				brokerClient.subscribe('$CONTROL/cedalo/inspect/v1/#', (error) => {error && console.error(`Error subscruging to control inspect topic for ${url}`, error)});
-				brokerClient.subscribe('$CONTROL/cedalo/license/v1/#', (error) => {error && console.error(`Error subscruging to control license topic for ${url}`, error)});
-				brokerClient.on('message', (topic, message) => this._handleBrokerMessage(topic, message.toString())); // TODO: can we move it out of connect?
-			});
+				brokerClient.subscribe('$CONTROL/cedalo/inspect/v1/#', (error) => {error && console.error(`Error subscruging to control inspect topic for ${this._url}`, error)});
+				brokerClient.subscribe('$CONTROL/cedalo/license/v1/#', (error) => {error && console.error(`Error subscruging to control license topic for ${this._url}`, error)});
+				
+				brokerClient.on('message', (topic, message) => {
+					this._handleBrokerMessage(topic, message.toString())
+				}); // TODO: can we move it out of connect?
 
-			brokerClient.on('disconnect', () => {
-				console.log(`Disonnected from ${url}`);
-				this.logger.log(`Disonnected from ${url}`);
-			});
-
-			brokerClient.on('close', () => {
-				this.connected = false;
-				if (attemptNumber === 1) {
-					console.log(`Closing connection to ${url}`);
-					this.logger.log(`Closing connection to ${url}`);
-				} else if (attemptNumber === MAX_NUMBER_OF_ATTEMPTS + 1) {
-					this.logger.log(`Maximum reconnection attempts reached for ${url}`);
-					console.log(`Maximum reconnection attempts reached for ${url}`);
-					// brokerClient.end(); // has no effect
-					return;
-				}
-				if (!wasConnected) {
-					this.logger.error(`${url} closed before connect`);
-					// brokerClient.end(); // has no effect
-					return reject(new Error(`Could not connect to ${url}. Connection closed`));
-				}
-				if (this._disconnectedByUser) {
-					this.logger.log(`Connection to ${url} closed by the user`);
-					console.log(`Connection to ${url} closed by the user`);
-					return;
-				}
-				timeoutID = setTimeout(() => { // kill set timeout in connect hanlder!!!
-					this.logger.log(`Reconnecting to ${url}: attempt ${attemptNumber}; current backoff interval was: ${attemptBackoffMs} ms`);
-					console.log(`Reconnecting to ${url}: attempt ${attemptNumber}; current backoff interval was: ${attemptBackoffMs} ms`);
-					brokerClient.reconnect();
-					attemptNumber += 1;
-					attemptBackoffMs = parseInt(attemptBackoffMs * BACKOFF_RATE);
-				}, attemptBackoffMs);
+				resolve(brokerClient);
 			});
 		});
 	}
