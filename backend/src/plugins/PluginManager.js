@@ -66,7 +66,7 @@ module.exports = class PluginManager {
 		// load user management as a first plugin since we redefine isAdmin and alike functions there
 		// also load application-tokens first as it redefines isLoggedIn function
 		// saml-sso redefines the whole login
-		const PLUGIN_IDS_OF_HIGHEST_PRIORITY = [/* 'cedalo_login_rate_limit' */, 'cedalo_saml_sso', ...OS_PLUGINS_IDS, 'cedalo_application_tokens', 'cedalo_user_management'];
+		const PLUGIN_IDS_OF_HIGHEST_PRIORITY = [/* 'cedalo_login_rate_limit' */, 'cedalo_saml_sso', ...OS_PLUGINS_IDS, 'cedalo_application_tokens', 'cedalo_user_management', 'cedalo_cluster_management'];
 
 		for (const pluginId of PLUGIN_IDS_OF_HIGHEST_PRIORITY.reverse()) {
 			const pluginIndex = plugins.findIndex((el) => {
