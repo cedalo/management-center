@@ -40,7 +40,7 @@ const GroupNew = (props) => {
 	const onSaveGroup = async () => {
 		try {
 			await client.createGroup(groupname, '', textname, textdescription);
-			const groups = await client.listGroups();
+			const groups = client.listGroups();
 			dispatch(updateGroups(groups));
 			history.push(`/groups`);
 			enqueueSnackbar(`Group "${groupname}" successfully created.`, {

@@ -52,7 +52,7 @@ const ClientNew = (props) => {
 	const onSaveClient = async () => {
 		try {
 			await client.createClient(username, password, clientID, '', textname, textdescription);
-			const clients = await client.listClients();
+			const clients = client.listClients();
 			dispatch(updateClients(clients));
 			history.push(`/clients`);
 			enqueueSnackbar(`Client "${username}" successfully created.`, {

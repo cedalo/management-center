@@ -34,7 +34,7 @@ const RoleNew = () => {
 	const onSaveRole = async () => {
 		try {
 			await client.createRole(rolename, textname, textdescription);
-			const roles = await client.listRoles();
+			const roles = client.listRoles();
 			dispatch(updateRoles(roles));
 			history.push(`/roles`);
 			enqueueSnackbar(`Role "${rolename}" successfully created.`, {
