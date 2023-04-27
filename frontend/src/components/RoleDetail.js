@@ -132,6 +132,8 @@ const RoleDetail = (props) => {
 	const {enqueueSnackbar} = useSnackbar();
 	const {client: brokerClient} = context;
 	const formClasses = useFormStyles();
+	const count = props.rowsPerPage;
+	const offset = props.page * props.rowsPerPage;
 
 	const {role = {}, onSort, sortBy, sortDirection, defaultClient, clients} = props;
 
@@ -187,8 +189,11 @@ const RoleDetail = (props) => {
 			});
 			const roleObject = await brokerClient.getRole(role.rolename);
 			dispatch(updateRole(roleObject));
-			const roles = await brokerClient.listRoles();
-			dispatch(updateRoles(roles));
+
+			brokerClient.listRoles(true, count, offset).then((roles) => {
+				dispatch(updateRoles(roles));
+			}).catch((error) => console.error(error));
+
 			setEditMode(false);
 		} catch (error) {
 			console.error(error);
@@ -235,8 +240,9 @@ const RoleDetail = (props) => {
 			console.error(error);
 			enqueueSnackbar(`${error}`, { variant: 'error' });
 		}
-		const roles = await brokerClient.listRoles();
-		dispatch(updateRoles(roles));
+		brokerClient.listRoles(true, count, offset).then((roles) => { //? Not sure if we should fetch the roles if ACL is added
+			dispatch(updateRoles(roles));
+		}).catch((error) => console.error(error));
 	};
 
 
@@ -250,8 +256,10 @@ const RoleDetail = (props) => {
 			await brokerClient.removeRoleACL(role.rolename, acl);
 			const updatedRole = await brokerClient.getRole(role.rolename);
 			dispatch(updateRole(updatedRole));
-			const roles = await brokerClient.listRoles();
-			dispatch(updateRoles(roles));
+
+			brokerClient.listRoles(true, count, offset).then((roles) => { //? Not sure if we should fetch the roles if ACL is added
+				dispatch(updateRoles(roles));
+			}).catch((error) => console.error(error));
 		} catch(error) {
 			console.error(error);
 			enqueueSnackbar(`${error}`, { variant: 'error' });
@@ -658,10 +666,11 @@ RoleDetail.propTypes = {
 const mapStateToProps = (state) => {
 	return {
 		role: state.roles?.role,
-		roles: state.roles?.roles,
 		defaultClient: state.brokerConnections?.defaultClient,
 		clients: state.clients?.clients?.clients,
-		defaultClient: state.brokerConnections?.defaultClient
+		defaultClient: state.brokerConnections?.defaultClient,
+		rowsPerPage: state.roles?.rowsPerPage,
+		page: state.roles?.page,
 	};
 };
 

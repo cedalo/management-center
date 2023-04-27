@@ -21,7 +21,13 @@ import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
-import {updateClient, updateClients, updateGroups, updateRoles, updateRolesAll, updateGroupsAll} from '../actions/actions';
+import {updateClient,
+		updateClients,
+		updateClientsPage,
+		updateClientsRowsPerPage,
+		updateRolesAll,
+		updateGroupsAll
+	} from '../actions/actions';
 import {getIsAdminClient} from '../helpers/utils';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
@@ -88,12 +94,11 @@ const Clients = (props) => {
 	const confirm = useConfirm();
 	const {enqueueSnackbar} = useSnackbar();
 	const {client: brokerClient} = context;
-	const [page, setPage] = useState(0);
-	const [rowsPerPage, setRowsPerPage] = useState(10);
+	const [page, setPage] = useState(props.page || 0);  // TODO: no need to set this internally. Deprecated after moving these vars to state
+	const [rowsPerPage, setRowsPerPage] = useState(props.rowsPerPage || 10); // TODO: no need to set this internally. Deprecated after moving these vars to state
 	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
 	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
 	const [roleSuggestions, setRoleSuggestions] = useState([]);
-	const [roles, setRoles] = useState([]);
 
 	const handleChangePage = async (event, newPage) => {
 		setPage(newPage);
@@ -101,14 +106,17 @@ const Clients = (props) => {
 		const offset = newPage * count;
 		const clients = await brokerClient.listClients(true, count, offset);
 		dispatch(updateClients(clients));
+		dispatch(updateClientsPage(newPage));
 	};
 
 	const handleChangeRowsPerPage = async (event) => {
 		const rowsPerPage = parseInt(event.target.value, 10);
-		setRowsPerPage(rowsPerPage);
 		setPage(0);
+		setRowsPerPage(rowsPerPage);
 		const clients = await brokerClient.listClients(true, rowsPerPage, 0);
 		dispatch(updateClients(clients));
+		dispatch(updateClientsPage(0));
+		dispatch(updateClientsRowsPerPage(rowsPerPage));
 	};
 
 	const onUpdateClientGroups = async (client, groups = []) => {
@@ -506,6 +514,8 @@ const mapStateToProps = (state) => {
 		roles: state.roles?.roles?.roles,
 		rolesAll: state.roles?.rolesAll?.roles,
 		clients: state.clients?.clients,
+		page: state.clients?.page,
+		rowsPerPage: state.clients?.rowsPerPage,
 		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity,
 		connected: state.brokerConnections?.connected,
 		defaultClient: state.brokerConnections?.defaultClient

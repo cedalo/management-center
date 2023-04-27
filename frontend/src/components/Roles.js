@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
-import {updateRole, updateRoles} from '../actions/actions';
+import {updateRole, updateRoles, updateRolesRowsPerPage, updateRolesPage} from '../actions/actions';
 import {getAdminRoles} from '../helpers/utils';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
@@ -63,8 +63,8 @@ const Roles = (props) => {
 	const confirm = useConfirm();
 	const {enqueueSnackbar} = useSnackbar();
 	const {client} = context;
-	const [page, setPage] = React.useState(0);
-	const [rowsPerPage, setRowsPerPage] = React.useState(10);
+	const [page, setPage] = React.useState(props.page || 0);
+	const [rowsPerPage, setRowsPerPage] = React.useState(props.rowsPerPage || 10);
 	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
 	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
 	const handleChangePage = async (event, newPage) => {
@@ -73,6 +73,7 @@ const Roles = (props) => {
 		const offset = newPage * rowsPerPage;
 		const roles = await client.listRoles(true, count, offset);
 		dispatch(updateRoles(roles));
+		dispatch(updateRolesPage(newPage));
 	};
 
 	const onReload = async () => {
@@ -84,10 +85,12 @@ const Roles = (props) => {
 
 	const handleChangeRowsPerPage = async (event) => {
 		const rowsPerPage = parseInt(event.target.value, 10);
-		setRowsPerPage(rowsPerPage);
 		setPage(0);
+		setRowsPerPage(rowsPerPage);
 		const roles = await client.listRoles(true, rowsPerPage, 0);
+		dispatch(updateRolesPage(0));
 		dispatch(updateRoles(roles));
+		dispatch(updateRolesRowsPerPage(rowsPerPage));
 	};
 
 	const onEditDefaultACLAccess = () => {
@@ -341,6 +344,8 @@ Roles.defaultProps = {
 const mapStateToProps = (state) => {
 	return {
 		roles: state.roles?.roles,
+		rowsPerPage: state.roles?.rowsPerPage,
+		page: state.roles?.page,
 		defaultClient: state.brokerConnections?.defaultClient,
 		clients: state.clients?.clients?.clients,
 		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity,

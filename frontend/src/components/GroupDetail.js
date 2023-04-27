@@ -58,8 +58,14 @@ const GroupDetail = (props) => {
 		});
 		const groupObject = await brokerClient.getGroup(group.groupname);
 		dispatch(updateGroup(groupObject));
-		const groups = await brokerClient.listGroups();
-		dispatch(updateGroups(groups));
+
+		const count = props.rowsPerPage;
+		const offset = props.page * props.rowsPerPage;
+
+		brokerClient.listGroups(true, count, offset).then((groups) => {
+			dispatch(updateGroups(groups));
+		}).catch((error) => console.error(error));
+
 		setEditMode(false);
 	};
 
@@ -211,7 +217,9 @@ GroupDetail.propTypes = {
 const mapStateToProps = (state) => {
 	return {
 		// TODO: check object hierarchy
-		group: state.groups?.group
+		group: state.groups?.group,
+		rowsPerPage: state.groups?.rowsPerPage,
+		page: state.groups?.page,
 	};
 };
 

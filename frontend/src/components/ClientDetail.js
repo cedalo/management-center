@@ -120,8 +120,14 @@ const ClientDetail = (props) => {
 		});
 		const clientObject = await brokerClient.getClient(updatedClient.username);
 		dispatch(updateClient(clientObject));
-		const clients = await brokerClient.listClients();
-		dispatch(updateClients(clients));
+
+		const count = props.rowsPerPage;
+		const offset = props.page * props.rowsPerPage;
+
+		brokerClient.listClients(true, count, offset).then((clients) => {
+			dispatch(updateClients(clients));
+		}).catch((error) => console.error(error));
+
 		setEditMode(false);
 	};
 
@@ -358,7 +364,9 @@ ClientDetail.propTypes = {
 const mapStateToProps = (state) => {
 	return {
 		client: state.clients?.client,
-		defaultClient: state.brokerConnections?.defaultClient
+		defaultClient: state.brokerConnections?.defaultClient,
+		page: state.clients?.page,
+		rowsPerPage: state.clients?.rowsPerPage
 	};
 };
 

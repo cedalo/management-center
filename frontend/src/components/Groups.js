@@ -29,7 +29,14 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
-import {updateAnonymousGroup, updateGroup, updateGroups, updateRoles, updateClientsAll, updateRolesAll} from '../actions/actions';
+import {updateAnonymousGroup,
+		updateGroup,
+		updateGroups,
+		updateGroupsRowsPerPage,
+		updateGroupsPage,
+		updateClientsAll,
+		updateRolesAll
+} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
 import AnonymousGroupSelect from './AnonymousGroupSelect';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
@@ -91,8 +98,8 @@ const Groups = (props) => {
 	const {client} = context;
 	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
 	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
-	const [page, setPage] = React.useState(0);
-	const [rowsPerPage, setRowsPerPage] = React.useState(10);
+	const [page, setPage] = React.useState(props.page || 0);
+	const [rowsPerPage, setRowsPerPage] = React.useState(props.rowsPerPage || 10);
 
 	const handleChangePage = async (event, newPage) => {
 		setPage(newPage);
@@ -100,6 +107,7 @@ const Groups = (props) => {
 		const offset = newPage * rowsPerPage;
 		const groups = await client.listGroups(true, count, offset);
 		dispatch(updateGroups(groups));
+		dispatch(updateGroupsPage(newPage));
 	};
 
 	const onReload = async () => {
@@ -115,6 +123,8 @@ const Groups = (props) => {
 		setPage(0);
 		const groups = await client.listGroups(true, rowsPerPage, 0);
 		dispatch(updateGroups(groups));
+		dispatch(updateGroupsPage(0));
+		dispatch(updateGroupsRowsPerPage(rowsPerPage));
 	};
 
 	const onUpdateGroupClients = async (group, clients = []) => {
@@ -134,8 +144,6 @@ const Groups = (props) => {
 		try {
 			const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
 			dispatch(updateGroups(groups));
-			// const clientsUpdated = await client.listClients(); //??????????
-			// dispatch(updateClients(clientsUpdated));
 		} catch (error) {
 			console.error(error);
 			enqueueSnackbar(`${error}`, { variant: 'error' });
@@ -433,6 +441,8 @@ const mapStateToProps = (state) => {
 	return {
 		anonymousGroup: state.groups?.anonymousGroup,
 		groups: state.groups?.groups,
+		rowsPerPage: state.groups?.rowsPerPage,
+		page: state.groups?.page,
 		roles: state.roles?.roles?.roles,
 		rolesAll: state.roles?.rolesAll?.roles,
 		clientsAll: state.clients?.clientsAll?.clients,

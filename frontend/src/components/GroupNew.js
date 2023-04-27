@@ -7,7 +7,7 @@ import {useSnackbar} from 'notistack';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
-import {updateGroups} from '../actions/actions';
+import {updateGroups, updateGroupsAll} from '../actions/actions';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBox from './ContainerBox';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
@@ -29,7 +29,7 @@ const GroupNew = (props) => {
 	const {client} = context;
 	const formClasses = useFormStyles();
 
-	const groupnameExists = props?.groups?.groups?.find((searchGroup) => {
+	const groupnameExists = props?.groupsAll?.find((searchGroup) => {
 		return searchGroup.groupname === groupname;
 	});
 
@@ -40,8 +40,16 @@ const GroupNew = (props) => {
 	const onSaveGroup = async () => {
 		try {
 			await client.createGroup(groupname, '', textname, textdescription);
-			const groups = await client.listGroups();
-			dispatch(updateGroups(groups));
+			const count = props.rowsPerPage;
+			const offset = props.page * props.rowsPerPage;
+
+			client.listGroups(true, count, offset).then((groups) => {
+				dispatch(updateGroups(groups))
+			}).catch((error) => console.error(error));
+			client.listGroups(false).then((groupsAll) => {
+				dispatch(updateGroupsAll(groupsAll));
+			}).catch((error) => console.error(error));
+	
 			history.push(`/groups`);
 			enqueueSnackbar(`Group "${groupname}" successfully created.`, {
 				variant: 'success'
@@ -128,7 +136,9 @@ const GroupNew = (props) => {
 
 const mapStateToProps = (state) => {
 	return {
-		groups: state.groups?.groups
+		groupsAll: state.groups?.groupsAll?.groups,
+		rowsPerPage: state.groups?.rowsPerPage,
+		page: state.groups?.page,
 	};
 };
 

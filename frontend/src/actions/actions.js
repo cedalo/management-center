@@ -35,6 +35,20 @@ export function updateClients(update) {
 	};
 }
 
+export function updateClientsRowsPerPage(update) {
+	return {
+		type: ActionTypes.UPDATE_CLIENTS_ROWS_PER_PAGE,
+		update
+	};
+}
+
+export function updateClientsPage(update) {
+	return {
+		type: ActionTypes.UPDATE_CLIENTS_PAGE,
+		update
+	};
+}
+
 export function updateClientsAll(update) {
 	return {
 		type: ActionTypes.UPDATE_CLIENTS_ALL,
@@ -84,6 +98,20 @@ export function updateGroups(update) {
 	};
 }
 
+export function updateGroupsPage(update) {
+	return {
+		type: ActionTypes.UPDATE_GROUPS_PAGE,
+		update
+	};
+}
+
+export function updateGroupsRowsPerPage(update) {
+	return {
+		type: ActionTypes.UPDATE_GROUPS_ROWS_PER_PAGE,
+		update
+	};
+}
+
 export function updateGroupsAll(update) {
 	return {
 		type: ActionTypes.UPDATE_GROUPS_ALL,
@@ -108,6 +136,20 @@ export function updateRole(update) {
 export function updateRoles(update) {
 	return {
 		type: ActionTypes.UPDATE_ROLES,
+		update
+	};
+}
+
+export function updateRolesPage(update) {
+	return {
+		type: ActionTypes.UPDATE_ROLES_PAGE,
+		update
+	};
+}
+
+export function updateRolesRowsPerPage(update) {
+	return {
+		type: ActionTypes.UPDATE_ROLES_ROWS_PER_PAGE,
 		update
 	};
 }

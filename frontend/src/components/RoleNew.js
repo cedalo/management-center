@@ -6,7 +6,7 @@ import {useSnackbar} from 'notistack';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
-import {updateRoles} from '../actions/actions';
+import {updateRoles, updateRolesAll} from '../actions/actions';
 import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
@@ -15,7 +15,7 @@ import ContentContainer from './ContentContainer';
 import SaveCancelButtons from './SaveCancelButtons';
 import { useConfirmCancel } from '../helpers/useConfirmDialog';
 
-const RoleNew = () => {
+const RoleNew = (props) => {
 	const [rolename, setRolename] = useState('');
 	const [textname, setTextname] = useState('');
 	const [textdescription, setTextdescription] = useState('');
@@ -27,6 +27,10 @@ const RoleNew = () => {
 	const {client} = context;
 	const formClasses = useFormStyles();
 
+	const rolenameExists = props?.rolesAll?.find((role) => {
+		return role.rolename === rolename;
+	});
+
 	const validate = () => {
 		return rolename !== '';
 	};
@@ -34,8 +38,16 @@ const RoleNew = () => {
 	const onSaveRole = async () => {
 		try {
 			await client.createRole(rolename, textname, textdescription);
-			const roles = await client.listRoles();
-			dispatch(updateRoles(roles));
+			const count = props.rowsPerPage;
+			const offset = props.page * props.rowsPerPage;
+
+			client.listRoles(true, count, offset).then((roles) => {
+				dispatch(updateRoles(roles))
+			}).catch((error) => console.error(error));
+			client.listRoles(false).then((rolesAll) => {
+				dispatch(updateRolesAll(rolesAll));
+			}).catch((error) => console.error(error));
+
 			history.push(`/roles`);
 			enqueueSnackbar(`Role "${rolename}" successfully created.`, {
 				variant: 'success'
@@ -73,6 +85,8 @@ const RoleNew = () => {
 					required
 					id="rolename"
 					label="Name"
+					error={rolenameExists}
+					helperText={rolenameExists && 'A role with this name already exists.'}
 					onChange={(event) => setRolename(event.target.value)}
 					defaultValue=""
 					variant="outlined"
@@ -121,7 +135,11 @@ const RoleNew = () => {
 };
 
 const mapStateToProps = () => {
-	return {};
+	return {
+		rolesAll: state.roles?.rolesAll?.roles,
+		rowsPerPage: state.roles?.rowsPerPage,
+		page: state.roles?.page,
+	};
 };
 
 export default connect(mapStateToProps)(RoleNew);
