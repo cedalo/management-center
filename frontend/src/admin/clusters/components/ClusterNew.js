@@ -105,7 +105,7 @@ const ClusterNew = (props) => {
 			enqueueSnackbar(`Error creating cluster "${clustername}". Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
-			throw error;
+			// throw error;
 		}
 	};
 
@@ -119,14 +119,17 @@ const ClusterNew = (props) => {
 
 	return (
 		<ContentContainer
-			breadCrumbs={<ContainerBreadCrumbs
-				title="New"
-				links={[
-					{name: 'Home', route: '/home'},
-					{name: 'Clusters', route: '/clusters'}
-				]}
-			/>}
+			breadCrumbs={
+				<ContainerBreadCrumbs
+					title="New"
+					links={[
+						{ name: 'Home', route: '/home' },
+						{ name: 'Clusters', route: '/clusters' }
+					]}
+				/>
+			}
 			overFlowX="hidden"
+			overFlowY="hidden"
 		>
 			<ContainerHeader
 				title="New Cluster"
@@ -162,7 +165,7 @@ const ClusterNew = (props) => {
 								InputProps={{
 									startAdornment: (
 										<InputAdornment position="start">
-											<ClusterIcon/>
+											<ClusterIcon />
 										</InputAdornment>
 									)
 								}}
@@ -201,8 +204,8 @@ const ClusterNew = (props) => {
 						</Grid>
 						<Grid item xs={12} sm={4}>
 							<Card variant="outlined">
-								<CardHeader subheader="Node 1" disableTypography/>
-								<CardContent style={{paddingTop: '0px'}}>
+								<CardHeader subheader="Node 1" disableTypography />
+								<CardContent style={{ paddingTop: '0px' }}>
 									<SelectNodeComponent
 										defaultNode={node1}
 										setNode={setNode1}
@@ -213,8 +216,8 @@ const ClusterNew = (props) => {
 						</Grid>
 						<Grid item xs={12} sm={4}>
 							<Card variant="outlined">
-								<CardHeader subheader="Node 2" disableTypography/>
-								<CardContent style={{paddingTop: '0px'}}>
+								<CardHeader subheader="Node 2" disableTypography />
+								<CardContent style={{ paddingTop: '0px' }}>
 									<SelectNodeComponent
 										defaultNode={node2}
 										setNode={setNode2}
@@ -225,8 +228,8 @@ const ClusterNew = (props) => {
 						</Grid>
 						<Grid item xs={12} sm={4}>
 							<Card variant="outlined">
-								<CardHeader subheader="Node 3" disableTypography/>
-								<CardContent style={{paddingTop: '0px'}}>
+								<CardHeader subheader="Node 3" disableTypography />
+								<CardContent style={{ paddingTop: '0px' }}>
 									<SelectNodeComponent
 										defaultNode={node3}
 										setNode={setNode3}
@@ -236,11 +239,7 @@ const ClusterNew = (props) => {
 							</Card>
 						</Grid>
 					</Grid>
-					<SaveCancelButtons
-						onSave={onSaveCluster}
-						saveDisabled={!validate()}
-						onCancel={onCancel}
-					/>
+					<SaveCancelButtons onSave={onSaveCluster} saveDisabled={!validate()} onCancel={onCancel} />
 				</FormGroup>
 			)}
 		</ContentContainer>
