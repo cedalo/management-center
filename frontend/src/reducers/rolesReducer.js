@@ -15,6 +15,12 @@ export default function roles(state = {}, action) {
 		case ActionTypes.UPDATE_ROLES_ALL:
 			newState.rolesAll = action.update;
 			break;
+		case ActionTypes.UPDATE_ROLES_ROWS_PER_PAGE:
+			newState.rowsPerPage = action.update;
+			break;
+		case ActionTypes.UPDATE_ROLES_PAGE:
+			newState.page = action.update;
+			break;
 		default:
 	}
 	return newState;
