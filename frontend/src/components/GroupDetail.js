@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
-import {updateGroup, updateGroups} from '../actions/actions';
+import {updateGroup, updateGroups, updateGroupsAll} from '../actions/actions';
 import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
@@ -58,8 +58,17 @@ const GroupDetail = (props) => {
 		});
 		const groupObject = await brokerClient.getGroup(group.groupname);
 		dispatch(updateGroup(groupObject));
-		const groups = await brokerClient.listGroups();
-		dispatch(updateGroups(groups));
+
+		const count = props.rowsPerPage;
+		const offset = props.page * props.rowsPerPage;
+
+		brokerClient.listGroups(true, count, offset).then((groups) => {
+			dispatch(updateGroups(groups));
+		}).catch((error) => console.error(error));
+		brokerClient.listGroups(false).then((groupsAll) => {
+			dispatch(updateGroupsAll(groupsAll));
+		}).catch((error) => console.error(error));
+
 		setEditMode(false);
 	};
 
@@ -211,7 +220,9 @@ GroupDetail.propTypes = {
 const mapStateToProps = (state) => {
 	return {
 		// TODO: check object hierarchy
-		group: state.groups?.group
+		group: state.groups?.group,
+		rowsPerPage: state.groups?.rowsPerPage,
+		page: state.groups?.page,
 	};
 };
 

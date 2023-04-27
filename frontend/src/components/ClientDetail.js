@@ -15,7 +15,7 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
-import {updateClient, updateClients} from '../actions/actions';
+import {updateClient, updateClients, updateClientsAll} from '../actions/actions';
 import {getIsAdminClient} from '../helpers/utils';
 import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
@@ -120,8 +120,17 @@ const ClientDetail = (props) => {
 		});
 		const clientObject = await brokerClient.getClient(updatedClient.username);
 		dispatch(updateClient(clientObject));
-		const clients = await brokerClient.listClients();
-		dispatch(updateClients(clients));
+
+		const count = props.rowsPerPage;
+		const offset = props.page * props.rowsPerPage;
+
+		brokerClient.listClients(true, count, offset).then((clients) => {
+			dispatch(updateClients(clients));
+		}).catch((error) => console.error(error));
+		brokerClient.listClients(false).then((clientsAll) => {
+			dispatch(updateClientsAll(clientsAll));
+		}).catch((error) => console.error(error));
+
 		setEditMode(false);
 	};
 
@@ -358,7 +367,9 @@ ClientDetail.propTypes = {
 const mapStateToProps = (state) => {
 	return {
 		client: state.clients?.client,
-		defaultClient: state.brokerConnections?.defaultClient
+		defaultClient: state.brokerConnections?.defaultClient,
+		page: state.clients?.page,
+		rowsPerPage: state.clients?.rowsPerPage
 	};
 };
 

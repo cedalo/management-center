@@ -11,7 +11,7 @@ import {useSnackbar} from 'notistack';
 import React, {useContext, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {useHistory} from 'react-router-dom';
-import {updateClients} from '../actions/actions';
+import {updateClients, updateClientsAll} from '../actions/actions';
 import {useFormStyles} from '../styles';
 import {WebSocketContext} from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
@@ -33,7 +33,7 @@ const ClientNew = (props) => {
 	const handleClickShowPassword = () => setShowPassword(!showPassword);
 	const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
-	const usernameExists = props?.clients?.clients?.find((searchClient) => {
+	const usernameExists = props?.clientsAll?.find((searchClient) => {
 		return searchClient.username === username;
 	});
 
@@ -52,8 +52,16 @@ const ClientNew = (props) => {
 	const onSaveClient = async () => {
 		try {
 			await client.createClient(username, password, clientID, '', textname, textdescription);
-			const clients = client.listClients();
-			dispatch(updateClients(clients));
+			const count = props.rowsPerPage;
+			const offset = props.page * props.rowsPerPage;
+
+			client.listClients(true, count, offset).then((clients) => {
+				dispatch(updateClients(clients))
+			}).catch((error) => console.error(error));
+			client.listClients(false).then((clientsAll) => {
+				dispatch(updateClientsAll(clientsAll));
+			}).catch((error) => console.error(error));
+
 			history.push(`/clients`);
 			enqueueSnackbar(`Client "${username}" successfully created.`, {
 				variant: 'success'
@@ -190,7 +198,9 @@ const ClientNew = (props) => {
 
 const mapStateToProps = (state) => {
 	return {
-		clients: state.clients?.clients
+		clientsAll: state.clients?.clientsAll?.clients,
+		page: state.clients?.page,
+		rowsPerPage: state.clients?.rowsPerPage
 	};
 };
 
