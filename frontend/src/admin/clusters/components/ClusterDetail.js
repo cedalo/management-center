@@ -137,15 +137,19 @@ const ClusterDetail = (props) => {
 	}
 
 	const onUpdateClusterDetail = async () => {
-		await brokerClient.modifyCluster(updatedCluster);
-		enqueueSnackbar('Cluster successfully updated', {
-			variant: 'success'
-		});
-		const clusterObject = await brokerClient.getCluster(updatedCluster.clustername);
-		dispatch(updateCluster(clusterObject));
-		const clusters = await brokerClient.listClusters();
-		dispatch(updateClusters(clusters));
-		setEditMode(false);
+		try {
+			await brokerClient.modifyCluster(updatedCluster);
+			enqueueSnackbar('Cluster successfully updated', {
+				variant: 'success'
+			});
+			const clusterObject = await brokerClient.getCluster(updatedCluster.clustername);
+			dispatch(updateCluster(clusterObject));
+			const clusters = await brokerClient.listClusters();
+			dispatch(updateClusters(clusters));
+			setEditMode(false);
+		} catch (error) {
+			enqueueSnackbar(`Error updating cluster. Reason: ${error.message || error}`, { variant: 'error' });
+		}
 	};
 
 	const onEnableLTS = async (cluster, node) => {
