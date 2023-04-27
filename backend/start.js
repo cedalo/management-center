@@ -60,6 +60,7 @@ const CEDALO_MC_ENABLE_FULL_LOG = preprocessBoolEnvVariable(process.env.CEDALO_M
 const CEDALO_MC_SHOW_FEEDBACK_FORM = preprocessBoolEnvVariable(process.env.CEDALO_MC_SHOW_FEEDBACK_FORM);
 const CEDALO_MC_SHOW_STREAMSHEETS = preprocessBoolEnvVariable(process.env.CEDALO_MC_SHOW_STREAMSHEETS || true);
 const CEDALO_MC_USERNAME = process.env.CEDALO_MC_USERNAME;
+const CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST = process.env.CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST;
 
 const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
@@ -888,15 +889,13 @@ const init = async (licenseContainer) => {
 		// https plugin was successfully enabled
 		server = context.server;
 
+		// if https is not setup on the default HTTP port (which doesn't make sense but we don't restrict this), we open an http listener on default HTTP port
 		if (parseInt(port) !== parseInt(HTTP_PORT)) {
 			// set up plain http server
 			httpPlainApp = express();
 			// set up a route to redirect http to https
-			httpPlainApp.get('*', function(request, response) {  
-				response.redirect('https://' + request.headers.host + `:${port}` + request.url);
-
-				// Or, if you don't want to automatically detect the domain name from the request header, you can hard code it:
-				// res.redirect('https://example.com' + req.url);
+			httpPlainApp.get('*', function(request, response) {
+				response.redirect('https://' + CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST || request.headers.host + `:${port}` + request.url);
 			});
 			httpPlainServer =  http.createServer(httpPlainApp);
 			// have it listen on 80
