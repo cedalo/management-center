@@ -1,3 +1,7 @@
+const BROKER_PREFIX = process.env.CEDALO_MC_DEV_CLUSTER_NODE_BROKER_PREFIX;
+const ADDRESS_PREFIX = process.env.CEDALO_MC_DEV_CLUSTER_NODE_ADDRESS_PREFIX;
+const concat = (prefix, suffix) => (prefix ? `${prefix}${suffix}` : undefined);
+
 const SYNCMODES = Object.freeze([
 	{
 		label: 'Full Sync',
@@ -14,5 +18,7 @@ module.exports = {
 	getSyncModeLabel: (syncmode) => {
 		const modeidx = syncmode === 'dynsec' ? 1 : 0;
 		return SYNCMODES[modeidx].label;
-	}
+	},
+	defaultNodeBroker: (nodeid) => concat(BROKER_PREFIX, nodeid),
+	defaultNodeAddress: (nodeid) => concat(ADDRESS_PREFIX, nodeid)
 };

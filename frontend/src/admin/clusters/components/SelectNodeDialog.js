@@ -17,6 +17,7 @@ import {
     getBrokersPresentValidator
 } from '../validators';
 
+import { defaultNodeAddress, defaultNodeBroker } from './clusterutils';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -109,11 +110,20 @@ const getDialogContent = ({
 		</>
 	} 
 }
+
+const lastNodeId = (cluster) => (cluster ? cluster.nodes.reduce((id, node) => Math.max(id, node.nodeid), 0) : 3);
+
 const SelectNodeDialog = ({ brokerConnections, cluster, open, handleClose, handleAddNode }) => {
 	const classes = useStyles();
+	const nodeid = lastNodeId(cluster) + 1
 	const [node, setNode] = React.useState({
-		nodeid: (cluster && cluster.nodes && cluster.nodes[cluster.nodes.length - 1].nodeid + 1) || undefined, // last cluster nodes' id + 1
-		port: 7000
+		nodeid,
+		port: 7000,
+		address: defaultNodeAddress(nodeid),
+		broker: defaultNodeBroker(nodeid)
+
+		// nodeid: (cluster && cluster.nodes && cluster.nodes[cluster.nodes.length - 1].nodeid + 1) || undefined, // last cluster nodes' id + 1
+		// port: 7000
 	});
 
 	return (
