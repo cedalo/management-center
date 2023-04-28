@@ -1,3 +1,4 @@
+import {Tooltip} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import {indigo} from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
@@ -30,6 +31,7 @@ const FeedbackButton = ({backendParameters}) => {
 	const formPageAddress = 'https://majy33976q6.typeform.com/to/aeRoINk0';
 
 	return (!small && displayFeedback) ? (
+		<Tooltip title="Feedback Questionnaire">
 			<ColorButton
 				variant="contained"
 				color="primary"
@@ -38,7 +40,8 @@ const FeedbackButton = ({backendParameters}) => {
 			>
 				<FeedbackIcon/>
 			</ColorButton>
-		) : null;
+		</Tooltip>
+	) : null;
 };
 
 const mapStateToProps = (state) => {
