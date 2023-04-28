@@ -1,5 +1,5 @@
-const BROKER_PREFIX = process.env.CEDALO_MC_DEV_CLUSTER_NODE_BROKER_PREFIX;
-const ADDRESS_PREFIX = process.env.CEDALO_MC_DEV_CLUSTER_NODE_ADDRESS_PREFIX;
+const BROKER_PREFIX = undefined; // process.env.CEDALO_MC_DEV_CLUSTER_NODE_BROKER_PREFIX;
+const ADDRESS_PREFIX = undefined; // process.env.CEDALO_MC_DEV_CLUSTER_NODE_ADDRESS_PREFIX;
 const concat = (prefix, suffix) => (prefix ? `${prefix}${suffix}` : undefined);
 
 const SYNCMODES = Object.freeze([
