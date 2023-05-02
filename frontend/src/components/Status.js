@@ -229,7 +229,7 @@ const Status = ({
 
 		if (ver1) {
 			// remove mosquitto: prefix from host
-			const hostInfo = host ? parseUrl(host.substring(0, 10)) : connInfo;
+			const hostInfo = host ? parseUrl(host.substring(10)) : connInfo;
 			const wsListener = listeners && listeners.find(listener => listener.port === 8090);
 			const requireCerts = wsListener && wsListener.requireCertificate;
 			infos.push({
