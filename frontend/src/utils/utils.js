@@ -21,5 +21,5 @@ export const showConnections = () => {
 };
 
 export const getHelpBasePath = () => {
-	return 'https://docs.cedalo.com/mosquitto/';
+	return 'https://docs.cedalo.com/';
 }
