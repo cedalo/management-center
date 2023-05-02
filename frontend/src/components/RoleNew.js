@@ -134,7 +134,7 @@ const RoleNew = (props) => {
 	);
 };
 
-const mapStateToProps = () => {
+const mapStateToProps = (state) => {
 	return {
 		rolesAll: state.roles?.rolesAll?.roles,
 		rowsPerPage: state.roles?.rowsPerPage,
