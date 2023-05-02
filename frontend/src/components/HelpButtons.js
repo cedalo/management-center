@@ -53,7 +53,6 @@ export default function HelpButtons(props) {
 		case 'clientinspection':
 			link += 'inspection/mc-clientinspection';
 			break;
-		case 'test':
 		case 'clients':
 		case 'groups':
 		case 'roles':
