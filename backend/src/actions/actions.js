@@ -28,7 +28,7 @@ const unloadPluginAction = {
 	isModifying: true,
 	fn: ({ user, security, pluginManager }, { pluginId }) => {
 		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin)) {
-			throw new NotAuthorizedError();
+			throw AuthError.notAllowed();
 		}
 		const response = pluginManager.unloadPlugin(pluginId);
 		return response;
@@ -40,7 +40,7 @@ const loadPluginAction = {
 	isModifying: true,
 	fn: ({ user, security, pluginManager }, { pluginId }) => {
 		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin)) {
-			throw new NotAuthorizedError();
+			throw AuthError.notAllowed();
 		}
 		const response = pluginManager.loadPlugin(pluginId);
 		return response;
@@ -51,7 +51,7 @@ const setPluginStatusAtNextStartupAction = {
 	isModifying: true,
 	fn: ({ user, security, pluginManager }, { pluginId, nextStatus }) => {
 		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin)) {
-			throw new NotAuthorizedError();
+			throw AuthError.notAllowed();
 		}
 		const response = pluginManager.setPluginStatusAtNextStartup(pluginId, !!nextStatus);
 		return response;
@@ -62,7 +62,7 @@ const testConnectionAction = {
 	type: 'connection/test',
 	fn: async ({ user, security, configManager }, { connection }) => {
 		if (!security.acl.noRestrictedRoles(user)) {
-			throw new NotAuthorizedError();
+			throw AuthError.notAllowed();
 		}
 		const testClient = new NodeMosquittoClient({
 			/* logger: console */
@@ -100,8 +100,8 @@ const createConnectionAction = {
 	type: 'connection/create',
 	isModifying: true,
 	fn: async ({ user, security, configManager, licenseContainer }, { connection }) => {
-		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, null, 'createConnection')) {
-			throw new NotAuthorizedError();
+		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, null, 'createConnection')) { // passing security.acl.atLeastAdmin is not needed here, we can just pass null instead
+			throw AuthError.notAllowed();
 		}
 
 		try {
@@ -139,7 +139,7 @@ const modifyConnectionAction = {
 	isModifying: true,
 	fn: async ({ user, security, configManager }, { oldConnectionId, connection }) => {
 		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, oldConnectionId)) {
-			throw new NotAuthorizedError();
+			throw AuthError.notAllowed();
 		}
 		configManager.updateConnection(oldConnectionId, connection);
 
@@ -168,7 +168,7 @@ const deleteConnectionAction = {
 	fn: ({ user, security, configManager }, { connectionId }) => {
 		try {
 			if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, connectionId)) {
-				throw new NotAuthorizedError();
+				throw AuthError.notAllowed();
 			}
 			const connection = configManager.getConnection(connectionId);
 			if (connection.cluster) {
