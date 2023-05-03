@@ -839,7 +839,7 @@ const init = async (licenseContainer) => {
 				if (plugin.isLoaded()) {
 					return next();
 				}
-				response.status(404).send('Plugin not enabled');
+				response.status(404).send({ code: 'NOT_FOUND', message: 'Plugin not enabled'});
 			},
 			preprocessUser: async (request, _response, next) => {
                 try {
@@ -1039,7 +1039,7 @@ const init = async (licenseContainer) => {
 			} else if (fs.existsSync(mediaFilePath)) {
 				response.sendFile(mediaFilePath);
 			} else if (request.path.includes('/api/')) {
-				response.status(404).json('Not found');
+				response.status(404).send({ code: 'NOT_FOUND', message: 'Resource not found' });
 			} else {
 				response.status(404);
 				response.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -1051,6 +1051,8 @@ const init = async (licenseContainer) => {
 	router.use('/api/*', (error, request, response, next) => {
 		if (error) {
 			switch (error.code) {
+				case 'ACCEPTED':
+					return response.status(202).send({ code: error.code, message: error.message, successful: true });
 				case 'CONFLICT':
 					return response.status(409).send({ code: error.code, message: error.message });
 				case 'INVALID':
@@ -1077,10 +1079,11 @@ const init = async (licenseContainer) => {
 		}
 	});
 
+	// TODO: this router is shadowed by the one on top, so it's probably safe to remove it
 	router.use((error, request, response, next) => {
 		if (error) {
 			console.error(error.stack);
-			response.status(500).send('Something went wrong!');
+			response.status(500).send({ code: 'INTERNAL_ERROR', message: 'Something went wrong!'});
 		} else {
 			next();
 		}

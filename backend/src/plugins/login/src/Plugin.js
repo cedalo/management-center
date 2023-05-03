@@ -99,7 +99,8 @@ module.exports = class Plugin extends BasePlugin {
 					if (!request.query.json) {
 						return response.redirect(`${CEDALO_MC_PROXY_BASE_PATH}/login?error=authentication-failed`);
 					} else {
-						return response.status(401).json('Unauthorized');
+						return response.status(401).send({ code: 'UNAUTHORIZED', message: 'Unauthorized'});
+						
 					}
 				} else {
 					request.login(user, function (error_) {
@@ -109,7 +110,7 @@ module.exports = class Plugin extends BasePlugin {
 						if (!request.query.json) {
 							return response.redirect(`${CEDALO_MC_PROXY_BASE_PATH}/`);
 						} else {
-							return response.status(200).json('Authorized');
+							return response.status(200).send({ code: 'SUCCESS', message: 'Authorized', successful: true});
 						}
 					});
 				}
