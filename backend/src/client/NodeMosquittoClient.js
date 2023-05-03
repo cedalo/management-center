@@ -19,7 +19,9 @@ const MAX_NUMBER_OF_ATTEMPTS = (process.env.CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF
 const BACKOFF_RATE =  (process.env.CEDALO_MC_MQTT_CONNECT_BACKOFF_INCREASE_RATE 
 						&& Math.abs(parseFloat(process.env.CEDALO_MC_MQTT_CONNECT_BACKOFF_INCREASE_RATE))
 						) || 1.5;
-const CONNECT_TIMEOUT_MS = 5000;
+const CONNECT_TIMEOUT_MS = (process.env.CEDALO_MC_MQTT_CONNECT_TIMEOUT_MS 
+							&& Math.abs(parseFloat(process.env.CEDALO_MC_MQTT_CONNECT_TIMEOUT_MS))
+							) || 5000;
 
 const TOPIC_NAME = 'brokerReconnect';
 
@@ -85,7 +87,10 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 
 		brokerClient.stream.on('error', (error) => {
 			if (!socketErrors.includes(error.code) && error.code.startsWith('ERR_SSL')) {
-				console.error('Caught SSL error:', error.code, 'Emitting error');
+				console.error('Caught SSL cert error:', error.code, '; Emitting error...');
+				brokerClient.emit('error', error);
+			} else if (!socketErrors.includes(error.code)) {
+				console.error('Caught error in TLS socket:', error.code, '; Emitting error...');
 				brokerClient.emit('error', error);
 			}
 		});
@@ -140,7 +145,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				this.logger.error(`${url} closed before connect`);
 				console.error(`${url} closed before connect`);
 				// brokerClient.end(); // has no effect
-				brokerClient.emit('error', new Error(`Could not connect to ${url}. Connection closed`));
+				brokerClient.emit('error', new Error(`Could not connect to ${url}. Connection closed`)); // propagete the error further inside brokerClient listeners
 				return;
 			}
 			if (this._disconnectedByUser) {
@@ -169,15 +174,36 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 
 	_connectBroker(url, options) {
 		return new Promise((resolve, reject) => {
+			const timeoutHandler = setTimeout(() => {
+				reject(new Error(`Connection to ${this._url} timed out`));
+			}, CONNECT_TIMEOUT_MS);
+
 			let brokerClient = this._client;
 
+			// if brokerClient wasn't already initialised, this means that the parameters are passed and we should create a handle first. otherwise, we can just use the existing one
 			if (!brokerClient) {
+				if (!url || !options) {
+					reject(new Error('connection handle not initialized and no arguments given, invalid call to _connectBroker'));
+				}
 				try {
 					brokerClient = this._createConnectionHandler(url, options);
 				} catch(error) {
 					reject(error);
 				}
 			}
+
+			brokerClient.on('close', () => {
+				// promise can only be rejected once, subsequent calls are ignored, so in the fact that this code is getting called on every close connection (in case of reconnect), doesn't matter
+				// we are only intereseted in the first close event which happens before any connect can occur. there is no guarantee that we will catch it with this code
+				// but for such casees we have timeout hanlder in the beginning of this funciton
+				// bottom line is that this is just an auxilary code and it can be safely removed/ignored (same as an error event handler below)
+				reject(new Error(`Connection to ${this._url} closed`));
+			});
+			brokerClient.on('error', (error) => {
+				// promise can only be rejected once, subsequent calls are ignored, so this code will not cause any harm when executed subsequently
+				// also safe to call reject in case both close and error events are emitted which is usually the case
+				reject(new Error(error));
+			});
 
 			brokerClient.on('connect', () => {
 				brokerClient.subscribe('$CONTROL/#', (error) => { // critical topics, reject if unsucessful
@@ -209,6 +235,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 					this._handleBrokerMessage(topic, message.toString())
 				}); // TODO: can we move it out of connect?
 
+				clearTimeout(timeoutHandler);
 				resolve(brokerClient);
 			});
 		});
