@@ -20,7 +20,7 @@ import SelectNodeComponent from './SelectNodeComponent';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
-import { getSyncModes } from './clusterutils';
+import { defaultNodeAddress, defaultNodeBroker, getSyncModes } from './clusterutils';
 import {
 	getNodeIdsUniqueValidator,
     getPrivateAddressesPresentValidator,
@@ -30,24 +30,21 @@ import {
 import { useConfirmCancel } from '../../../helpers/useConfirmDialog';
 
 
+const DEF_NODES = [
+	{ nodeid: 1, port: 7000, address: defaultNodeAddress(1), broker: defaultNodeBroker(1) },
+	{ nodeid: 2, port: 7000, address: defaultNodeAddress(2), broker: defaultNodeBroker(2) },
+	{ nodeid: 3, port: 7000, address: defaultNodeAddress(3), broker: defaultNodeBroker(3) }
+];
+
 const ClusterNew = (props) => {
 	const {clusterManagementFeature} = props;
 
 	const [clustername, setClustername] = useState('Example');
 	const [clusterDescription, setClusterDescription] = useState('Example cluster');
 	const [syncmode, setSyncmode] = useState('full');
-	const [node1, setNode1] = useState({
-		nodeid: 1,
-		port: 7000
-	});
-	const [node2, setNode2] = useState({
-		nodeid: 2,
-		port: 7000
-	});
-	const [node3, setNode3] = useState({
-		nodeid: 3,
-		port: 7000
-	});
+	const [node1, setNode1] = useState(DEF_NODES[0]);
+	const [node2, setNode2] = useState(DEF_NODES[1]);
+	const [node3, setNode3] = useState(DEF_NODES[2]);
 
 	const clusternameExists = props?.clusters?.find((searchCluster) => {
 		return searchCluster.clustername === clustername;
@@ -105,7 +102,7 @@ const ClusterNew = (props) => {
 			enqueueSnackbar(`Error creating cluster "${clustername}". Reason: ${error.message || error}`, {
 				variant: 'error'
 			});
-			throw error;
+			// throw error;
 		}
 	};
 
@@ -119,14 +116,17 @@ const ClusterNew = (props) => {
 
 	return (
 		<ContentContainer
-			breadCrumbs={<ContainerBreadCrumbs
-				title="New"
-				links={[
-					{name: 'Home', route: '/home'},
-					{name: 'Clusters', route: '/clusters'}
-				]}
-			/>}
+			breadCrumbs={
+				<ContainerBreadCrumbs
+					title="New"
+					links={[
+						{ name: 'Home', route: '/home' },
+						{ name: 'Clusters', route: '/clusters' }
+					]}
+				/>
+			}
 			overFlowX="hidden"
+			overFlowY="hidden"
 		>
 			<ContainerHeader
 				title="New Cluster"
@@ -162,7 +162,7 @@ const ClusterNew = (props) => {
 								InputProps={{
 									startAdornment: (
 										<InputAdornment position="start">
-											<ClusterIcon/>
+											<ClusterIcon />
 										</InputAdornment>
 									)
 								}}
@@ -201,8 +201,8 @@ const ClusterNew = (props) => {
 						</Grid>
 						<Grid item xs={12} sm={4}>
 							<Card variant="outlined">
-								<CardHeader subheader="Node 1" disableTypography/>
-								<CardContent style={{paddingTop: '0px'}}>
+								<CardHeader subheader="Node 1" disableTypography />
+								<CardContent style={{ paddingTop: '0px' }}>
 									<SelectNodeComponent
 										defaultNode={node1}
 										setNode={setNode1}
@@ -213,8 +213,8 @@ const ClusterNew = (props) => {
 						</Grid>
 						<Grid item xs={12} sm={4}>
 							<Card variant="outlined">
-								<CardHeader subheader="Node 2" disableTypography/>
-								<CardContent style={{paddingTop: '0px'}}>
+								<CardHeader subheader="Node 2" disableTypography />
+								<CardContent style={{ paddingTop: '0px' }}>
 									<SelectNodeComponent
 										defaultNode={node2}
 										setNode={setNode2}
@@ -225,8 +225,8 @@ const ClusterNew = (props) => {
 						</Grid>
 						<Grid item xs={12} sm={4}>
 							<Card variant="outlined">
-								<CardHeader subheader="Node 3" disableTypography/>
-								<CardContent style={{paddingTop: '0px'}}>
+								<CardHeader subheader="Node 3" disableTypography />
+								<CardContent style={{ paddingTop: '0px' }}>
 									<SelectNodeComponent
 										defaultNode={node3}
 										setNode={setNode3}
@@ -236,11 +236,7 @@ const ClusterNew = (props) => {
 							</Card>
 						</Grid>
 					</Grid>
-					<SaveCancelButtons
-						onSave={onSaveCluster}
-						saveDisabled={!validate()}
-						onCancel={onCancel}
-					/>
+					<SaveCancelButtons onSave={onSaveCluster} saveDisabled={!validate()} onCancel={onCancel} />
 				</FormGroup>
 			)}
 		</ContentContainer>

@@ -36,11 +36,11 @@ export default function HelpButtons(props) {
 	const getHelpContext = () => {
 		// let link = 'https://docs.cedalo.com/management-center';
 		const basePath = getHelpBasePath();
-		let link = `${basePath}mosquitto/next/management-center/overview/`;
+		let link = `${basePath}mosquitto/management-center/overview/`;
 		const path = location.pathname.split('/');
 
 		if (path.length < 2) {
-			return `${basePath}mosquitto/next/management-center/introduction/`;
+			return `${basePath}mosquitto/management-center/introduction/`;
 		}
 
 		switch (path[1]) {
@@ -71,11 +71,14 @@ export default function HelpButtons(props) {
 		case 'tokens':
 			link += `administration/mc-${path[1]}`;
 			break;
+		case 'profile':
+			link += `/mc-user-profile`;
+			break;
 		case 'info':
 			link += `administration/mc-information`;
 			break;
 		default:
-			link = `${basePath}mosquitto/next/management-center/introduction/`;
+			link = `${basePath}mosquitto/management-center/introduction/`;
 			break;
 		}
 

@@ -229,7 +229,7 @@ const Status = ({
 
 		if (ver1) {
 			// remove mosquitto: prefix from host
-			const hostInfo = host ? parseUrl(host.substring(0, 10)) : connInfo;
+			const hostInfo = host ? parseUrl(host.substring(10)) : connInfo;
 			const wsListener = listeners && listeners.find(listener => listener.port === 8090);
 			const requireCerts = wsListener && wsListener.requireCertificate;
 			infos.push({
@@ -310,7 +310,7 @@ const Status = ({
 									infoIcon
 									infoTooltip={<>The information displayed here is gathered from Mosquitto
 										system topics. <br/>Click here to get a detailed explanation.</>}
-									infoLink={`${basePath}mosquitto/next/management-center/overview/inspection/mc-system#broker-traffic`}
+									infoLink={`${basePath}mosquitto/management-center/overview/inspection/mc-system#broker-traffic`}
 									infos={[{
 										label: "Messages Sent",
 										value: toNumber(systemStatus?.$SYS?.broker?.messages?.sent)
@@ -342,7 +342,7 @@ const Status = ({
 									infoIcon
 									infoTooltip={<>The information displayed here is gathered from Mosquitto
 										system topics. <br/>Click here to get a detailed explanation.</>}
-									infoLink={`${basePath}mosquitto/next/management-center/overview/inspection/mc-system#publish`}
+									infoLink={`${basePath}mosquitto/management-center/overview/inspection/mc-system#publish`}
 									infos={[{
 										label: "Messages Sent",
 										value: toNumber(systemStatus?.$SYS?.broker?.publish?.messages?.sent)
@@ -369,7 +369,7 @@ const Status = ({
 									infoIcon
 									infoTooltip={<>The information displayed here is gathered from Mosquitto
 										system topics. <br/>Click here to get a detailed explanation.</>}
-									infoLink={`${basePath}mosquitto/next/management-center/overview/inspection/mc-system#clients`}
+									infoLink={`${basePath}mosquitto/management-center/overview/inspection/mc-system#clients`}
 									actionIcon={
 										<Tooltip title="Click to inspect clients">
 											<IconButton
@@ -410,7 +410,7 @@ const Status = ({
 									infoTooltip={<>The information displayed here is gathered from Mosquitto
 										system topics and your license. <br/>Click here to get a detailed
 										explanation.</>}
-									infoLink={`${basePath}mosquitto/next/management-center/overview/inspection/mc-system#client-usage`}
+									infoLink={`${basePath}mosquitto/management-center/overview/inspection/mc-system#client-usage`}
 									chart={
 										<div style={{margin: 'auto'}}>
 											<Speedometer
@@ -448,7 +448,7 @@ const Status = ({
 										infoIcon
 										infoTooltip={<>The information displayed here is gathered from your
 											license. <br/>Click here to get a detailed explanation.</>}
-										infoLink={`${basePath}mosquitto/next/management-center/overview/inspection/mc-system#license`}
+										infoLink={`${basePath}mosquitto/management-center/overview/inspection/mc-system#license`}
 										infos={[{
 											label: "Edition",
 											value: brokerLicense.edition === 'pro' ? 'Premium' : (brokerLicense.edition || 'N/A')
@@ -485,7 +485,7 @@ const Status = ({
 									infoTooltip={<>The information displayed here is gathered from Mosquitto
 										system topics and your configuration<br/>Click here to get a detailed
 										explanation.</>}
-									infoLink={`${basePath}mosquitto/next/management-center/overview/inspection/mc-system#broker-info`}
+									infoLink={`${basePath}mosquitto/management-center/overview/inspection/mc-system#broker-info`}
 									infos={getBrokerInfos()}
 									icon={<InfoIcon/>}
 								/>

@@ -21,5 +21,5 @@ export const showConnections = () => {
 };
 
 export const getHelpBasePath = () => {
-	return 'https://cedalo.github.io/documentation-staging/';
+	return 'https://docs.cedalo.com/';
 }
