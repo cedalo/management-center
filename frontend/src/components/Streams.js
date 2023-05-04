@@ -212,7 +212,7 @@ const Streams = (props) => {
 				title="Streams"
 				subTitle="List of all defined streams. Stream are used to transfer or persist topic payloads."
 				connectedWarning={!connected}
-				featureWarning={streamprocessingFeature?.supported === false ? "Streams" : undefined}
+				brokerFeatureWarning={streamprocessingFeature?.supported === false ? "Streams" : undefined}
 			>
 				<ReplayStreamDialog
 					stream={replayStream}
@@ -420,6 +420,7 @@ const mapStateToProps = (state) => {
 		streams: state.streams?.streams,
 		streamprocessingFeature: state.systemStatus?.features?.streamprocessing,
 		connected: state.brokerConnections?.connected,
+		features: state.systemStatus?.features,
 	};
 };
 
