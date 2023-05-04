@@ -7,7 +7,7 @@ import React from 'react';
 import ConnectedWarning from './ConnectedWarning';
 
 
-export default function ConnectionHeader(props) {
+export default function ContainerHeader(props) {
 	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
 	const theme = useTheme();
 
@@ -48,7 +48,7 @@ export default function ConnectionHeader(props) {
 					contact us at <a style={{color: theme.palette.primary.main}} href="mailto:info@cedalo.com">info@cedalo.com</a>.
 				</Alert> : null
 			}
-			{props.warnings && props.warnings()?.map(warning => (
+			{props.warnings && !props.featureWarning && props.warnings()?.map(warning => (
 				<Alert severity={warning.severity} style={{height: 'fit-content', marginTop: '15px'}}>
 					<AlertTitle>{warning.title}</AlertTitle>
 					{warning.error}
