@@ -979,6 +979,7 @@ const init = async (licenseContainer) => {
 	const router = express.Router();
 	app.use(CEDALO_MC_PROXY_BASE_PATH, router);
 
+	const pluginManager = new PluginManager();
 	context = {
 		...context,
 		security: {
@@ -1007,12 +1008,12 @@ const init = async (licenseContainer) => {
 		middleware: {
 			preprocessUser: actions.actions.middleware.preprocessUser
 		},
-		preprocessUserFunctions: actions.preprocessUserFunctions
+		preprocessUserFunctions: actions.preprocessUserFunctions,
+		pluginManager
 	};
 
 	let httpPlainApp;
 	let httpPlainServer;
-	const pluginManager = new PluginManager();
 	pluginManager.init(config.plugins, context, swaggerDocument);
 	context.config.parameters.ssoUsed = !!pluginManager.plugins.find(plugin => plugin._meta.id.includes('_sso') && plugin._status.type === 'loaded');
 
