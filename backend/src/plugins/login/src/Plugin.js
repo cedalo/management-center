@@ -14,8 +14,7 @@ const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 
 module.exports = class Plugin extends BasePlugin {
 	constructor() {
-		super();
-		this._meta = meta;
+		super(meta);
 		this._swagger = swagger;
 	}
 
@@ -122,9 +121,5 @@ module.exports = class Plugin extends BasePlugin {
 		// 		failureRedirect : `${CEDALO_MC_PROXY_BASE_PATH}/login?error=authentication-failed`,
 		// 	}
 		// ));
-	}
-
-	get meta() {
-		return this._meta;
 	}
 };

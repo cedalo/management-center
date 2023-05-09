@@ -5,8 +5,7 @@ const swagger = require('./swagger.js');
 
 module.exports = class Plugin extends BasePlugin {
 	constructor() {
-		super();
-		this._meta = meta;
+		super(meta);
 		this._swagger = swagger;
 	}
 
@@ -27,9 +26,5 @@ module.exports = class Plugin extends BasePlugin {
 				response.send(result);
 			}
 		);
-	}
-
-	get meta() {
-		return this._meta;
 	}
 };

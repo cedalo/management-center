@@ -4,8 +4,7 @@ const { createActions } = require('./actions');
 
 module.exports = class Plugin extends BasePlugin {
 	constructor() {
-		super();
-		this._meta = meta;
+		super(meta);
 	}
 
 	init(context) {
@@ -16,9 +15,5 @@ module.exports = class Plugin extends BasePlugin {
 		const { connectServerToBrokerAction, disconnectServerFromBroker } = createActions(this);
 		context.registerAction(connectServerToBrokerAction);
 		context.registerAction(disconnectServerFromBroker);
-	}
-
-	get meta() {
-		return this._meta;
 	}
 };

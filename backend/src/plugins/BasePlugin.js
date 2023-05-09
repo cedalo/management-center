@@ -18,6 +18,7 @@ module.exports = class BasePlugin {
 			defaultMeta: { service: meta?.name },
 			transports: [new winston.transports.File({ filename: path.join(LOG_DIR, `plugin-${meta?.id}.log`) })]
 		});
+		this._meta = meta;
 		this._logger = logger;
 		this._swagger = {};
 		this.options = {};
@@ -25,7 +26,7 @@ module.exports = class BasePlugin {
 		if (!options) {
 			return;
 		} else if (!(typeof option === 'object' && option !== null)) {
-			throw new Error('options argument passed to BasePlugin is not of type "Object"')
+			throw new Error('options argument passed to BasePlugin is not of type "Object"');
 		}
 		for (const option in options) {
 			this.options[option] = options[option];
@@ -34,6 +35,15 @@ module.exports = class BasePlugin {
 
 	get logger() {
 		return this._logger;
+	}
+
+
+	get meta() {
+		return this._meta;
+	}
+
+	get featureId() {
+		return this.meta.featureId;
 	}
 
 	unload(context) {
@@ -75,4 +85,4 @@ module.exports = class BasePlugin {
 	get swagger() {
 		return this._swagger;
 	}
-}
+};
