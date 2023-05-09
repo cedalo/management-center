@@ -289,7 +289,7 @@ const Clients = (props) => {
 				title="Inspect Clients"
 				subTitle="List of all clients that have connected to the broker at least once."
 				connectedWarning={!connected}
-				featureWarning={(!clientControlFeature?.error && clientControlFeature?.supported === false) ? "Client Control" : null}
+				// featureWarning={(!clientControlFeature?.error && clientControlFeature?.supported === false) ? "Client Control" : null} // TODO: Client control banner was requested to be disabled. Determine how to handle it
 				brokerFeatureWarning={(!inspectFeature?.error && inspectFeature?.supported === false) ? "Client Inspection" : null}
 				warnings={() => {
 					const alerts = [];
@@ -300,13 +300,13 @@ const Clients = (props) => {
 							error: inspectFeature?.error?.message
 						});
 					}
-					if (clientControlFeature?.error) {
-						alerts.push({
-							severity: 'warning',
-							title: 'Client Control Error: ' + clientControlFeature?.error?.title,
-							error: clientControlFeature?.error?.message
-						});
-					}
+					// if (clientControlFeature?.error) {  // TODO: Client control banner was requested to be disabled. Determine how to handle it
+					// 	alerts.push({
+					// 		severity: 'warning',
+					// 		title: 'Client Control Error: ' + clientControlFeature?.error?.title,
+					// 		error: clientControlFeature?.error?.message
+					// 	});
+					// }
 					return alerts;
 				}}
 			>
