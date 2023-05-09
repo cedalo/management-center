@@ -783,13 +783,13 @@ const init = async (licenseContainer) => {
 		globalSystem,
 		globalTopicTree,
 		licenseContainer,
-		registerAction: ({ type, isModifying, fn, filter = (x) => x }) => {
-			context.actions[type] = { fn, filter, isModifying };
+		registerAction: ({ type, metainfo, isModifying, fn, filter = (x) => x }) => {
+			context.actions[type] = { fn, filter, metainfo, isModifying };
 		},
 		runAction: (user, type, data, extendedContext = {}) => {
 			const action = context.actions[type];
 			if (action) {
-				const { isModifying } = action;
+				const { isModifying, metainfo } = action;
 
 				let errorMessage;
 				let pendingResult;
@@ -811,6 +811,7 @@ const init = async (licenseContainer) => {
 						.finally(() => {
 							const eventData = {
 								type,
+								metainfo,
 								isModifying,
 								user,
 								data: action.filter(data),
@@ -819,7 +820,7 @@ const init = async (licenseContainer) => {
 								result
 							};
 							const eventName = `${errorMessage ? 'e' : isModifying ? 'w' : 'r'}/${type}`;
-							context.actionEmitter.emit(eventName, eventData);
+							context.actionEmitter.emit(eventName, eventData, extendedContext);
 						});
 				}
 			} else {

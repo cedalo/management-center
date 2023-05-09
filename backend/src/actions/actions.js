@@ -3,6 +3,8 @@ const NodeMosquittoClient = require('../client/NodeMosquittoClient');
 const { AuthError } = require('../plugins/Errors');
 const { stripConnectionsCredentials } = require('../utils/utils');
 
+const metainfo = (operation, crud) => ({ plugin: 'management-center', operation, crud });
+
 const connectToBroker = (context, brokerName, client) => {
 	const brokerConnection = context.brokerManager.getBrokerConnection(brokerName);
 	if (brokerConnection) {
@@ -26,6 +28,7 @@ const disconnectFromBroker = (context, brokerName, client) => {
 const unloadPluginAction = {
 	type: 'plugin/unload',
 	isModifying: true,
+	metainfo: metainfo('unloadPlugin', 'delete'),
 	fn: ({ user, security, pluginManager }, { pluginId }) => {
 		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin)) {
 			throw AuthError.notAllowed();
@@ -38,6 +41,7 @@ const unloadPluginAction = {
 const loadPluginAction = {
 	type: 'plugin/load',
 	isModifying: true,
+	metainfo: metainfo('loadPlugin', 'create'),
 	fn: ({ user, security, pluginManager }, { pluginId }) => {
 		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin)) {
 			throw AuthError.notAllowed();
@@ -49,6 +53,7 @@ const loadPluginAction = {
 const setPluginStatusAtNextStartupAction = {
 	type: 'plugin/setStatusNextStartup',
 	isModifying: true,
+	metainfo: metainfo('setStatusNextStartup', 'update'),
 	fn: ({ user, security, pluginManager }, { pluginId, nextStatus }) => {
 		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin)) {
 			throw AuthError.notAllowed();
@@ -60,6 +65,7 @@ const setPluginStatusAtNextStartupAction = {
 
 const testConnectionAction = {
 	type: 'connection/test',
+	metainfo: metainfo('testConnection', 'create'),
 	fn: async ({ user, security, configManager }, { connection }) => {
 		if (!security.acl.noRestrictedRoles(user)) {
 			throw AuthError.notAllowed();
@@ -99,6 +105,7 @@ const testConnectionAction = {
 const createConnectionAction = {
 	type: 'connection/create',
 	isModifying: true,
+	metainfo: metainfo('createConnection', 'create'),
 	fn: async ({ user, security, configManager, licenseContainer }, { connection }) => {
 		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, null, 'createConnection')) { // passing security.acl.atLeastAdmin is not needed here, we can just pass null instead
 			throw AuthError.notAllowed();
@@ -137,6 +144,7 @@ const createConnectionAction = {
 const modifyConnectionAction = {
 	type: 'connection/modify',
 	isModifying: true,
+	metainfo: metainfo('modifyConnection', 'update'),
 	fn: async ({ user, security, configManager }, { oldConnectionId, connection }) => {
 		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, oldConnectionId)) {
 			throw AuthError.notAllowed();
@@ -165,6 +173,7 @@ const modifyConnectionAction = {
 const deleteConnectionAction = {
 	type: 'connection/delete',
 	isModifying: true,
+	metainfo: metainfo('deleteConnection', 'delete'),
 	fn: ({ user, security, configManager }, { connectionId }) => {
 		try {
 			if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, connectionId)) {
@@ -188,6 +197,7 @@ const deleteConnectionAction = {
 const getBrokerConnectionsAction = {
 	type: 'connection/list',
 	isModifying: false,
+	metainfo: metainfo('getConnections', 'read'),
 	fn: (context) => {
 		const { user, security, configManager } = context;
 		const connections = configManager.connections;
@@ -200,6 +210,7 @@ const getBrokerConnectionsAction = {
 const connectToBrokerAction = {
 	type: 'connection/connect',
 	isModifying: false,
+	metainfo: metainfo('connectToBroker', 'update'),
 	fn: async (context, { brokerName }) => {
 		const { user, security, client } = context;
 		if (!security.acl.isConnectionAuthorized(user, null, brokerName)) {
@@ -213,6 +224,7 @@ const connectToBrokerAction = {
 const disconnectFromBrokerAction = {
 	type: 'connection/disconnect',
 	isModifying: false,
+	metainfo: metainfo('disconnectFromBroker', 'update'),
 	fn: async (context, { brokerName }) => {
 		const { client } = context;
 		// no need to check if user is authorised because they are probably already connected to broker if they call this action
@@ -240,6 +252,7 @@ const userCanAccessAPI = ({ user, security }, api, connection) => {
 const commandAction = {
 	type: 'connection/command',
 	isModifying: true,
+	metainfo: metainfo('command'),
 	fn: async (context, { api, command }) => {
 		const { brokerManager, client, user } = context;
 		const broker = brokerManager.getBroker(client);
@@ -279,6 +292,7 @@ const commandAction = {
 const getConfigurationAction = {
 	type: 'config/get',
 	isModifying: false,
+	metainfo: metainfo('getConfiguration', 'read'),
 	fn: async ({ user, security, config }) => {
 		let configToReturn;
 		if (security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin)) {
@@ -304,6 +318,7 @@ const getConfigurationAction = {
 const getSettingsAction = {
 	type: 'settings/get',
 	isModifying: false,
+	metainfo: metainfo('getSettings', 'read'),
 	fn: async ({ user, settingsManager, security }) => {
 		if (!security.acl.noRestrictedRoles(user)) {
 			throw AuthError.notAllowed();
@@ -315,6 +330,7 @@ const getSettingsAction = {
 const updateSettingsAction = {
 	type: 'settings/update',
 	isModifying: true,
+	metainfo: metainfo('updateSettings', 'update'),
 	fn: async ({ globalSystem, usageTracker, user, settingsManager, security }, { settings }) => {
 		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin)) {
 			throw AuthError.notAllowed();
