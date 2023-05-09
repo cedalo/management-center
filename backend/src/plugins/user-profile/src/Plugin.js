@@ -22,7 +22,7 @@ module.exports = class Plugin extends BasePlugin {
 			(request, response, next) => context.security.isLoggedIn(request, response, next),
 			context.middleware.isPluginLoaded(this),
 			(request, response) => {
-				const result = context.runAction(request.user, 'user-profile/get');
+				const result = context.runAction(request.user, 'user-profile/get', null, { request });
 				response.send(result);
 			}
 		);

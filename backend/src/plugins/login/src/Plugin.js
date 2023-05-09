@@ -34,10 +34,11 @@ module.exports = class Plugin extends BasePlugin {
 
 		passport.use(
 			new LocalStrategy(
+				{ passReqToCallback: true },
 				// function of username, password, done(callback)
-				async (username, password, done) => {
+				async (request, username, password, done) => {
 					try {
-						const user = await context.runAction(null, 'user/login', { username, password });
+						const user = await context.runAction(null, 'user/login', { username, password }, { request });
 						done(null, user);
 					} catch (error) {
 						done(null, false, error);
@@ -76,7 +77,7 @@ module.exports = class Plugin extends BasePlugin {
 				if (error) {
 					return next(error);
 				}
-				context.runAction(user, 'user/logout', { username: user?.username });
+				context.runAction(user, 'user/logout', { username: user?.username }, { request });
 				response.redirect('/login');
 			});
 		});
