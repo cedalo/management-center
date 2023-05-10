@@ -804,7 +804,7 @@ module.exports = class BaseMosquittoProxyClient {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
-			request: 'deleteClusterConfiguration',
+			request: 'cluster-management/deleteClusterConfiguration',
 			clustername
 		});
 		return response.response;
