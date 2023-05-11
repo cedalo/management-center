@@ -224,12 +224,14 @@ const init = async (client, dispatch, connectionConfiguration) => {
 				status: 'ok'
 			}));
 		} else {
+			console.error('Client control not enabled. Status:', isEnabled);
 		  	dispatch(updateFeatures({
 				feature: 'clientcontrol',
 				status: {message: ERROR_MESSAGE, satatus: 'failed'},
 		  	}));
 		}
 	} catch (error) {
+		console.error('Error enabling client control:', error);
 		dispatch(updateFeatures({
 		  	feature: 'clientcontrol',
 		  	status: {message: ERROR_MESSAGE, satatus: 'failed'},

@@ -502,6 +502,7 @@ const init = async (licenseContainer) => {
 		return context.runAction(user, 'connection/command', data, { client });
 	};
 
+	// request name to request action name mapping, legacy
 	context.requestHandlers.set('loadPlugin', 'plugin/load');
 	context.requestHandlers.set('unloadPlugin', 'plugin/unload');
 	context.requestHandlers.set('setPluginStatusAtNextStartup', 'plugin/setStatusNextStartup');
@@ -825,6 +826,7 @@ const init = async (licenseContainer) => {
 				}
 			} else {
 				console.error(`Unknown action: "${type}"`);
+				// throw new Error(`Unknown action: "${type}"`); // TODO: throw this error because it makes more sense. Not doing it know because we have released this version
 			}
 		},
 		broadcastWebSocketMessage,
