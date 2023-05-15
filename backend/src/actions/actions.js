@@ -1,4 +1,7 @@
 const os = require('os');
+const http = require('http');
+const express = require('express');
+
 const NodeMosquittoClient = require('../client/NodeMosquittoClient');
 const { AuthError } = require('../plugins/Errors');
 const { stripConnectionsCredentials } = require('../utils/utils');
@@ -357,6 +360,97 @@ const updateSettingsAction = {
 	}
 };
 
+const HTTP_PORT = 80;
+const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
+const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
+
+const startupAction = {
+	type: 'startup',
+	isModifying: false,
+	metainfo: metainfo('startup'),
+	fn: (context) => {
+		
+		let server;
+		const host = CEDALO_MC_PROXY_HOST;
+		const port = CEDALO_MC_PROXY_PORT;
+		let protocol = context.config.plugins?.find((plugin) => plugin.name === 'https') ? 'https' : 'http';
+		
+		let httpPlainApp;
+		let httpPlainServer;
+		
+		console.log(`Starting Mosquitto proxy server at ${protocol}://${host}:${port}`);
+
+		if (context.server instanceof Error) {
+			// https plugin tried to be loaded but failed
+			console.error('HTTPS not properly configured. Exiting...');
+			throw new Error('Exit');
+		} else if (!context.server) {
+			// https plugin not enabled, switch to http server
+			server = http.createServer(context.app);
+			context.server = server;
+			protocol = 'http';
+		} else {
+			// https plugin was successfully enabled
+			server = context.server;
+	
+			// if https is not setup on the default HTTP port (which doesn't make sense but we don't restrict this), we open an http listener on default HTTP port
+			if (parseInt(port) !== parseInt(HTTP_PORT)) {
+				// set up plain http server
+				httpPlainApp = express();
+				// set up a route to redirect http to https
+				httpPlainApp.get('*', function(request, response) {
+					response.redirect('https://' + CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST || request.headers.host + `:${port}` + request.url);
+				});
+				httpPlainServer =  http.createServer(httpPlainApp);
+				// have it listen on 80
+				// httpPlainServer.listen(HTTP_PORT)
+				httpPlainServer.listen({
+					host,
+					port: HTTP_PORT
+				}, () => {
+						console.log(`HTTP to HTTPS redirect set up for http://${host}:${HTTP_PORT}`);
+					}
+				);
+				context.httpPlainServer = httpPlainServer;
+			} else {
+				console.log(`HTTP to HTTPS redirect is not set up. Same port used for HTTPS and HTTP (port ${port}). Change port in CEDALO_MC_PROXY_PORT variable to solve this`);
+			}
+		}
+
+		server.listen(
+			{
+				host,
+				port
+			},
+			() => {
+				console.log(`Started Mosquitto proxy server at ${protocol}://${host}:${server.address().port}`);
+				context.controlElements.serverStarted = true;
+			}
+		);
+		server.on('upgrade', (request, socket, head) => {
+			context.wss.handleUpgrade(request, socket, head, (socket) => {
+				context.wss.emit('connection', socket, request);
+			});
+		});
+	}
+};
+
+const shutdownAction = {
+	type: 'shutdown',
+	isModifying: false,
+	metainfo: metainfo('shutdown'),
+	fn: async ({ controlElements, stopFunctions }) => {
+		controlElements.stopSignalSent = true;
+		for (const stopFunction of stopFunctions) {
+			await stopFunction();
+		}
+		controlElements.serverStarted = false;
+	}
+};
+
+
+
+
 module.exports = {
 	unloadPluginAction,
 	loadPluginAction,
@@ -371,5 +465,7 @@ module.exports = {
 	deleteConnectionAction,
 	getConfigurationAction,
 	getSettingsAction,
-	updateSettingsAction
+	updateSettingsAction,
+	startupAction,
+	shutdownAction
 };

@@ -1,7 +1,6 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const http = require('http');
 const EventEmitter = require('events');
 const EventEmitter2 = require('eventemitter2');
 const { v4: uuidv4 } = require('uuid');
@@ -40,7 +39,9 @@ const {
 	deleteConnectionAction,
 	getConfigurationAction,
 	getSettingsAction,
-	updateSettingsAction
+	updateSettingsAction,
+	startupAction,
+	shutdownAction,
 } = require('./src/actions/actions');
 
 console = new Logger(console, false);
@@ -51,10 +52,7 @@ const preprocessBoolEnvVariable = (envVariable) => {
 	return !!((envVariable && typeof envVariable === 'string' && envVariable.toLowerCase() === 'false') ? false : envVariable);
 }
 
-const HTTP_PORT = 80;
 const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
-const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
-const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
 const CEDALO_MC_ENABLE_FULL_LOG = preprocessBoolEnvVariable(process.env.CEDALO_MC_ENABLE_FULL_LOG);
 const CEDALO_MC_SHOW_FEEDBACK_FORM = preprocessBoolEnvVariable(process.env.CEDALO_MC_SHOW_FEEDBACK_FORM);
@@ -89,8 +87,71 @@ let context = {
 		acl: {
 			...acl
 		}
-	}
+	},
+	registerAction: ({ type, metainfo, isModifying, fn, filter = (x) => x }) => {
+		context.actions[type] = { fn, filter, metainfo, isModifying };
+	},
+	runAction: (user, type, data, extendedContext = {}) => {
+		const action = context.actions[type];
+		if (action) {
+			const { isModifying, metainfo } = action;
+
+			let errorMessage;
+			let pendingResult;
+			let result;
+			try {
+				pendingResult = action.fn({ ...context, user, ...extendedContext }, data);
+				return pendingResult;
+			} catch (error) {
+				errorMessage = error.message || 'Unknown error!';
+				throw error;
+			} finally {
+				Promise.resolve(pendingResult)
+					.catch((error) => {
+						errorMessage = error.message || 'Unknown error!';
+					})
+					.then((r) => {
+						result = r;
+					})
+					.finally(() => {
+						const eventData = {
+							type,
+							metainfo,
+							isModifying,
+							user,
+							data: action.filter(data),
+							error: errorMessage,
+							// TODO: should this be here? should we filter it? Currently only required for user/login
+							result
+						};
+						const eventName = `${errorMessage ? 'e' : isModifying ? 'w' : 'r'}/${type}`;
+						context.actionEmitter.emit(eventName, eventData, extendedContext);
+					});
+			}
+		} else {
+			console.error(`Unknown action: "${type}"`);
+			// throw new Error(`Unknown action: "${type}"`); // TODO: throw this error because it makes more sense. Not doing it know because we have released this version
+		}
+	},
+	actions: {},
 };
+
+context.registerAction(unloadPluginAction);
+context.registerAction(loadPluginAction);
+context.registerAction(setPluginStatusAtNextStartupAction);
+context.registerAction(testConnectionAction);
+context.registerAction(createConnectionAction);
+context.registerAction(modifyConnectionAction);
+context.registerAction(getBrokerConnectionsAction);
+context.registerAction(commandAction);
+context.registerAction(connectToBrokerAction);
+context.registerAction(disconnectFromBrokerAction);
+context.registerAction(deleteConnectionAction);
+context.registerAction(getConfigurationAction);
+context.registerAction(getSettingsAction);
+context.registerAction(updateSettingsAction);
+context.registerAction(startupAction);
+context.registerAction(shutdownAction);
 
 const noCache = (req, res, next) => {
 	res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
@@ -221,11 +282,7 @@ const controlElements = {
 	logger: console
 };
 const stop = async () => {
-	controlElements.stopSignalSent = true;
-	for (const stopFunction of stopFunctions) {
-		await stopFunction();
-	}
-	controlElements.serverStarted = false;
+	await context.runAction(null, 'shutdown', null, { stopFunctions, controlElements });
 };
 controlElements.stop = stop;
 
@@ -290,11 +347,6 @@ const init = async (licenseContainer) => {
 			CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING: process.env.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING
 		}
 	};
-
-	let server;
-	const host = CEDALO_MC_PROXY_HOST;
-	const port = CEDALO_MC_PROXY_PORT;
-	let protocol = config.plugins?.find((plugin) => plugin.name === 'https') ? 'https' : 'http';
 
 	const wss = new WebSocket.Server({
 		//   port: CEDALO_MC_PROXY_PORT,
@@ -495,7 +547,7 @@ const init = async (licenseContainer) => {
 			}
 		}
 	};
-	console.log(`Starting Mosquitto proxy server at ${protocol}://${host}:${port}`);
+	// console.log(`Starting Mosquitto proxy server at ${protocol}://${host}:${port}`); // no longer needed because it's moved into startup action
 
 	const handleCommandMessage = async (message, client, user = {}) => {
 		const { id, type, ...data } = message;
@@ -784,51 +836,6 @@ const init = async (licenseContainer) => {
 		globalSystem,
 		globalTopicTree,
 		licenseContainer,
-		registerAction: ({ type, metainfo, isModifying, fn, filter = (x) => x }) => {
-			context.actions[type] = { fn, filter, metainfo, isModifying };
-		},
-		runAction: (user, type, data, extendedContext = {}) => {
-			const action = context.actions[type];
-			if (action) {
-				const { isModifying, metainfo } = action;
-
-				let errorMessage;
-				let pendingResult;
-				let result;
-				try {
-					pendingResult = action.fn({ ...context, user, ...extendedContext }, data);
-					return pendingResult;
-				} catch (error) {
-					errorMessage = error.message || 'Unknown error!';
-					throw error;
-				} finally {
-					Promise.resolve(pendingResult)
-						.catch((error) => {
-							errorMessage = error.message || 'Unknown error!';
-						})
-						.then((r) => {
-							result = r;
-						})
-						.finally(() => {
-							const eventData = {
-								type,
-								metainfo,
-								isModifying,
-								user,
-								data: action.filter(data),
-								error: errorMessage,
-								// TODO: should this be here? should we filter it? Currently only required for user/login
-								result
-							};
-							const eventName = `${errorMessage ? 'e' : isModifying ? 'w' : 'r'}/${type}`;
-							context.actionEmitter.emit(eventName, eventData, extendedContext);
-						});
-				}
-			} else {
-				console.error(`Unknown action: "${type}"`);
-				// throw new Error(`Unknown action: "${type}"`); // TODO: throw this error because it makes more sense. Not doing it know because we have released this version
-			}
-		},
 		broadcastWebSocketMessage,
 		sendTopicTreeUpdate,
 		sendSystemStatusUpdate,
@@ -836,7 +843,6 @@ const init = async (licenseContainer) => {
 		handleConnectServerToBroker,
 		handleDisconnectServerFromBroker,
 		preprocessUser,
-		actions: {},
 		middleware: {
 			isPluginLoaded: (plugin) => (request, response, next) => {
 				if (plugin.isLoaded()) {
@@ -857,63 +863,12 @@ const init = async (licenseContainer) => {
 		preprocessUserFunctions: preprocessUserFunctions
 	};
 
-	let httpPlainApp;
-	let httpPlainServer;
 	context.pluginManager.init(config.plugins, context, swaggerDocument);
 	context.config.parameters.ssoUsed = !!context.pluginManager.plugins.find(
 		(plugin) => plugin._meta.id.includes('_sso') && plugin._status.type === 'loaded'
 	);
 
-	context.registerAction(unloadPluginAction);
-	context.registerAction(loadPluginAction);
-	context.registerAction(setPluginStatusAtNextStartupAction);
-	context.registerAction(testConnectionAction);
-	context.registerAction(createConnectionAction);
-	context.registerAction(modifyConnectionAction);
-	context.registerAction(getBrokerConnectionsAction);
-	context.registerAction(commandAction);
-	context.registerAction(connectToBrokerAction);
-	context.registerAction(disconnectFromBrokerAction);
-	context.registerAction(deleteConnectionAction);
-	context.registerAction(getConfigurationAction);
-	context.registerAction(getSettingsAction);
-	context.registerAction(updateSettingsAction);
-
-	if (context.server instanceof Error) {
-		// https plugin tried to be loaded but failed
-		console.error('HTTPS not properly configured. Exiting...');
-		throw new Error('Exit');
-	} else if (!context.server) {
-		// https plugin not enabled, switch to http server
-		server = http.createServer(app);
-		context.server = server;
-		protocol = 'http';
-	} else {
-		// https plugin was successfully enabled
-		server = context.server;
-
-		// if https is not setup on the default HTTP port (which doesn't make sense but we don't restrict this), we open an http listener on default HTTP port
-		if (parseInt(port) !== parseInt(HTTP_PORT)) {
-			// set up plain http server
-			httpPlainApp = express();
-			// set up a route to redirect http to https
-			httpPlainApp.get('*', function(request, response) {
-				response.redirect('https://' + CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST || request.headers.host + `:${port}` + request.url);
-			});
-			httpPlainServer =  http.createServer(httpPlainApp);
-			// have it listen on 80
-			// httpPlainServer.listen(HTTP_PORT)
-			httpPlainServer.listen({
-				host,
-				port: HTTP_PORT
-			}, () => {
-					console.log(`HTTP to HTTPS redirect set up for http://${host}:${HTTP_PORT}`);
-				}
-			);
-		} else {
-			console.log(`HTTP to HTTPS redirect is not set up. Same port used for HTTPS and HTTP (port ${port}). Change port in CEDALO_MC_PROXY_PORT variable to solve this`);
-		}
-	}
+	context.runAction(null, 'startup', null, {app, controlElements, config, wss});
 
 	// Swagger
 	const theme = config.themes?.find((theme) => theme.id === 'custom');
@@ -1092,21 +1047,21 @@ const init = async (licenseContainer) => {
 		}
 	});
 
-	server.listen(
-		{
-			host,
-			port
-		},
-		() => {
-			console.log(`Started Mosquitto proxy server at ${protocol}://${host}:${server.address().port}`);
-			controlElements.serverStarted = true;
-		}
-	);
-	server.on('upgrade', (request, socket, head) => {
-		wss.handleUpgrade(request, socket, head, (socket) => {
-			wss.emit('connection', socket, request);
-		});
-	});
+	// server.listen(
+	// 	{
+	// 		host,
+	// 		port
+	// 	},
+	// 	() => {
+	// 		console.log(`Started Mosquitto proxy server at ${protocol}://${host}:${server.address().port}`);
+	// 		controlElements.serverStarted = true;
+	// 	}
+	// );
+	// server.on('upgrade', (request, socket, head) => {
+	// 	wss.handleUpgrade(request, socket, head, (socket) => {
+	// 		wss.emit('connection', socket, request);
+	// 	});
+	// });
 
 	const intervalD = setInterval(() => {
 		if (settingsManager.settings.allowTrackingUsageData) {
@@ -1160,8 +1115,8 @@ const init = async (licenseContainer) => {
 		}
 	});
 
-	stopFunctions.push(() => server.close());
-	stopFunctions.push(() => httpPlainServer?.close()); // plain server created to redirect http -> https in case https is used
+	stopFunctions.push(() => context.server.close());
+	stopFunctions.push(() => context.httpPlainServer?.close()); // plain server created to redirect http -> https in case https is used
 	stopFunctions.push(() => {
 		clearInterval(intervalD);
 	});
