@@ -6,6 +6,10 @@ const NodeMosquittoClient = require('../client/NodeMosquittoClient');
 const { AuthError } = require('../plugins/Errors');
 const { stripConnectionsCredentials } = require('../utils/utils');
 
+const HTTP_PORT = 80;
+const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
+const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
+
 const metainfo = (operation, crud) => ({ plugin: 'management-center', operation, crud });
 
 const connectToBroker = (context, brokerName, client) => {
@@ -200,7 +204,7 @@ const deleteConnectionAction = {
 const getBrokerConnectionsAction = {
 	type: 'connection/list',
 	isModifying: false,
-	metainfo: metainfo('getConnections', 'read'),
+	metainfo: metainfo('getBrokerConnections', 'read'),
 	fn: (context) => {
 		const { user, security, configManager } = context;
 		const connections = configManager.connections;
@@ -360,9 +364,24 @@ const updateSettingsAction = {
 	}
 };
 
-const HTTP_PORT = 80;
-const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
-const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
+const getPluginsAction = {
+	type: 'plugin/list',
+	isModifying: false,
+	metainfo: metainfo('getPlugins'),
+	fn: (context) => {
+		return context.pluginManager.plugins
+				.filter((plugin) => !plugin.options.hidden)
+				.map((plugin) => {
+					const removeProp = 'context';
+					const { [removeProp]: removedPropFromOptions, ...restOptions } = plugin.options;
+					return {
+						...plugin.meta,
+						...restOptions,
+						status: plugin.status
+					};
+				});
+	}
+};
 
 const startupAction = {
 	type: 'startup',
@@ -467,5 +486,6 @@ module.exports = {
 	getSettingsAction,
 	updateSettingsAction,
 	startupAction,
-	shutdownAction
+	shutdownAction,
+	getPluginsAction
 };

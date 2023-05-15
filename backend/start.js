@@ -42,6 +42,7 @@ const {
 	updateSettingsAction,
 	startupAction,
 	shutdownAction,
+	getPluginsAction
 } = require('./src/actions/actions');
 
 console = new Logger(console, false);
@@ -152,6 +153,7 @@ context.registerAction(getSettingsAction);
 context.registerAction(updateSettingsAction);
 context.registerAction(startupAction);
 context.registerAction(shutdownAction);
+context.registerAction(getPluginsAction);
 
 const noCache = (req, res, next) => {
 	res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
@@ -961,19 +963,8 @@ const init = async (licenseContainer) => {
 		context.security.isLoggedIn,
 		context.security.acl.middleware.isAdmin,
 		(request, response) => {
-			response.json(
-				context.pluginManager.plugins
-					.filter((plugin) => !plugin.options.hidden)
-					.map((plugin) => {
-						const removeProp = 'context';
-						const { [removeProp]: removedPropFromOptions, ...restOptions } = plugin.options;
-						return {
-							...plugin.meta,
-							...restOptions,
-							status: plugin.status
-						};
-					})
-			);
+			plugins = context.runAction(request.user, 'plugin/list', null);
+			response.json(plugins);
 		}
 	);
 
