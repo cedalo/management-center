@@ -252,7 +252,10 @@ const ConnectionDetailComponent = (props) => {
 			if (connect) {
 				try {
 					// await doConnect(connection);
-					await doConnect(updatedConnection);
+					// if this connection is currently not connected, we test it before connecting
+					if (!connection?.status?.connected) {
+						await doConnect(updatedConnection);
+					}
 					await brokerClient.connectServerToBroker(connection.id);
 					if (!alreadyConnected) {
 						handleConnectionChange(dispatch, brokerClient, currentConnectionName,
@@ -377,83 +380,81 @@ const ConnectionDetailComponent = (props) => {
 
 	return connection?.id ? (
 		<FormGroup>
-						<TextField
-							required={editMode}
-							disabled
-							size="small"
-							margin="normal"
-							className={formClasses.textField}
-							onChange={(event) => {
-								if (editMode) {
-									setUpdatedConnection({
-										...updatedConnection,
-										id: event.target.value
-									});
-								}
-							}}
-							id="id"
-							label="ID"
-							value={updatedConnection.id}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							InputProps={{
-								startAdornment: (
-									<InputAdornment position="start">
-										<AccountCircle/>
-									</InputAdornment>
-								)
-							}}
-						/>
-						<TextField
-							required={editMode}
-							disabled
-							id="name"
-							size="small"
-							margin="normal"
-							className={formClasses.textField}
-							label="Name"
-							value={updatedConnection.name}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							onChange={(event) => {
-								if (editMode) {
-									setUpdatedConnection({
-										...updatedConnection,
-										name: event.target.value
-									});
-								}
-							}}
-						/>
-					{ !connection.internalUrl ?
-						<TextField
-							required={editMode}
-							disabled={!editMode}
-							id="url"
-							label="URL"
-							value={updatedConnection.url}
-							size="small"
-							margin="normal"
-							className={formClasses.textField}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							onChange={(event) => {
-								if (editMode) {
-									setExternalEncryptedUrl('');
-									setExternalUnencryptedUrl('');
-									setExternalWebsocketUrl('');
-									setInternalUrl('');
-									setUpdatedConnection({
-										...updatedConnection,
-										url: event.target.value
-									});
-									setConnected(false);
-								}
-							}}
-						/>
-					 : null}
+					<TextField
+						required={editMode}
+						disabled
+						size="small"
+						margin="normal"
+						className={formClasses.textField}
+						onChange={(event) => {
+							if (editMode) {
+								setUpdatedConnection({
+									...updatedConnection,
+									id: event.target.value
+								});
+							}
+						}}
+						id="id"
+						label="ID"
+						value={updatedConnection.id}
+						defaultValue=""
+						variant="outlined"
+						fullWidth
+						InputProps={{
+							startAdornment: (
+								<InputAdornment position="start">
+									<AccountCircle/>
+								</InputAdornment>
+							)
+						}}
+					/>
+					<TextField
+						required={editMode}
+						disabled
+						id="name"
+						size="small"
+						margin="normal"
+						className={formClasses.textField}
+						label="Name"
+						value={updatedConnection.name}
+						defaultValue=""
+						variant="outlined"
+						fullWidth
+						onChange={(event) => {
+							if (editMode) {
+								setUpdatedConnection({
+									...updatedConnection,
+									name: event.target.value
+								});
+							}
+						}}
+					/>
+					<TextField
+						required={editMode}
+						disabled={!editMode}
+						id="url"
+						label="URL"
+						value={updatedConnection.url}
+						size="small"
+						margin="normal"
+						className={formClasses.textField}
+						defaultValue=""
+						variant="outlined"
+						fullWidth
+						onChange={(event) => {
+							if (editMode) {
+								setExternalEncryptedUrl('');
+								setExternalUnencryptedUrl('');
+								setExternalWebsocketUrl('');
+								setInternalUrl('');
+								setUpdatedConnection({
+									...updatedConnection,
+									url: event.target.value
+								});
+								setConnected(false);
+							}
+						}}
+					/>
 					{ connection.internalUrl ?
 						<TextField
 							disabled
