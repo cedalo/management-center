@@ -1,6 +1,7 @@
 const os = require('os');
 const http = require('http');
 const express = require('express');
+const { hostname, hostIPs } = require('../utils/localhost');
 
 const NodeMosquittoClient = require('../client/NodeMosquittoClient');
 const { AuthError } = require('../plugins/Errors');
@@ -405,14 +406,12 @@ const startupAction = {
 			throw new Error('Exit');
 		} else if (!context.server) {
 			// https plugin not enabled, switch to http server
-			context.protocol = 'http';
 			server = http.createServer(context.app);
 			context.server = server;
 			protocol = 'http';
 		} else {
 			// https plugin was successfully enabled
 			server = context.server;
-			context.protocol = 'https';
 	
 			// if https is not setup on the default HTTP port (which doesn't make sense but we don't restrict this), we open an http listener on default HTTP port
 			if (parseInt(port) !== parseInt(HTTP_PORT)) {
@@ -438,6 +437,9 @@ const startupAction = {
 			}
 		}
 
+		// context.mmc = { host, port, protocol };
+		Object.assign(context.mmc, { host: hostname, port, protocol, hostIPs });
+		
 		server.listen(
 			{
 				host,

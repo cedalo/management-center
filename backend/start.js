@@ -84,6 +84,7 @@ let context = {
 	actionEmitter: new EventEmitter2({ wildcard: true, delimiter: '/' }),
 	brokerManager: new BrokerManager(),
 	requestHandlers: new Map(),
+	mmc: {},
 	security: {
 		acl: {
 			...acl
