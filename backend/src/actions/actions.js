@@ -10,6 +10,7 @@ const { stripConnectionsCredentials } = require('../utils/utils');
 const HTTP_PORT = 80;
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
+const CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST = process.env.CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST;
 
 const metainfo = (operation, crud) => ({ plugin: 'management-center', operation, crud });
 
