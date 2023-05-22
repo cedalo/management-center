@@ -390,7 +390,6 @@ const startupAction = {
 	isModifying: false,
 	metainfo: metainfo('startup'),
 	fn: (context) => {
-		
 		let server;
 		const host = CEDALO_MC_PROXY_HOST;
 		const port = CEDALO_MC_PROXY_PORT;
@@ -408,7 +407,7 @@ const startupAction = {
 		} else if (!context.server) {
 			// https plugin not enabled, switch to http server
 			server = http.createServer(context.app);
-			context.server = server;
+			// context.server = server;
 			protocol = 'http';
 		} else {
 			// https plugin was successfully enabled
@@ -432,15 +431,12 @@ const startupAction = {
 						console.log(`HTTP to HTTPS redirect set up for http://${host}:${HTTP_PORT}`);
 					}
 				);
-				context.httpPlainServer = httpPlainServer;
+				// context.httpPlainServer = httpPlainServer;
 			} else {
 				console.log(`HTTP to HTTPS redirect is not set up. Same port used for HTTPS and HTTP (port ${port}). Change port in CEDALO_MC_PROXY_PORT variable to solve this`);
 			}
 		}
 
-		// context.mmc = { host, port, protocol };
-		Object.assign(context.mmc, { host: hostname, port, protocol, hostIPs });
-		
 		server.listen(
 			{
 				host,
@@ -456,6 +452,8 @@ const startupAction = {
 				context.wss.emit('connection', socket, request);
 			});
 		});
+
+		return  { host: hostname, port, protocol, hostIPs, server, httpPlainServer }
 	}
 };
 

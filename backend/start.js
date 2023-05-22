@@ -870,7 +870,24 @@ const init = async (licenseContainer) => {
 		(plugin) => plugin._meta.id.includes('_sso') && plugin._status.type === 'loaded'
 	);
 
-	context.runAction(null, 'startup', null, {app, controlElements, config, wss});
+	const {
+		host,
+		port,
+		protocol,
+		hostIPs,
+		server,
+		httpPlainServer 
+	} = context.runAction(null, 'startup', null, {app, controlElements, config, wss});
+
+	context = {
+		...context,
+		host,
+		port,
+		protocol,
+		hostIPs,
+		server,
+		httpPlainServer
+	};
 
 	// Swagger
 	const theme = config.themes?.find((theme) => theme.id === 'custom');
@@ -1134,8 +1151,27 @@ const init = async (licenseContainer) => {
 			} else {
 				console.error(error);
 			}
+
+			setTimeout(() => { // TODO: fix this quick hack which allows us to write shutdown event to syslog and not exit before it
+				process.exit(1);
+			}, 1000);
 		}
+
+		process.on('SIGTERM', async () => {
+			// TODO: stop does not release all the resources. App still hangs for some reason
+			await controlElements.stop();
+			setTimeout(() => { // TODO: fix this quick hack which allows us to write shutdown event to syslog and not exit before it
+				process.exit(0);
+			}, 1000);
+		});
+		process.on('SIGINT', async () => {
+			await controlElements.stop(); // TODO: fix this quick hack which allows us to write shutdown event to syslog and not exit before it
+			setTimeout(() => {
+				process.exit(0);
+			}, 1000);
+		});
 	});
 })();
+
 
 module.exports = controlElements;
