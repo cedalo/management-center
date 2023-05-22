@@ -20,7 +20,7 @@ const UsageTracker = require('./src/usage/UsageTracker');
 const InstallationManager = require('./src/usage/InstallationManager');
 const ConfigManager = require('./src/config/ConfigManager');
 const SettingsManager = require('./src/settings/SettingsManager');
-const { loadInstallation, generateSecret } = require('./src/utils/utils');
+const { loadInstallation, generateSecret, embedIntoObject } = require('./src/utils/utils');
 const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
 const swaggerDocument = require('./swagger.js');
 const Logger = require('./src/utils/Logger');
@@ -879,15 +879,8 @@ const init = async (licenseContainer) => {
 		httpPlainServer 
 	} = context.runAction(null, 'startup', null, {app, controlElements, config, wss});
 
-	context = {
-		...context,
-		host,
-		port,
-		protocol,
-		hostIPs,
-		server,
-		httpPlainServer
-	};
+	// since context has already been passed to the plugins, we need to add variables to it one by one with out recreating the context object itself
+	embedIntoObject(context, {host, port, protocol, hostIPs, server, httpPlainServer});
 
 	// Swagger
 	const theme = config.themes?.find((theme) => theme.id === 'custom');

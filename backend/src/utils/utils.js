@@ -116,6 +116,16 @@ const generateSecret = () => { // TODO: change the location of this fucntion, al
 };
 
 
+const embedIntoObject = (object, embeddings) => {
+    // mutates the object by adding new properties to it
+    for (const key in embeddings) {
+        const value = embeddings[key];
+        object[key] =  value;
+    }
+    return object;
+};
+
+
 
 module.exports = {
 	loadInstallation,
@@ -124,5 +134,6 @@ module.exports = {
     getBaseDirectory,
     stripConnectionsCredentials,
     generateSecret,
+    embedIntoObject,
     ...sessions
 };
