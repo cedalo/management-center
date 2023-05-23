@@ -46,6 +46,10 @@ module.exports = class BasePlugin {
 		return this.meta.featureId;
 	}
 
+	get id() {
+		return this.meta.id;
+	}
+
 	unload(context) {
 		this.setUnloaded();
 	}
