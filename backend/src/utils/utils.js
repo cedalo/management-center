@@ -120,7 +120,9 @@ const embedIntoObject = (object, embeddings) => {
     // mutates the object by adding new properties to it
     for (const key in embeddings) {
         const value = embeddings[key];
-        object[key] =  value;
+        if (value) {
+            object[key] =  value;
+        }
     }
     return object;
 };
