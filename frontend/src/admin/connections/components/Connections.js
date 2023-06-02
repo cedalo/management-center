@@ -328,9 +328,6 @@ const Connections = ({
 
 	const onDisconnectServerFromBroker = async (id, name) => {
 		try {
-
-			let connections = await brokerClient.getBrokerConnections();
-
 			await confirm({
 				title: 'Confirm disconnecting',
 				description: `Do you really want to disconnect the connection "${id}"?`
@@ -340,7 +337,7 @@ const Connections = ({
 			enqueueSnackbar(`Connection "${id}" successfully closed`, {
 				variant: 'success'
 			});
-			connections = await brokerClient.getBrokerConnections();
+			const connections = await brokerClient.getBrokerConnections();
 			dispatch(updateBrokerConnections(connections));
 			handleConnectionChange(dispatch, brokerClient, currentConnectionName, name, connected).catch(
 				(error) => console.error('Error while pulling information from the broker on disconnect: ' + error));
