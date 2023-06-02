@@ -6,6 +6,7 @@ const isPublicIP = (ipFamily) => ({ family, internal }) => family === ipFamily &
 module.exports = {
 	hostname: os.hostname(),
 	hostIPs: {
+		// get all external v4 ip addresses and v6 addresses as arrays
 		v4: Object.values(os.networkInterfaces()).flat().filter(isPublicIP('IPv4')).map(toAddress),
 		v6: Object.values(os.networkInterfaces()).flat().filter(isPublicIP('IPv6')).map(toAddress)
 	}
