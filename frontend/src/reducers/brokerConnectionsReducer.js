@@ -30,6 +30,8 @@ export default function brokerConnections(state = {}, action) {
 		default:
 			// console.log('DEFAULT called!!!', action.type);
 	}
+	// only fire this whenever it's one of the following actions. because this function is normally invoked on every state change
+	// and it would be wasteful to change current broker connection every time.
 	if ([ActionTypes.UPDATE_BROKER_CONNECTED,
 		ActionTypes.UPDATE_EDIT_DEFAULT_CLIENT,
 		ActionTypes.UPDATE_SELECTED_CONNECTION
