@@ -377,446 +377,446 @@ const ConnectionDetailComponent = (props) => {
 
 	return connection?.id ? (
 		<FormGroup>
-						<TextField
-							required={editMode}
-							disabled
-							size="small"
-							margin="normal"
-							className={formClasses.textField}
-							onChange={(event) => {
-								if (editMode) {
-									setUpdatedConnection({
-										...updatedConnection,
-										id: event.target.value
-									});
-								}
-							}}
-							id="id"
-							label="ID"
-							value={updatedConnection.id}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							InputProps={{
-								startAdornment: (
-									<InputAdornment position="start">
-										<AccountCircle/>
-									</InputAdornment>
-								)
-							}}
-						/>
-						<TextField
-							required={editMode}
-							disabled
-							id="name"
-							size="small"
-							margin="normal"
-							className={formClasses.textField}
-							label="Name"
-							value={updatedConnection.name}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							onChange={(event) => {
-								if (editMode) {
-									setUpdatedConnection({
-										...updatedConnection,
-										name: event.target.value
-									});
-								}
-							}}
-						/>
-					{ !connection.internalUrl ?
-						<TextField
-							required={editMode}
-							disabled={!editMode}
-							id="url"
-							label="URL"
-							value={updatedConnection.url}
-							size="small"
-							margin="normal"
-							className={formClasses.textField}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							onChange={(event) => {
-								if (editMode) {
-									setExternalEncryptedUrl('');
-									setExternalUnencryptedUrl('');
-									setExternalWebsocketUrl('');
-									setInternalUrl('');
-									setUpdatedConnection({
-										...updatedConnection,
-										url: event.target.value
-									});
-									setConnected(false);
-								}
-							}}
-						/>
-					 : null}
-					{ connection.internalUrl ?
-						<TextField
-							disabled
-							id="external-url"
-							label="Internal URL"
-							value={internalUrl}
-							// helperText="Not editable"
-							defaultValue=""
-							size="small"
-							margin="normal"
-							variant="outlined"
-							fullWidth
-							className={formClasses.textField}
-						/>
-					 : null}
-					{ connection.externalEncryptedUrl ?
-						<TextField
-							disabled
-							id="external-url"
-							label="External MQTTS URL"
-							value={externalEncryptedUrl}
-							// helperText="Not editable"
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							size="small"
-							margin="normal"
-							className={formClasses.textField}
-						/>
-					 : null}
-					{ connection.externalUnencryptedUrl ?
-						<TextField
-							disabled
-							id="external-url"
-							label="External MQTT URL"
-							value={externalUnencryptedUrl}
-							// helperText="Not editable"
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							size="small"
-							margin="normal"
-							className={formClasses.textField}
-						/>
-					: null}
-					{ connection.websocketsUrl ?
-						<TextField
-							disabled
-							id="external-url"
-							label="Websocket URL"
-							value={websocketUrl}
-							// helperText="Not editable"
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							size="small"
-							margin="normal"
-							className={formClasses.textField}
-							style={{paddingBottom: '10px'}}
-						/>
-					: null}
-						<TextField
-							required={false}
-							disabled={!editMode}
-							id="username"
-							label="Username"
-							value={updatedConnection.credentials?.username}
-							size="small"
-							margin="normal"
-							className={formClasses.textField}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							onChange={(event) => {
-								if (editMode) {
-									setUpdatedConnection({
-										...updatedConnection,
-										credentials: {
-											username: event.target.value || undefined,
-											password: updatedConnection.credentials.password,
-										}
-									});
-									setConnected(false);
-								}
-							}}
-						/>
-						<TextField
-							required={false}
-							disabled={!editMode}
-							id="password"
-							type={showPassword ? "text" : "password"}
-							label="Password"
-							size="small"
-							margin="normal"
-							className={formClasses.textField}
-							value={updatedConnection.credentials?.password}
-							defaultValue=""
-							variant="outlined"
-							fullWidth
-							onChange={(event) => {
-								if (editMode) {
-									setUpdatedConnection({
-										...updatedConnection,
-										credentials: {
-											username: updatedConnection.credentials.username,
-											password: event.target.value || undefined,
-										}
-									});
-									setConnected(false);
-								}
-							}}
-							InputProps={{ // <-- This is where the toggle button is added.
-								endAdornment: (
-									<InputAdornment position="end">
-										<IconButton
-											disabled={!editMode}
-											aria-label="toggle password visibility"
-											onClick={handleClickShowPassword}
-											onMouseDown={handleMouseDownPassword}
-										>
-											{showPassword ? <Visibility/> : <VisibilityOff/>}
-										</IconButton>
-									</InputAdornment>
-								)
-							}}
-						/>
+			<TextField
+				required={editMode}
+				disabled
+				size="small"
+				margin="normal"
+				className={formClasses.textField}
+				onChange={(event) => {
+					if (editMode) {
+						setUpdatedConnection({
+							...updatedConnection,
+							id: event.target.value
+						});
+					}
+				}}
+				id="id"
+				label="ID"
+				value={updatedConnection.id}
+				defaultValue=""
+				variant="outlined"
+				fullWidth
+				InputProps={{
+					startAdornment: (
+						<InputAdornment position="start">
+							<AccountCircle/>
+						</InputAdornment>
+					)
+				}}
+			/>
+			<TextField
+				required={editMode}
+				disabled
+				id="name"
+				size="small"
+				margin="normal"
+				className={formClasses.textField}
+				label="Name"
+				value={updatedConnection.name}
+				defaultValue=""
+				variant="outlined"
+				fullWidth
+				onChange={(event) => {
+					if (editMode) {
+						setUpdatedConnection({
+							...updatedConnection,
+							name: event.target.value
+						});
+					}
+				}}
+			/>
+			{ !connection.internalUrl ?
+				<TextField
+					required={editMode}
+					disabled={!editMode}
+					id="url"
+					label="URL"
+					value={updatedConnection.url}
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					onChange={(event) => {
+						if (editMode) {
+							setExternalEncryptedUrl('');
+							setExternalUnencryptedUrl('');
+							setExternalWebsocketUrl('');
+							setInternalUrl('');
+							setUpdatedConnection({
+								...updatedConnection,
+								url: event.target.value
+							});
+							setConnected(false);
+						}
+					}}
+				/>
+				: null}
+			{ connection.internalUrl ?
+				<TextField
+					disabled
+					id="external-url"
+					label="Internal URL"
+					value={internalUrl}
+					// helperText="Not editable"
+					defaultValue=""
+					size="small"
+					margin="normal"
+					variant="outlined"
+					fullWidth
+					className={formClasses.textField}
+				/>
+				: null}
+			{ connection.externalEncryptedUrl ?
+				<TextField
+					disabled
+					id="external-url"
+					label="External MQTTS URL"
+					value={externalEncryptedUrl}
+					// helperText="Not editable"
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+				/>
+				: null}
+			{ connection.externalUnencryptedUrl ?
+				<TextField
+					disabled
+					id="external-url"
+					label="External MQTT URL"
+					value={externalUnencryptedUrl}
+					// helperText="Not editable"
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+				/>
+			: null}
+			{ connection.websocketsUrl ?
+				<TextField
+					disabled
+					id="external-url"
+					label="Websocket URL"
+					value={websocketUrl}
+					// helperText="Not editable"
+					defaultValue=""
+					variant="outlined"
+					fullWidth
+					size="small"
+					margin="normal"
+					className={formClasses.textField}
+					style={{paddingBottom: '10px'}}
+				/>
+			: null}
+			<TextField
+				required={false}
+				disabled={!editMode}
+				id="username"
+				label="Username"
+				value={updatedConnection.credentials?.username}
+				size="small"
+				margin="normal"
+				className={formClasses.textField}
+				defaultValue=""
+				variant="outlined"
+				fullWidth
+				onChange={(event) => {
+					if (editMode) {
+						setUpdatedConnection({
+							...updatedConnection,
+							credentials: {
+								username: event.target.value || undefined,
+								password: updatedConnection.credentials.password,
+							}
+						});
+						setConnected(false);
+					}
+				}}
+			/>
+			<TextField
+				required={false}
+				disabled={!editMode}
+				id="password"
+				type={showPassword ? "text" : "password"}
+				label="Password"
+				size="small"
+				margin="normal"
+				className={formClasses.textField}
+				value={updatedConnection.credentials?.password}
+				defaultValue=""
+				variant="outlined"
+				fullWidth
+				onChange={(event) => {
+					if (editMode) {
+						setUpdatedConnection({
+							...updatedConnection,
+							credentials: {
+								username: updatedConnection.credentials.username,
+								password: event.target.value || undefined,
+							}
+						});
+						setConnected(false);
+					}
+				}}
+				InputProps={{ // <-- This is where the toggle button is added.
+					endAdornment: (
+						<InputAdornment position="end">
+							<IconButton
+								disabled={!editMode}
+								aria-label="toggle password visibility"
+								onClick={handleClickShowPassword}
+								onMouseDown={handleMouseDownPassword}
+							>
+								{showPassword ? <Visibility/> : <VisibilityOff/>}
+							</IconButton>
+						</InputAdornment>
+					)
+				}}
+			/>
 
-				{!(tlsFeature?.supported) ?
-					(<>
-						<div style={{padding: '10px'}}></div>
-						<Alert severity="warning" className={classes.alert}>
-							<AlertTitle>TLS feature is not available</AlertTitle>
-							Make sure that support for custom TLS certificates is included in your MMC license.
-						</Alert>
-					</>) : (<></>)
-				}
+			{!(tlsFeature?.supported) ?
+				(<>
+					<div style={{padding: '10px'}}></div>
+					<Alert severity="warning" className={classes.alert}>
+						<AlertTitle>TLS feature is not available</AlertTitle>
+						Make sure that support for custom TLS certificates is included in your MMC license.
+					</Alert>
+				</>) : (<></>)
+			}
 
-				<div className={(!tlsFeature?.supported) ? classes.notEnabledBlock : ''}>
-					<div style={{padding: '5px'}}></div>
-					<div className={`${classes.parent} ${classes.padTop}`}>
-						<div className={classes.overlayed}>
-							<Typography className={classes.smallFont}>
-								Server certificate
-							</Typography>
-						</div>
-						<Grid container direction={'row'} spacing={0} alignItems="flex-end"
-							  className={`${classes.container} ${classes.parent} ${classes.padTop2}`}>
-							<Grid item xl={6} md={6} sm={6} xs={6}>
-								<FormGroup>
-									<FormControlLabel
-										control={
-											<Switch
-												color="primary"
+			<div className={(!tlsFeature?.supported) ? classes.notEnabledBlock : ''}>
+				<div style={{padding: '5px'}}></div>
+				<div className={`${classes.parent} ${classes.padTop}`}>
+					<div className={classes.overlayed}>
+						<Typography className={classes.smallFont}>
+							Server certificate
+						</Typography>
+					</div>
+					<Grid container direction={'row'} spacing={0} alignItems="flex-end"
+							className={`${classes.container} ${classes.parent} ${classes.padTop2}`}>
+						<Grid item xl={6} md={6} sm={6} xs={6}>
+							<FormGroup>
+								<FormControlLabel
+									control={
+										<Switch
+											color="primary"
+											size="small"
+											disabled={!editMode || !tlsFeature?.supported}
+											checked={updatedConnection[verifyServerCertificateFieldName]}
+											onChange={(event) => {
+												if (editMode) {
+													setUpdatedConnection({
+														...updatedConnection,
+														[verifyServerCertificateFieldName]: event.target.checked
+													});
+													setConnected(false);
+												}
+											}}
+										/>
+									}
+									label="Verify server certificate"
+								/>
+							</FormGroup>
+						</Grid>
+						<Grid item xl={6} md={6} sm={6} xs={6}>
+						</Grid>
+						<Grid item xl={3} md={3} sm={4} xs={4} style={{marginTop: '8px'}}>
+							<Typography
+								className={errors[customCACertificateFieldName] ? classes.verticallyPad : ''}
+								align="left">CA Certificate</Typography>
+						</Grid>
+						<Grid item xl={7} md={7} sm={7} xs={7}>
+							<FormGroup row>
+								<Button
+									disabled={!editMode || !tlsFeature?.supported}
+									size="small"
+									onChange={handleFileUpload}
+									variant="contained"
+									className={`${classes.button} ${classes.restrictButtonHeight}`}
+									color="primary"
+									startIcon={<CloudUpload/>}
+									component="label"
+								>
+									Choose File
+									<input name={customCACertificateFieldName} hidden type="file"/>
+								</Button>
+								<TextField
+									disabled={!editMode || !tlsFeature?.supported}
+									className={(errors[customCACertificateFieldName]) ? classes.filenameFieldExpanded : classes.filenameField}
+									size="small"
+									inputProps={{readOnly: true,}}
+									id="standard-basic"
+									label=""
+									variant="standard"
+									value={updatedConnection[customCACertificateFileFieldName]}
+									error={!!errors[customCACertificateFieldName]}
+									helperText={errors[customCACertificateFieldName]?.message}
+									InputProps={{
+										endAdornment:
+											<IconButton
+												className={(editMode && updatedConnection[customCACertificateFileFieldName]) ? classes.crossButton : classes.invisible}
+												style={{backgroundColor: 'transparent'}}
 												size="small"
-												disabled={!editMode || !tlsFeature?.supported}
-												checked={updatedConnection[verifyServerCertificateFieldName]}
-												onChange={(event) => {
-													if (editMode) {
-														setUpdatedConnection({
-															...updatedConnection,
-															[verifyServerCertificateFieldName]: event.target.checked
-														});
-														setConnected(false);
-													}
-												}}
-											/>
-										}
-										label="Verify server certificate"
-									/>
-								</FormGroup>
-							</Grid>
-							<Grid item xl={6} md={6} sm={6} xs={6}>
-							</Grid>
-							<Grid item xl={3} md={3} sm={4} xs={4} style={{marginTop: '8px'}}>
-								<Typography
-									className={errors[customCACertificateFieldName] ? classes.verticallyPad : ''}
-									align="left">CA Certificate</Typography>
-							</Grid>
-							<Grid item xl={7} md={7} sm={7} xs={7}>
-								<FormGroup row>
-									<Button
-										disabled={!editMode || !tlsFeature?.supported}
-										size="small"
-										onChange={handleFileUpload}
-										variant="contained"
-										className={`${classes.button} ${classes.restrictButtonHeight}`}
-										color="primary"
-										startIcon={<CloudUpload/>}
-										component="label"
-									>
-										Choose File
-										<input name={customCACertificateFieldName} hidden type="file"/>
-									</Button>
-									<TextField
-										disabled={!editMode || !tlsFeature?.supported}
-										className={(errors[customCACertificateFieldName]) ? classes.filenameFieldExpanded : classes.filenameField}
-										size="small"
-										inputProps={{readOnly: true,}}
-										id="standard-basic"
-										label=""
-										variant="standard"
-										value={updatedConnection[customCACertificateFileFieldName]}
-										error={!!errors[customCACertificateFieldName]}
-										helperText={errors[customCACertificateFieldName]?.message}
-										InputProps={{
-											endAdornment:
-												<IconButton
-													className={(editMode && updatedConnection[customCACertificateFileFieldName]) ? classes.crossButton : classes.invisible}
-													style={{backgroundColor: 'transparent'}}
-													size="small"
-													onClick={() => deleteFile(customCACertificateFieldName)}
-													disabled={!tlsFeature?.supported}
-												>
-													<Close className={classes.closeIcon}/>
-												</IconButton>,
-										}}
-									/>
-									<IconButton
-										disabled={!tlsFeature?.supported || !updatedConnection[customCACertificateFieldName]}
-										// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
-										style={{backgroundColor: 'transparent'}}
-										className={`${classes.fileDownloadButton}`}
-										size="small"
-										onClick={() => handleFileDownload(customCACertificateFieldName)}
-									>
-										<CloudDownload></CloudDownload>
-									</IconButton>
-								</FormGroup>
-							</Grid>
-							<Grid item xl={2} md={2} sm={1} xs={1}>
-							</Grid>
+												onClick={() => deleteFile(customCACertificateFieldName)}
+												disabled={!tlsFeature?.supported}
+											>
+												<Close className={classes.closeIcon}/>
+											</IconButton>,
+									}}
+								/>
+								<IconButton
+									disabled={!tlsFeature?.supported || !updatedConnection[customCACertificateFieldName]}
+									// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
+									style={{backgroundColor: 'transparent'}}
+									className={`${classes.fileDownloadButton}`}
+									size="small"
+									onClick={() => handleFileDownload(customCACertificateFieldName)}
+								>
+									<CloudDownload></CloudDownload>
+								</IconButton>
+							</FormGroup>
 						</Grid>
+						<Grid item xl={2} md={2} sm={1} xs={1}>
+						</Grid>
+					</Grid>
+				</div>
+				<div style={{padding: '7px'}}></div>
+				<div className={`${classes.parent} ${classes.padTop}`}>
+					<div className={classes.overlayed}>
+						<Typography className={classes.smallFont}>
+							Client certificate
+						</Typography>
 					</div>
-					<div style={{padding: '7px'}}></div>
-					<div className={`${classes.parent} ${classes.padTop}`}>
-						<div className={classes.overlayed}>
-							<Typography className={classes.smallFont}>
-								Client certificate
-							</Typography>
-						</div>
-						<Grid container direction={'row'} spacing={0} alignItems="flex-end"
-							  className={`${classes.container} ${classes.parent} ${classes.padTop2}`}>
-							<Grid item xl={3} md={3} sm={4} xs={4}>
-								<Typography className={errors[clientCertificateFieldName] ? classes.verticallyPad : ''}
-											align="left">Certificate</Typography>
-							</Grid>
-							<Grid item xl={7} md={7} sm={7} xs={7} style={{marginTop: '8px'}}>
-								<FormGroup row>
-									<Button
-										disabled={!editMode || !tlsFeature?.supported}
-										size="small"
-										onChange={handleFileUpload}
-										variant="contained"
-										color="primary"
-										className={`${classes.button} ${classes.restrictButtonHeight}`}
-										startIcon={<CloudUpload/>}
-										component="label"
-									>
-										Choose File
-										<input name={clientCertificateFieldName} hidden type="file"/>
-									</Button>
-									<TextField
-										disabled={!editMode || !tlsFeature?.supported}
-										className={(errors[clientCertificateFieldName]) ? classes.filenameFieldExpanded : classes.filenameField}
-										size="small"
-										inputProps={{readOnly: true,}}
-										id="standard-basic"
-										label=""
-										variant="standard"
-										value={updatedConnection[clientCertificateFileFieldName]}
-										error={!!errors[clientCertificateFieldName]}
-										helperText={errors[clientCertificateFieldName]?.message}
-										InputProps={{
-											endAdornment:
-												<IconButton
-													className={(editMode && updatedConnection[clientCertificateFileFieldName]) ? classes.crossButton : classes.invisible}
-													style={{backgroundColor: 'transparent'}}
-													size="small"
-													onClick={() => deleteFile(clientCertificateFieldName)}
-													disabled={!tlsFeature?.supported}
-												>
-													<Close className={classes.closeIcon}/>
-												</IconButton>,
-										}}
-									/>
-									<IconButton
-										disabled={!tlsFeature?.supported || !updatedConnection[clientCertificateFieldName]}
-										// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
-										style={{backgroundColor: 'transparent'}}
-										className={`${classes.fileDownloadButton}`}
-										size="small"
-										onClick={() => handleFileDownload(clientCertificateFieldName)}
-									>
-										<CloudDownload></CloudDownload>
-									</IconButton>
-								</FormGroup>
-							</Grid>
-							<Grid item xl={2} md={2} sm={1} xs={1}>
-							</Grid>
+					<Grid container direction={'row'} spacing={0} alignItems="flex-end"
+							className={`${classes.container} ${classes.parent} ${classes.padTop2}`}>
+						<Grid item xl={3} md={3} sm={4} xs={4}>
+							<Typography className={errors[clientCertificateFieldName] ? classes.verticallyPad : ''}
+										align="left">Certificate</Typography>
+						</Grid>
+						<Grid item xl={7} md={7} sm={7} xs={7} style={{marginTop: '8px'}}>
+							<FormGroup row>
+								<Button
+									disabled={!editMode || !tlsFeature?.supported}
+									size="small"
+									onChange={handleFileUpload}
+									variant="contained"
+									color="primary"
+									className={`${classes.button} ${classes.restrictButtonHeight}`}
+									startIcon={<CloudUpload/>}
+									component="label"
+								>
+									Choose File
+									<input name={clientCertificateFieldName} hidden type="file"/>
+								</Button>
+								<TextField
+									disabled={!editMode || !tlsFeature?.supported}
+									className={(errors[clientCertificateFieldName]) ? classes.filenameFieldExpanded : classes.filenameField}
+									size="small"
+									inputProps={{readOnly: true,}}
+									id="standard-basic"
+									label=""
+									variant="standard"
+									value={updatedConnection[clientCertificateFileFieldName]}
+									error={!!errors[clientCertificateFieldName]}
+									helperText={errors[clientCertificateFieldName]?.message}
+									InputProps={{
+										endAdornment:
+											<IconButton
+												className={(editMode && updatedConnection[clientCertificateFileFieldName]) ? classes.crossButton : classes.invisible}
+												style={{backgroundColor: 'transparent'}}
+												size="small"
+												onClick={() => deleteFile(clientCertificateFieldName)}
+												disabled={!tlsFeature?.supported}
+											>
+												<Close className={classes.closeIcon}/>
+											</IconButton>,
+									}}
+								/>
+								<IconButton
+									disabled={!tlsFeature?.supported || !updatedConnection[clientCertificateFieldName]}
+									// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
+									style={{backgroundColor: 'transparent'}}
+									className={`${classes.fileDownloadButton}`}
+									size="small"
+									onClick={() => handleFileDownload(clientCertificateFieldName)}
+								>
+									<CloudDownload></CloudDownload>
+								</IconButton>
+							</FormGroup>
+						</Grid>
+						<Grid item xl={2} md={2} sm={1} xs={1}>
+						</Grid>
 
 
-							<Grid item xl={3} md={3} sm={4} xs={4}>
-								<Typography className={(errors[clientPrivateKeyFieldName]) ? classes.verticallyPad : ''}
-											align="left">Private Key</Typography>
-							</Grid>
-							<Grid item xl={7} md={7} sm={7} xs={7} style={{marginTop: '8px'}}>
-								<FormGroup row>
-									<Button
-										disabled={!editMode || !tlsFeature?.supported}
-										size="small"
-										onChange={handleFileUpload}
-										variant="contained"
-										color="primary"
-										className={`${classes.button} ${classes.restrictButtonHeight}`}
-										startIcon={<CloudUpload/>}
-										component="label"
-									>
-										Choose File
-										<input name={clientPrivateKeyFieldName} hidden type="file"/>
-									</Button>
-									<TextField
-										disabled={!editMode || !tlsFeature?.supported}
-										className={(errors[clientPrivateKeyFieldName]) ? classes.filenameFieldExpanded : classes.filenameField}
-										size="small"
-										inputProps={{readOnly: true,}}
-										id="standard-basic"
-										label=""
-										variant="standard"
-										value={updatedConnection[clientPrivateKeyFileFieldName]}
-										error={!!errors[clientPrivateKeyFieldName]}
-										helperText={errors[clientPrivateKeyFieldName]?.message}
-										InputProps={{
-											endAdornment:
-												<IconButton
-													className={(editMode && updatedConnection[clientPrivateKeyFileFieldName]) ? classes.crossButton : classes.invisible}
-													style={{backgroundColor: 'transparent'}}
-													size="small"
-													onClick={() => deleteFile(clientPrivateKeyFieldName)}
-													disabled={!tlsFeature?.supported}
-												>
-													<Close className={classes.closeIcon}/>
-												</IconButton>,
-											// classes: {
-											// 		   adornedEnd: classes.adornedEnd
-											// 		  }
-										}}
-									/>
-									<IconButton
-										disabled={!tlsFeature?.supported || !updatedConnection[clientPrivateKeyFieldName]}
-										style={{backgroundColor: 'transparent'}}
-										// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
-										className={`${classes.fileDownloadButton}`}
-										size="small"
-										onClick={() => handleFileDownload(clientPrivateKeyFieldName)}
-									>
-										<CloudDownload></CloudDownload>
-									</IconButton>
-								</FormGroup>
-							</Grid>
-							<Grid item xl={2} md={2} sm={1} xs={1}>
-							</Grid>
+						<Grid item xl={3} md={3} sm={4} xs={4}>
+							<Typography className={(errors[clientPrivateKeyFieldName]) ? classes.verticallyPad : ''}
+										align="left">Private Key</Typography>
 						</Grid>
-					</div>
+						<Grid item xl={7} md={7} sm={7} xs={7} style={{marginTop: '8px'}}>
+							<FormGroup row>
+								<Button
+									disabled={!editMode || !tlsFeature?.supported}
+									size="small"
+									onChange={handleFileUpload}
+									variant="contained"
+									color="primary"
+									className={`${classes.button} ${classes.restrictButtonHeight}`}
+									startIcon={<CloudUpload/>}
+									component="label"
+								>
+									Choose File
+									<input name={clientPrivateKeyFieldName} hidden type="file"/>
+								</Button>
+								<TextField
+									disabled={!editMode || !tlsFeature?.supported}
+									className={(errors[clientPrivateKeyFieldName]) ? classes.filenameFieldExpanded : classes.filenameField}
+									size="small"
+									inputProps={{readOnly: true,}}
+									id="standard-basic"
+									label=""
+									variant="standard"
+									value={updatedConnection[clientPrivateKeyFileFieldName]}
+									error={!!errors[clientPrivateKeyFieldName]}
+									helperText={errors[clientPrivateKeyFieldName]?.message}
+									InputProps={{
+										endAdornment:
+											<IconButton
+												className={(editMode && updatedConnection[clientPrivateKeyFileFieldName]) ? classes.crossButton : classes.invisible}
+												style={{backgroundColor: 'transparent'}}
+												size="small"
+												onClick={() => deleteFile(clientPrivateKeyFieldName)}
+												disabled={!tlsFeature?.supported}
+											>
+												<Close className={classes.closeIcon}/>
+											</IconButton>,
+										// classes: {
+										// 		   adornedEnd: classes.adornedEnd
+										// 		  }
+									}}
+								/>
+								<IconButton
+									disabled={!tlsFeature?.supported || !updatedConnection[clientPrivateKeyFieldName]}
+									style={{backgroundColor: 'transparent'}}
+									// style={{marginLeft: '10px', opacity: '75%', borderRadius: '6px'}}
+									className={`${classes.fileDownloadButton}`}
+									size="small"
+									onClick={() => handleFileDownload(clientPrivateKeyFieldName)}
+								>
+									<CloudDownload></CloudDownload>
+								</IconButton>
+							</FormGroup>
+						</Grid>
+						<Grid item xl={2} md={2} sm={1} xs={1}>
+						</Grid>
+					</Grid>
+				</div>
 			</div>
 			<Grid item xs={12} spacing={0} style={{paddingTop: '15px'}}>
 				{/* <Button
