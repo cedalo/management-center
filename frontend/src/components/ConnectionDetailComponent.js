@@ -154,7 +154,7 @@ const ConnectionDetailComponent = (props) => {
 	if (!connection.credentials) {
 		connection.credentials = {};
 	}
-
+	
 	const classes = useStyles();
 	const formClasses = useFormStyles();
 	const [value, setValue] = React.useState(0);
@@ -166,14 +166,17 @@ const ConnectionDetailComponent = (props) => {
 	const handleClickShowPassword = () => setShowPassword(!showPassword);
 	const handleMouseDownPassword = () => setShowPassword(!showPassword);
 	const [editMode, setEditMode] = React.useState(editModeEnabledByDefault);
+	console.log('connection........................................>', connection)
+	console.log('noMetrics........................................>', connection.protocolVersion === 5 && connection.protocolVersion?.['sys-metrics'] === 'none')
+	const [noMetrics, setNoMetrics] = React.useState(connection.protocolVersion === 5 && connection.protocolVersion?.['sys-metrics'] === 'none');
 	const {enqueueSnackbar} = useSnackbar();
 
 	const [updatedConnection, setUpdatedConnection] = React.useState({
 		...connection,
 		[verifyServerCertificateFieldName]: connection[verifyServerCertificateFieldName],
 		[customCACertificateFileFieldName]: connection[customCACertificateFileFieldName],
-		[clientCertificateFileFieldName]: connection[clientCertificateFileFieldName],
-		[clientPrivateKeyFileFieldName]: connection[clientPrivateKeyFileFieldName],
+		[clientCertificateFileFieldName]: 	connection[clientCertificateFileFieldName],
+		[clientPrivateKeyFileFieldName]: 	connection[clientPrivateKeyFileFieldName],
 	});
 
 	const context = useContext(WebSocketContext);
@@ -252,6 +255,7 @@ const ConnectionDetailComponent = (props) => {
 			if (connect) {
 				try {
 					// await doConnect(connection);
+					console.log('updatedConnection:===============================================>', updatedConnection)
 					await doConnect(updatedConnection);
 					await brokerClient.connectServerToBroker(connection.id);
 					if (!alreadyConnected) {
@@ -580,6 +584,39 @@ const ConnectionDetailComponent = (props) => {
 					)
 				}}
 			/>
+
+			<FormGroup
+				style={{padding: '5px', paddingLeft: '8px'}}
+			>
+				<FormControlLabel
+					control={
+						<Switch
+							color="primary"
+							size="small"
+							disabled={!editMode}
+							checked={noMetrics}
+							onChange={(event) => {
+								const ignoreMMCTraffic = event.target.checked;
+								if (ignoreMMCTraffic) {
+									delete updatedConnection.protocolVersion;
+									delete updatedConnection.properties;							
+								} else {
+									updatedConnection.protocolVersion = 5;
+									updatedConnection.properties = {
+										userProperties: {
+											'sys-metrics': 'none'
+										}
+									};
+								}
+								setUpdatedConnection(updatedConnection);
+								setNoMetrics(ignoreMMCTraffic);
+								setConnected(false);
+							}}
+						/>
+					}
+					label="Ignore MMC traffic"
+				/>
+			</FormGroup>
 
 			{!(tlsFeature?.supported) ?
 				(<>

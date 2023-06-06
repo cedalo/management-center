@@ -116,15 +116,18 @@ module.exports = class ConfigManager {
 	}
 
 	filterConnectionObject(connection) { // tls plugin injects its own fucntion here
-		return {
+		const filteredConnection = {
 			id: connection.id,
 			name: connection.name,
 			url: connection.url,
 			credentials: {
 				username: connection.credentials?.username,
 				password: connection.credentials?.password,
-			}
+			},
+			...(connection.protocolVersion ? {protocolVersion: connection.protocolVersion} : {}),
+			...(connection.properties ? {properties: connection.properties} : {})
 		};
+		return filteredConnection;
 	}
 
 	processInternalExternalURLs(connection) {

@@ -139,7 +139,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 	const [showPassword, setShowPassword] = React.useState(false);
 	const handleClickShowPassword = () => setShowPassword(!showPassword);
 	const handleMouseDownPassword = () => setShowPassword(!showPassword);
-
+	
 	const classes = useStyles();
 	const formClasses = useFormStyles();
 	const [connection, setConnection] = React.useState({
@@ -155,6 +155,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 		[clientCertificateFileFieldName]: '',
 		[clientPrivateKeyFileFieldName]: '',
 	});
+	const [noMetrics, setNoMetrics] = React.useState(true);
 	const [connected, setConnected] = React.useState(false);
 	const {enqueueSnackbar} = useSnackbar();
 	const history = useHistory();
@@ -228,6 +229,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 			await brokerClient.createConnection(connection);
 			if (connect) {
 				try {
+					console.log('connection:===============================================>', connection)
 					await doConnect(connection);
 					await brokerClient.connectServerToBroker(connection.id);
 				} catch (error) {
@@ -472,6 +474,40 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 					)
 				}}
 			/>
+
+
+			<FormGroup
+				style={{padding: '5px', paddingLeft: '8px'}}
+			>
+				<FormControlLabel
+					control={
+						<Switch
+							color="primary"
+							size="small"
+							checked={noMetrics}
+							onChange={(event) => {
+								const ignoreMMCTraffic = event.target.checked;
+								if (ignoreMMCTraffic) {
+									delete connection.protocolVersion;
+									delete connection.properties;							
+								} else {
+									connection.protocolVersion = 5;
+									connection.properties = {
+										userProperties: {
+											'sys-metrics': 'none'
+										}
+									};
+								}
+								setConnection(connection);
+								setNoMetrics(ignoreMMCTraffic);
+								setConnected(false);
+							}}
+						/>
+					}
+					label="Ignore MMC traffic"
+				/>
+			</FormGroup>
+
 
 			{!(tlsFeature?.supported) ?
 				(<>
