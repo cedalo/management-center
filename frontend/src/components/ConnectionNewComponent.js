@@ -488,15 +488,15 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 							onChange={(event) => {
 								const ignoreMMCTraffic = event.target.checked;
 								if (ignoreMMCTraffic) {
-									delete connection.protocolVersion;
-									delete connection.properties;							
-								} else {
 									connection.protocolVersion = 5;
 									connection.properties = {
 										userProperties: {
 											'sys-metrics': 'none'
 										}
 									};
+								} else {
+									delete connection.protocolVersion;
+									delete connection.properties;
 								}
 								setConnection(connection);
 								setNoMetrics(ignoreMMCTraffic);

@@ -124,8 +124,15 @@ module.exports = class ConfigManager {
 				username: connection.credentials?.username,
 				password: connection.credentials?.password,
 			},
-			...(connection.protocolVersion ? {protocolVersion: connection.protocolVersion} : {}),
-			...(connection.properties ? {properties: connection.properties} : {})
+			protocolVersion: connection.protocolVersion || undefined,
+			...(connection.properties?.userProperties?.['sys-metrics'] ?
+				{
+					properties: {
+						userProperties: {
+							'sys-metrics': connection.properties.userProperties['sys-metrics']
+						}
+					}
+		 		} : { properties: undefined })
 		};
 		return filteredConnection;
 	}
