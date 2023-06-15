@@ -229,7 +229,6 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 			await brokerClient.createConnection(connection);
 			if (connect) {
 				try {
-					console.log('connection:===============================================>', connection)
 					await doConnect(connection);
 					await brokerClient.connectServerToBroker(connection.id);
 				} catch (error) {
