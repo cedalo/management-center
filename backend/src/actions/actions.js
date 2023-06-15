@@ -122,6 +122,10 @@ const createConnectionAction = {
 
 		try {
 			if (configManager.connections.length < licenseContainer.license.maxBrokerConnections) {
+				const existingConnection = configManager.getConnection(connection.id);
+				if (existingConnection) {
+					throw new Error(`Connection ${connection.id} already exists`);		
+				}
 				configManager.createConnection(connection);
 			} else {
 				throw new Error('Maximum number of connections reached.');
