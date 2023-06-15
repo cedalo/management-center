@@ -241,8 +241,10 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		});
 	}
 
-	async _disconnectBroker() {
-		this._disconnectedByUser = true;
+	async _disconnectBroker(isDisconnectedByUser) {
+		// this function is called when user requests disconnection (then isDisconnectedByUser is set to true), but can
+		// also be called be called when the connection got unexpectedly closed or error erised, then we don't set disconnecteByUser flag
+		this._disconnectedByUser = !!isDisconnectedByUser;
 		this._client?.end();
 	}
 

@@ -444,7 +444,7 @@ const init = async (licenseContainer) => {
 						errno: 1,
 						code: 'ECONNCLOSED',
 						syscall: 'on',
-						interrupted: brokerClient.disconnectedByUser ? false : true
+						interrupted: !brokerClient.disconnectedByUser
 					}
 				};
 				if (brokerClient.disconnectedByUser) {
@@ -508,10 +508,10 @@ const init = async (licenseContainer) => {
 		return error;
 	};
 
-	const handleDisconnectServerFromBroker = async (connection) => {
+	const handleDisconnectServerFromBroker = async (connection, isDisconnectedByUser) => {
 		const client = context.brokerManager.getBrokerConnectionById(connection.id);
 		if (client) {
-			client.broker.disconnect();
+			client.broker.disconnect(isDisconnectedByUser);
 		}
 		context.brokerManager.handleDeleteBrokerConnection(connection);
 
