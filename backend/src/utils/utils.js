@@ -128,6 +128,14 @@ const embedIntoObject = (object, embeddings) => {
 };
 
 
+const replaceNaN = (number, replacer) => {
+	if (isNaN(number)) { // check for NaN is also possible with (number !== number) will be true only if number is NaN
+		return replacer
+	}
+	return number
+};
+
+
 
 module.exports = {
 	loadInstallation,
@@ -137,5 +145,6 @@ module.exports = {
     stripConnectionsCredentials,
     generateSecret,
     embedIntoObject,
+    replaceNaN,
     ...sessions
 };

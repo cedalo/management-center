@@ -1,4 +1,5 @@
 const mqtt = require('mqtt');
+const { replaceNaN } = require('../utils/utils');
 
 const socketErrors = [ // defined in mqttjs (client.js)
 	'ECONNREFUSED',
@@ -13,9 +14,9 @@ const BaseMosquittoClient = require('./BaseMosquittoClient');
 const ATTEMPT_BACKOFF_MS = (process.env.CEDALO_MC_MQTT_CONNECT_INITIAL_BACKOFF_INTERVAL_MS
 							&& Math.abs((process.env.CEDALO_MC_MQTT_CONNECT_INITIAL_BACKOFF_INTERVAL_MS))
 							) || 500;
-const MAX_NUMBER_OF_ATTEMPTS = (process.env.CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS
-							&& parseInt(process.env.CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS)) // put 0 or -1 to indicate an indefinite reconnect
-							 || 10;
+const MAX_NUMBER_OF_ATTEMPTS = (process.env.CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS || 10)
+							&& replaceNaN(parseInt(process.env.CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS), 10); // put -1 to indicate an indefinite reconnect
+							// CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS=0 means no reconnects will be scheduled
 const BACKOFF_RATE =  (process.env.CEDALO_MC_MQTT_CONNECT_BACKOFF_INCREASE_RATE 
 						&& Math.abs(parseFloat(process.env.CEDALO_MC_MQTT_CONNECT_BACKOFF_INCREASE_RATE))
 						) || 1.5;
@@ -153,6 +154,14 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				console.log(`Connection to ${url} closed by the user`);
 				return;
 			}
+			if (!MAX_NUMBER_OF_ATTEMPTS) {
+				this.logger.log(`No reconnection attempts scheduled for ${url}. CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS is zero (${MAX_NUMBER_OF_ATTEMPTS})`);
+				console.log(`No reconnection attempts scheduled for ${url}. CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS is zero (${MAX_NUMBER_OF_ATTEMPTS})`);
+				return;
+			}
+			this.logger.log(`Scheduling reconnect(s) for ${url}`);
+			console.log(`Scheduling reconnect(s) for ${url}`);
+
 			timeoutID = setTimeout(() => { // kill set timeout in connect hanlder!!!
 				this.logger.log(`Reconnecting to ${url}: attempt ${attemptNumber}; current backoff interval was: ${attemptBackoffMs} ms`);
 				console.log(`Reconnecting to ${url}: attempt ${attemptNumber}; current backoff interval was: ${attemptBackoffMs} ms`);
