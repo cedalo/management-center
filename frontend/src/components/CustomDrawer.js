@@ -265,14 +265,14 @@ const CustomDrawer = ({
 							primary="Terminal"
 							icon={<TerminalIcon fontSize="small"/>}
 						/>}
-					{/* {backendParameters.showStreemsheets ? 
+					{backendParameters.showStreemsheets ? 
 						<ListItemLink
 							classes={classes}
 							to="/tools/streamsheets"
 							primary="Streamsheets"
 							icon={<StreamsheetsIcon fontSize="small" />}
 						/>
-					: null} */}
+					: null}
 				</List>
 				<Divider/>
 				<Paper
