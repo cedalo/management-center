@@ -15,7 +15,7 @@ const API_HIGH_AVAILABILITY = 'cedalo/ha';
 const ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED = 'You are not authorized to access the user management';
 const ERROR_MESSAGE_API_NOT_FOUND = 'API not found. Note that this is a premium feature';
 const NOT_AUTHORIZED_MESSAGE = 'Not authorized';
-
+const LOGIN_ENDPOINT = '/login?error=session-expired';
 
 class APIError extends Error {
 	constructor(title, message) {
@@ -38,6 +38,25 @@ class APINotFoundError extends APIError {
 		this.name = 'APINotFoundError';
 	}
 }
+
+axios.interceptors.response.use(
+    response => response, // if the response is successful, just return it
+    error => {
+		const sessionExpired = error.response
+								&& error.response.status === 401
+								&& error.response?.data?.code === 'UNAUTHORIZED' 
+								&& !error.response?.data?.data?.session; 
+
+        if (sessionExpired) {
+            // replace this with your login route
+			console.error('Session expired or invalid')
+			window.location.href = LOGIN_ENDPOINT;
+			return Promise.reject('Session expired or invalid');
+        }
+        
+        return Promise.reject(error);
+    }
+);
 
 // TODO: merge with method deletePendingRequest()
 const deletePendingRequest = (requestId, requests) => {

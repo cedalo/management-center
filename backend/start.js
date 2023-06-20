@@ -53,6 +53,7 @@ const preprocessBoolEnvVariable = (envVariable) => {
 	return !!((envVariable && typeof envVariable === 'string' && envVariable.toLowerCase() === 'false') ? false : envVariable);
 }
 
+const LOGIN_ENDPOINT = '/login';
 const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
 const CEDALO_MC_ENABLE_FULL_LOG = preprocessBoolEnvVariable(process.env.CEDALO_MC_ENABLE_FULL_LOG);
@@ -822,9 +823,15 @@ const init = async (licenseContainer) => {
 		...context,
 		security: {
 			...context.security,
-			isLoggedIn(request, response, next) {
+			handleSessionExpiredOrInvalidResponse(request, response, doRedirectOnFail) {
+				if (!doRedirectOnFail) {
+					return response.status(401).send({ code: 'UNAUTHORIZED', message: 'Unauthorized', data: {session: !!request.session?.passport?.user}});
+				}
+				return response.redirect(LOGIN_ENDPOINT);
+			},
+			isLoggedIn(request, response, next, doRedirectOnFail=false) {
 				return next();
-			}
+			},
 		},
 		configManager,
 		pluginManager: new PluginManager(),
@@ -983,7 +990,8 @@ const init = async (licenseContainer) => {
 			if (request.path.includes('.png')) {
 				next();
 			} else {
-				context.security.isLoggedIn(request, response, next);
+				const doRedirectOnFail = true;
+				context.security.isLoggedIn(request, response, next, doRedirectOnFail);
 			}
 		},
 		(request, response) => {

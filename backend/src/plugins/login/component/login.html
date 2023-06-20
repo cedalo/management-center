@@ -283,6 +283,10 @@
                 const errorContainer = document.getElementById('error-container');
                 errorContainer.style.display = 'block';
                 errorContainer.textContent = 'Authentication failed';
+            } else if (error && error === 'session-expired') {
+                const errorContainer = document.getElementById('error-container');
+                errorContainer.style.display = 'block';
+                errorContainer.textContent = 'Session has expired or is invalid';
             }
         });
     </script>

@@ -57,12 +57,11 @@ module.exports = class Plugin extends BasePlugin {
 
 		router.use(context.middleware.preprocessUser);
 
-		context.security.isLoggedIn = (request, response, next) => {
+		context.security.isLoggedIn = (request, response, next, doRedirectOnFail=false) => {
 			if (request.isAuthenticated()) {
 				return next();
 			}
-
-			response.redirect(303, `${CEDALO_MC_PROXY_BASE_PATH}/login`);
+			return context.security.handleSessionExpiredOrInvalidResponse(request, response, doRedirectOnFail);
 		};
 
 		router.use(express.static(path.join(__dirname, '..', 'component')));
@@ -100,7 +99,6 @@ module.exports = class Plugin extends BasePlugin {
 						return response.redirect(`${CEDALO_MC_PROXY_BASE_PATH}/login?error=authentication-failed`);
 					} else {
 						return response.status(401).send({ code: 'UNAUTHORIZED', message: 'Unauthorized'});
-						
 					}
 				} else {
 					request.login(user, function (error_) {
