@@ -456,6 +456,7 @@ const init = async (licenseContainer) => {
 				context.handleDisconnectServerFromBroker(connection);
 			});
 			// this listener is applied only on reconnect (at the time we apply this listener the conenction had already been established and the first connect event alrady fired)
+			// this is important to set up this event here, after brokerClient.connect(); and not before since otherwise it will not be a called exclusively on reconnect
 			brokerClient.on('connect', () => {
 				context.eventEmitter.emit('reconnect', connectionConfiguration);
 				connectionConfiguration.status = {
