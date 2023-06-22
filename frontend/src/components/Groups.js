@@ -293,6 +293,7 @@ const Groups = (props) => {
 						variant="outlined"
 						color="primary"
 						size="small"
+						id="new-group-button"
 						startIcon={<AddIcon/>}
 						style={{marginRight: '10px'}}
 						onClick={(event) => {

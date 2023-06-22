@@ -395,6 +395,7 @@ const Connections = ({
 					variant="outlined"
 					color="primary"
 					size="small"
+					id="new-connection-button"
 					// className={classes.button}
 					startIcon={<AddIcon/>}
 					onClick={(event) => {

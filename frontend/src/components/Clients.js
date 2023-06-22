@@ -328,6 +328,7 @@ const Clients = (props) => {
 						variant="outlined"
 						color="primary"
 						size="small"
+						id="new-client-button"
 						className={classes.button}
 						style={{marginRight: '10px'}}
 						startIcon={<AddIcon/>}

@@ -229,6 +229,7 @@ const Users = (props) => {
 						variant="outlined"
 						color="primary"
 						size="small"
+						id="new-user-button"
 						startIcon={<AddIcon/>}
 						onClick={(event) => {
 							event.stopPropagation();

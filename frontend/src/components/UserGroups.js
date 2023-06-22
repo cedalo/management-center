@@ -276,6 +276,7 @@ const UserGroups = (props) => {
 						variant="outlined"
 						color="primary"
 						size="small"
+						id="new-user-group-button"
 						startIcon={<AddIcon/>}
 						onClick={(event) => {
 							event.stopPropagation();

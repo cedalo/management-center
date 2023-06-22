@@ -90,6 +90,7 @@ const AnonymousGroupSelect = ({ anonymousGroup, groupsAll = [], onUpdateAnonymou
 					<IconButton
 						size="small"
 						style={{ paddingRight: '10px' }}
+						id="select-anon-group"
 						onClick={(event) => {
 							event.stopPropagation();
 							// onDeleteGroup(group.groupname);

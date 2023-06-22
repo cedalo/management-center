@@ -162,9 +162,9 @@ const createClientsTable = (clients, classes, props, onDisconnectClient, onUpdat
 											</>
 										}>
 											{client.connected ?
-												<EnabledIcon fontSize="small" style={{color: green[500]}}/>
+												<EnabledIcon fontSize="small" style={{color: green[500]}} id="enabled-client-icon"/>
 												:
-												<DisabledIcon fontSize="small" style={{color: red[500]}}/>
+												<DisabledIcon fontSize="small" style={{color: red[500]}} id="disabled-client-icon"/>
 											}
 										</Tooltip>
 									</TableCell>

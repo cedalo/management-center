@@ -173,7 +173,7 @@ const Roles = (props) => {
 			clients,
 			defaultClient
 		} = props;
-	
+
 	const adminRoles = getAdminRoles(defaultClient, clients);
 
 	return (
@@ -194,6 +194,7 @@ const Roles = (props) => {
 						color="primary"
 						style={{marginRight: '10px'}}
 						size="small"
+						id="new-role-button"
 						startIcon={<AddIcon/>}
 						onClick={(event) => {
 							event.stopPropagation();

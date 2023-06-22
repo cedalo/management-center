@@ -297,6 +297,7 @@ const Clusters = (props) => {
 						variant="outlined"
 						color="primary"
 						size="small"
+						id="new-cluster-button"
 						startIcon={<AddIcon/>}
 						onClick={(event) => {
 							event.stopPropagation();

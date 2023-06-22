@@ -435,6 +435,7 @@ const createNewTokenDialog = (dialogOpen, handleDialogClose, client, userRoles, 
 													size="small"
 													className={classes.iconButton}
 													aria-label="copy token"
+													id="token-value-field"
 													onClick={() => copyText(createdToken.token,
 														enqueueSnackbar,
 														() => {
@@ -726,6 +727,7 @@ const ApplicationTokens = (props) => {
 					variant="outlined"
 					color="primary"
 					size="small"
+					id="new-token-button"
 					startIcon={<AddIcon/>}
 					onClick={(event) => {
 						event.stopPropagation();
