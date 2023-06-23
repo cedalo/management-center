@@ -56,6 +56,7 @@ const AnonymousGroupSelect = ({ anonymousGroup, groupsAll = [], onUpdateAnonymou
 					select
 					size="small"
 					placeholder="Select Anonymous Group"
+					id="select-anon-group"
 					options={groupSuggestions}
 					value={anonymousGroup?.groupname || ''}
 					onChange={(event) => {
@@ -90,7 +91,6 @@ const AnonymousGroupSelect = ({ anonymousGroup, groupsAll = [], onUpdateAnonymou
 					<IconButton
 						size="small"
 						style={{ paddingRight: '10px' }}
-						id="select-anon-group"
 						onClick={(event) => {
 							event.stopPropagation();
 							// onDeleteGroup(group.groupname);

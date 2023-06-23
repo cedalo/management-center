@@ -30,6 +30,7 @@ const LogoutButton = (props) => {
 	return <Tooltip title="Logout">
 		<IconButton
 			edge="end"
+			id="logout-button"
 			aria-label="Logout"
 			aria-controls="logout"
 			aria-haspopup="true"
