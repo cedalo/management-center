@@ -253,7 +253,10 @@ const ConnectionDetailComponent = (props) => {
 			if (connect) {
 				try {
 					// await doConnect(connection);
-					await doConnect(updatedConnection);
+					// if this connection is currently not connected, we test it before connecting
+					if (!connection?.status?.connected) {
+						await doConnect(updatedConnection);
+					}
 					await brokerClient.connectServerToBroker(connection.id);
 					if (!alreadyConnected) {
 						handleConnectionChange(dispatch, brokerClient, currentConnectionName,

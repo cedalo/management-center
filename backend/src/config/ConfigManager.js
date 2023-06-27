@@ -189,9 +189,23 @@ module.exports = class ConfigManager {
 		}
 		connection = removeCircular(connection);
 
-		let newConnection = this.filterConnectionObject(connection, keepStatusProperty);
+		// keepStatusProperty is true during the first server connection to all the brokers. This is done to respect the previous status of the connection and act accordingly.
+		// otherwise, the status property would have been filtered out from the connection
+		// cases when we want to filter it out from the connection object include receiving connection object form the frontend in order to ensure integrity of our db data
+		if (keepStatusProperty && connection.status === undefined) { // in case connections status is not defined, which is common for old config files
+			connection.status  = {
+				"connected": false,
+				"timestamp": null
+			}
+		}
+
+		let newConnection = this.filterConnectionObject(connection);
 		if (newConnection.url && this.hostMappingString) {
 			newConnection = this.processInternalExternalURLs(newConnection);
+		}
+
+		if (keepStatusProperty) {
+			newConnection.status = JSON.parse(JSON.stringify(connection.status)); // make a json deep copy here
 		}
 
 		return newConnection;

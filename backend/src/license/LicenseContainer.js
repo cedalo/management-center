@@ -14,7 +14,7 @@ class LicenseContainer {
 		return this._license;
 	}
 	set license(license) {
-		license.features.splice(license.features.length, 0, ...devFeatures);
+		license.features?.splice(license.features.length, 0, ...devFeatures);
 		this._license = license;
 	}
 }

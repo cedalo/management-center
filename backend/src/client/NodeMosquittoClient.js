@@ -237,8 +237,8 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 						reject(error);
 					}
 				});
-				brokerClient.subscribe('$CONTROL/cedalo/inspect/v1/#', (error) => {error && console.error(`Error subscruging to control inspect topic for ${this._url}`, error)});
-				brokerClient.subscribe('$CONTROL/cedalo/license/v1/#', (error) => {error && console.error(`Error subscruging to control license topic for ${this._url}`, error)});
+				brokerClient.subscribe('$CONTROL/cedalo/inspect/v1/#', (error) => {error && console.error(`Error subscribing to control inspect topic for ${this._url}`, error)});
+				brokerClient.subscribe('$CONTROL/cedalo/license/v1/#', (error) => {error && console.error(`Error subscribing to control license topic for ${this._url}`, error)});
 				
 				brokerClient.on('message', (topic, message) => {
 					this._handleBrokerMessage(topic, message.toString())
