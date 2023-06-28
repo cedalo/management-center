@@ -435,7 +435,6 @@ const createNewTokenDialog = (dialogOpen, handleDialogClose, client, userRoles, 
 													size="small"
 													className={classes.iconButton}
 													aria-label="copy token"
-													id="token-value-field"
 													onClick={() => copyText(createdToken.token,
 														enqueueSnackbar,
 														() => {
