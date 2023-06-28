@@ -225,6 +225,7 @@ const Streams = (props) => {
 						variant="outlined"
 						color="primary"
 						size="small"
+						id="new-stream-button"
 						style={{marginRight: '10px'}}
 						startIcon={<AddIcon/>}
 						onClick={(event) => {

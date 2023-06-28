@@ -50,7 +50,7 @@ const getNodeIcon = (node) => {
 		</Tooltip>
 	} else {
 		if (node?.leader) {
-			return <Tooltip title="Leader" aria-label="Leader">
+			return <Tooltip title="Leader" aria-label="Leader" id="cluster-leader-node">
 				<LeaderIcon style={{color: green[500]}}/>
 			</Tooltip>
 		} else {

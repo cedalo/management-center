@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-const Info = ({className, infos, infoIcon, infoTooltip, infoLink, actionIcon, label, chart, icon, alignment, ...rest}) => {
+const Info = ({className, infos, infoIcon, infoTooltip, infoLink, actionIcon, label, chart, icon, alignment, id, ...rest}) => {
 	const classes = useStyles();
 
 	return (
@@ -51,7 +51,7 @@ const Info = ({className, infos, infoIcon, infoTooltip, infoLink, actionIcon, la
 						{infoIcon ?
 							<Tooltip title={infoTooltip}>
 								<IconButton
-									className={classes.info} size="small"
+									className={classes.info} size="small" id={id}
 									aria-label="info">
 									<InfoOutlined
 										onClick={(event) => {

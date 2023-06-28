@@ -180,6 +180,7 @@ const Certificates = ({ connections, isCertSupported }) => {
 							variant="outlined"
 							color="primary"
 							size="small"
+							id="add-certificate-button"
 							startIcon={<AddIcon />}
 							onClick={onAddNewCertificate}
 						>

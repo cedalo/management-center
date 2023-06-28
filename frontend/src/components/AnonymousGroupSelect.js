@@ -56,6 +56,7 @@ const AnonymousGroupSelect = ({ anonymousGroup, groupsAll = [], onUpdateAnonymou
 					select
 					size="small"
 					placeholder="Select Anonymous Group"
+					id="select-anon-group"
 					options={groupSuggestions}
 					value={anonymousGroup?.groupname || ''}
 					onChange={(event) => {

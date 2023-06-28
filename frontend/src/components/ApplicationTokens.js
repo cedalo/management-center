@@ -726,6 +726,7 @@ const ApplicationTokens = (props) => {
 					variant="outlined"
 					color="primary"
 					size="small"
+					id="new-token-button"
 					startIcon={<AddIcon/>}
 					onClick={(event) => {
 						event.stopPropagation();

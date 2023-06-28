@@ -308,6 +308,7 @@ const Status = ({
 								<Info
 									label="Broker Traffic"
 									infoIcon
+									id={"broker-traffic-info-icon"}
 									infoTooltip={<>The information displayed here is gathered from Mosquitto
 										system topics. <br/>Click here to get a detailed explanation.</>}
 									infoLink={`${basePath}mosquitto/management-center/overview/inspection/mc-system#broker-traffic`}
@@ -340,6 +341,7 @@ const Status = ({
 								<Info
 									label="Publish"
 									infoIcon
+									id={"publish-info-icon"}
 									infoTooltip={<>The information displayed here is gathered from Mosquitto
 										system topics. <br/>Click here to get a detailed explanation.</>}
 									infoLink={`${basePath}mosquitto/management-center/overview/inspection/mc-system#publish`}
@@ -367,6 +369,7 @@ const Status = ({
 									// style={{cursor: 'pointer'}}
 									label="Clients"
 									infoIcon
+									id="clients-info-icon"
 									infoTooltip={<>The information displayed here is gathered from Mosquitto
 										system topics. <br/>Click here to get a detailed explanation.</>}
 									infoLink={`${basePath}mosquitto/management-center/overview/inspection/mc-system#clients`}
@@ -407,6 +410,7 @@ const Status = ({
 									label={brokerLicense && brokerLicense.edition ? "Client Usage" : "Client Usage not available"}
 									infos={[]}
 									infoIcon
+									id={"cliens-usage-info-icon"}
 									infoTooltip={<>The information displayed here is gathered from Mosquitto
 										system topics and your license. <br/>Click here to get a detailed
 										explanation.</>}
@@ -446,6 +450,7 @@ const Status = ({
 									<Info
 										label={brokerLicense.edition ? "License" : "License info not available"}
 										infoIcon
+										id={"license-info-icon"}
 										infoTooltip={<>The information displayed here is gathered from your
 											license. <br/>Click here to get a detailed explanation.</>}
 										infoLink={`${basePath}mosquitto/management-center/overview/inspection/mc-system#license`}
@@ -482,6 +487,7 @@ const Status = ({
 								<Info
 									label="Broker Info"
 									infoIcon
+									id={"broker-info-info-icon"}
 									infoTooltip={<>The information displayed here is gathered from Mosquitto
 										system topics and your configuration<br/>Click here to get a detailed
 										explanation.</>}
