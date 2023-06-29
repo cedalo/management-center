@@ -381,6 +381,7 @@ const UserGroups = (props) => {
 														<Tooltip title="Delete group">
 															<IconButton
 																size="small"
+																id={`delete-user-group-${group.name}`}
 																onClick={(event) => {
 																	event.stopPropagation();
 																	onDeleteGroup(group.name);
