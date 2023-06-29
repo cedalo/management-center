@@ -40,6 +40,7 @@ const ProfileButton = (props) => {
 			aria-haspopup="true"
 			onClick={() => handleProfile()}
 			color="inherit"
+			id="profile-button"
 			className={classes.toolbarButton}
 		>
 			<ProfileIcon fontSize="small" />

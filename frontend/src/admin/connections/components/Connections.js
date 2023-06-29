@@ -173,6 +173,7 @@ const CustomRow = (props) => {
 					<IconButton
 						disabled={brokerConnection.status?.connected || !atLeastAdmin(userProfile,
 							brokerConnection.name)}
+						id={`delete-connection-${brokerConnection.name}`}
 						size="small"
 						onClick={(event) => {
 							event.stopPropagation();

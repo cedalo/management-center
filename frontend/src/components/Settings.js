@@ -60,6 +60,7 @@ const Settings = ({settings, onChangeTheme, sendMessage}) => {
 						<Switch
 							checked={darkMode === 'true'}
 							onChange={(event) => onChangeTheme(event.target.checked)}
+							id="dark-mode-switch"
 							name="darkMode"
 							color="primary"
 						/>
@@ -78,6 +79,7 @@ const Settings = ({settings, onChangeTheme, sendMessage}) => {
 									onChangeAllowTrackingUsageData(false);
 								}
 							}}
+							id="allow-tracking-usage-data-switch"
 							name="allowTrackingUsageData"
 							color="primary"
 						/>
@@ -96,6 +98,7 @@ const Settings = ({settings, onChangeTheme, sendMessage}) => {
 									onChangeEnableTopicTree(false);
 								}
 							}}
+							id="topic-tree-enabled-switch"
 							name="topicTreeEnabled"
 							color="primary"
 						/>

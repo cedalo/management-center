@@ -314,6 +314,7 @@ const Clients = (props) => {
 					variant="outlined"
 					color="primary"
 					size="small"
+					id="reload-button-client-inspect"
 					style={{paddingRight: '0px', minWidth: '30px'}}
 					startIcon={<ReloadIcon/>}
 					onClick={(event) => {

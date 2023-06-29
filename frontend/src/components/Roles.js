@@ -219,6 +219,7 @@ const Roles = (props) => {
 						variant="outlined"
 						color="primary"
 						size="small"
+						id="reload-button-roles"
 						style={{paddingRight: '0px', minWidth: '30px'}}
 						startIcon={<ReloadIcon/>}
 						onClick={(event) => {
@@ -294,6 +295,7 @@ const Roles = (props) => {
 												<Tooltip title="Delete role">
 													<IconButton
 														size="small"
+														id={`delete-role-${role.rolename}`}
 														disabled={adminRoles.includes(role.rolename)}
 														onClick={(event) => {
 															event.stopPropagation();
