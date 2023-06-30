@@ -48,8 +48,10 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 	}
 
 	static createOptions(connection) {
+		// make a deep copy of the connection options
+		connection = JSON.parse(JSON.stringify(connection));
 		// remove unwanted parameters
-		const { name: _name, id: _id, status: _status, url: _url, credentials, ...restOfConnection } = connection;
+		const { name: _name, id: _id, status: _status, url: _url, credentials, noMetricsMode, ...restOfConnection } = connection;
 
 		// decode all base64 encoded fields
 		for (const property in restOfConnection) {
@@ -59,6 +61,16 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				restOfConnection[property] =
 					(restOfConnection[property] && restOfConnection[property].data) || restOfConnection[property];
 			}
+		}
+
+		// process no sysmetrics mode
+		if (noMetricsMode) {
+			restOfConnection.protocolVersion = 5;
+			restOfConnection.properties = {
+				userProperties: {
+					'sys-metrics': 'none'
+				}
+			};
 		}
 
 		// compose the result together by adding credentials, the rest of the connection and connectTimeout into one options object
@@ -71,6 +83,9 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 
 
 	_createConnectionHandler(url, options) {
+		// make a deep copy of the options
+		options = JSON.parse(JSON.stringify(options));
+
 		if (options) {
 			options.reconnectPeriod = 0;
 			options.connectTimeout = CONNECT_TIMEOUT_MS;

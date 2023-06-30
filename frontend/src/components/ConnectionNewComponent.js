@@ -150,12 +150,12 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 			// username: 'cedalo',
 			// password: 'eAkX29UnAs'
 		},
+		noMetricsMode: true,
 		[verifyServerCertificateFieldName]: true,
 		[customCACertificateFileFieldName]: '',
 		[clientCertificateFileFieldName]: '',
 		[clientPrivateKeyFileFieldName]: '',
 	});
-	const [noMetrics, setNoMetrics] = React.useState(true);
 	const [connected, setConnected] = React.useState(false);
 	const {enqueueSnackbar} = useSnackbar();
 	const history = useHistory();
@@ -335,7 +335,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 				[makeFileField(name)]: filename
 			}));
 
-			setConnected(false); // ??!!
+			setConnected(false); //?! why do we even need this? 
 		};
 	};
 
@@ -483,22 +483,13 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 						<Switch
 							color="primary"
 							size="small"
-							checked={noMetrics}
+							checked={connection.noMetricsMode}
 							onChange={(event) => {
 								const ignoreMMCTraffic = event.target.checked;
-								if (ignoreMMCTraffic) {
-									connection.protocolVersion = 5;
-									connection.properties = {
-										userProperties: {
-											'sys-metrics': 'none'
-										}
-									};
-								} else {
-									delete connection.protocolVersion;
-									delete connection.properties;
-								}
-								setConnection(connection);
-								setNoMetrics(ignoreMMCTraffic);
+								setConnection({
+									...connection,
+									noMetricsMode: ignoreMMCTraffic,
+								});
 								setConnected(false);
 							}}
 						/>

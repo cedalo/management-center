@@ -166,7 +166,6 @@ const ConnectionDetailComponent = (props) => {
 	const handleClickShowPassword = () => setShowPassword(!showPassword);
 	const handleMouseDownPassword = () => setShowPassword(!showPassword);
 	const [editMode, setEditMode] = React.useState(editModeEnabledByDefault);
-	const [noMetrics, setNoMetrics] = React.useState(connection.protocolVersion === 5 && connection.properties?.userProperties?.['sys-metrics'] === 'none');
 	const {enqueueSnackbar} = useSnackbar();
 
 	const [updatedConnection, setUpdatedConnection] = React.useState({
@@ -594,22 +593,13 @@ const ConnectionDetailComponent = (props) => {
 							color="primary"
 							size="small"
 							disabled={!editMode}
-							checked={noMetrics}
+							checked={updatedConnection.noMetricsMode}
 							onChange={(event) => {
 								const ignoreMMCTraffic = event.target.checked;
-								if (ignoreMMCTraffic) {
-									updatedConnection.protocolVersion = 5;
-									updatedConnection.properties = {
-										userProperties: {
-											'sys-metrics': 'none'
-										}
-									};
-								} else {
-									delete updatedConnection.protocolVersion;
-									delete updatedConnection.properties;
-								}
-								setUpdatedConnection(updatedConnection);
-								setNoMetrics(ignoreMMCTraffic);
+								setUpdatedConnection({
+									...updatedConnection,
+									noMetricsMode: ignoreMMCTraffic,
+								});
 								setConnected(false);
 							}}
 						/>
