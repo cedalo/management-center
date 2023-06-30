@@ -239,6 +239,7 @@ const Streams = (props) => {
 						variant="outlined"
 						color="primary"
 						size="small"
+						id="reload-button-streams"
 						style={{paddingRight: '0px', minWidth: '30px'}}
 						startIcon={<ReloadIcon/>}
 						onClick={(event) => {
@@ -393,6 +394,7 @@ const Streams = (props) => {
 													<Tooltip title="Delete stream">
 														<IconButton
 															size="small"
+															id={`delete-stream-${stream.streamname}`}
 															onClick={(event) => {
 																event.stopPropagation();
 																onDeleteStream(stream.streamname);

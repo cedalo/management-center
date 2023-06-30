@@ -104,6 +104,7 @@ export default function HelpButtons(props) {
 				aria-label="Tour"
 				aria-controls="tour"
 				aria-haspopup="true"
+				id="intro-tour-button"
 				onClick={(event) => {
 					onShowPopup(event, )
 				}}
@@ -118,6 +119,7 @@ export default function HelpButtons(props) {
 				aria-label="Tour"
 				aria-controls="tour"
 				aria-haspopup="true"
+				id="help-button"
 				onClick={() => window.open(getHelpContext(), '_blank')}
 				className={classes.toolbarButton}
 			>

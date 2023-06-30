@@ -417,7 +417,7 @@ const createNewTokenDialog = (dialogOpen, handleDialogClose, client, userRoles, 
 											}
 										/>
 									</Grid>
-									<Grid item xs={12} style={{paddingTop: '20px'}}>
+									<Grid item xs={12} style={{paddingTop: '20px'}} id={"token-color-field"}>
 										<Typography>Token:</Typography>
 										<TextField
 											autoFocus
@@ -434,6 +434,7 @@ const createNewTokenDialog = (dialogOpen, handleDialogClose, client, userRoles, 
 												endAdornment: <IconButton
 													size="small"
 													className={classes.iconButton}
+													id="copy-token-button"		// ist der copy button
 													aria-label="copy token"
 													onClick={() => copyText(createdToken.token,
 														enqueueSnackbar,
@@ -629,6 +630,7 @@ const createTokenTable = (tokens, classes, props, onDeleteToken) => {
 										<Tooltip title="Revoke token">
 											<IconButton
 												size="small"
+												id={`revoke-token-${token.name}`}
 												onClick={(event) => {
 													event.stopPropagation();
 													onDeleteToken(token.hash, token.name);

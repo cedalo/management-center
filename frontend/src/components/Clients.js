@@ -343,6 +343,7 @@ const Clients = (props) => {
 						variant="outlined"
 						color="primary"
 						size="small"
+						id="reload-button-clients"
 						style={{paddingRight: '0px', minWidth: '30px'}}
 						startIcon={<ReloadIcon/>}
 						onClick={(event) => {
@@ -439,6 +440,7 @@ const Clients = (props) => {
 														<Tooltip title="Enable / disable client">
 															<Checkbox
 																color="primary"
+																id={`enable-disable-checkbox-${client.username}`}
 																disabled={isAdminClient(client)}
 																checked={
 																	typeof client.disabled === 'undefined' ||
@@ -457,6 +459,7 @@ const Clients = (props) => {
 														</Tooltip>
 														<Tooltip title="Delete client">
 															<IconButton
+																id={`delete-button-${client.username}`}
 																disabled={isAdminClient(client)}
 																size="small"
 																onClick={(event) => {

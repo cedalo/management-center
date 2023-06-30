@@ -90,15 +90,15 @@ const CustomTableRow = ({ cert, connections, handleDelete, names }) => {
 				</BadgesCell>
 				<TableCell align="center">
 					<Tooltip title="Deploy/Undeploy Certificate">
-						<IconButton size="small" onClick={onDeploy}>
+						<IconButton size="small" onClick={onDeploy} id={`deploy-cert-button-${cert.name}`}>
 							<UploadIcon fontSize="small" />
 						</IconButton>
 					</Tooltip>
 				</TableCell>
 				<TableCell align="center">
 					<Tooltip title="Delete Certificate">
-						<IconButton size="small" onClick={onDelete}>
-							<DeleteIcon fontSize="small" />
+						<IconButton size="small" onClick={onDelete} id={`delete-certificate-${cert.name}`}>
+							<DeleteIcon fontSize="small"/>
 						</IconButton>
 					</Tooltip>
 				</TableCell>

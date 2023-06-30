@@ -122,6 +122,7 @@ const createClusterTable = (clusters, classes, props, onCheckHealthStatus, onDel
 									<Tooltip title="Delete cluster">
 										<IconButton
 											size="small"
+											id={`delete-cluster-${cluster.clustername}`}
 											onClick={(event) => {
 												event.stopPropagation();
 												onDeleteCluster(cluster.clustername);

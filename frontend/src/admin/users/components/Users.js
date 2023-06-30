@@ -107,6 +107,7 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 												<IconButton
 													disabled={user.editable === false}
 													size="small"
+													id={`delete-user-${user.username}`}
 													onClick={(event) => {
 														event.stopPropagation();
 														onDeleteUser(user.username);

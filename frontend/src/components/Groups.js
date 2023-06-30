@@ -307,6 +307,7 @@ const Groups = (props) => {
 						variant="outlined"
 						color="primary"
 						size="small"
+						id="reload-button-groups"
 						style={{paddingRight: '0px', minWidth: '30px'}}
 						startIcon={<ReloadIcon/>}
 						onClick={(event) => {
@@ -392,6 +393,7 @@ const Groups = (props) => {
 											<Tooltip title="Delete group">
 												<IconButton
 													size="small"
+													id={`delete-group-${group.groupname}`}
 													onClick={(event) => {
 														event.stopPropagation();
 														onDeleteGroup(group.groupname);

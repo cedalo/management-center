@@ -166,7 +166,7 @@ const OnBoardingDialog = ({ settings }) => {
 	const [newsletterEndpointResponse, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/newsletter/subscribe`);
 
 	const steps = getSteps(hasError ? null : newsletterEndpointResponse?.newsletterEndpointAvailable);
-	
+
 	const [showOnBoardingDialog, setShowOnBoardingDialog] = useLocalStorage(
 		'cedalo.managementcenter.showOnBoardingDialog'
 	);
@@ -378,7 +378,7 @@ const OnBoardingDialog = ({ settings }) => {
 				{/* <Button onClick={handleClose} color="primary">
             Disagree
           </Button> */}
-				<Button onClick={handleClose} color="secondary" autoFocus>
+				<Button onClick={handleClose} color="secondary" autoFocus id="get-started-button">
 					Get started!
 				</Button>
 			</DialogActions>
