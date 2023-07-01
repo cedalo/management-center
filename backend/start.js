@@ -756,6 +756,11 @@ const init = async (licenseContainer) => {
 		broadcastWebSocketConnectionConnected();
 		broadcastWebSocketConnections();
 		// send license information
+		ws.cedaloStash = { // the name of the property is cedaloStash to make any collision with ws object's internal arguments in the future version highly unlickly
+			request
+		}; // store request object in the websocket object itself. This is mainly done to access x-real-ip later on in audit trail plugin
+
+
 		ws.send(
 			JSON.stringify({
 				type: 'event',
