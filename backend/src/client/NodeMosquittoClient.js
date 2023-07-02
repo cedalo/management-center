@@ -83,8 +83,8 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 
 
 	_createConnectionHandler(url, options) {
-		// make a deep copy of the options
-		options = JSON.parse(JSON.stringify(options));
+		// make a shallow copy of the options. This is enough for our purposes. We don't change the nested object to need a deep copy plus deep copy is cumbersome because options contain Buffers which JSON.parse(JSON.stringify()) doesn't know how to serialize 
+		options = {...options};
 
 		if (options) {
 			options.reconnectPeriod = 0;
