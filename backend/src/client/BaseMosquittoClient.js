@@ -47,12 +47,12 @@ module.exports = class BaseMosquittoClient {
 
 	// abstract method to be overwritten in subclass
 	_createConnectionHandler() {
-		return Promise.reject(new Error('No implementation of abstract method _createConnectionHandler() in subclass.'));
+		throw new Error('No implementation of abstract method _createConnectionHandler() in subclass.')
 	}
 
 
-	async createConnectionHandler() {
-		this._createConnectionHandler(...arguments);
+	createConnectionHandler() {
+		return this._createConnectionHandler(...arguments);
 	}
 
 
