@@ -372,6 +372,8 @@ const init = async (licenseContainer) => {
 
 	const handleConnectServerToBroker = async (connection, user) => {
 		const brokerClient = new NodeMosquittoClient({
+			brokerName: connection.name,
+			brokerId: connection.id
 			/* logger: console */
 		});
 		const topicTreeManager = new TopicTreeManager(brokerClient, connection, settingsManager, context);

@@ -25,8 +25,10 @@ const timeoutHandler = (correlationData, requests) => {
 const createID = () => uuid();
 
 module.exports = class BaseMosquittoClient {
-	constructor({ name, logger, defaultListener } = {}) {
+	constructor({ name, logger, defaultListener, brokerId, brokerName } = {}) {
 		this.name = name || 'Default Base Mosquitto Client';
+		this.brokerId = brokerId;
+		this.brokerName = brokerName;
 		this._logger = logger || {
 			log() {},
 			info() {},

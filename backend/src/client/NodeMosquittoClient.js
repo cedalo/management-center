@@ -50,8 +50,8 @@ const generateEventMessage = (topicName, message, rest) => {
 
 
 module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
-	constructor({ name = 'Node Mosquitto Client', logger } = {}) {
-		super({ name, logger: logger });
+	constructor({ name='Node Mosquitto Client', brokerId, brokerName, logger } = {}) {
+		super({ name, logger: logger, brokerId, brokerName });
 		this._disconnectedByUser = false;
 		this._topicsToSubscribe = TOPICS_TO_SUBSCRIBE;
 		this.subscribedTopics = [];
@@ -110,6 +110,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 
 		this._client = brokerClient;
 		this._url = url;
+		this._brokerIdentifier = this.brokerId || this.brokerName || this._url;
 
 		brokerClient.stream.on('error', (error) => {
 			if (!socketErrors.includes(error.code) && error.code.startsWith('ERR_SSL')) {
@@ -142,58 +143,58 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 			wasConnected = true;
 			clearInterval(timeoutID);
 			this.connected = true;
-			this.logger.log(`Connected to ${url}`);
+			this.logger.log(`Connected to ${this._brokerIdentifier}`);
 		});
 
 		brokerClient.on('disconnect', () => {
-			console.log(`Disonnected from ${url}`);
-			this.logger.log(`Disonnected from ${url}`);
+			console.log(`Disonnected from ${this._brokerIdentifier}`);
+			this.logger.log(`Disonnected from ${this._brokerIdentifier}`);
 		});
 
 		brokerClient.on('close', () => {
 			this.connected = false;
 			if (attemptNumber === 1) {
-				console.log(`Closing connection to ${url}`);
-				this.logger.log(`Closing connection to ${url}`);
+				console.log(`Closing connection to ${this._brokerIdentifier}`);
+				this.logger.log(`Closing connection to ${this._brokerIdentifier}`);
 			} else if (attemptNumber === MAX_NUMBER_OF_ATTEMPTS + 1) {
-				this.logger.log(`Maximum reconnection attempts reached for ${url}`);
-				console.log(`Maximum reconnection attempts reached for ${url}`);
+				this.logger.log(`Maximum reconnection attempts reached for ${this._brokerIdentifier}`);
+				console.log(`Maximum reconnection attempts reached for ${this._brokerIdentifier}`);
 				// brokerClient.end(); // has no effect
 				brokerClient.emit('information', generateEventMessage(
 						TOPIC_NAME,
 						'Maximum reconnection attempts reached',
-						{ brokerId: 'todo' }
+						{ brokerId: this.brokerId }
 					)
 				);
 				return;
 			}
 			if (!wasConnected) {
-				this.logger.error(`${url} closed before connect`);
-				console.error(`${url} closed before connect`);
+				this.logger.error(`${this._brokerIdentifier} closed before connect`);
+				console.error(`${this._brokerIdentifier} closed before connect`);
 				// brokerClient.end(); // has no effect
-				brokerClient.emit('error', new Error(`Could not connect to ${url}. Connection closed`)); // propagete the error further inside brokerClient listeners
+				brokerClient.emit('error', new Error(`Could not connect to ${this._brokerIdentifier}. Connection closed`)); // propagete the error further inside brokerClient listeners
 				return;
 			}
 			if (this._disconnectedByUser) {
-				this.logger.log(`Connection to ${url} closed by the user`);
-				console.log(`Connection to ${url} closed by the user`);
+				this.logger.log(`Connection to ${this._brokerIdentifier} closed by the user`);
+				console.log(`Connection to ${this._brokerIdentifier} closed by the user`);
 				return;
 			}
 			if (!MAX_NUMBER_OF_ATTEMPTS) {
-				this.logger.log(`No reconnection attempts scheduled for ${url}. CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS is zero (${MAX_NUMBER_OF_ATTEMPTS})`);
-				console.log(`No reconnection attempts scheduled for ${url}. CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS is zero (${MAX_NUMBER_OF_ATTEMPTS})`);
+				this.logger.log(`No reconnection attempts scheduled for ${this._brokerIdentifier}. CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS is zero (${MAX_NUMBER_OF_ATTEMPTS})`);
+				console.log(`No reconnection attempts scheduled for ${this._brokerIdentifier}. CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS is zero (${MAX_NUMBER_OF_ATTEMPTS})`);
 				return;
 			}
-			this.logger.log(`Scheduling reconnect(s) for ${url}`);
-			console.log(`Scheduling reconnect(s) for ${url}`);
+			this.logger.log(`Scheduling reconnect(s) for ${this._brokerIdentifier}`);
+			console.log(`Scheduling reconnect(s) for ${this._brokerIdentifier}`);
 
 			timeoutID = setTimeout(() => { // kill set timeout in connect hanlder!!!
-				this.logger.log(`Reconnecting to ${url}: attempt ${attemptNumber}; current backoff interval was: ${attemptBackoffMs} ms`);
-				console.log(`Reconnecting to ${url}: attempt ${attemptNumber}; current backoff interval was: ${attemptBackoffMs} ms`);
+				this.logger.log(`Reconnecting to ${this._brokerIdentifier}: attempt ${attemptNumber}; current backoff interval was: ${attemptBackoffMs} ms`);
+				console.log(`Reconnecting to ${this._brokerIdentifier}: attempt ${attemptNumber}; current backoff interval was: ${attemptBackoffMs} ms`);
 				brokerClient.emit('information', generateEventMessage(
 						TOPIC_NAME,
-						`Reconnecting to ${url}: attempt ${attemptNumber}; current backoff interval was: ${attemptBackoffMs} ms`,
-						{ attemptNumber, attemptBackoffMs, brokerId: 'todo' }
+						`Reconnecting to ${this._brokerIdentifier}: attempt ${attemptNumber}; current backoff interval was: ${attemptBackoffMs} ms`,
+						{ attemptNumber, attemptBackoffMs, brokerId: this.brokerId }
 					)
 				);
 				brokerClient.reconnect();
@@ -210,12 +211,12 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		this._topicsToSubscribe.forEach((topicname) => {
 			this.subscribe(topicname, (error) => { // critical topics, reject if unsucessful
 				if (error) {
-					console.error(`Error subscriting to ${topicname} topic for ${this._url}:`, error);
-					this.logger.error(`Error subscriting to ${topicname} topic for ${this._url}: ${error}`);
+					console.error(`Error subscriting to ${topicname} topic for ${this._brokerIdentifier}:`, error);
+					this.logger.error(`Error subscriting to ${topicname} topic for ${this._brokerIdentifier}: ${error}`);
 					return;
 				}
-				console.log(`Subscribed to ${topicname} topic for ${this._url}`);
-				this.logger.log(`Subscribed to ${topicname} topic for ${this._url}`);
+				console.log(`Subscribed to ${topicname} topic for ${this._brokerIdentifier}`);
+				this.logger.log(`Subscribed to ${topicname} topic for ${this._brokerIdentifier}`);
 			});
 		});
 	}
@@ -225,12 +226,12 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		[...this.subscribedTopics].forEach((topicname) => { // when unsubscribing from topics we mutate this array
 			this.unsubscribe(topicname, (error) => { // critical topics, reject if unsucessful
 				if (error) {
-					console.error(`Error unsubscriting to ${topicname} topic for ${this._url}:`, error);
-					this.logger.error(`Error unsubscriting to ${topicname} topic for ${this._url}: ${error}`);
+					console.error(`Error unsubscriting to ${topicname} topic for ${this._brokerIdentifier}:`, error);
+					this.logger.error(`Error unsubscriting to ${topicname} topic for ${this._brokerIdentifier}: ${error}`);
 					return;
 				}
-				console.log(`Unsubscribed to ${topicname} topic for ${this._url}`);
-				this.logger.log(`Unsubscribed to ${topicname} topic for ${this._url}`);
+				console.log(`Unsubscribed to ${topicname} topic for ${this._brokerIdentifier}`);
+				this.logger.log(`Unsubscribed to ${topicname} topic for ${this._brokerIdentifier}`);
 			});
 		});
 	}
@@ -239,7 +240,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 	_connectBroker(url, options) {
 		return new Promise((resolve, reject) => {
 			const timeoutHandler = setTimeout(() => {
-				reject(new Error(`Connection to ${this._url} timed out`));
+				reject(new Error(`Connection to ${this._brokerIdentifier} timed out`));
 			}, CONNECT_TIMEOUT_MS);
 
 			let brokerClient = this._client;
@@ -261,7 +262,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				// we are only intereseted in the first close event which happens before any connect can occur. there is no guarantee that we will catch it with this code
 				// but for such casees we have timeout hanlder in the beginning of this funciton
 				// bottom line is that this is just an auxilary code and it can be safely removed/ignored (same as an error event handler below)
-				reject(new Error(`Connection to ${this._url} closed`));
+				reject(new Error(`Connection to ${this._brokerIdentifier} closed`));
 			});
 			brokerClient.on('error', (error) => {
 				// promise can only be rejected once, subsequent calls are ignored, so this code will not cause any harm when executed subsequently

@@ -80,6 +80,8 @@ const testConnectionAction = {
 			throw AuthError.notAllowed();
 		}
 		const testClient = new NodeMosquittoClient({
+			brokerName: connection.name,
+			brokerId: connection.id
 			/* logger: console */
 		});
 
