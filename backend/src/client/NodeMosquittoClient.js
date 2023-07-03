@@ -25,9 +25,17 @@ const CONNECT_TIMEOUT_MS = (process.env.CEDALO_MC_MQTT_CONNECT_TIMEOUT_MS
 							) || 5000;
 
 const TOPIC_NAME = 'brokerReconnect';
+     
 
+const TOPICS_TO_SUBSCRIBE = ['$CONTROL/#',
+							'$SYS/#',
+							// '$CONTROL/dynamic-security/v1/',
+							// '$CONTROL/cedalo/inspect/v1/#',
+							// '$CONTROL/cedalo/license/v1/#',
+						]
 
 //TODO: move to utils or something
+// made to notify other parts of the program that some connection events happened
 const generateEventMessage = (topicName, message, rest) => {
 	if (!rest) {
 		rest = {};
@@ -45,6 +53,8 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 	constructor({ name = 'Node Mosquitto Client', logger } = {}) {
 		super({ name, logger: logger });
 		this._disconnectedByUser = false;
+		this._topicsToSubscribe = TOPICS_TO_SUBSCRIBE;
+		this.subscribedTopics = [];
 	}
 
 	static createOptions(connection) {
@@ -196,6 +206,36 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 	}
 
 
+	_subscribeToSystemTopics() {
+		this._topicsToSubscribe.forEach((topicname) => {
+			this.subscribe(topicname, (error) => { // critical topics, reject if unsucessful
+				if (error) {
+					console.error(`Error subscriting to ${topicname} topic for ${this._url}:`, error);
+					this.logger.error(`Error subscriting to ${topicname} topic for ${this._url}: ${error}`);
+					return;
+				}
+				console.log(`Subscribed to ${topicname} topic for ${this._url}`);
+				this.logger.log(`Subscribed to ${topicname} topic for ${this._url}`);
+			});
+		});
+	}
+
+	
+	_unsubscribeFromAllTopics() {
+		[...this.subscribedTopics].forEach((topicname) => { // when unsubscribing from topics we mutate this array
+			this.unsubscribe(topicname, (error) => { // critical topics, reject if unsucessful
+				if (error) {
+					console.error(`Error unsubscriting to ${topicname} topic for ${this._url}:`, error);
+					this.logger.error(`Error unsubscriting to ${topicname} topic for ${this._url}: ${error}`);
+					return;
+				}
+				console.log(`Unsubscribed to ${topicname} topic for ${this._url}`);
+				this.logger.log(`Unsubscribed to ${topicname} topic for ${this._url}`);
+			});
+		});
+	}
+
+
 	_connectBroker(url, options) {
 		return new Promise((resolve, reject) => {
 			const timeoutHandler = setTimeout(() => {
@@ -230,34 +270,17 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 			});
 
 			brokerClient.on('connect', () => {
-				brokerClient.subscribe('$CONTROL/#', (error) => { // critical topics, reject if unsucessful
-					console.log(`Subscribed to control topics for ${this._url}`);
-					if (error) {
-						this.logger.error(error);
-						reject(error);
-					}
-				});
-	
-				brokerClient.subscribe('$SYS/#', (error) => { // critical topics, reject if unsucessful
-					console.log(`Subscribed to system topics for '${this._url}'`);
-					if (error) {
-						console.error(error);
-						reject(error);
-					}
-				});
-				brokerClient.subscribe('$CONTROL/dynamic-security/v1/#', (error) => { // critical topics, reject if unsucessful
-					console.log(`Subscribed to dynamic-security topics for '${this._url}'`);
-					if (error) {
-						console.error(error);
-						reject(error);
-					}
-				});
-				brokerClient.subscribe('$CONTROL/cedalo/inspect/v1/#', (error) => {error && console.error(`Error subscribing to control inspect topic for ${this._url}`, error)});
-				brokerClient.subscribe('$CONTROL/cedalo/license/v1/#', (error) => {error && console.error(`Error subscribing to control license topic for ${this._url}`, error)});
-				
+				this._subscribeToSystemTopics();
+
 				brokerClient.on('message', (topic, message) => {
 					this._handleBrokerMessage(topic, message.toString())
 				}); // TODO: can we move it out of connect?
+
+
+				brokerClient.on('end', () => {
+					console.log('END CALLED:DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD');
+				});
+
 
 				clearTimeout(timeoutHandler);
 				resolve(brokerClient);
@@ -265,10 +288,12 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		});
 	}
 
+
 	async _disconnectBroker(isDisconnectedByUser) {
 		// this function is called when user requests disconnection (then isDisconnectedByUser is set to true), but can
 		// also be called be called when the connection got unexpectedly closed or error erised, then we don't set disconnecteByUser flag
 		this._disconnectedByUser = !!isDisconnectedByUser;
+		this._unsubscribeFromAllTopics();
 		this._client?.end();
 	}
 
@@ -278,13 +303,37 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 
 	subscribe(topic, callback) {
 		if (this._client?.connected) {
-			this._client.subscribe(topic, callback);
-		} 
+			if (!this.subscribedTopics.includes(topic)) {
+				this.subscribedTopics.push(topic);
+			}
+
+			this._client.subscribe(topic, (...args) => {
+				const error = args[0];
+				if (error) {
+					const index = this.subscribedTopics.indexOf(topic)
+					if (index) {
+						this.subscribedTopics.splice(index, 1);
+					}
+				}
+				callback(...args);
+			});
+		}
 	}
 
 	unsubscribe(topic, callback) {
 		if (this._client?.connected) {
-			this._client.unsubscribe(topic, callback);
+			const index = this.subscribedTopics.indexOf(topic)
+			if (index) {
+				this.subscribedTopics.splice(index, 1);
+			}
+
+			this._client.unsubscribe(topic, (...args) => {
+				const error = args[0];
+				if (error) {
+					this.subscribedTopics.push(topic);
+				}
+				callback(...args);
+			});
 		}
 	}
 
