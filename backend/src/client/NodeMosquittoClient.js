@@ -276,12 +276,6 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 					this._handleBrokerMessage(topic, message.toString())
 				}); // TODO: can we move it out of connect?
 
-
-				brokerClient.on('end', () => {
-					console.log('END CALLED:DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD');
-				});
-
-
 				clearTimeout(timeoutHandler);
 				resolve(brokerClient);
 			});
@@ -289,10 +283,10 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 	}
 
 
-	async _disconnectBroker(isDisconnectedByUser) {
-		// this function is called when user requests disconnection (then isDisconnectedByUser is set to true), but can
+	async _disconnectBroker(isNormalDisconnect) {
+		// this function is called when user requests disconnection (then isNormalDisconnect is set to true), but can
 		// also be called be called when the connection got unexpectedly closed or error erised, then we don't set disconnecteByUser flag
-		this._disconnectedByUser = !!isDisconnectedByUser;
+		this._disconnectedByUser = !!isNormalDisconnect;
 		this._unsubscribeFromAllTopics();
 		this._client?.end();
 	}

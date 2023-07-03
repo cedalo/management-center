@@ -30,8 +30,8 @@ const createActions = (plugin) => ({
 			if (security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, connectionId)) {
 				try {
 					const connection = configManager.getConnection(connectionId);
-					const isDisconnectedByUser = true;
-					await context.handleDisconnectServerFromBroker(connection, isDisconnectedByUser);
+					const isNormalDisconnect = true;
+					await context.handleDisconnectServerFromBroker(connection, isNormalDisconnect);
 				} catch (error) {
 					throw error;
 				}

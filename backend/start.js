@@ -453,7 +453,7 @@ const init = async (licenseContainer) => {
 				}
 				sendConnectionsUpdate(brokerClient, user);
 				configManager.updateConnection(connection.id, connectionConfiguration);
-				// const isDisconnectedByUser = false;
+				// const isNormalDisconnect = false;
 				// context.handleDisconnectServerFromBroker(connection);
 			});
 			// this listener is applied only on reconnect (at the time we apply this listener the conenction had already been established and the first connect event alrady fired)
@@ -511,10 +511,10 @@ const init = async (licenseContainer) => {
 		return error;
 	};
 
-	const handleDisconnectServerFromBroker = async (connection, isDisconnectedByUser) => {
+	const handleDisconnectServerFromBroker = async (connection, isNormalDisconnect) => {
 		const client = context.brokerManager.getBrokerConnectionById(connection.id);
 		if (client) {
-			client.broker.disconnect(isDisconnectedByUser);
+			client.broker.disconnect(isNormalDisconnect);
 		}
 		context.brokerManager.handleDeleteBrokerConnection(connection);
 
