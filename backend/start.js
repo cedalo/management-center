@@ -458,8 +458,6 @@ const init = async (licenseContainer) => {
 
 				if (brokerClient.completeDisconnect.value) {
 					context.handleDisconnectServerFromBroker(connection); // this will remove brokerClient from brokerManager
-					globalTopicTree[connection.name] = undefined;
-					globalSystem[connection.name] = undefined;
 				}
 			});
 			// this listener is applied only on reconnect (at the time we apply this listener the conenction had already been established and the first connect event alrady fired)
@@ -523,7 +521,8 @@ const init = async (licenseContainer) => {
 			client.broker.disconnect(isNormalDisconnect);
 		}
 		context.brokerManager.handleDeleteBrokerConnection(connection);
-
+		globalTopicTree[connection.name] = undefined;
+		globalSystem[connection.name] = undefined;
 		// if (!connection.status) {
 		// 	connection.status = {};
 		// }
