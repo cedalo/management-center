@@ -447,16 +447,20 @@ const init = async (licenseContainer) => {
 						errno: 1,
 						code: 'ECONNCLOSED',
 						syscall: 'on',
-						interrupted: !brokerClient.disconnectedByUser
+						interrupted: !brokerClient.disconnectedByUser // interuppted means it was not a normal disconnect, not disconnected by user 
 					}
 				};
-				if (brokerClient.disconnectedByUser) {
-					brokerClient.disconnectedByUser = false;
-				}
+				// if (brokerClient.disconnectedByUser) {
+				// 	brokerClient.disconnectedByUser = false;
+				// }
 				sendConnectionsUpdate(brokerClient, user);
 				configManager.updateConnection(connection.id, connectionConfiguration);
-				// const isNormalDisconnect = false;
-				// context.handleDisconnectServerFromBroker(connection);
+
+				if (brokerClient.completeDisconnect.value) {
+					context.handleDisconnectServerFromBroker(connection); // this will remove brokerClient from brokerManager
+					globalTopicTree[connection.name] = undefined;
+					globalSystem[connection.name] = undefined;
+				}
 			});
 			// this listener is applied only on reconnect (at the time we apply this listener the conenction had already been established and the first connect event alrady fired)
 			// this is important to set up this event here, after brokerClient.connect(); and not before since otherwise it will not be a called exclusively on reconnect

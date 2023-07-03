@@ -105,6 +105,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		let wasConnected = false; // maybe delete this
 		let attemptNumber = 1;
 		let attemptBackoffMs = ATTEMPT_BACKOFF_MS;
+		this._completeDisconnect = {value: false, reason: undefined};
 		// an ugly way to make mqttClient throw openssl errors instead of silencing them
 		const brokerClient = mqtt.connect(url, options);
 
@@ -142,8 +143,12 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 			attemptBackoffMs = ATTEMPT_BACKOFF_MS;
 			wasConnected = true;
 			clearInterval(timeoutID);
+			this._disconnectedByUser = false;
 			this.connected = true;
 			this.logger.log(`Connected to ${this._brokerIdentifier}`);
+			// this._completeDisconnect = {value: false, reason: undefined}; // there is no point in this line, since terminal disconnect is supposed to destroy this brokerClient object anyways.
+			// in case we want to reestablish a connection after a terminal disconnect, we don't need this brokerClient. We have connections in config.json, and will create a new brokerClient
+			// the only porblem is that I think there is a reference to brokerClient in topicTreeManager which doesn't allow to garbadge collect it even if we remove it from brokerMnager (need to double check tho)
 		});
 
 		brokerClient.on('disconnect', () => {
@@ -162,10 +167,17 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				// brokerClient.end(); // has no effect
 				brokerClient.emit('information', generateEventMessage(
 						TOPIC_NAME,
-						'Maximum reconnection attempts reached',
+						'Maximum reconnection attempts reached', // 'MAX_NUMBER_OF_ATTEMPTS'
 						{ brokerId: this.brokerId }
 					)
 				);
+				this._completeDisconnect = {value: true, reason: 'MAX_NUMBER_OF_ATTEMPTS'};
+				return;
+			}
+			if (!MAX_NUMBER_OF_ATTEMPTS) {
+				this.logger.log(`No reconnection attempts scheduled for ${this._brokerIdentifier}. CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS is zero (${MAX_NUMBER_OF_ATTEMPTS})`);
+				console.log(`No reconnection attempts scheduled for ${this._brokerIdentifier}. CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS is zero (${MAX_NUMBER_OF_ATTEMPTS})`);
+				this._completeDisconnect = {value: true, reason: 'NO_RECONNECT_ATTEMPTS'};
 				return;
 			}
 			if (!wasConnected) {
@@ -173,16 +185,13 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				console.error(`${this._brokerIdentifier} closed before connect`);
 				// brokerClient.end(); // has no effect
 				brokerClient.emit('error', new Error(`Could not connect to ${this._brokerIdentifier}. Connection closed`)); // propagete the error further inside brokerClient listeners
+				this._completeDisconnect = {value: true, reason: 'CLOSED_BEFORE_CONNECT'};
 				return;
 			}
 			if (this._disconnectedByUser) {
 				this.logger.log(`Connection to ${this._brokerIdentifier} closed by the user`);
 				console.log(`Connection to ${this._brokerIdentifier} closed by the user`);
-				return;
-			}
-			if (!MAX_NUMBER_OF_ATTEMPTS) {
-				this.logger.log(`No reconnection attempts scheduled for ${this._brokerIdentifier}. CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS is zero (${MAX_NUMBER_OF_ATTEMPTS})`);
-				console.log(`No reconnection attempts scheduled for ${this._brokerIdentifier}. CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS is zero (${MAX_NUMBER_OF_ATTEMPTS})`);
+				this._completeDisconnect = {value: true, reason: 'NORMAL_DISCONNECT'};
 				return;
 			}
 			this.logger.log(`Scheduling reconnect(s) for ${this._brokerIdentifier}`);
@@ -338,5 +347,13 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 
 	set disconnectedByUser(value) {
 		this._disconnectedByUser = value;
+	}
+
+	get completeDisconnect() {
+		return this._completeDisconnect;
+	}
+
+	set completeDisconnect(value) {
+		return this._completeDisconnect = value;
 	}
 };
