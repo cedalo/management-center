@@ -79,6 +79,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		let wasConnected = false; // maybe delete this
 		let attemptNumber = 1;
 		let attemptBackoffMs = ATTEMPT_BACKOFF_MS;
+		this._completeDisconnect = {value: false, reason: undefined};
 		// an ugly way to make mqttClient throw openssl errors instead of silencing them
 		const brokerClient = mqtt.connect(url, options);
 
@@ -115,6 +116,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 			attemptBackoffMs = ATTEMPT_BACKOFF_MS;
 			wasConnected = true;
 			clearInterval(timeoutID);
+			this._disconnectedByUser = false;
 			this.connected = true;
 			this.logger.log(`Connected to ${url}`);
 		});
@@ -133,6 +135,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				this.logger.log(`Maximum reconnection attempts reached for ${url}`);
 				console.log(`Maximum reconnection attempts reached for ${url}`);
 				// brokerClient.end(); // has no effect
+				this._completeDisconnect = {value: true, reason: 'MAX_NUMBER_OF_ATTEMPTS'};
 				brokerClient.emit('information', generateEventMessage(
 						TOPIC_NAME,
 						'Maximum reconnection attempts reached',
@@ -146,11 +149,13 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				console.error(`${url} closed before connect`);
 				// brokerClient.end(); // has no effect
 				brokerClient.emit('error', new Error(`Could not connect to ${url}. Connection closed`)); // propagete the error further inside brokerClient listeners
+				this._completeDisconnect = {value: true, reason: 'CLOSED_BEFORE_CONNECT'};
 				return;
 			}
 			if (this._disconnectedByUser) {
 				this.logger.log(`Connection to ${url} closed by the user`);
 				console.log(`Connection to ${url} closed by the user`);
+				this._completeDisconnect = {value: true, reason: 'NORMAL_DISCONNECT'};
 				return;
 			}
 			timeoutID = setTimeout(() => { // kill set timeout in connect hanlder!!!
@@ -241,9 +246,12 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		});
 	}
 
-	async _disconnectBroker() {
-		this._disconnectedByUser = true;
-		this._client?.end();
+	async _disconnectBroker(isNormalDisconnect) {
+		// this function is called when user requests disconnection (then isNormalDisconnect is set to true), but can
+		// also be called be called when the connection got unexpectedly closed or error erised, then we don't set disconnecteByUser flag
+		this._disconnectedByUser = !!isNormalDisconnect;
+		const force = true; // quickfix for CSM-113
+		this._client?.end(force);
 	}
 
 	on(event, callback) {
@@ -268,5 +276,13 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 
 	set disconnectedByUser(value) {
 		this._disconnectedByUser = value;
+	}
+
+	get completeDisconnect() {
+		return this._completeDisconnect;
+	}
+
+	set completeDisconnect(value) {
+		return this._completeDisconnect = value;
 	}
 };

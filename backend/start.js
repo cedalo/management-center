@@ -394,12 +394,17 @@ const init = async (licenseContainer) => {
 						interrupted: brokerClient.disconnectedByUser ? false : true
 					}
 				};
-				if (brokerClient.disconnectedByUser) {
-					brokerClient.disconnectedByUser = false;
-				}
+				// if (brokerClient.disconnectedByUser) {
+				// 	brokerClient.disconnectedByUser = false;
+				// }
 				sendConnectionsUpdate(brokerClient, user);
 				configManager.updateConnection(connection.id, connectionConfiguration);
-				context.handleDisconnectServerFromBroker(connection);
+
+				if (brokerClient.completeDisconnect.value) {
+					context.handleDisconnectServerFromBroker(connection); // this will remove brokerClient from brokerManager
+					globalTopicTree[connection.name] = undefined;
+					globalSystem[connection.name] = undefined;
+				}
 			});
 			// this listener is applied only on reconnect (at the time we apply this listener the conenction had already been established and the first connect event alrady fired)
 			brokerClient.on('connect', () => {
@@ -455,10 +460,10 @@ const init = async (licenseContainer) => {
 		return error;
 	};
 
-	const handleDisconnectServerFromBroker = async (connection) => {
+	const handleDisconnectServerFromBroker = async (connection, isNormalDisconnect) => {
 		const client = context.brokerManager.getBrokerConnectionById(connection.id);
 		if (client) {
-			client.broker.disconnect();
+			client.broker.disconnect(isNormalDisconnect);
 		}
 		context.brokerManager.handleDeleteBrokerConnection(connection);
 

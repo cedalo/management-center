@@ -74,8 +74,8 @@ module.exports = class BaseMosquittoClient {
 		}
 	}
 
-	async disconnect() {
-		await this._disconnectBroker();
+	async disconnect(isNormalDisconnect) {
+		await this._disconnectBroker(isNormalDisconnect);
 	}
 
 	get logger() {
