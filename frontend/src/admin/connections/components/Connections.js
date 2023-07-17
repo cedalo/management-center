@@ -156,7 +156,7 @@ const CustomRow = (props) => {
 			</TableCell>
 			{medium || small ? null :
 				<TableCell align={CONN_TABLE_COLUMNS[5].align} style={{padding: '6px'}}>
-					<Tooltip title={brokerConnection.status?.connected ? `Disconnect-${brokerConnection.id}` : `Connect-${brokerConnection.id}`}>
+					<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'} aria-label={`conn-switch-${brokerConnection.id}`}>
 						<Switch
 							color="primary"
 							disabled={!atLeastAdmin(userProfile, brokerConnection.name)}
