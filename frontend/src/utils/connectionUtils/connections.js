@@ -24,7 +24,7 @@ import {
 } from '../../admin/inspect/actions/actions';
 
 
-export const handleConnectionChange = async (dispatch, client, newConnectionName, currentConnectionName, setConnection, connected) => {
+export const handleConnectionChange = async (dispatch, client, newConnectionName, currentConnectionName, connected) => {
     dispatch(updateBrokerLicenseInformation(null));
     dispatch(updateInspectClients([]));
     dispatch(updateClients([]));
@@ -37,8 +37,8 @@ export const handleConnectionChange = async (dispatch, client, newConnectionName
     dispatch(updateSystemStatus({}));
 
     await client.disconnectFromBroker(currentConnectionName);
-    dispatch(updateBrokerConnected(false, newConnectionName));
-    if (newConnectionName && newConnectionName !== '') {
+    dispatch(updateBrokerConnected(false, currentConnectionName));
+    if (newConnectionName) {
         try {
             await client.connectToBroker(newConnectionName);
             dispatch(updateBrokerConnected(true, newConnectionName));
@@ -54,9 +54,6 @@ export const handleConnectionChange = async (dispatch, client, newConnectionName
         const brokerConfigurations = await client.getBrokerConfigurations();
         dispatch(updateBrokerConfigurations(brokerConfigurations));
     
-        if (setConnection) {
-            setConnection(newConnectionName);
-        }
         try {
             console.log('Loading dynamic security');
             const clients = await client.listClients(true, 10, 0);
@@ -130,6 +127,5 @@ export const handleConnectionChange = async (dispatch, client, newConnectionName
         }
         // const plugins = await client.listPlugins();
         // dispatch(updatePlugins(plugins));
-    } else {
     }
 };
