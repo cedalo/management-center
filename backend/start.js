@@ -388,7 +388,7 @@ const init = async (licenseContainer) => {
 		});
 		const topicTreeManager = new TopicTreeManager(brokerClient, connection, settingsManager, context);
 		topicTreeManager.addListener((topicTree, brokerClient, connection) => {
-			sendTopicTreeUpdate(topicTree, brokerClient, connection);
+			sendTopicTreeUpdate(topicTree);
 		});
 
 		const system = {
@@ -416,7 +416,7 @@ const init = async (licenseContainer) => {
 			brokerClient.on('message', (topic, message, packet) => {
 				if (topic.startsWith('$SYS')) {
 					updateSystemTopics(system, topic, message, packet);
-					sendSystemStatusUpdate(system, brokerClient, connection);
+					sendSystemStatusUpdate(system);
 				} else if (
 					// TODO: change topic
 					topic.startsWith('$CONTROL/dynamic-security/v1/response')
@@ -463,7 +463,7 @@ const init = async (licenseContainer) => {
 				// if (brokerClient.disconnectedByUser) {
 				// 	brokerClient.disconnectedByUser = false;
 				// }
-				sendConnectionsUpdate(brokerClient, user);
+				sendConnectionsUpdate();
 				configManager.saveConnection(connectionConfiguration, connection.id, );
 
 				if (brokerClient.completeDisconnect.value) {
@@ -482,7 +482,7 @@ const init = async (licenseContainer) => {
 					timestamp: Date.now(),
 					reconnect: true
 				};
-				sendConnectionsUpdate(brokerClient, user);
+				sendConnectionsUpdate();
 				configManager.saveConnection(connectionConfiguration, connection.id);
 			});
 		} catch (error) {
@@ -495,7 +495,7 @@ const init = async (licenseContainer) => {
 				error: error?.message || error
 			};
 
-			sendConnectionsUpdate(brokerClient, user);
+			sendConnectionsUpdate();
 			configManager.saveConnection(connectionConfiguration, connection.id);
 		} finally {
 			stopFunctions.push(async () => {
@@ -520,7 +520,7 @@ const init = async (licenseContainer) => {
 				timestamp: Date.now()
 			};
 			configManager.saveConnection(connectionConfiguration, connection.id, );
-			sendConnectionsUpdate(brokerClient, user);
+			sendConnectionsUpdate();
 		} else {
 			error = connectionConfiguration.status.error;
 		}
@@ -682,13 +682,40 @@ const init = async (licenseContainer) => {
 		}
 	};
 
-	const sendConnectionsUpdate = (brokerClient, user) => {
+
+	const createConnectionsUpdateWebsocketMessage = (message, stash) => {
+		// we need to filter connections to make sure the user that is using socket connections only sees connections that he is allowed to see (user groups feature)
+		const username = stash?.username;
+		const connectionsToUpdate = message.event.payload;
+		if (!username) {
+			return;
+		}
+		const userAssociatedWithClient = stash?.request?.session?.passport?.user;
+		
+		if (!userAssociatedWithClient) {
+			console.error('No user found when performing notifyWebSocketClients');
+			return;
+		}
+		
+		const filteredConnections = context.security.acl.filterAllowedConnections(connectionsToUpdate, userAssociatedWithClient.connections);
+		return {
+			...message,
+			event: {
+				...message.event,
+				payload: filteredConnections,
+			}
+		};
+	};
+
+
+	const sendConnectionsUpdate = () => {
 		const connections = context.configManager.connections; // context.brokerManager.getBrokerConnections(); brokerManager does not include connections that have been disconnected by the user before the start of the MMC
 		let payload = connections;
+		console.log('connections::::::::::::::::::::::::::', connections)
 
-		if (user) {
-			payload = context.security.acl.filterAllowedConnections(connections, user.connections);
-		}
+		// if (user) {
+		// 	payload = context.security.acl.filterAllowedConnections(connections, user.connections);
+		// }
 
 		const messageObject = {
 			type: 'event',
@@ -697,10 +724,10 @@ const init = async (licenseContainer) => {
 				payload
 			}
 		};
-		notifyWebSocketClients(messageObject, brokerClient);
+		notifyWebSocketClients(messageObject);
 	};
 
-	const sendSystemStatusUpdate = (system, brokerClient, brokerConnection) => {
+	const sendSystemStatusUpdate = (system) => {
 		const messageObject = {
 			type: 'event',
 			event: {
@@ -708,10 +735,10 @@ const init = async (licenseContainer) => {
 				payload: system
 			}
 		};
-		notifyWebSocketClients(messageObject, brokerClient, brokerConnection);
+		notifyWebSocketClients(messageObject);
 	};
 
-	const sendTopicTreeUpdate = (topicTree, brokerClient, brokerConnection) => {
+	const sendTopicTreeUpdate = (topicTree) => {
 		const messageObject = {
 			type: 'event',
 			event: {
@@ -719,16 +746,16 @@ const init = async (licenseContainer) => {
 				payload: topicTree
 			}
 		};
-		notifyWebSocketClients(messageObject, brokerClient, brokerConnection);
+		notifyWebSocketClients(messageObject);
 	};
 
-	const notifyWebSocketClients = (message, brokerClient, brokerConnection) => {
+	const notifyWebSocketClients = (message) => {
 		wss.clients.forEach((client) => {
-			const broker = context.brokerManager.getBroker(client);
-			if (broker === brokerClient) {
-				// this WebSocket client is connected to this broker
-				client.send(JSON.stringify(message));
+			if (message.event.type == 'connections') {
+				message = createConnectionsUpdateWebsocketMessage(message, client.cedaloStash);
 			}
+			
+			client.send(JSON.stringify(message));
 		});
 	};
 
@@ -782,9 +809,11 @@ const init = async (licenseContainer) => {
 		context.brokerManager.handleNewClientWebSocketConnection(ws);
 		broadcastWebSocketConnectionConnected();
 		broadcastWebSocketConnections();
+		const user = request.session?.passport?.user;
 		// send license information
 		ws.cedaloStash = { // the name of the property is cedaloStash to make any collision with ws object's internal arguments in the future version highly unlickly
-			request
+			request,
+			username: user?.username,
 		}; // store request object in the websocket object itself. This is mainly done to access x-real-ip later on in audit trail plugin
 
 
@@ -825,7 +854,7 @@ const init = async (licenseContainer) => {
 		ws.on('message', (message) => {
 			try {
 				const messageObject = JSON.parse(message);
-				handleClientMessage(messageObject, ws, request.session?.passport?.user);
+				handleClientMessage(messageObject, ws, user);
 			} catch (error) {
 				console.error(error);
 			}
