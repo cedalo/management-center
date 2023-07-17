@@ -711,11 +711,6 @@ const init = async (licenseContainer) => {
 	const sendConnectionsUpdate = () => {
 		const connections = context.configManager.connections; // context.brokerManager.getBrokerConnections(); brokerManager does not include connections that have been disconnected by the user before the start of the MMC
 		let payload = connections;
-		console.log('connections::::::::::::::::::::::::::', connections)
-
-		// if (user) {
-		// 	payload = context.security.acl.filterAllowedConnections(connections, user.connections);
-		// }
 
 		const messageObject = {
 			type: 'event',
