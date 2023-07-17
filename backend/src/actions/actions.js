@@ -16,7 +16,7 @@ const metainfo = (operation, crud) => ({ plugin: 'management-center', operation,
 
 const connectToBroker = (context, brokerName, client) => {
 	const brokerConnection = context.brokerManager.getBrokerConnection(brokerName);
-	if (brokerConnection) {
+	if (brokerConnection && brokerConnection.name === brokerName) {
 		const { broker, system, topicTreeManager } = brokerConnection;
 		context.brokerManager.connectClient(client, broker, brokerConnection);
 		if (broker.connected) {

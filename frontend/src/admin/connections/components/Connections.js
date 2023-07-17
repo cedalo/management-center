@@ -308,9 +308,9 @@ const Connections = ({
 	const onConnectServerToBroker = async (id, name) => {
 		try {
 			await brokerClient.connectServerToBroker(id);
-			if (!connected) {
+			if (!connected) { // if current broker is not connected, then select the one we just connected with connectServerToBroker
 				handleConnectionChange(dispatch, brokerClient, name, currentConnectionName, connected).catch(
-					(error) => console.error('Error while pulling information from the broker on reconnect: ' + error));
+					(error) => console.error('Error while pulling information from the broker on reconnect: ', error));
 				// await brokerClient.connectToBroker(name);
 				// dispatch(updateBrokerConnected(true, name));
 			}
@@ -338,12 +338,12 @@ const Connections = ({
 			enqueueSnackbar(`Connection "${id}" successfully closed`, {
 				variant: 'success'
 			});
-			const connections = await brokerClient.getBrokerConnections();
-			dispatch(updateBrokerConnections(connections));
+			// const connections = await brokerClient.getBrokerConnections(); // this will anyway be called in handleConnectionChange
+			// dispatch(updateBrokerConnections(connections));
 			handleConnectionChange(dispatch, brokerClient, currentConnectionName, name, connected).catch(
-				(error) => console.error('Error while pulling information from the broker on disconnect: ' + error));
+				(error) => console.error('Error while pulling information from the broker on disconnect: ', error));
 		} catch (error) {
-			// setPremiumFeatureDialogOpen(true);
+		    // setPremiumFeatureDialogOpen(true);
 			enqueueSnackbar(`Error disconnecting broker. Reason: ${error.message ? error.message : error}`, {
 				variant: 'error'
 			});

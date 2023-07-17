@@ -341,6 +341,7 @@ const init = async (licenseContainer) => {
 		showFeedbackForm: CEDALO_MC_SHOW_FEEDBACK_FORM,
 		showStreemsheets: CEDALO_MC_SHOW_STREAMSHEETS,
 		rootUsername: CEDALO_MC_USERNAME,
+		multipleConnectionsAllowed: false,
 		ssoUsed: false,
 		urlMappings: {
 			CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING: process.env.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING,
@@ -371,6 +372,15 @@ const init = async (licenseContainer) => {
 	config.connections = connections;
 
 	const handleConnectServerToBroker = async (connection, user) => {
+		try {
+			if (!context.config.parameters.multipleConnectionsAllowed) {
+				await handleDisconnectServerFromBroker(context.brokerManager.getBrokerConnection(), true); // in case multipleConnectionsAllowed is false, there will only be a single element in brokerManager's connection, so no need to pass name as parameter into getBrokerConnection
+			}
+		} catch(error) {
+			console.error('Error while disconnecting brokers (multiple connections not allowed):', error);
+			throw error;
+		}
+
 		const brokerClient = new NodeMosquittoClient({
 			brokerName: connection.name,
 			brokerId: connection.id
@@ -396,7 +406,7 @@ const init = async (licenseContainer) => {
 				connected: false,
 				timestamp: Date.now()
 			};
-			configManager.updateConnection(connection.id, connectionConfiguration);
+			configManager.saveConnection(connectionConfiguration, connection.id);
 		}
 		try {
 			brokerClient.createConnectionHandler(connection.url,
@@ -454,23 +464,26 @@ const init = async (licenseContainer) => {
 				// 	brokerClient.disconnectedByUser = false;
 				// }
 				sendConnectionsUpdate(brokerClient, user);
-				configManager.updateConnection(connection.id, connectionConfiguration);
+				configManager.saveConnection(connectionConfiguration, connection.id, );
 
 				if (brokerClient.completeDisconnect.value) {
-					context.handleDisconnectServerFromBroker(connection); // this will remove brokerClient from brokerManager
+					// context.handleDisconnectServerFromBroker(connection); // this will remove brokerClient from brokerManager
+					context.brokerManager.handleDeleteBrokerConnection(connection); // this will remove brokerClient from brokerManager
+					globalTopicTree[connection.name] = undefined;
+					globalSystem[connection.name] = undefined;
 				}
 			});
 			// this listener is applied only on reconnect (at the time we apply this listener the conenction had already been established and the first connect event alrady fired)
 			// this is important to set up this event here, after brokerClient.connect(); and not before since otherwise it will not be a called exclusively on reconnect
 			brokerClient.on('connect', () => {
-				context.eventEmitter.emit('reconnect', connectionConfiguration);
+				context.eventEmitter.emit('reconnect', connectionConfiguration); // reconnect exclusively in case of failure. In cases we disconnect user manually brokerClient and all it's listeners are actually deleted
 				connectionConfiguration.status = {
 					connected: true,
 					timestamp: Date.now(),
 					reconnect: true
 				};
 				sendConnectionsUpdate(brokerClient, user);
-				configManager.updateConnection(connection.id, connectionConfiguration);
+				configManager.saveConnection(connectionConfiguration, connection.id);
 			});
 		} catch (error) {
 			// disconnect broker client
@@ -483,26 +496,12 @@ const init = async (licenseContainer) => {
 			};
 
 			sendConnectionsUpdate(brokerClient, user);
-			configManager.updateConnection(connection.id, connectionConfiguration);
+			configManager.saveConnection(connectionConfiguration, connection.id);
 		} finally {
 			stopFunctions.push(async () => {
 				await brokerClient.disconnect();
 				console.log(`Disconnected from '${connection.name}' at ${connection.url}`);
 			});
-		}
-
-		let error;
-
-		if (!connectionConfiguration.status.error) {
-			// means we have connected successfully
-			connectionConfiguration.status = {
-				connected: true,
-				timestamp: Date.now()
-			};
-			sendConnectionsUpdate(brokerClient, user);
-			configManager.updateConnection(connection.id, connectionConfiguration);
-		} else {
-			error = connectionConfiguration.status.error;
 		}
 
 		context.brokerManager.handleNewBrokerConnection(
@@ -512,17 +511,28 @@ const init = async (licenseContainer) => {
 			topicTreeManager /*, proxyClient */
 		);
 
+		let error;
+
+		if (!connectionConfiguration.status.error) {
+			// means we have connected successfully
+			connectionConfiguration.status = {
+				connected: true,
+				timestamp: Date.now()
+			};
+			configManager.saveConnection(connectionConfiguration, connection.id, );
+			sendConnectionsUpdate(brokerClient, user);
+		} else {
+			error = connectionConfiguration.status.error;
+		}
+
 		return error;
 	};
 
 	const handleDisconnectServerFromBroker = async (connection, isNormalDisconnect) => {
-		const client = context.brokerManager.getBrokerConnectionById(connection.id);
+		const client = context.brokerManager.getBrokerConnectionById(connection?.id);
 		if (client) {
-			client.broker.disconnect(isNormalDisconnect);
+			await client.broker.disconnect(isNormalDisconnect);
 		}
-		context.brokerManager.handleDeleteBrokerConnection(connection);
-		globalTopicTree[connection.name] = undefined;
-		globalSystem[connection.name] = undefined;
 		// if (!connection.status) {
 		// 	connection.status = {};
 		// }
@@ -534,11 +544,13 @@ const init = async (licenseContainer) => {
 	};
 
 	const connectServerToAllBrokers = () => {
+		let connectedBrokersCount = 0;
+
 		for (let i = 0; i < connections.length; i++) {
 			if (i < maxBrokerConnections) {
 				// preprocess connection to insert any external urls coming from env variables
-				const connection = context.configManager.preprocessConnection(connections[i], true);
-				context.configManager.saveConnection(connection);
+				const connection = configManager.preprocessConnection(connections[i], true);
+				configManager.saveConnection(connection);
 
 				const wasConnected = connection.status && connection.status.connected;
 				const closedByUser =
@@ -551,7 +563,17 @@ const init = async (licenseContainer) => {
 
 				if (wasConnected || hadError || connection.status === undefined) {
 					// Note that we don't connect in case broker was manually disconnected. We connect only in the three cases descirbed in if
-					handleConnectServerToBroker(connection);
+					if (context.config.parameters.multipleConnectionsAllowed || connectedBrokersCount < 1) {
+						handleConnectServerToBroker(connection);
+						connectedBrokersCount++;
+					} else {
+						connection.status = {
+							connected: false,
+							timestamp: Date.now(),
+							error: 'Error: Multiple connections not allowed (multiple-connections plugin not loaded)'
+						};
+						configManager.saveConnection(connection);
+					}
 				}
 			}
 		}
@@ -886,6 +908,9 @@ const init = async (licenseContainer) => {
 	context.pluginManager.init(config.plugins, context, swaggerDocument);
 	context.config.parameters.ssoUsed = !!context.pluginManager.plugins.find(
 		(plugin) => plugin._meta.id.includes('_sso') && plugin._status.type === 'loaded'
+	);
+	context.config.parameters.multipleConnectionsAllowed = !!context.pluginManager.plugins.find(
+		(plugin) => plugin._meta.id.includes('_multiple_connections') && plugin._status.type === 'loaded'
 	);
 
 	const {

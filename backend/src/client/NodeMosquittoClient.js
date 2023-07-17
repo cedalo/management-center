@@ -1,5 +1,6 @@
 const mqtt = require('mqtt');
-const { replaceNaN } = require('../utils/utils');
+const util = require('util');
+const { replaceNaN, addTimeout } = require('../utils/utils');
 
 const socketErrors = [ // defined in mqttjs (client.js)
 	'ECONNREFUSED',
@@ -48,6 +49,15 @@ const generateEventMessage = (topicName, message, rest) => {
 	};
 };
 
+
+const closeBrokerConnection = async (client, force=false, options={}) => {
+	if (client) {
+		const promise = util.promisify(client.end.bind(client));
+		return promise(force, options);
+	} else {
+		return Promise.resolve();
+	}
+};
 
 module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 	constructor({ name='Node Mosquitto Client', brokerId, brokerName, logger } = {}) {
@@ -174,12 +184,6 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				this._completeDisconnect = {value: true, reason: 'MAX_NUMBER_OF_ATTEMPTS'};
 				return;
 			}
-			if (!MAX_NUMBER_OF_ATTEMPTS) {
-				this.logger.log(`No reconnection attempts scheduled for ${this._brokerIdentifier}. CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS is zero (${MAX_NUMBER_OF_ATTEMPTS})`);
-				console.log(`No reconnection attempts scheduled for ${this._brokerIdentifier}. CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS is zero (${MAX_NUMBER_OF_ATTEMPTS})`);
-				this._completeDisconnect = {value: true, reason: 'NO_RECONNECT_ATTEMPTS'};
-				return;
-			}
 			if (!wasConnected) {
 				this.logger.error(`${this._brokerIdentifier} closed before connect`);
 				console.error(`${this._brokerIdentifier} closed before connect`);
@@ -192,6 +196,12 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				this.logger.log(`Connection to ${this._brokerIdentifier} closed by the user`);
 				console.log(`Connection to ${this._brokerIdentifier} closed by the user`);
 				this._completeDisconnect = {value: true, reason: 'NORMAL_DISCONNECT'};
+				return;
+			}
+			if (!MAX_NUMBER_OF_ATTEMPTS) {
+				this.logger.log(`No reconnection attempts scheduled for ${this._brokerIdentifier}. CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS is zero (${MAX_NUMBER_OF_ATTEMPTS})`);
+				console.log(`No reconnection attempts scheduled for ${this._brokerIdentifier}. CEDALO_MC_MQTT_CONNECT_MAX_NUMBER_OF_ATTEMPTS is zero (${MAX_NUMBER_OF_ATTEMPTS})`);
+				this._completeDisconnect = {value: true, reason: 'NO_RECONNECT_ATTEMPTS'};
 				return;
 			}
 			this.logger.log(`Scheduling reconnect(s) for ${this._brokerIdentifier}`);
@@ -216,33 +226,31 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 	}
 
 
-	_subscribeToSystemTopics() {
-		this._topicsToSubscribe.forEach((topicname) => {
-			this.subscribe(topicname, (error) => { // critical topics, reject if unsucessful
-				if (error) {
+	async _subscribeToSystemTopics() {
+		await Promise.all([...this._topicsToSubscribe].map(async (topicname) => { // make a copy of _topicsToSubscribe in case it will be modified as we iterate
+			const promise = this.subscribe(topicname).then(() => {
+					console.log(`Subscribed to ${topicname} topic for ${this._brokerIdentifier}`);
+					this.logger.log(`Subscribed to ${topicname} topic for ${this._brokerIdentifier}`);
+				}).catch((error) => { // TODO: reject if unsuccessful for critical topics
 					console.error(`Error subscriting to ${topicname} topic for ${this._brokerIdentifier}:`, error);
 					this.logger.error(`Error subscriting to ${topicname} topic for ${this._brokerIdentifier}: ${error}`);
-					return;
-				}
-				console.log(`Subscribed to ${topicname} topic for ${this._brokerIdentifier}`);
-				this.logger.log(`Subscribed to ${topicname} topic for ${this._brokerIdentifier}`);
-			});
-		});
+				});
+			return promise;
+		}));
 	}
 
 	
-	_unsubscribeFromAllTopics() {
-		[...this.subscribedTopics].forEach((topicname) => { // when unsubscribing from topics we mutate this array
-			this.unsubscribe(topicname, (error) => { // critical topics, reject if unsucessful
-				if (error) {
+	async _unsubscribeFromAllTopics() {
+		await Promise.all([...this.subscribedTopics].map(async (topicname) => { // make a copy of subscribedTopics in case it will be modified as we iterate
+			const promise = this.unsubscribe(topicname).then(() => {
+					console.log(`Unsubscribed to ${topicname} topic for ${this._brokerIdentifier}`);
+					this.logger.log(`Unsubscribed to ${topicname} topic for ${this._brokerIdentifier}`);
+				}).catch((error) => {
 					console.error(`Error unsubscriting to ${topicname} topic for ${this._brokerIdentifier}:`, error);
 					this.logger.error(`Error unsubscriting to ${topicname} topic for ${this._brokerIdentifier}: ${error}`);
-					return;
-				}
-				console.log(`Unsubscribed to ${topicname} topic for ${this._brokerIdentifier}`);
-				this.logger.log(`Unsubscribed to ${topicname} topic for ${this._brokerIdentifier}`);
-			});
-		});
+				});
+			return promise;
+		}));
 	}
 
 
@@ -267,7 +275,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 			}
 
 			brokerClient.on('close', () => {
-				// promise can only be rejected once, subsequent calls are ignored, so in the fact that this code is getting called on every close connection (in case of reconnect), doesn't matter
+				// promise can only be rejected or resolved once, subsequent calls are ignored, so in the fact that this code is getting called on every close connection (in case of reconnect), doesn't matter
 				// we are only intereseted in the first close event which happens before any connect can occur. there is no guarantee that we will catch it with this code
 				// but for such casees we have timeout hanlder in the beginning of this funciton
 				// bottom line is that this is just an auxilary code and it can be safely removed/ignored (same as an error event handler below)
@@ -297,46 +305,59 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		// this function is called when user requests disconnection (then isNormalDisconnect is set to true), but can
 		// also be called be called when the connection got unexpectedly closed or error erised, then we don't set disconnecteByUser flag
 		this._disconnectedByUser = !!isNormalDisconnect;
-		this._unsubscribeFromAllTopics();
-		this._client?.end();
+		await this._unsubscribeFromAllTopics();
+		// this._client?.end();
+		await addTimeout(closeBrokerConnection(this._client), 5000, `Disconnecting broker ${this._brokerIdentifier} timed out`);
 	}
+
 
 	on(event, callback) {
 		this._client.on(event, callback);
 	}
 
-	subscribe(topic, callback) {
+
+	async subscribe(topic) {
+		const promise = util.promisify(this._subscribe.bind(this));
+		return promise(topic);
+	}
+
+
+	async unsubscribe(topic) {
+		const promise = util.promisify(this._unsubscribe.bind(this));
+		return promise(topic);
+	}
+
+
+	_subscribe(topic, callback) {
 		if (this._client?.connected) {
 			if (!this.subscribedTopics.includes(topic)) {
 				this.subscribedTopics.push(topic);
 			}
 
-			this._client.subscribe(topic, (...args) => {
-				const error = args[0];
+			this._client.subscribe(topic, (error) => {
 				if (error) {
 					const index = this.subscribedTopics.indexOf(topic)
 					if (index) {
-						this.subscribedTopics.splice(index, 1);
+						this.subscribedTopics.splice(index, 1); // remove topic from topic list if error encountered
 					}
 				}
-				callback(...args);
+				callback(...arguments);
 			});
 		}
 	}
 
-	unsubscribe(topic, callback) {
+	_unsubscribe(topic, callback) {
 		if (this._client?.connected) {
 			const index = this.subscribedTopics.indexOf(topic)
 			if (index) {
 				this.subscribedTopics.splice(index, 1);
 			}
 
-			this._client.unsubscribe(topic, (...args) => {
-				const error = args[0];
+			this._client.unsubscribe(topic, (error) => {
 				if (error) {
 					this.subscribedTopics.push(topic);
 				}
-				callback(...args);
+				callback(...arguments);
 			});
 		}
 	}

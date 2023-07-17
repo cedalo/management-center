@@ -136,6 +136,14 @@ const replaceNaN = (number, replacer) => {
 };
 
 
+const addTimeout = (promise, timeoutMilliseconds=5000, errorMessage='Timeout exceeded') => {
+	const timeoutPromise = new Promise((_, reject) => {
+		setTimeout(() => reject(new Error(errorMessage)), timeoutMilliseconds);
+	});
+
+	return Promise.race([promise, timeoutPromise]);
+};
+
 
 module.exports = {
 	loadInstallation,
@@ -146,5 +154,6 @@ module.exports = {
     generateSecret,
     embedIntoObject,
     replaceNaN,
+    addTimeout,
     ...sessions
 };

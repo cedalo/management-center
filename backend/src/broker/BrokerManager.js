@@ -1,8 +1,8 @@
 module.exports = class BrokerManager {
 	constructor() {
 		// TODO: merge _connection and _brokerConnection
-		this._connection = {};
-		this._brokerConnection = {};
+		this._connection = null;
+		this._brokerConnection = null;
 		this._clientConnections = new Map();
 	}
 
@@ -22,8 +22,7 @@ module.exports = class BrokerManager {
 	handleDeleteBrokerConnection(connection) {
 		this._brokerClient = null;
 		this._brokerConnection = null;
-		this._connection = {};
-		this._brokerConnection = {};
+		this._connection = null;
 		this._clientConnections = new Map();
 	}
 
@@ -48,7 +47,7 @@ module.exports = class BrokerManager {
 	}
 
 	getBrokerConnections() {
-		return [this._connection];
+		return this._connection ? [this._connection] : [];
 	}
 
 	connectClient(client, broker) { }
