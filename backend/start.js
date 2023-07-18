@@ -388,7 +388,7 @@ const init = async (licenseContainer) => {
 		});
 		const topicTreeManager = new TopicTreeManager(brokerClient, connection, settingsManager, context);
 		topicTreeManager.addListener((topicTree, brokerClient, connection) => {
-			sendTopicTreeUpdate(topicTree);
+			sendTopicTreeUpdate(topicTree, brokerClient);
 		});
 
 		const system = {
@@ -416,7 +416,7 @@ const init = async (licenseContainer) => {
 			brokerClient.on('message', (topic, message, packet) => {
 				if (topic.startsWith('$SYS')) {
 					updateSystemTopics(system, topic, message, packet);
-					sendSystemStatusUpdate(system);
+					sendSystemStatusUpdate(system, brokerClient);
 				} else if (
 					// TODO: change topic
 					topic.startsWith('$CONTROL/dynamic-security/v1/response')
@@ -463,7 +463,7 @@ const init = async (licenseContainer) => {
 				// if (brokerClient.disconnectedByUser) {
 				// 	brokerClient.disconnectedByUser = false;
 				// }
-				sendConnectionsUpdate();
+				sendConnectionsUpdate(brokerClient);
 				configManager.saveConnection(connectionConfiguration, connection.id, );
 
 				if (brokerClient.completeDisconnect.value) {
@@ -482,7 +482,7 @@ const init = async (licenseContainer) => {
 					timestamp: Date.now(),
 					reconnect: true
 				};
-				sendConnectionsUpdate();
+				sendConnectionsUpdate(brokerClient);
 				configManager.saveConnection(connectionConfiguration, connection.id);
 			});
 		} catch (error) {
@@ -495,7 +495,7 @@ const init = async (licenseContainer) => {
 				error: error?.message || error
 			};
 
-			sendConnectionsUpdate();
+			sendConnectionsUpdate(brokerClient);
 			configManager.saveConnection(connectionConfiguration, connection.id);
 		} finally {
 			stopFunctions.push(async () => {
@@ -520,7 +520,7 @@ const init = async (licenseContainer) => {
 				timestamp: Date.now()
 			};
 			configManager.saveConnection(connectionConfiguration, connection.id, );
-			sendConnectionsUpdate();
+			sendConnectionsUpdate(brokerClient);
 		} else {
 			error = connectionConfiguration.status.error;
 		}
@@ -708,7 +708,7 @@ const init = async (licenseContainer) => {
 	};
 
 
-	const sendConnectionsUpdate = () => {
+	const sendConnectionsUpdate = (brokerClient) => {
 		const connections = context.configManager.connections; // context.brokerManager.getBrokerConnections(); brokerManager does not include connections that have been disconnected by the user before the start of the MMC
 		let payload = connections;
 
@@ -719,10 +719,10 @@ const init = async (licenseContainer) => {
 				payload
 			}
 		};
-		notifyWebSocketClients(messageObject);
+		notifyWebSocketClients(messageObject, brokerClient);
 	};
 
-	const sendSystemStatusUpdate = (system) => {
+	const sendSystemStatusUpdate = (system, brokerClient) => {
 		const messageObject = {
 			type: 'event',
 			event: {
@@ -730,10 +730,10 @@ const init = async (licenseContainer) => {
 				payload: system
 			}
 		};
-		notifyWebSocketClients(messageObject);
+		notifyWebSocketClients(messageObject, brokerClient);
 	};
 
-	const sendTopicTreeUpdate = (topicTree) => {
+	const sendTopicTreeUpdate = (topicTree, brokerClient) => {
 		const messageObject = {
 			type: 'event',
 			event: {
@@ -741,16 +741,22 @@ const init = async (licenseContainer) => {
 				payload: topicTree
 			}
 		};
-		notifyWebSocketClients(messageObject);
+		notifyWebSocketClients(messageObject, brokerClient);
 	};
 
-	const notifyWebSocketClients = (message) => {
+	const notifyWebSocketClients = (message, brokerClient) => {
 		wss.clients.forEach((client) => {
 			if (message.event.type == 'connections') {
-				message = createConnectionsUpdateWebsocketMessage(message, client.cedaloStash);
+				const filteredConnectionsMessage = createConnectionsUpdateWebsocketMessage(message, client.cedaloStash);
+				client.send(JSON.stringify(filteredConnectionsMessage));
+				return;
 			}
 			
-			client.send(JSON.stringify(message));
+			const broker = context.brokerManager.getBroker(client);
+			if (broker === brokerClient) {
+				// this WebSocket client is connected to this broker
+				client.send(JSON.stringify(message));
+			}
 		});
 	};
 
