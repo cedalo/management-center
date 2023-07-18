@@ -31,7 +31,7 @@ const connectToBroker = (context, brokerName, client) => {
 };
 
 const disconnectFromBroker = (context, brokerName, client) => {
-	context.brokerManager.disconnectClient(client); //!!
+	context.brokerManager.disconnectClient(client);
 };
 
 const unloadPluginAction = {

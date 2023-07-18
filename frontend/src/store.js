@@ -13,7 +13,6 @@ import topicTreeReducer from './reducers/topicTreeReducer';
 import clientsReducer from './reducers/clientsReducer';
 import userProfileReducer from './reducers/userProfileReducer';
 import settingsReducer from './reducers/settingsReducer';
-import webSocketConnectionsReducer from './reducers/webSocketConnectionsReducer';
 import brokerLicenseReducer from './reducers/brokerLicenseReducer';
 import testsReducer from './reducers/testsReducer';
 import applicationTokensReducer from './reducers/applicationTokensReducer';
@@ -38,7 +37,6 @@ const store = createStore(
 		version: versionsReducer,
 		roles: rolesReducer,
 		settings: settingsReducer,
-		webSocketConnections: webSocketConnectionsReducer,
 		streams: streamsReducer,
 		systemStatus: systemStatusReducer,
 		topicTree: topicTreeReducer,

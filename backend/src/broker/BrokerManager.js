@@ -34,9 +34,6 @@ module.exports = class BrokerManager {
 		this._clientConnections.delete(ws);
 	}
 
-	getClientWebSocketConnections() {
-		return this._clientConnections;
-	}
 
 	getBrokerConnection(brokerName) {
 		return this._brokerConnection;

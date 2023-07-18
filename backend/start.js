@@ -766,50 +766,10 @@ const init = async (licenseContainer) => {
 		});
 	};
 
-	const broadcastWebSocketConnectionConnected = () => {
-		const message = {
-			type: 'event',
-			event: {
-				type: 'websocket-client-connected',
-				payload: {
-					webSocketClients: context.brokerManager.getClientWebSocketConnections().size
-				}
-			}
-		};
-		broadcastWebSocketMessage(message);
-	};
-
-	const broadcastWebSocketConnectionDisconnected = () => {
-		const message = {
-			type: 'event',
-			event: {
-				type: 'websocket-client-disconnected',
-				payload: {
-					webSocketClients: context.brokerManager.getClientWebSocketConnections().size
-				}
-			}
-		};
-		broadcastWebSocketMessage(message);
-	};
-
-	const broadcastWebSocketConnections = () => {
-		const message = {
-			type: 'event',
-			event: {
-				type: 'websocket-clients',
-				payload: {
-					webSocketClients: context.brokerManager.getClientWebSocketConnections().size
-				}
-			}
-		};
-		broadcastWebSocketMessage(message);
-	};
 
 	// TODO: handle disconnect of clients
 	wss.on('connection', (ws, request) => {
 		context.brokerManager.handleNewClientWebSocketConnection(ws);
-		broadcastWebSocketConnectionConnected();
-		broadcastWebSocketConnections();
 		const user = request.session?.passport?.user;
 		// send license information
 		ws.cedaloStash = { // the name of the property is cedaloStash to make any collision with ws object's internal arguments in the future version highly unlickly
@@ -862,8 +822,6 @@ const init = async (licenseContainer) => {
 		});
 		ws.on('close', (message) => {
 			context.brokerManager.handleCloseClientWebSocketConnection(ws);
-			broadcastWebSocketConnectionDisconnected();
-			broadcastWebSocketConnections();
 		});
 	});
 
