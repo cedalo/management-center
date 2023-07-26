@@ -1053,7 +1053,7 @@ const init = async (licenseContainer) => {
 				case 'NOT_FOUND':
 					return response.status(404).send({ code: error.code, message: error.message });
 				case 'GONE':
-					return response.status(409).send({ code: error.code, message: error.message });
+					return response.status(410).send({ code: error.code, message: error.message });
 				case 'SOMETHING_WRONG': {
 					console.error(error);
 					return response.status(500).send({ code: error.code, message: error.message });
