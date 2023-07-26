@@ -365,7 +365,7 @@ module.exports = class BaseMosquittoProxyClient {
 
 	async updateUserProfile(user) {
 		try {
-			const url = `${this._httpEndpointURL}/api/profile/${user.username}`;
+			const url = `${this._httpEndpointURL}/api/profile`;
 			const response = await axios.put(url, user, this._headers);
 			return response.data;
 		} catch (error) {
