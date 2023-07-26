@@ -17,7 +17,7 @@ module.exports = {
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "User profile object"
                     }
                 }
             }
