@@ -51,7 +51,7 @@ module.exports = class BaseMosquittoClient {
 	}
 
 
-	async createConnectionHandler() {
+	createConnectionHandler() {
 		this._createConnectionHandler(...arguments);
 	}
 
