@@ -144,6 +144,25 @@ const addTimeout = (promise, timeoutMilliseconds=5000, errorMessage='Timeout exc
 	return Promise.race([promise, timeoutPromise]);
 };
 
+const safeJoin = (...paths) => {
+    let processedPaths = [];
+
+    for (const pathString of paths) {
+        const targetPath = path.normalize(pathString);
+        processedPaths.push(targetPath);
+        
+    }
+
+    const resultingPath = path.join(...processedPaths);
+
+    if (resultingPath.startsWith(paths[0])) {
+        return resultingPath;
+    }
+
+    return null;
+};
+
+
 
 module.exports = {
 	loadInstallation,
@@ -155,5 +174,6 @@ module.exports = {
     embedIntoObject,
     replaceNaN,
     addTimeout,
+    safeJoin,
     ...sessions
 };

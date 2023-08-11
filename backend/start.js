@@ -20,7 +20,7 @@ const UsageTracker = require('./src/usage/UsageTracker');
 const InstallationManager = require('./src/usage/InstallationManager');
 const ConfigManager = require('./src/config/ConfigManager');
 const SettingsManager = require('./src/settings/SettingsManager');
-const { loadInstallation, generateSecret, embedIntoObject } = require('./src/utils/utils');
+const { loadInstallation, generateSecret, embedIntoObject, safeJoin } = require('./src/utils/utils');
 const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
 const swaggerDocument = require('./swagger.js');
 const Logger = require('./src/utils/Logger');
@@ -1009,19 +1009,17 @@ const init = async (licenseContainer) => {
 		}
 	);
 
+	router.get('/*.png', express.static(path.join(__dirname, 'public')));
+	
 	router.get(
 		'/*',
 		(request, response, next) => {
-			if (request.path.includes('.png')) {
-				next();
-			} else {
-				const doRedirectOnFail = true;
-				context.security.isLoggedIn(request, response, next, doRedirectOnFail);
-			}
+			const doRedirectOnFail = true;
+			context.security.isLoggedIn(request, response, next, doRedirectOnFail);
 		},
 		(request, response) => {
-			let publicFilePath = path.join(__dirname, 'public', request.path);
-			let mediaFilePath = path.join(__dirname, 'media', request.path);
+			let publicFilePath = safeJoin(__dirname, 'public', request.path);
+			let mediaFilePath = safeJoin(__dirname, 'media', request.path);
 			// TODO: handle better
 			publicFilePath = publicFilePath.replace(CEDALO_MC_PROXY_BASE_PATH, '');
 			mediaFilePath = mediaFilePath.replace(CEDALO_MC_PROXY_BASE_PATH, '');
@@ -1037,7 +1035,7 @@ const init = async (licenseContainer) => {
 			}
 		}
 	);
-	router.use(express.static(path.join(__dirname, 'public')));
+	
 
 	router.use('/api/*', (error, request, response, next) => {
 		if (error) {
