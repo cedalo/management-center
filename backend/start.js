@@ -52,6 +52,7 @@ const preprocessBoolEnvVariable = (envVariable) => {
 }
 
 const HTTP_PORT = 80;
+const CEDALO_MC_DEVELOPMENT_MODE = preprocessBoolEnvVariable(process.env.CEDALO_MC_DEVELOPMENT_MODE);
 const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
@@ -258,6 +259,9 @@ const init = async (licenseContainer) => {
 	const globalTopicTree = {};
 	const app = express();
 	app.set('view engine', 'ejs');
+	if (!CEDALO_MC_DEVELOPMENT_MODE) {
+		app.set('env', 'production');
+	}
 	app.set('views', path.join(__dirname, 'views'));
 
 	const sessionParser = session({
