@@ -1,45 +1,51 @@
+const DEFAULT_ERROR_MESSAGE = 'An error has occured'
+
+const makeError = (message) => {
+	return new Error(message || DEFAULT_ERROR_MESSAGE);
+};
+
 const InputError = {
-	conflict: (message) => {
-		const error = new Error(message);
+	conflict: (message='Conflict') => {
+		const error = makeError(message);
 		error.code = 'CONFLICT';
 		return error;
 	},
-	invalid: (message = 'Bad request') => {
-		const error = new Error(message);
+	invalid: (message='Bad request') => {
+		const error = makeError(message);
 		error.code = 'INVALID';
 		return error;
 	},
-	notFound: (message) => {
-		const error = new Error(message);
+	notFound: (message='Not Found') => {
+		const error = makeError(message);
 		error.code = 'NOT_FOUND';
 		return error;
 	},
-	gone: (message = 'Requestsed object does not exist') => {
-		const error = new Error(message);
+	gone: (message='Requestsed object does not exist') => {
+		const error = makeError(message);
 		error.code = 'GONE';
 		return error;
 	}
 };
 
 const OtherError = {
-	somethingWentWrong: (message) => {
-		const error = new Error(message);
+	somethingWentWrong: (message='Something went wrong') => {
+		const error = makeError(message);
 		error.code = 'SOMETHING_WRONG';
 		return error;
 	}
 };
 
 const InternalError = {
-	unexpected: (message = 'Something went wrong!') => {
-		const error = new Error(message);
+	unexpected: (message='Something went wrong!') => {
+		const error = makeError(message);
 		error.code = 'SOMETHING_WRONG';
 		return error;
 	}
 };
 
 const AuthError = {
-	notAllowed: (message) => {
-		const error = new Error(message);
+	notAllowed: (message='Not Allowed') => {
+		const error = makeError(message);
 		error.code = 'NOT_ALLOWED';
 		return error;
 	}
