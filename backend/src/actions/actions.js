@@ -61,7 +61,10 @@ const setPluginStatusAtNextStartupAction = {
 const testConnectionAction = {
 	type: 'connection/test',
 	fn: async ({ user, security, configManager }, { connection }) => {
-		if (!security.acl.noRestrictedRoles(user)) {
+		// if (!security.acl.noRestrictedRoles(user)) {
+		// 	throw AuthError.notAllowed();
+		// }
+		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin)) {
 			throw AuthError.notAllowed();
 		}
 		const testClient = new NodeMosquittoClient({

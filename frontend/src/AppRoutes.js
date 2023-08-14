@@ -46,7 +46,7 @@ import TestEdit from './components/TestEdit';
 import TestCollections from './components/TestCollections';
 import TestCollectionDetail from './components/TestCollectionDetail';
 import ApplicationTokens from './components/ApplicationTokens';
-import {atLeastAdmin, atLeastEditor, atLeastViewer, isGroupMember} from './utils/accessUtils/access';
+import {atLeastAdmin, atLeastEditor, atLeastViewer, isGroupMember, /*isMemberOfAdminGroups*/} from './utils/accessUtils/access';
 
 function AppRoutes(props) {
 
@@ -57,6 +57,9 @@ function AppRoutes(props) {
 
 	if ((hasError || response) && (hasErrorConfig || responseConfig)) {
 		let hideConnections = (typeof responseConfig?.hideConnections === 'boolean') ? responseConfig?.hideConnections : false;
+		// const shouldHideConnections = (userProfile) => {
+		// 	return !atLeastAdmin(userProfile) && !isMemberOfAdminGroups(userProfile) ? true : hideConnections;
+		// }
 		let hideInfoPage = (typeof responseConfig?.hideInfoPage === 'boolean') ? responseConfig?.hideInfoPage : false;
 
 		//   const container = window !== undefined ? () => window().document.body : undefined;
@@ -174,9 +177,9 @@ function AppRoutes(props) {
 				<Route path="/users">
 					<Users/>
 				</Route>
-				<Route path="/clusters/new">
+				{atLeastAdmin(userProfile) && <Route path="/clusters/new">
 					<ClusterNew/>
-				</Route>
+				</Route>}
 				<Route
 					path="/clusters/:clusterId"
 					component={ClusterDetail}
