@@ -54,6 +54,7 @@ const preprocessBoolEnvVariable = (envVariable) => {
 }
 
 const LOGIN_ENDPOINT = '/login';
+const CEDALO_MC_DEVELOPMENT_MODE = preprocessBoolEnvVariable(process.env.CEDALO_MC_DEVELOPMENT_MODE);
 const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
 const CEDALO_MC_ENABLE_FULL_LOG = preprocessBoolEnvVariable(process.env.CEDALO_MC_ENABLE_FULL_LOG);
@@ -317,6 +318,9 @@ const init = async (licenseContainer) => {
 	const globalTopicTree = {};
 	const app = express();
 	app.set('view engine', 'ejs');
+	if (!CEDALO_MC_DEVELOPMENT_MODE) {
+		app.set('env', 'production');
+	}
 	app.set('views', path.join(__dirname, 'views'));
 
 	const sessionParser = session({
