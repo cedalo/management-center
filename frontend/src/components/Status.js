@@ -269,7 +269,7 @@ const Status = ({
 			overFlowX="hidden"
 		>
 			<ContainerHeader
-				title={`Broker: ${currentConnectionName}`}
+				title={(currentConnectionName && `Broker: ${currentConnectionName}`) || 'No broker selected'}
 				subTitle="Display the status and license info of the selected broker. Hover over the info icon to get more information about each metric"
 				connectedWarning={!connected}
 			>
