@@ -1,5 +1,5 @@
 import Button from '@material-ui/core/Button';
-import {green, red} from '@material-ui/core/colors';
+import {green, red, grey} from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
 import {makeStyles, useTheme, withStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -11,8 +11,9 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import DisabledIcon from '@material-ui/icons/Cancel';
 import CancelIcon from '@material-ui/icons/CancelOutlined';
+import UnknownStateIcon from '@material-ui/icons/Help';
+import DisabledIcon from '@material-ui/icons/Cancel';
 import EnabledIcon from '@material-ui/icons/CheckCircle';
 import ReloadIcon from '@material-ui/icons/Replay';
 import {useSnackbar} from 'notistack';
@@ -159,12 +160,19 @@ const createClientsTable = (clients, classes, props, onDisconnectClient, onUpdat
 														<span>Last Disconnected: {dateToString(unixTimestampToDate(
 															client.lastDisconnect))}</span> : null
 												}
+												{
+													!client.hasOwnProperty('lastConnect') && !client.hasOwnProperty('lastDisconnect') ?
+														<span>Connection state unknown. Check the license of your broker for the inspect clients feature</span> : null
+												}
 											</>
 										}>
 											{client.connected ?
 												<EnabledIcon fontSize="small" style={{color: green[500]}} id={`enabled-client-icon-${client.username}-${client.clientid}`}/>
 												:
-												<DisabledIcon fontSize="small" style={{color: red[500]}} id={`disabled-client-icon-${client.username}-${client.clientid}`}/>
+												client.hasOwnProperty('connected') ? 
+													<DisabledIcon fontSize="small" style={{color: red[500]}} id={`disabled-client-icon-${client.username}-${client.clientid}`}/>
+													:
+													<UnknownStateIcon fontSize="small" style={{color: grey[500]}} id={`unknown-state-client-icon-${client.username}-${client.clientid}`}/>	
 											}
 										</Tooltip>
 									</TableCell>
