@@ -116,6 +116,25 @@ const generateSecret = () => { // TODO: change the location of this fucntion, al
 };
 
 
+const safeJoin = (...paths) => {
+    let processedPaths = [];
+
+    for (const pathString of paths) {
+        const targetPath = path.normalize(pathString);
+        processedPaths.push(targetPath);
+        
+    }
+
+    const resultingPath = path.join(...processedPaths);
+
+    if (resultingPath.startsWith(paths[0])) {
+        return resultingPath;
+    }
+
+    return null;
+};
+
+
 
 module.exports = {
 	loadInstallation,
@@ -124,5 +143,6 @@ module.exports = {
     getBaseDirectory,
     stripConnectionsCredentials,
     generateSecret,
+    safeJoin,
     ...sessions
 };

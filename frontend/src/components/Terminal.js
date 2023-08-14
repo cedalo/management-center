@@ -518,6 +518,9 @@ Topic:      ${acl.topic}
 								print(toErrorMessage(error));
 							});
 					})
+					.catch((error) => {
+						print(toErrorMessage(error));
+					});
 			}
 		}
 	}
