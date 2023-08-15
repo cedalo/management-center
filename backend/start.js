@@ -93,6 +93,41 @@ let context = {
 	}
 };
 
+
+const redirectLogWrapper = (req, res, next) => {
+	// Keep a reference to the original `res.redirect` function
+	const originalRedirect = res.redirect;
+  
+	// Override the `res.redirect` function
+	res.redirect = function (status, url) {
+		// If only the URL is provided, the status will be the URL, and the status will be 302
+		if (typeof url === 'undefined') {
+			url = status;
+			status = 302;
+		}
+	
+		if (status === 302) {
+			// Log the redirect and additional information
+			console.log(`
+Redirecting 302:
+	- Method: ${req.method}
+	- IP: ${req.ip}
+	- Port: ${req.connection.remotePort}
+	- From: ${req.originalUrl}
+	- Protocol: ${req.protocol}
+	- Host: ${req.headers.host}
+	- Path: ${req.path}
+	- To: ${url}
+`);
+		}
+	
+		// Call the original `res.redirect` function
+		originalRedirect.call(this, status, url);
+	};
+	next();
+};
+
+
 const noCache = (req, res, next) => {
 	res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
 	res.header('Expires', '-1');
@@ -278,6 +313,7 @@ const init = async (licenseContainer) => {
 	app.use(cors());
 	app.use(contentTypeParser);
 	app.use(noCache);
+	app.use(redirectLogWrapper); //!!
 
 	// TODO: add error handling
 	const config = loadConfig();
@@ -905,7 +941,10 @@ const init = async (licenseContainer) => {
 			// set up plain http server
 			httpPlainApp = express();
 			// set up a route to redirect http to https
+			httpPlainApp.use(redirectLogWrapper);
 			httpPlainApp.get('*', function(request, response) {
+				// !!
+				console.log(`Hit http to https redirect (request was made to ${request.headers.host}). About to redirect to:`, 'https://' +  CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST || request.headers.host + `:${port}` + request.url)
 				response.redirect('https://' + CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST || request.headers.host + `:${port}` + request.url);
 			});
 			httpPlainServer =  http.createServer(httpPlainApp);
