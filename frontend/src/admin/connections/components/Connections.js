@@ -425,7 +425,7 @@ const Connections = ({
 				subTitle="List of Connections. Connections configure the access to an existing broker instance.
 				You have to be connected to a broker to view and manage its settings or inspect broker information"
 			>
-				<Button
+				{ atLeastAdmin(userProfile) ? <Button
 					variant="outlined"
 					color="primary"
 					size="small"
@@ -437,7 +437,7 @@ const Connections = ({
 					}}
 				>
 					New Connection
-				</Button>
+				</Button> : null }
 			</ContainerHeader>
 			{brokerConnections && brokerConnections?.length > 0 ? (
 				<TableContainer style={{maxHeight: '100%'}}>
