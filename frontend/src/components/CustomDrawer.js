@@ -289,7 +289,7 @@ const CustomDrawer = ({
 						<List style={{background: 'none'}}>
 							{open ? <ListSubheader className={classes.menuSubHeader}>Configuration</ListSubheader> : null}
 							<Divider style={{margin: "7px 0px"}}/>
-							{(atLeastAdmin(userProfile, currentConnectionName) && !hideConnections) ?
+							{(!hideConnections) ?
 								<ListItemLink
 									tour="navbar-connections"
 									classes={classes}

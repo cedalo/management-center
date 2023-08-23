@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import {green} from '@material-ui/core/colors';
 import {makeStyles, withStyles} from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import Table from '@material-ui/core/Table';
@@ -20,6 +21,8 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import ClusterIcon from '@material-ui/icons/People';
+import LeaderIcon from '@material-ui/icons/Person';
 import {useConfirm} from 'material-ui-confirm';
 import {useSnackbar} from 'notistack';
 import React, {useContext} from 'react';
@@ -39,6 +42,7 @@ import {WebSocketContext} from '../../../websockets/WebSocket';
 
 const CONN_TABLE_COLUMNS = [
 	{id: 'expand', key: '', align: 'left', width: '10px'},
+	{id: 'cluster', key: '', align: 'left', width: '10px'},
 	{id: 'name', key: 'Name', align: 'left'},
 	{id: 'id', key: 'ID', align: 'left'},
 	{id: 'url', key: 'URL', align: 'left'},
@@ -75,7 +79,13 @@ const CustomRow = (props) => {
 		mouseX: null, mouseY: null,
 	};
 	const {
-		brokerConnection, handleBrokerConnectionConnectDisconnect, onDeleteConnection, userProfile, small, medium
+		brokerConnection,
+		clusterConnection,
+		handleBrokerConnectionConnectDisconnect,
+		onDeleteConnection,
+		userProfile,
+		small,
+		medium
 	} = props;
 	const [open, setOpen] = React.useState(false);
 	const [cursorPosInfo, setCursorPosInfo] = React.useState(initialCursorPosInfo);
@@ -119,7 +129,6 @@ const CustomRow = (props) => {
 
 	const url = brokerConnection.externalEncryptedUrl || brokerConnection.externalUnencryptedUrl || brokerConnection.internalUrl || brokerConnection.url;
 
-
 	return <>
 		<StyledTableRow
 			//   style={{ cursor: "pointer" }}
@@ -142,20 +151,32 @@ const CustomRow = (props) => {
 					</IconButton>
 				</TableCell>
 			}
-			<TableCell align={CONN_TABLE_COLUMNS[1].align} style={{padding: '6px'}}>{brokerConnection.name}</TableCell>
 			{medium || small ? null :
-				<TableCell align={CONN_TABLE_COLUMNS[2].align}
+				<TableCell align={CONN_TABLE_COLUMNS[1].align} style={{padding: '6px'}}>
+					{clusterConnection ? <Tooltip title={clusterConnection.isLeader ? `Leader of "${clusterConnection.clustername}" cluster` : `Follower of "${clusterConnection.clustername}" cluster`}>
+						{
+							clusterConnection.isLeader ? 
+								<LeaderIcon fontSize="small" style={{color: green[500]}}/>
+								:
+								<ClusterIcon fontSize="small"/>
+						}
+					</Tooltip> : null}
+				</TableCell>
+			}
+			<TableCell align={CONN_TABLE_COLUMNS[2].align} style={{padding: '6px'}}>{brokerConnection.name}</TableCell>
+			{medium || small ? null :
+				<TableCell align={CONN_TABLE_COLUMNS[3].align}
 						   style={{padding: '6px'}}>{brokerConnection.id}</TableCell>
 			}
 			{small ? null :
-				<TableCell align={CONN_TABLE_COLUMNS[3].align} style={{padding: '6px'}}>{url}</TableCell>
+				<TableCell align={CONN_TABLE_COLUMNS[4].align} style={{padding: '6px'}}>{url}</TableCell>
 			}
-			<TableCell align={CONN_TABLE_COLUMNS[4].align} style={{padding: '6px'}}>
+			<TableCell align={CONN_TABLE_COLUMNS[5].align} style={{padding: '6px'}}>
 				<BrokerStatusIcon brokerConnection={brokerConnection}/>
 				{}
 			</TableCell>
 			{medium || small ? null :
-				<TableCell align={CONN_TABLE_COLUMNS[5].align} style={{padding: '6px'}}>
+				<TableCell align={CONN_TABLE_COLUMNS[6].align} style={{padding: '6px'}}>
 					<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}>
 						<Switch
 							color="primary"
@@ -265,7 +286,7 @@ const CustomRow = (props) => {
 
 
 const Connections = ({
-						 brokerConnections, onSort, sortBy, sortDirection, connected, userProfile, currentConnectionName
+						 brokerConnections, onSort, sortBy, sortDirection, connected, userProfile, currentConnectionName, clusterDetails
 					 }) => {
 	const classes = useStyles();
 	const history = useHistory();
@@ -278,6 +299,16 @@ const Connections = ({
 	const [premiumFeatureDialogOpen, setPremiumFeatureDialogOpen] = React.useState(false);
 	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
 	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
+
+	const clusterConnections = {};
+	// clusterDetails is a dict of cluternames and their details
+	clusterDetails && Object.keys(clusterDetails).forEach((clustername) => {
+		const clusterDetail = clusterDetails[clustername];
+
+		clusterDetail?.nodes.forEach((node) => {
+			clusterConnections[node.broker] = { clustername, isLeader: node.leader };
+		});
+	});
 
 	const handleClosePremiumFeatureDialog = () => {
 		setPremiumFeatureDialogOpen(false);
@@ -447,6 +478,7 @@ const Connections = ({
 									onDeleteConnection={onDeleteConnection}
 									userProfile={userProfile}
 									classes={classes}
+									clusterConnection={clusterConnections[brokerConnection.id]}
 								/>))}
 						</TableBody>
 					</Table>
@@ -458,6 +490,8 @@ const Connections = ({
 
 const mapStateToProps = (state) => {
 	return {
+		clusterDetails: state.clusters?.clusterDetails,
+		brokerConnections: state.brokerConnections?.brokerConnections,
 		brokerConnections: state.brokerConnections?.brokerConnections,
 		connected: state.brokerConnections.connected,
 		userProfile: state.userProfile?.userProfile,
