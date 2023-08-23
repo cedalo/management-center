@@ -23,6 +23,12 @@ const getBaseDirectory = (dirname) => {
 };
 
 
+const generateSecureClientId = () => {
+	// a longer clientid to account for bruteforce
+	return 'mmc-' + uuidv4();
+};
+
+
 const adapter = new FileSync(path.join(process.env.CEDALO_MC_DIRECTORY_SETTINGS || getBaseDirectory(__dirname), 'db.json'));
 const db = low(adapter);
 
@@ -144,5 +150,6 @@ module.exports = {
     stripConnectionsCredentials,
     generateSecret,
     safeJoin,
+    generateSecureClientId,
     ...sessions
 };

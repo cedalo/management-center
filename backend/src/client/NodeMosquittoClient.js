@@ -1,4 +1,5 @@
 const mqtt = require('mqtt');
+const { generateSecureClientId } = require('../utils/utils');
 
 const socketErrors = [ // defined in mqttjs (client.js)
 	'ECONNREFUSED',
@@ -73,6 +74,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		if (options) {
 			options.reconnectPeriod = 0;
 			options.connectTimeout = CONNECT_TIMEOUT_MS;
+			options.clientId = options.clientId || generateSecureClientId();
 		}
 
 		let timeoutID = undefined;
