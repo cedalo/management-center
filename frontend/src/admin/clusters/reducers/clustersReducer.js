@@ -9,6 +9,9 @@ export default function clusters(state = {}, action) {
 		case ActionTypes.UPDATE_CLUSTERS:
 			newState.clusters = action.update;
 			break;
+		case ActionTypes.UPDATE_CLUSTER_DETAILS:
+			newState.clusterDetails = action.update;
+			break;
 		default:
 	}
 	return newState;

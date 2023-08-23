@@ -13,3 +13,11 @@ export function updateClusters(update) {
 		update
 	};
 }
+
+
+export function updateClusterDetails(update) {
+	return {
+		type: ActionTypes.UPDATE_CLUSTER_DETAILS,
+		update
+	};
+}
