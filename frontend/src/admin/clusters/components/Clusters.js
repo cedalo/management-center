@@ -23,8 +23,8 @@ import ContainerHeader from '../../../components/ContainerHeader';
 import ContentContainer from '../../../components/ContentContainer';
 import WaitDialog from '../../../components/WaitDialog';
 import {WebSocketContext} from '../../../websockets/WebSocket';
-import {updateCluster, updateClusters} from '../actions/actions';
-import { getSyncModeLabel } from './clusterutils';
+import {updateCluster, updateClusters, updateClusterDetails} from '../actions/actions';
+import { getSyncModeLabel, generateClusterDetails } from './clusterutils';
 import DialogContentText from '@material-ui/core/DialogContentText';
 
 
@@ -269,6 +269,8 @@ const Clusters = (props) => {
 		}
 		const clusters = await brokerClient.listClusters();
 		dispatch(updateClusters(clusters));
+		const clusterDetails = await generateClusterDetails(brokerClient, clusters);
+		dispatch(updateClusterDetails(clusterDetails));
 	};
 
 	return [

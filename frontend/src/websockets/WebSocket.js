@@ -45,6 +45,10 @@ import {
 } from '../admin/clusters/actions/actions';
 
 import {
+	generateClusterDetails
+} from '../admin/clusters/components/clusterutils';
+
+import {
 	updateInspectClients
 } from '../admin/inspect/actions/actions';
 
@@ -247,13 +251,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			feature: 'clustermanagement',
 			status: 'ok'
 		}));
-		const clusterDetails = {};
-		// it's not ideal to make requests for every cluster, but that's what we currently have
-		if (clusters && Array.isArray(clusters)) {
-			for (const cluster of clusters) {
-				clusterDetails[cluster.clustername] = await client.getCluster(cluster.clustername);
-			}
-		}
+		const clusterDetails = await generateClusterDetails(client, clusters);
 		dispatch(updateClusterDetails(clusterDetails));
 	} catch (error) {
 		console.error('Error listing clusters:', error);
