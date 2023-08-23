@@ -5,7 +5,7 @@ import ContainerBox from '../../../components/ContainerBox';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
 import ContentContainer from '../../../components/ContentContainer';
-import {updateClusters} from '../actions/actions';
+import {updateClusters, updateClusterDetails} from '../actions/actions';
 import {useSnackbar} from 'notistack';
 import {Alert, AlertTitle} from '@material-ui/lab';
 import ClusterIcon from '@material-ui/icons/Storage';
@@ -20,7 +20,11 @@ import SelectNodeComponent from './SelectNodeComponent';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
-import { defaultNodeAddress, defaultNodeBroker, getSyncModes } from './clusterutils';
+import { defaultNodeAddress,
+		defaultNodeBroker,
+		getSyncModes,
+		generateClusterDetails
+} from './clusterutils';
 import {
 	getNodeIdsUniqueValidator,
     getPrivateAddressesPresentValidator,
@@ -85,6 +89,8 @@ const ClusterNew = (props) => {
 	const {client} = context;
 
 	const onSaveCluster = async () => {
+		let clusters;
+
 		try {
 			await client.createCluster({
 				clustername,
@@ -92,7 +98,7 @@ const ClusterNew = (props) => {
 				syncmode,
 				nodes
 			});
-			const clusters = await client.listClusters();
+			clusters = await client.listClusters();
 			dispatch(updateClusters(clusters));
 			history.push(`/clusters`);
 			enqueueSnackbar(`Cluster "${clustername}" successfully created.`, {
@@ -104,6 +110,8 @@ const ClusterNew = (props) => {
 			});
 			// throw error;
 		}
+		const clusterDetails = await generateClusterDetails(client, clusters);
+		dispatch(updateClusterDetails(clusterDetails));
 	};
 
 	const onCancel = async () => {
