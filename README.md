@@ -1,4 +1,4 @@
-# Management Center
+ Management Center
 
 The management center for Eclipse Mosquitto. See the [official documentation](https://docs.cedalo.com/) for additional details.
 
@@ -38,8 +38,8 @@ Either go to [official documentation page](https://docs.cedalo.com/management-ce
                     - 127.0.0.1:8080:8080
                     - 8883:8883
                 volumes:
-                    - ./mosquitto/config:/mosquitto/config
-                    - ./mosquitto/data:/mosquitto/data
+                   -  ./config:/mosquitto/config
+                    - ./data:/mosquitto/data
                 networks:
                     - mosquitto
         networks:
