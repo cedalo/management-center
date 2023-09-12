@@ -20,7 +20,13 @@ const UsageTracker = require('./src/usage/UsageTracker');
 const InstallationManager = require('./src/usage/InstallationManager');
 const ConfigManager = require('./src/config/ConfigManager');
 const SettingsManager = require('./src/settings/SettingsManager');
-const { loadInstallation, generateSecret, embedIntoObject, safeJoin } = require('./src/utils/utils');
+const { loadInstallation,
+	generateSecret,
+	embedIntoObject,
+	safeJoin,
+	isDirectoryAsync,
+	existsAsync
+} = require('./src/utils/utils');
 const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
 const swaggerDocument = require('./swagger.js');
 const Logger = require('./src/utils/Logger');
@@ -1015,31 +1021,44 @@ const init = async (licenseContainer) => {
 
 	router.get('/*.png', express.static(path.join(__dirname, 'public')));
 	
-	router.get(
-		'/*',
+	router.get('/*',
 		(request, response, next) => {
 			const doRedirectOnFail = true;
 			context.security.isLoggedIn(request, response, next, doRedirectOnFail);
 		},
-		(request, response) => {
+		async (request, response) => {
 			let publicFilePath = safeJoin(__dirname, 'public', request.path);
 			let mediaFilePath = safeJoin(__dirname, 'media', request.path);
-			// TODO: handle better
 			publicFilePath = publicFilePath.replace(CEDALO_MC_PROXY_BASE_PATH, '');
 			mediaFilePath = mediaFilePath.replace(CEDALO_MC_PROXY_BASE_PATH, '');
-			if (fs.existsSync(publicFilePath)) {
-				response.sendFile(publicFilePath);
-			} else if (fs.existsSync(mediaFilePath)) {
-				response.sendFile(mediaFilePath);
-			} else if (request.path.includes('/api/')) {
-				response.status(404).send({ code: 'NOT_FOUND', message: 'Resource not found' });
-			} else {
-				response.status(404);
-				response.sendFile(path.join(__dirname, 'public', 'index.html'));
+
+			try {
+				const potentialPaths = [
+					{ path: publicFilePath, defaultFile: 'index.html' },
+					{ path: mediaFilePath, defaultFile: 'index.html' },
+				];
+		
+				for (const potential of potentialPaths) {
+					const exists = await existsAsync(potential.path);
+					if (exists) {
+						if (await isDirectoryAsync(potential.path)) {
+							return response.sendFile(path.join(potential.path, potential.defaultFile));
+						}
+						return response.sendFile(potential.path);
+					}
+				}
+		
+				if (request.path.includes('/api/')) {
+					return response.status(404).send({ code: 'NOT_FOUND', message: 'Resource not found' });
+				}
+		
+				return response.status(404).sendFile(path.join(__dirname, 'public', 'index.html'));
+			} catch (err) {
+				console.error('Error handling request:', err);
+				return response.status(500).send({ code: 'INTERNAL_ERROR', message: 'Internal Server Error' });
 			}
 		}
 	);
-	
 
 	router.use('/api/*', (error, request, response, next) => {
 		if (error) {

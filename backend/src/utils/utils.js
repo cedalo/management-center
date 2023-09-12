@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 const crypto = require('crypto');
+const fs = require('fs');
 
 const sessions = require('./sessions');
 
@@ -169,6 +170,22 @@ const safeJoin = (...paths) => {
 };
 
 
+const isDirectoryAsync = async (path) => {
+    try {
+        const stats = await fs.promises.stat(path);
+        const isDir = stats.isDirectory();
+        return isDir;
+    } catch (e) {
+        return false;
+    }
+}
+
+// Helper functions
+const existsAsync = async (file) => {
+    return fs.promises.access(file, fs.constants.F_OK)
+        .then(() => true)
+        .catch(() => false)
+}
 
 module.exports = {
 	loadInstallation,
@@ -182,5 +199,7 @@ module.exports = {
     addTimeout,
     safeJoin,
     generateSecureClientId,
+    existsAsync,
+    isDirectoryAsync,
     ...sessions
 };
