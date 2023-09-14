@@ -1204,22 +1204,22 @@ const init = async (licenseContainer) => {
 				process.exit(1);
 			}, 1000);
 		}
+	});
 
-		process.on('SIGTERM', async () => {
-			// TODO: stop does not release all the resources. App still hangs for some reason
-			console.log('SIGTERM received. Terminating...');
-			await controlElements.stop();
-			setTimeout(() => { // TODO: fix this quick hack which allows us to write shutdown event to syslog and not exit before it
-				process.exit(0);
-			}, 1000);
-		});
-		process.on('SIGINT', async () => {
-			console.log('SIGNINT received. Terminating...');
-			await controlElements.stop(); // TODO: fix this quick hack which allows us to write shutdown event to syslog and not exit before it
-			setTimeout(() => {
-				process.exit(0);
-			}, 1000);
-		});
+	process.on('SIGTERM', async () => {
+		// TODO: stop does not release all the resources. App still hangs for some reason
+		console.log('SIGTERM received. Terminating...');
+		await controlElements.stop();
+		setTimeout(() => { // TODO: fix this quick hack which allows us to write shutdown event to syslog and not exit before it
+			process.exit(0);
+		}, 1000);
+	});
+	process.on('SIGINT', async () => {
+		console.log('SIGNINT received. Terminating...');
+		await controlElements.stop(); // TODO: fix this quick hack which allows us to write shutdown event to syslog and not exit before it
+		setTimeout(() => {
+			process.exit(0);
+		}, 1000);
 	});
 })();
 
