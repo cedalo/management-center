@@ -13,6 +13,8 @@ const valideCronTab = (crontab) => {
 	}
 	return crontab;
 };
+
+// either run cronteabl job as per the passed crontab variable if it was passed and valid or take the license's valid until timestamp and run job then
 const getCronTab = async (crontab, license) => valideCronTab(crontab) || msToCronTab(license.validUntil);
 
 const notify = (cb) => (license) => {
