@@ -90,6 +90,7 @@ let context = {
 	actionEmitter: new QueuedEmitter2({ wildcard: true, delimiter: '/' }),
 	brokerManager: new BrokerManager(),
 	requestHandlers: new Map(),
+	httpClient: HTTPClient,
 	security: {
 		acl: {
 			...acl
