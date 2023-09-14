@@ -1154,7 +1154,7 @@ const init = async (licenseContainer) => {
 			broadcastWebSocketMessage(message);
 		} else {
 			licenseContainer.license = license;
-			licenseContainer.isValid = true;
+			licenseContainer.isValid = license.isValid;
 			const message = {
 				type: 'event',
 				event: {
