@@ -342,7 +342,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 						this.subscribedTopics.splice(index, 1); // remove topic from topic list if error encountered
 					}
 				}
-				callback(...arguments);
+				callback(error);
 			});
 		}
 	}
@@ -358,7 +358,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				if (error) {
 					this.subscribedTopics.push(topic);
 				}
-				callback(...arguments);
+				callback(error);
 			});
 		}
 	}
