@@ -85,7 +85,6 @@ const { AuthError } = require('./src/plugins/Errors');
 // await licenseManager.loadLicense();
 // const license = licenseManager.getLicenseAsJSON();
 
-const checker = new LicenseChecker();
 let context = {
 	eventEmitter: new EventEmitter(),
 	actionEmitter: new QueuedEmitter2({ wildcard: true, delimiter: '/' }),
@@ -143,6 +142,8 @@ let context = {
 	},
 	actions: {},
 };
+
+const checker = new LicenseChecker(context);
 
 context.registerAction(unloadPluginAction);
 context.registerAction(loadPluginAction);
