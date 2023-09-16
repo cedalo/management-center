@@ -3,7 +3,7 @@ const BaseMosquittoProxyClient = require('base-mc-classes').BaseMosquittoProxyCl
 
 module.exports = class NodeMosquittoProxyClient extends BaseMosquittoProxyClient {
 	constructor({ name = 'Node Mosquitto Proxy Client', logger } = {}, { socketEndpointURL, httpEndpointURL } = {}, headers=undefined) {
-		super({ name, logger: logger }, { socketEndpointURL, httpEndpointURL }, headers);
+		super({ name, logger }, { socketEndpointURL, httpEndpointURL }, headers);
 	}
 
 	_connectSocketServer(url, sid=undefined) {
