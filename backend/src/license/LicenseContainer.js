@@ -1,6 +1,7 @@
 const devFeatures = (() => {
 	try {
-		return require(process.env.CEDALO_MC_DEV_FEATURES_FILE);
+		const features = require(process.env.CEDALO_MC_DEV_FEATURES_FILE);
+		return (typeof features === 'object' && Object.keys(features).length === 0) ? [] : features;
 	} catch (_) { /* ignore */ }
 	return [];
 })();
