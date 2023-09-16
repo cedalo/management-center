@@ -70,12 +70,14 @@ const CEDALO_MC_USERNAME = process.env.CEDALO_MC_USERNAME;
 
 const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
+const CEDALO_MC_LICENSE_CHECHER_PATH = process.env.CEDALO_MC_LICENSE_CHECHER_PATH;
+const CEDALO_MC_LICENSE_CRON_TAB_STRING = process.env.CEDALO_MC_LICENSE_CRON_TAB_STRING || '*/10 * * * * *';
 
 console.log(`Mosquitto Management Center version ${version.version || 'unknown'}`);
 console.log(`MMC is starting in ${process.env.CEDALO_MC_MODE === 'offline' ? 'offline' : 'online'} mode`);
 
 // const LicenseManager = require("../src/LicenseManager");
-const LicenseChecker = require('./src/license/LicenseChecker');
+const LicenseChecker = require(CEDALO_MC_LICENSE_CHECHER_PATH || './src/license/LicenseChecker');
 const acl = require('./src/security/acl');
 const TopicTreeManager = require('./src/topictree/TopicTreeManager');
 const licenseContainer = require('./src/license/LicenseContainer');
@@ -902,7 +904,42 @@ const init = async (licenseContainer) => {
                 return next();
             }
 		},
-		preprocessUserFunctions: preprocessUserFunctions
+		preprocessUserFunctions: preprocessUserFunctions,
+		licenseCheckCallback: (async (error, license) => {
+			if (error) {
+				licenseContainer.license = license;
+				licenseContainer.isValid = false;
+				const message = {
+					type: 'event',
+					event: {
+						type: 'license',
+						payload: {
+							...licenseContainer.license,
+							integrations: {
+								error: licenseContainer.integrations.error
+							}
+						}
+					}
+				};
+				broadcastWebSocketMessage(message);
+			} else {
+				licenseContainer.license = license;
+				licenseContainer.isValid = license.isValid;
+				const message = {
+					type: 'event',
+					event: {
+						type: 'license',
+						payload: {
+							...licenseContainer.license,
+							integrations: {
+								error: licenseContainer?.integrations?.error
+							}
+						}
+					}
+				};
+				broadcastWebSocketMessage(message);
+			}
+		}),
 	};
 
 	context.pluginManager.init(config.plugins, context, swaggerDocument);
@@ -1135,41 +1172,9 @@ const init = async (licenseContainer) => {
 		}
 	}, USAGE_TRACKER_INTERVAL);
 
-	await checker.scheduleEvery('*/10 * * * * *', async (error, license) => {
-		if (error) {
-			licenseContainer.license = license;
-			licenseContainer.isValid = false;
-			const message = {
-				type: 'event',
-				event: {
-					type: 'license',
-					payload: {
-						...licenseContainer.license,
-						integrations: {
-							error: licenseContainer.integrations.error
-						}
-					}
-				}
-			};
-			broadcastWebSocketMessage(message);
-		} else {
-			licenseContainer.license = license;
-			licenseContainer.isValid = license.isValid;
-			const message = {
-				type: 'event',
-				event: {
-					type: 'license',
-					payload: {
-						...licenseContainer.license,
-						integrations: {
-							error: licenseContainer?.integrations?.error
-						}
-					}
-				}
-			};
-			broadcastWebSocketMessage(message);
-		}
-	});
+	if (context.licenseCheckCallback) {
+		await checker.scheduleEvery(CEDALO_MC_LICENSE_CRON_TAB_STRING, context.licenseCheckCallback);
+	}
 
 	stopFunctions.push(() => context.server.close());
 	stopFunctions.push(() => context.httpPlainServer?.close()); // plain server created to redirect http -> https in case https is used
