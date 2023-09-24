@@ -31,6 +31,7 @@ const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
 const swaggerDocument = require('./swagger.js');
 const Logger = require('./src/utils/Logger');
 const contentTypeParser = require('./src/middleware/ContentTypeParser');
+const License = require('./src/license/License');
 const {
 	unloadPluginAction,
 	loadPluginAction,
@@ -88,11 +89,14 @@ const { AuthError } = require('./src/plugins/Errors');
 // const license = licenseManager.getLicenseAsJSON();
 
 let context = {
+	licenseClass: License, // needed for custom license checkers which are responsible for loading the license, making initial validity check and can schedule subsequent checks
+	// some license checkers need to generate this license, therefore they need this class (which is btw used by the default licenseChecker and its implementation lies next to the default
+	// license checker in src/license folder)
 	eventEmitter: new EventEmitter(),
 	actionEmitter: new QueuedEmitter2({ wildcard: true, delimiter: '/' }),
 	brokerManager: new BrokerManager(),
 	requestHandlers: new Map(),
-	httpClient: HTTPClient,
+	httpClient: HTTPClient.getInstance(),
 	security: {
 		acl: {
 			...acl
@@ -906,6 +910,9 @@ const init = async (licenseContainer) => {
 		},
 		preprocessUserFunctions: preprocessUserFunctions,
 		licenseCheckCallback: (async (error, license) => {
+			// this is a default licenseCheckCallback. Particular licenseCheckers might ignore this function altogether and instead set their own when calling schedule method.
+			// in such cases the only parameter that can be levaraged is the crontab string (i.e. the frequency of executing the license check)
+			// in principle, specific plugins can also override this callback through the context if need be and sent for example a notification to the API about the invalid license and so on.
 			if (error) {
 				licenseContainer.license = license;
 				licenseContainer.isValid = false;
@@ -1189,6 +1196,7 @@ const init = async (licenseContainer) => {
 	await checker.check(async (error, license) => {
 		if (error) {
 			console.error(error);
+			console.error('Encountered an unexpected error when processing the license. Terminating...');
 			process.exit(-1);
 		}
 		licenseContainer.license = license;
