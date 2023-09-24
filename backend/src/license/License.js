@@ -1,20 +1,22 @@
-const setup = (license, json) =>
-	Object.entries(json).reduce((lic, [key, value]) => {
-		if (value != null) lic[key] = value;
-		return lic;
-	}, license);
-
-const validate = (license) =>
-	Object.entries(license).reduce(
-		(err, [key, value]) => err || (value == null ? `${key} not specified!` : undefined),
-		undefined
-	);
-
 class License {
+	static _setup (license, json) {
+		return 	Object.entries(json).reduce((lic, [key, value]) => {
+			if (value != null) lic[key] = value;
+			return lic;
+		}, license);
+	}
+
+	static _validate(license) {
+		return Object.entries(license).reduce(
+			(err, [key, value]) => err || (value == null ? `${key} not specified!` : undefined),
+			undefined
+		);
+	}
+
 	static from(json = {}) {
 		// const license = Object.assign(new License(), DEF, json);
-		const license = setup(new License(), json);
-		const error = validate(license);
+		const license = License._setup(new License(), json);
+		const error = License._validate(license);
 		if (error) throw Error(error);
 		return Object.freeze(license);
 	}
