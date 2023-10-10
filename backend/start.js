@@ -982,6 +982,10 @@ const init = async (licenseContainer) => {
 
 	router.use('/api/docs', swaggerUi.serve);
 	router.get('/api/docs', context.security.isLoggedIn, swaggerUi.setup(swaggerDocument));
+	router.get('/api/docs/export', context.security.isLoggedIn, (request, response) => {
+		response.setHeader('Content-Type', 'application/json');
+		response.send(JSON.stringify(swaggerDocument, null, 4));
+	});
 
 	router.get('/api/version', context.security.isLoggedIn, (request, response) => {
 		response.json(version);
