@@ -13,7 +13,7 @@ class Logger {
 
     error() {
         if (!this.silentMode) {
-            this.logger.log(...arguments);
+            this.logger.error(...arguments);
         }
     }
 
