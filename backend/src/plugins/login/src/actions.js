@@ -9,7 +9,7 @@ const createActions = (plugin) => ({
 	loginAction: {
 		type: 'user/login',
 		isModifying: true,
-		metainfo: { plugin: plugin.featureId, operation: 'login', crud: 'update' },
+		metainfo: { source: plugin.featureId, operation: 'login', operationType: 'update' },
 		fn: async (context, { username, password }) => {
 			if (username === USERNAME && password === PASSWORD) {
 				return addSessionId({
@@ -34,7 +34,7 @@ const createActions = (plugin) => ({
 		// Dummy Action to receive a logout event
 		type: 'user/logout',
 		isModifying: true,
-		metainfo: { plugin: plugin.featureId, operation: 'logout', crud: 'update' },
+		metainfo: { source: plugin.featureId, operation: 'logout', operationType: 'update' },
 		fn: (context, { username }) => {
 			return true;
 		}

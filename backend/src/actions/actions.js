@@ -12,7 +12,7 @@ const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
 const CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST = process.env.CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST;
 
-const metainfo = (operation, crud) => ({ plugin: 'management-center', operation, crud });
+const metainfo = (operation, operationType) => ({ source: 'management-center', operation, operationType });
 
 const connectToBroker = (context, brokerName, client) => {
 	const brokerConnection = context.brokerManager.getBrokerConnection(brokerName);

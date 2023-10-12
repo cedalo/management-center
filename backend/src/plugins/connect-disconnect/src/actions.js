@@ -5,7 +5,7 @@ const createActions = (plugin) => ({
 	connectServerToBrokerAction: {
 		type: 'connect-disconnect/connectToBroker',
 		isModifying: true,
-		metainfo: { plugin: plugin.featureId, operation: 'connectServerToBroker', crud: 'update' },
+		metainfo: { source: plugin.featureId, operation: 'connectServerToBroker', operationType: 'update' },
 		fn: async (context, { connectionId }) => {
 			const { user, security, configManager } = context;
 			if (security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, connectionId)) {
@@ -24,7 +24,7 @@ const createActions = (plugin) => ({
 	disconnectServerFromBroker: {
 		type: 'connect-disconnect/disconnectFromBroker',
 		isModifying: true,
-		metainfo: { plugin: plugin.featureId, operation: 'disconnectServerFromBroker', crud: 'update' },
+		metainfo: { source: plugin.featureId, operation: 'disconnectServerFromBroker', operationType: 'update' },
 		fn: async (context, { connectionId }) => {
 			const { user, security, configManager } = context;
 			if (security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, connectionId)) {
