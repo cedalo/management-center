@@ -1206,6 +1206,7 @@ const init = async (licenseContainer) => {
 		licenseContainer.license = license;
 		licenseContainer.isValid = license.isValid;
 		try {
+			console.log(`Found ${license.plan} plan license.`);
 			await init(licenseContainer);
 		} catch (error) {
 			console.log('Error encountered');
