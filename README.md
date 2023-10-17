@@ -11,8 +11,8 @@ The management center for Eclipse Mosquitto. See the [official documentation](ht
 Either go to [official documentation page](https://docs.cedalo.com/management-center/2.4/installation/) and follow steps there or clone this repository and then:
 
 
-* Intstall `Docker` and `docker-compose`
-* Intstall `yarn` package manager
+* Install `Docker` and `docker-compose`
+* Install `yarn` package manager
 
 
 * Run the Mosquitto broker:
