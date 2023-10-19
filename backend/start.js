@@ -20,13 +20,14 @@ const UsageTracker = require('./src/usage/UsageTracker');
 const InstallationManager = require('./src/usage/InstallationManager');
 const ConfigManager = require('./src/config/ConfigManager');
 const SettingsManager = require('./src/settings/SettingsManager');
+const utilityFunctions = require('./src/utils/utils');
 const { loadInstallation,
 	generateSecret,
 	embedIntoObject,
 	safeJoin,
 	isDirectoryAsync,
 	existsAsync
-} = require('./src/utils/utils');
+} = utilityFunctions;
 const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
 const swaggerDocument = require('./swagger.js');
 const Logger = require('./src/utils/Logger');
@@ -959,6 +960,7 @@ const init = async (licenseContainer) => {
 				broadcastWebSocketMessage(message);
 			}
 		}),
+		utils: { ...utilityFunctions },
 	};
 
 	context.pluginManager.init(config.plugins, context, swaggerDocument);
