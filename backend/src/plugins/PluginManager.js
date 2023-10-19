@@ -85,35 +85,156 @@ module.exports = class PluginManager {
 	init(pluginConfigurations = [], context, swaggerDocument) {
 		this._context = context;
 		const { licenseContainer } = context;
-		if (licenseContainer.license.isValid && PLUGIN_DIR) {
-			pluginConfigurations.forEach((pluginConfiguration) => {
-				try {
-					const enableAtNextStartup = (pluginConfiguration.enableAtNextStartup !== undefined) ? pluginConfiguration.enableAtNextStartup : true;
+		if (licenseContainer.license.isValid) {
+		// if (licenseContainer.license.isValid && PLUGIN_DIR) {
+			// pluginConfigurations.forEach((pluginConfiguration) => {
+			// 	try {
+			// 		const enableAtNextStartup = (pluginConfiguration.enableAtNextStartup !== undefined) ? pluginConfiguration.enableAtNextStartup : true;
 
-					const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
-					const plugin = new Plugin({enableAtNextStartup, context, hidden: !!pluginConfiguration.hidden});
-					if (licenseContainer.license.features &&
-						licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
-					) {
-						if (!enableAtNextStartup) {
-							console.log(`Plugin not loaded: Plugin set to be disabled at current startup: "${pluginConfiguration.name}"`)
-							plugin.setErrored(`Plugin set to be disabled at current startup: "${pluginConfiguration.name}"`);
-							this._plugins.push(plugin);
-						} else {
-							this._plugins.push(plugin);
-						}
-					} else {
-						console.log(`Plugin not loaded: License does not allow this plugin: "${pluginConfiguration.name}"`)
-						plugin.setErrored(`License does not allow this plugin: "${pluginConfiguration.name}"`);
-						this._plugins.push(plugin);
-					}
-				} catch (error) {
-					console.error(`Failed loading plugin: "${pluginConfiguration.name}"`);
-					console.error(error);
+			// 		const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
+			// 		const plugin = new Plugin({enableAtNextStartup, context, hidden: !!pluginConfiguration.hidden});
+			// 		if (licenseContainer.license.features &&
+			// 			licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
+			// 		) {
+			// 			if (!enableAtNextStartup) {
+			// 				console.log(`Plugin not loaded: Plugin set to be disabled at current startup: "${pluginConfiguration.name}"`)
+			// 				plugin.setErrored(`Plugin set to be disabled at current startup: "${pluginConfiguration.name}"`);
+			// 				this._plugins.push(plugin);
+			// 			} else {
+			// 				this._plugins.push(plugin);
+			// 			}
+			// 		} else {
+			// 			console.log(`Plugin not loaded: License does not allow this plugin: "${pluginConfiguration.name}"`)
+			// 			plugin.setErrored(`License does not allow this plugin: "${pluginConfiguration.name}"`);
+			// 			this._plugins.push(plugin);
+			// 		}
+			// 	} catch (error) {
+			// 		console.error(`Failed loading plugin: "${pluginConfiguration.name}"`);
+			// 		console.error(error);
+			// 	}
+			// });
+			// try {
+				// const enableAtNextStartup = (pluginConfiguration.enableAtNextStartup !== undefined) ? pluginConfiguration.enableAtNextStartup : true;
+
+			const plugins = [];
+			let requiredPlugin;
+
+			try {
+				requiredPlugin = require('../../../../plugins/audit-trail').Plugin;
+				plugins.push(requiredPlugin);
+			} catch(error) {
+				console.error('Plugin "audit-trail" not found');
+			}
+
+			try {
+				requiredPlugin = require('../../../../plugins/user-management').Plugin;
+				plugins.push(requiredPlugin);
+			} catch(error) {
+				console.error('Plugin "user-management" not found');
+			}
+
+			try {
+				requiredPlugin = require('../../../../plugins/application-tokens').Plugin;
+				plugins.push(requiredPlugin);
+			} catch(error) {
+				console.error('Plugin "application-tokens" not found');
+			}
+
+			try {
+				requiredPlugin = require('../../../../plugins/monitoring-rest-api').Plugin;
+				plugins.push(requiredPlugin);
+			} catch(error) {
+				console.error('Plugin "monitoring-rest-api" not found');
+			}
+
+			try {
+				requiredPlugin = require('../../../../plugins/tls').Plugin;
+				plugins.push(requiredPlugin);
+			} catch(error) {
+				console.error('Plugin "tls" not found');
+			}
+
+			try {
+				requiredPlugin = require('../../../../plugins/user-profile-edit').Plugin;
+				plugins.push(requiredPlugin);
+			} catch(error) {
+				console.error('Plugin "user-profile-edit" not found');
+			}
+
+			try {
+				requiredPlugin = require('../../../../plugins/connections-rest-api').Plugin;
+				plugins.push(requiredPlugin);
+			} catch(error) {
+				console.error('Plugin "connections-rest-api" not found');
+			}
+
+			try {
+				requiredPlugin = require('../../../../plugins/custom-themes').Plugin;
+				plugins.push(requiredPlugin);
+			} catch(error) {
+				console.error('Plugin "custom-themes" not found');
+			}
+
+			try {
+				requiredPlugin = require('../../../../plugins/multiple-connections').Plugin;
+				plugins.push(requiredPlugin);
+			} catch(error) {
+				console.error('Plugin "multiple-connections" not found');
+			}
+
+			try {
+				requiredPlugin = require('../../../../plugins/system-status-rest-api').Plugin;
+				plugins.push(requiredPlugin);
+			} catch(error) {
+				console.error('Plugin "system-status-rest-api" not found');
+			}
+
+			try {
+				requiredPlugin = require('../../../../plugins/topictree-rest-api').Plugin;
+				plugins.push(requiredPlugin);
+			} catch(error) {
+				console.error('Plugin "topictree-rest-api" not found');
+			}
+
+			try {
+				requiredPlugin = require('../../../../plugins/dynamic-security-rest-api').Plugin;
+				plugins.push(requiredPlugin);
+			} catch(error) {
+				console.error('Plugin "dynamic-security-rest-api" not found');
+			}
+
+			try {
+				requiredPlugin = require('../../../../plugins/cert-management').Plugin;
+				plugins.push(requiredPlugin);
+			} catch(error) {
+				console.error('Plugin "cert-management" not found');
+			}
+
+			plugins.forEach((Plugin) => {
+				const plugin = new Plugin({/*enableAtNextStartup*/enableAtNextStartup: true, context, hidden: false/*!!pluginConfiguration.hidden*/});
+				if (licenseContainer.license.features &&
+					licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
+				) {
+					// if (!enableAtNextStartup) {
+					// 	console.log(`Plugin not loaded: Plugin set to be disabled at current startup: "${pluginConfiguration.name}"`)
+					// 	plugin.setErrored(`Plugin set to be disabled at current startup: "${pluginConfiguration.name}"`);
+					// 	this._plugins.push(plugin);
+					// } else {
+					// 	this._plugins.push(plugin);
+					// }
+					this._plugins.push(plugin);
+				} else {
+					console.log(`Plugin not loaded: License does not allow this plugin: "${plugin.meta.id}"`)
+					plugin.setErrored(`License does not allow this plugin: "${plugin.meta.id}"`);
+					this._plugins.push(plugin);
 				}
-			});
-		} else if (licenseContainer.license.isValid && !PLUGIN_DIR) {
-			console.log('"CEDALO_MC_PLUGIN_DIR" is not set. Skipping loading of plugins');
+			})
+			// } catch (error) {
+			// 	console.error(`Failed loading plugin: "${pluginConfiguration.name}"`);
+			// 	console.error(error);
+			// }
+		// } else if (licenseContainer.license.isValid && !PLUGIN_DIR) {
+			// console.log('"CEDALO_MC_PLUGIN_DIR" is not set. Skipping loading of plugins');
 		} else {
 			console.error('Ignore loading plugins: no premium license provided or license not valid');
 		}

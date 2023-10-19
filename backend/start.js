@@ -71,14 +71,26 @@ const CEDALO_MC_USERNAME = process.env.CEDALO_MC_USERNAME;
 
 const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
-const CEDALO_MC_LICENSE_CHECKER_PATH = process.env.CEDALO_MC_LICENSE_CHECKER_PATH;
 const CEDALO_MC_LICENSE_CRON_TAB_STRING = process.env.CEDALO_MC_LICENSE_CRON_TAB_STRING || '*/10 * * * * *';
 
 console.log(`Mosquitto Management Center version ${version.version || 'unknown'}`);
 console.log(`MMC is starting in ${process.env.CEDALO_MC_MODE === 'offline' ? 'offline' : 'online'} mode`);
 
 // const LicenseManager = require("../src/LicenseManager");
-const LicenseChecker = require(CEDALO_MC_LICENSE_CHECKER_PATH || './src/license/LicenseChecker');
+const licenseMode = process.env['CEDALO_MC_LICENSE_MODE'];
+
+// init env variables
+let LicenseChecker;
+
+switch(licenseMode) {
+    case 'google':
+		LicenseChecker = require('../../integrations/google/index.js')
+        break
+    default:
+		LicenseChecker = require('./src/license/LicenseChecker');
+}
+
+
 const acl = require('./src/security/acl');
 const TopicTreeManager = require('./src/topictree/TopicTreeManager');
 const licenseContainer = require('./src/license/LicenseContainer');
