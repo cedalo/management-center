@@ -1103,7 +1103,7 @@ const init = async (licenseContainer) => {
 				];
 		
 				for (const potential of potentialPaths) {
-					const exists = await existsAsync(potential.path);
+					const exists = fs.existsSync(potential.path); // unfortunately, existsAsync from utils doesn't work with pkg's virtual filesystem
 					if (exists) {
 						if (await isDirectoryAsync(potential.path)) {
 							return response.sendFile(path.join(potential.path, potential.defaultFile));
