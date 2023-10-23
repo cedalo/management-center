@@ -210,6 +210,13 @@ module.exports = class PluginManager {
 				console.error('Plugin "cert-management" not found');
 			}
 
+			try {
+				requiredPlugin = require('../../../../plugins/cluster-management').Plugin;
+				plugins.push(requiredPlugin);
+			} catch(error) {
+				console.error('Plugin "cluster-management" not found');
+			}
+
 			plugins.forEach((Plugin) => {
 				const plugin = new Plugin({/*enableAtNextStartup*/enableAtNextStartup: true, context, hidden: false/*!!pluginConfiguration.hidden*/});
 				if (licenseContainer.license.features &&
