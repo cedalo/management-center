@@ -379,7 +379,7 @@ const updateSettingsAction = {
 const getPluginsAction = {
 	type: 'plugin/list',
 	isModifying: false,
-	metainfo: metainfo('getPlugins'),
+	metainfo: metainfo('getPlugins', 'other'),
 	fn: (context) => {
 		return context.pluginManager.plugins
 				.filter((plugin) => !plugin.options.hidden)
