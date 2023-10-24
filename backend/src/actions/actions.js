@@ -12,7 +12,7 @@ const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
 const CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST = process.env.CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST;
 
-const metainfo = (operation, operationType) => ({ source: 'management-center', operation, operationType });
+const metainfo = (operation, operationType) => ({ source: 'core', operation, operationType });
 
 const connectToBroker = (context, brokerName, client) => {
 	const brokerConnection = context.brokerManager.getBrokerConnection(brokerName);
@@ -37,7 +37,7 @@ const disconnectFromBroker = (context, brokerName, client) => {
 const unloadPluginAction = {
 	type: 'plugin/unload',
 	isModifying: true,
-	metainfo: metainfo('unloadPlugin', 'delete'),
+	metainfo: metainfo('unloadPlugin', 'other'),
 	fn: ({ user, security, pluginManager }, { pluginId }) => {
 		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin)) {
 			throw AuthError.notAllowed();
@@ -50,7 +50,7 @@ const unloadPluginAction = {
 const loadPluginAction = {
 	type: 'plugin/load',
 	isModifying: true,
-	metainfo: metainfo('loadPlugin', 'create'),
+	metainfo: metainfo('loadPlugin', 'other'),
 	fn: ({ user, security, pluginManager }, { pluginId }) => {
 		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin)) {
 			throw AuthError.notAllowed();
@@ -74,7 +74,7 @@ const setPluginStatusAtNextStartupAction = {
 
 const testConnectionAction = {
 	type: 'connection/test',
-	metainfo: metainfo('testConnection', 'create'),
+	metainfo: metainfo('testConnection', 'other'),
 	fn: async ({ user, security, configManager }, { connection }) => {
 		// if (!security.acl.noRestrictedRoles(user)) {
 		// 	throw AuthError.notAllowed();
@@ -229,7 +229,7 @@ const getBrokerConnectionsAction = {
 const connectToBrokerAction = {
 	type: 'connection/connect',
 	isModifying: false,
-	metainfo: metainfo('connectToBroker', 'update'),
+	metainfo: metainfo('connectToBroker', 'other'),
 	fn: async (context, { brokerName }) => {
 		const { user, security, client } = context;
 		if (!security.acl.isConnectionAuthorized(user, null, brokerName)) {
@@ -243,7 +243,7 @@ const connectToBrokerAction = {
 const disconnectFromBrokerAction = {
 	type: 'connection/disconnect',
 	isModifying: false,
-	metainfo: metainfo('disconnectFromBroker', 'update'),
+	metainfo: metainfo('disconnectFromBroker', 'other'),
 	fn: async (context, { brokerName }) => {
 		const { client } = context;
 		// no need to check if user is authorised because they are probably already connected to broker if they call this action
@@ -271,7 +271,7 @@ const userCanAccessAPI = ({ user, security }, api, connection) => {
 const commandAction = {
 	type: 'connection/command',
 	isModifying: true,
-	metainfo: metainfo('command'),
+	metainfo: metainfo('command', 'other'),
 	fn: async (context, { api, command }) => {
 		const { brokerManager, client, user } = context;
 		const broker = brokerManager.getBroker(client);
@@ -398,7 +398,7 @@ const getPluginsAction = {
 const startupAction = {
 	type: 'startup',
 	isModifying: false,
-	metainfo: metainfo('startup'),
+	metainfo: metainfo('startup', 'other'),
 	fn: (context) => {
 		let server;
 		const host = CEDALO_MC_PROXY_HOST;
@@ -470,7 +470,7 @@ const startupAction = {
 const shutdownAction = {
 	type: 'shutdown',
 	isModifying: false,
-	metainfo: metainfo('shutdown'),
+	metainfo: metainfo('shutdown', 'other'),
 	fn: async ({ controlElements, stopFunctions }) => {
 		controlElements.stopSignalSent = true;
 		for (const stopFunction of stopFunctions) {
