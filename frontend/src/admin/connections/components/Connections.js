@@ -421,7 +421,7 @@ const Connections = ({
 			<ContainerHeader
 				title="Broker Connections"
 				subTitle="List of Connections. Connections configure the access to an existing broker instance.
-				You have to be connected to a broker to view and manage its settings or inspect broker information"
+				You have to be connected to a broker to view and manage its settings or inspect broker information."
 			>
 				{ atLeastAdmin(userProfile) ? <Button
 					variant="outlined"
