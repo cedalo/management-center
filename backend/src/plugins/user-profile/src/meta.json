@@ -1,5 +1,5 @@
 {
-	"id": "cedalo_user_profile",
+	"id": "user-profile",
 	"name": "Cedalo User Profile",
 	"version":"1.0",
 	"description":"Access to the user profile",

@@ -324,16 +324,18 @@ eventify(stopFunctions, async function (array, element) {
 	} // in this case as soon as the broker connected, it's stop functions which disconnects it is added to the stopFunctions array
 }); // and due to the callback it checks if stop signal has already been issued and gets executed immediately.
 
+
 const init = async (licenseContainer) => {
 	const installation = loadInstallation();
 	const usageTracker = new UsageTracker({ license: licenseContainer, version, installation });
 	const installationManager = new InstallationManager({ license: licenseContainer, version, installation });
 	await installationManager.verifyLicense();
 	const settingsManager = new SettingsManager(context);
+	const pluginList = PluginManager.loadPluginList();
 	const maxBrokerConnections = licenseContainer?.license?.maxBrokerConnections
 		? parseInt(licenseContainer.license.maxBrokerConnections)
 		: 1;
-	const configManager = new ConfigManager(maxBrokerConnections);
+	const configManager = new ConfigManager(maxBrokerConnections, pluginList);
 
 	const loadConfig = () => {
 		// const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, CEDALO_MC_PROXY_CONFIG)).toString());
@@ -963,7 +965,7 @@ const init = async (licenseContainer) => {
 		utils: { ...utilityFunctions },
 	};
 
-	context.pluginManager.init(config.plugins, context, swaggerDocument);
+	context.pluginManager.init(config.plugins, context, swaggerDocument); //!!!!!!
 	context.config.parameters.ssoUsed = !!context.pluginManager.plugins.find(
 		(plugin) => plugin._meta.id.includes('_sso') && plugin._status.type === 'loaded'
 	);

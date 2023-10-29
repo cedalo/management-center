@@ -1,5 +1,5 @@
 {
-	"id": "cedalo_connect_disconnect",
+	"id": "connect-disconnect",
 	"name": "Cedalo Connect / Disconnect",
 	"version":"1.0",
 	"description":"Connect and disconnect brokers",

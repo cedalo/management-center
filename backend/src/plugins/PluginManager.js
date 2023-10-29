@@ -1,13 +1,31 @@
+const fs = require('fs');
 const path = require('path');
 
 const PLUGIN_DIR = process.env.CEDALO_MC_PLUGIN_DIR;
 const CUSTOM_LOGIN_PLUGIN_FEATURE_IDS = ['saml-sso'];
-const OS_PLUGINS_IDS = ['cedalo_login', 'cedalo_user_profile', 'cedalo_connect_disconnect'];
-
+const OS_PLUGINS_IDS = ['login', 'user-profile', 'connect-disconnect'];
+const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
+const CEDALO_MC_PLUGIN_LIST_PATH = process.env.CEDALO_MC_PLUGIN_LIST_PATH;
 
 module.exports = class PluginManager {
 	constructor() {
 		this._plugins = [];
+	}
+
+	static loadPluginList() {
+		if (CEDALO_MC_PLUGIN_LIST_PATH) {
+			let plugins;
+			try {
+				plugins = fs.readFileSync(CEDALO_MC_PLUGIN_LIST_PATH, 'utf8');
+				plugins = JSON.parse(plugins);
+			} catch	(error) {
+				console.error(`Failed loading plugin list: "${CEDALO_MC_PLUGIN_LIST_PATH}"`);
+				console.error(error);
+				return null;
+			}
+			return plugins.plugins || null;
+		}
+		return null;
 	}
 
 	_enabledCustomLoginPlugin() {
@@ -66,8 +84,8 @@ module.exports = class PluginManager {
 		// load user management as a first plugin since we redefine isAdmin and alike functions there
 		// also load application-tokens first as it redefines isLoggedIn function
 		// saml-sso redefines the whole login
-		// cedalo_multiple_connections add MultiBrokerManager to context which is needed by cert management plugin
-		const PLUGIN_IDS_OF_HIGHEST_PRIORITY = ['cedalo_multiple_connections', /* 'cedalo_login_rate_limit' */, 'cedalo_saml_sso', ...OS_PLUGINS_IDS, 'cedalo_application_tokens', 'cedalo_user_management'];
+		// multiple-connections add MultiBrokerManager to context which is needed by cert management plugin
+		const PLUGIN_IDS_OF_HIGHEST_PRIORITY = ['multiple-connections', /* 'login_rate_limit' */, 'saml-sso', ...OS_PLUGINS_IDS, 'application-tokens', 'user-management'];
 
 		for (const pluginId of PLUGIN_IDS_OF_HIGHEST_PRIORITY.reverse()) {
 			const pluginIndex = plugins.findIndex((el) => {
@@ -81,8 +99,245 @@ module.exports = class PluginManager {
 		}
 	}
 
+	_preprocessRequiredPlugin(pluginClass, pluginConfiguration) {
+		const enablePlugin = (pluginConfiguration.enableAtNextStartup !== undefined) ? !!pluginConfiguration.enableAtNextStartup : true;
 
-	init(pluginConfigurations = [], context, swaggerDocument) {
+		return {
+			Plugin: pluginClass,
+			enable: enablePlugin,
+		};
+	}
+
+	_requirePlugins(pluginList) {
+		const plugins = [];
+		let pluginClass;
+
+		const load = (pluginConfiguration, plugins) => {
+			if (pluginConfiguration.id === 'application-tokens' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../plugins/application-tokens').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "application-tokens" not found');
+				}
+			}
+
+			if (pluginConfiguration.id === 'audit-trail' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../plugins/audit-trail').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "audit-trail" not found');
+				}
+			}
+
+			if (pluginConfiguration.id === 'broker-restart' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../plugins/broker-restart').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "broker-restart" not found');
+				}
+			}
+
+			if (pluginConfiguration.id === 'cert-management' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../plugins/cert-management').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "cert-management" not found');
+				}
+		    }
+
+			if (pluginConfiguration.id === 'client-control' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../plugins/client-control').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "client-control" not found');
+				}
+		    }
+
+			if (pluginConfiguration.id === 'cluster-management' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../plugins/cluster-management').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "cluster-management" not found');
+				}
+			}
+
+			if (pluginConfiguration.id === 'connections-rest-api' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../plugins/connections-rest-api').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "connections-rest-api" not found');
+				}
+			}
+
+			if (pluginConfiguration.id === 'custom-themes' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../plugins/custom-themes').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "custom-themes" not found');
+				}
+			}
+
+			if (pluginConfiguration.id === 'dynamic-security-rest-api' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../plugins/dynamic-security-rest-api').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "dynamic-security-rest-api" not found');
+				}
+			}
+
+			if (pluginConfiguration.id === 'https' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../plugins/https').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "https" not found');
+				}
+			}
+
+			// TODO: fix this plugin
+			// if (pluginConfiguration.id === 'login-rate-limit' || pluginConfiguration.id === 'all') {
+			// 	try {
+			// 		pluginClass = require('../../../../plugins/login-rate-limit').Plugin;
+			//      const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+			// 		plugins.push(requiredPluginObject);
+			// 	} catch(error) {
+			// 		console.error('Plugin "login-rate-limit" not found');
+			// 	}
+			// }
+
+			if (pluginConfiguration.id === 'monitoring-rest-api' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../plugins/monitoring-rest-api').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "monitoring-rest-api" not found');
+				}
+			}
+
+			if (pluginConfiguration.id === 'multiple-connections' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../plugins/multiple-connections').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "multiple-connections" not found');
+				}
+			}
+
+			if (pluginConfiguration.id === 'saml-sso' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../plugins/saml-sso').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "saml-sso" not found');
+				}
+			}
+	
+			if (pluginConfiguration.id === 'system-status-rest-api' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../plugins/system-status-rest-api').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "system-status-rest-api" not found');
+				}
+			}
+
+			if (pluginConfiguration.id === 'tls' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../plugins/tls').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "tls" not found');
+				}
+			}
+
+			if (pluginConfiguration.id === 'topictree-rest-api' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../plugins/topictree-rest-api').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "topictree-rest-api" not found');
+				}
+			}
+
+			if ((!CEDALO_MC_OFFLINE) && (pluginConfiguration.id === 'usage-analytics' || pluginConfiguration.id === 'all')) {
+				try {
+					pluginClass = require('../../../../plugins/usage-analytics').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "usage-analytics" not found');
+				}
+			}
+	
+			if (pluginConfiguration.id === 'user-management' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../plugins/user-management').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "user-management" not found');
+				}
+			}
+
+			if (pluginConfiguration.id === 'user-profile-edit' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../plugins/user-profile-edit').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					console.error('Plugin "user-profile-edit" not found');
+				}
+			}
+		};
+
+
+		if (!pluginList || !Array.isArray(pluginList)) { //  || pluginList.length === 0 if plugin list is null or undefined - everything from license is loaded. if plugin list is an empty list then no plugins are loaded
+			load({id: 'all'}, plugins);
+			return plugins;
+		}
+
+		for (const pluginConfiguration of pluginList) {
+			if (!pluginConfiguration
+				|| typeof pluginConfiguration !== 'object'
+				|| !pluginConfiguration.id
+				|| typeof pluginConfiguration.id !== 'string'
+			) {
+					throw new Error(`Plugin entry "${JSON.stringify(pluginConfiguration)}" in plugin config list is invalid`)
+			}
+			
+			load(pluginConfiguration, plugins);
+		}
+
+		return plugins;
+	}
+
+
+	init(pluginList, context, swaggerDocument) {
 		this._context = context;
 		const { licenseContainer } = context;
 		if (licenseContainer.license.isValid) {
@@ -91,145 +346,47 @@ module.exports = class PluginManager {
 			// 	try {
 			// 		const enableAtNextStartup = (pluginConfiguration.enableAtNextStartup !== undefined) ? pluginConfiguration.enableAtNextStartup : true;
 
-			// 		const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.name));
+			// 		const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.id));
 			// 		const plugin = new Plugin({enableAtNextStartup, context, hidden: !!pluginConfiguration.hidden});
 			// 		if (licenseContainer.license.features &&
 			// 			licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
 			// 		) {
 			// 			if (!enableAtNextStartup) {
-			// 				console.log(`Plugin not loaded: Plugin set to be disabled at current startup: "${pluginConfiguration.name}"`)
-			// 				plugin.setErrored(`Plugin set to be disabled at current startup: "${pluginConfiguration.name}"`);
+			// 				console.log(`Plugin not loaded: Plugin set to be disabled at current startup: "${pluginConfiguration.id}"`)
+			// 				plugin.setErrored(`Plugin set to be disabled at current startup: "${pluginConfiguration.id}"`);
 			// 				this._plugins.push(plugin);
 			// 			} else {
 			// 				this._plugins.push(plugin);
 			// 			}
 			// 		} else {
-			// 			console.log(`Plugin not loaded: License does not allow this plugin: "${pluginConfiguration.name}"`)
-			// 			plugin.setErrored(`License does not allow this plugin: "${pluginConfiguration.name}"`);
+			// 			console.log(`Plugin not loaded: License does not allow this plugin: "${pluginConfiguration.id}"`)
+			// 			plugin.setErrored(`License does not allow this plugin: "${pluginConfiguration.id}"`);
 			// 			this._plugins.push(plugin);
 			// 		}
 			// 	} catch (error) {
-			// 		console.error(`Failed loading plugin: "${pluginConfiguration.name}"`);
+			// 		console.error(`Failed loading plugin: "${pluginConfiguration.id}"`);
 			// 		console.error(error);
 			// 	}
 			// });
 			// try {
 				// const enableAtNextStartup = (pluginConfiguration.enableAtNextStartup !== undefined) ? pluginConfiguration.enableAtNextStartup : true;
 
-			const plugins = [];
-			let requiredPlugin;
+			const allRequiredPlugins = this._requirePlugins(pluginList);
 
-			try {
-				requiredPlugin = require('../../../../plugins/audit-trail').Plugin;
-				plugins.push(requiredPlugin);
-			} catch(error) {
-				console.error('Plugin "audit-trail" not found');
-			}
-
-			try {
-				requiredPlugin = require('../../../../plugins/user-management').Plugin;
-				plugins.push(requiredPlugin);
-			} catch(error) {
-				console.error('Plugin "user-management" not found');
-			}
-
-			try {
-				requiredPlugin = require('../../../../plugins/application-tokens').Plugin;
-				plugins.push(requiredPlugin);
-			} catch(error) {
-				console.error('Plugin "application-tokens" not found');
-			}
-
-			try {
-				requiredPlugin = require('../../../../plugins/monitoring-rest-api').Plugin;
-				plugins.push(requiredPlugin);
-			} catch(error) {
-				console.error('Plugin "monitoring-rest-api" not found');
-			}
-
-			try {
-				requiredPlugin = require('../../../../plugins/tls').Plugin;
-				plugins.push(requiredPlugin);
-			} catch(error) {
-				console.error('Plugin "tls" not found');
-			}
-
-			try {
-				requiredPlugin = require('../../../../plugins/user-profile-edit').Plugin;
-				plugins.push(requiredPlugin);
-			} catch(error) {
-				console.error('Plugin "user-profile-edit" not found');
-			}
-
-			try {
-				requiredPlugin = require('../../../../plugins/connections-rest-api').Plugin;
-				plugins.push(requiredPlugin);
-			} catch(error) {
-				console.error('Plugin "connections-rest-api" not found');
-			}
-
-			try {
-				requiredPlugin = require('../../../../plugins/custom-themes').Plugin;
-				plugins.push(requiredPlugin);
-			} catch(error) {
-				console.error('Plugin "custom-themes" not found');
-			}
-
-			try {
-				requiredPlugin = require('../../../../plugins/multiple-connections').Plugin;
-				plugins.push(requiredPlugin);
-			} catch(error) {
-				console.error('Plugin "multiple-connections" not found');
-			}
-
-			try {
-				requiredPlugin = require('../../../../plugins/system-status-rest-api').Plugin;
-				plugins.push(requiredPlugin);
-			} catch(error) {
-				console.error('Plugin "system-status-rest-api" not found');
-			}
-
-			try {
-				requiredPlugin = require('../../../../plugins/topictree-rest-api').Plugin;
-				plugins.push(requiredPlugin);
-			} catch(error) {
-				console.error('Plugin "topictree-rest-api" not found');
-			}
-
-			try {
-				requiredPlugin = require('../../../../plugins/dynamic-security-rest-api').Plugin;
-				plugins.push(requiredPlugin);
-			} catch(error) {
-				console.error('Plugin "dynamic-security-rest-api" not found');
-			}
-
-			try {
-				requiredPlugin = require('../../../../plugins/cert-management').Plugin;
-				plugins.push(requiredPlugin);
-			} catch(error) {
-				console.error('Plugin "cert-management" not found');
-			}
-
-			try {
-				requiredPlugin = require('../../../../plugins/cluster-management').Plugin;
-				plugins.push(requiredPlugin);
-			} catch(error) {
-				console.error('Plugin "cluster-management" not found');
-			}
-
-			plugins.forEach((Plugin) => {
-				const plugin = new Plugin({/*enableAtNextStartup*/enableAtNextStartup: true, context, hidden: false/*!!pluginConfiguration.hidden*/});
+			allRequiredPlugins.forEach((requiredPlugin) => {
+				const Plugin = requiredPlugin.Plugin;
+				const shouldEnable = requiredPlugin.enable;
+				const plugin = new Plugin({enableAtNextStartup: shouldEnable, context, hidden: false/*!!pluginConfiguration.hidden*/});
 				if (licenseContainer.license.features &&
 					licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
 				) {
-					// if (!enableAtNextStartup) {
-					// 	console.log(`Plugin not loaded: Plugin set to be disabled at current startup: "${pluginConfiguration.name}"`)
-					// 	plugin.setErrored(`Plugin set to be disabled at current startup: "${pluginConfiguration.name}"`);
-					// 	this._plugins.push(plugin);
-					// } else {
-					// 	this._plugins.push(plugin);
-					// }
-					this._plugins.push(plugin);
+					if (!shouldEnable) {
+						console.log(`Plugin not loaded: Plugin set to be disabled at current startup: "${plugin.meta.id}"`)
+						plugin.setErrored(`Plugin set to be disabled at current startup: "${plugin.meta.id}"`);
+						this._plugins.push(plugin);
+					} else {
+						this._plugins.push(plugin);
+					}
 				} else {
 					console.log(`Plugin not loaded: License does not allow this plugin: "${plugin.meta.id}"`)
 					plugin.setErrored(`License does not allow this plugin: "${plugin.meta.id}"`);
@@ -237,7 +394,7 @@ module.exports = class PluginManager {
 				}
 			})
 			// } catch (error) {
-			// 	console.error(`Failed loading plugin: "${pluginConfiguration.name}"`);
+			// 	console.error(`Failed loading plugin: "${pluginConfiguration.id}"`);
 			// 	console.error(error);
 			// }
 		// } else if (licenseContainer.license.isValid && !PLUGIN_DIR) {
@@ -245,12 +402,6 @@ module.exports = class PluginManager {
 		} else {
 			console.error('Ignore loading plugins: no premium license provided or license not valid');
 		}
-
-		// this._plugins.forEach(plugin => {
-		// 	if (plugin.preInit) {
-		// 		plugin.preInit(context);
-		// 	}
-		// });
 
 		this._loadOSPlugins(context);
 
