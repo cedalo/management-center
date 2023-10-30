@@ -39,7 +39,6 @@ module.exports = class PluginManager {
 		return false;
 	}
 
-
 	_loadOSPlugins(context) {
 		// TODO: support multiple plugins
 		if (process.env.CEDALO_MC_DISABLE_LOGIN !== 'true') {
@@ -250,7 +249,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "saml-sso" not found');
+					console.error('Plugin "saml-sso" not found', error);
 				}
 			}
 	
