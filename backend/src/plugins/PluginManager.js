@@ -1,7 +1,5 @@
 const fs = require('fs');
-const path = require('path');
 
-const PLUGIN_DIR = process.env.CEDALO_MC_PLUGIN_DIR;
 const CUSTOM_LOGIN_PLUGIN_FEATURE_IDS = ['saml-sso'];
 const OS_PLUGINS_IDS = ['login', 'user-profile', 'connect-disconnect'];
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
