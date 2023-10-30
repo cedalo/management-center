@@ -20,13 +20,14 @@ const UsageTracker = require('./src/usage/UsageTracker');
 const InstallationManager = require('./src/usage/InstallationManager');
 const ConfigManager = require('./src/config/ConfigManager');
 const SettingsManager = require('./src/settings/SettingsManager');
+const utilityFunctions = require('./src/utils/utils');
 const { loadInstallation,
 	generateSecret,
 	embedIntoObject,
 	safeJoin,
 	isDirectoryAsync,
 	existsAsync
-} = require('./src/utils/utils');
+} = utilityFunctions;
 const NotAuthorizedError = require('./src/errors/NotAuthorizedError');
 const swaggerDocument = require('./swagger.js');
 const Logger = require('./src/utils/Logger');
@@ -71,14 +72,26 @@ const CEDALO_MC_USERNAME = process.env.CEDALO_MC_USERNAME;
 
 const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
-const CEDALO_MC_LICENSE_CHECKER_PATH = process.env.CEDALO_MC_LICENSE_CHECKER_PATH;
 const CEDALO_MC_LICENSE_CRON_TAB_STRING = process.env.CEDALO_MC_LICENSE_CRON_TAB_STRING || '*/10 * * * * *';
 
 console.log(`Mosquitto Management Center version ${version.version || 'unknown'}`);
 console.log(`MMC is starting in ${process.env.CEDALO_MC_MODE === 'offline' ? 'offline' : 'online'} mode`);
 
 // const LicenseManager = require("../src/LicenseManager");
-const LicenseChecker = require(CEDALO_MC_LICENSE_CHECKER_PATH || './src/license/LicenseChecker');
+const licenseMode = process.env['CEDALO_MC_LICENSE_MODE'];
+
+// init env variables
+let LicenseChecker;
+
+switch(licenseMode) {
+    case 'google':
+		LicenseChecker = require('../../integrations/google/index.js')
+        break
+    default:
+		LicenseChecker = require('./src/license/LicenseChecker');
+}
+
+
 const acl = require('./src/security/acl');
 const TopicTreeManager = require('./src/topictree/TopicTreeManager');
 const licenseContainer = require('./src/license/LicenseContainer');
@@ -311,16 +324,18 @@ eventify(stopFunctions, async function (array, element) {
 	} // in this case as soon as the broker connected, it's stop functions which disconnects it is added to the stopFunctions array
 }); // and due to the callback it checks if stop signal has already been issued and gets executed immediately.
 
+
 const init = async (licenseContainer) => {
 	const installation = loadInstallation();
 	const usageTracker = new UsageTracker({ license: licenseContainer, version, installation });
 	const installationManager = new InstallationManager({ license: licenseContainer, version, installation });
 	await installationManager.verifyLicense();
 	const settingsManager = new SettingsManager(context);
+	const pluginList = PluginManager.loadPluginList();
 	const maxBrokerConnections = licenseContainer?.license?.maxBrokerConnections
 		? parseInt(licenseContainer.license.maxBrokerConnections)
 		: 1;
-	const configManager = new ConfigManager(maxBrokerConnections);
+	const configManager = new ConfigManager(maxBrokerConnections, pluginList);
 
 	const loadConfig = () => {
 		// const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, CEDALO_MC_PROXY_CONFIG)).toString());
@@ -947,9 +962,10 @@ const init = async (licenseContainer) => {
 				broadcastWebSocketMessage(message);
 			}
 		}),
+		utils: { ...utilityFunctions },
 	};
 
-	context.pluginManager.init(config.plugins, context, swaggerDocument);
+	context.pluginManager.init(config.plugins, context, swaggerDocument); //!!!!!!
 	context.config.parameters.ssoUsed = !!context.pluginManager.plugins.find(
 		(plugin) => plugin._meta.id.includes('_sso') && plugin._status.type === 'loaded'
 	);
@@ -1089,7 +1105,7 @@ const init = async (licenseContainer) => {
 				];
 		
 				for (const potential of potentialPaths) {
-					const exists = await existsAsync(potential.path);
+					const exists = fs.existsSync(potential.path); // unfortunately, existsAsync from utils doesn't work with pkg's virtual filesystem
 					if (exists) {
 						if (await isDirectoryAsync(potential.path)) {
 							return response.sendFile(path.join(potential.path, potential.defaultFile));

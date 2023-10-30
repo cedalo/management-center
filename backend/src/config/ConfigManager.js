@@ -34,7 +34,7 @@ const mapStringToMap = (string, converter=(x) => x) => {
 
 module.exports = class ConfigManager {
 
-	constructor(maxBrokerConnections) {
+	constructor(maxBrokerConnections, pluginList) {
 		this._maxBrokerConnections = maxBrokerConnections;
 		// construct objects from env vars
 		this.hostMappingString = CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING;
@@ -54,6 +54,43 @@ module.exports = class ConfigManager {
 		if (this.wsMappingString) {
 			this.allowWebsocketsMap = mapStringToMap(this.wsMappingString, stringToBool); 
 		}
+
+		this._synchronizePluginsToLoad(pluginList)
+	}
+
+	_synchronizePluginsToLoad(pluginList) {
+		const findPluginInConfig = (pluginId) => {
+			const plugins = this.plugins;
+			if (plugins && Array.isArray(plugins)) {
+				const foundPlugin = plugins.find((el) => el.id === pluginId);
+				return foundPlugin;
+			}
+			return undefined;
+		}
+
+		if (!pluginList || (Array.isArray(pluginList) && !pluginList.length)) {
+			// if no plugins to load or plugin list is null then return right away
+			// if plugins = [] it means that no plugins will be loaded except OSS ones
+			// if plguins = null or similar then it means that everything from the license will be loaded
+			this.plugins = pluginList;
+			return;
+		}
+		
+		const plugins = [];
+		for (const plugin of pluginList) {
+			if (!plugin.id) {
+				console.error('Invalid plugin entry in plugin list:', plugin);
+				continue;
+			}
+			const pluginInConfig = findPluginInConfig(plugin.id);
+			if (pluginInConfig) {
+				plugins.push(pluginInConfig);
+			} else {
+				plugins.push({id: plugin.id});
+			}
+		}
+
+		this.plugins = plugins;
 	}
 
 	get config() {
@@ -94,16 +131,13 @@ module.exports = class ConfigManager {
 		db.update('parameters', (oldParameters) => parameters).write();
 	}
 
-	updatePluginFromConfiguration(pluginId, plugin) {
+	updatePluginFromConfiguration(pluginId, plugin) { //!!!
 		if (!isObject(plugin)) {
 			throw new Error('Plugin is of invalid type/empty/not provided');
 		}
 
-		let pluginName = pluginId.replace('cedalo_', '');
-		pluginName = pluginName.replace(/_/g, '-');
-
 		const result = db.get('plugins')
-					.find({ name: pluginName })
+					.find({ id: pluginId })
 					.assign({...plugin})
 					.write();
 

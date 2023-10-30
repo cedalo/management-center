@@ -70,7 +70,7 @@ module.exports = class Plugin extends BasePlugin {
 			response.sendFile(path.join(__dirname, '..', 'component', 'login.html'));
 		});
 
-		router.get('/logout', (request, response) => {
+		router.get('/logout', (request, response, next) => {
 			const { user } = request;
 			request.logout(function (error) {
 				if (error) {
