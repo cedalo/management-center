@@ -341,7 +341,9 @@ module.exports = class PluginManager {
 		this._context = context;
 		const { licenseContainer } = context;
 		if (licenseContainer.license.isValid) {
-			pluginList = removeDuplicates(pluginList, 'id');
+			if (pluginList) {
+				pluginList = removeDuplicates(pluginList, 'id');
+			}
 			const allRequiredPlugins = this._requirePlugins(pluginList);
 
 			allRequiredPlugins.forEach((requiredPlugin) => {
