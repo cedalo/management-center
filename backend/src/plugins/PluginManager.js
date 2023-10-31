@@ -250,7 +250,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "saml-sso" not found', error);
+					console.error('Plugin "saml-sso" not found');
 				}
 			}
 	
