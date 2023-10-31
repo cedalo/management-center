@@ -1,4 +1,7 @@
 const fs = require('fs');
+const path = require('path');
+
+const { getBaseDirectory } = require('../utils/utils');
 
 const CUSTOM_LOGIN_PLUGIN_FEATURE_IDS = ['saml-sso'];
 const OS_PLUGINS_IDS = ['login', 'user-profile', 'connect-disconnect'];
@@ -11,19 +14,19 @@ module.exports = class PluginManager {
 	}
 
 	static loadPluginList() {
-		if (CEDALO_MC_PLUGIN_LIST_PATH) {
-			let plugins;
-			try {
-				plugins = fs.readFileSync(CEDALO_MC_PLUGIN_LIST_PATH, 'utf8');
-				plugins = JSON.parse(plugins);
-			} catch	(error) {
+		let plugins;
+		try {
+			const pathToPluginList = CEDALO_MC_PLUGIN_LIST_PATH || path.join(getBaseDirectory(__dirname), 'plugins.json');
+			plugins = fs.readFileSync(pathToPluginList, 'utf8');
+			plugins = JSON.parse(plugins);
+		} catch	(error) {
+			if (CEDALO_MC_PLUGIN_LIST_PATH) { // if we explicitely defined where plugin list should be loacated and it failed to load, then we display an error
 				console.error(`Failed loading plugin list: "${CEDALO_MC_PLUGIN_LIST_PATH}"`);
 				console.error(error);
-				return null;
 			}
-			return plugins.plugins || null;
+			return null;
 		}
-		return null;
+		return plugins.plugins || null;
 	}
 
 	_enabledCustomLoginPlugin() {
