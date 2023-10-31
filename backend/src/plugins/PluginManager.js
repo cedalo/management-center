@@ -341,36 +341,6 @@ module.exports = class PluginManager {
 		this._context = context;
 		const { licenseContainer } = context;
 		if (licenseContainer.license.isValid) {
-		// if (licenseContainer.license.isValid && PLUGIN_DIR) {
-			// pluginConfigurations.forEach((pluginConfiguration) => {
-			// 	try {
-			// 		const enableAtNextStartup = (pluginConfiguration.enableAtNextStartup !== undefined) ? pluginConfiguration.enableAtNextStartup : true;
-
-			// 		const { Plugin } = require(path.join(PLUGIN_DIR, pluginConfiguration.id));
-			// 		const plugin = new Plugin({enableAtNextStartup, context, hidden: !!pluginConfiguration.hidden});
-			// 		if (licenseContainer.license.features &&
-			// 			licenseContainer.license.features.find(feature => plugin.meta.featureId === feature.name)
-			// 		) {
-			// 			if (!enableAtNextStartup) {
-			// 				console.log(`Plugin not loaded: Plugin set to be disabled at current startup: "${pluginConfiguration.id}"`)
-			// 				plugin.setErrored(`Plugin set to be disabled at current startup: "${pluginConfiguration.id}"`);
-			// 				this._plugins.push(plugin);
-			// 			} else {
-			// 				this._plugins.push(plugin);
-			// 			}
-			// 		} else {
-			// 			console.log(`Plugin not loaded: License does not allow this plugin: "${pluginConfiguration.id}"`)
-			// 			plugin.setErrored(`License does not allow this plugin: "${pluginConfiguration.id}"`);
-			// 			this._plugins.push(plugin);
-			// 		}
-			// 	} catch (error) {
-			// 		console.error(`Failed loading plugin: "${pluginConfiguration.id}"`);
-			// 		console.error(error);
-			// 	}
-			// });
-			// try {
-				// const enableAtNextStartup = (pluginConfiguration.enableAtNextStartup !== undefined) ? pluginConfiguration.enableAtNextStartup : true;
-
 			const allRequiredPlugins = this._requirePlugins(pluginList);
 
 			allRequiredPlugins.forEach((requiredPlugin) => {
@@ -392,13 +362,7 @@ module.exports = class PluginManager {
 					plugin.setErrored(`License does not allow this plugin: "${plugin.meta.id}"`);
 					this._plugins.push(plugin);
 				}
-			})
-			// } catch (error) {
-			// 	console.error(`Failed loading plugin: "${pluginConfiguration.id}"`);
-			// 	console.error(error);
-			// }
-		// } else if (licenseContainer.license.isValid && !PLUGIN_DIR) {
-			// console.log('"CEDALO_MC_PLUGIN_DIR" is not set. Skipping loading of plugins');
+			});
 		} else {
 			console.error('Ignore loading plugins: no premium license provided or license not valid');
 		}
