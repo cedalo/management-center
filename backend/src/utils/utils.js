@@ -187,6 +187,15 @@ const existsAsync = async (file) => {
         .catch(() => false)
 }
 
+const removeDuplicates = (array, key) => {
+    const filtered = array.filter((el, index) => {
+        return array.findIndex((el2) => {
+            return (el[key] || el) === (el2[key] || el2);
+        }) === index;
+    });
+    return filtered;
+};
+
 module.exports = {
 	loadInstallation,
 	removeCircular,
@@ -201,5 +210,6 @@ module.exports = {
     generateSecureClientId,
     existsAsync,
     isDirectoryAsync,
+    removeDuplicates,
     ...sessions
 };

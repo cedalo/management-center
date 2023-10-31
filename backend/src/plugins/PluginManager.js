@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const { getBaseDirectory } = require('../utils/utils');
+const { getBaseDirectory, removeDuplicates } = require('../utils/utils');
 
 const CUSTOM_LOGIN_PLUGIN_FEATURE_IDS = ['saml-sso'];
 const OS_PLUGINS_IDS = ['login', 'user-profile', 'connect-disconnect'];
@@ -341,6 +341,7 @@ module.exports = class PluginManager {
 		this._context = context;
 		const { licenseContainer } = context;
 		if (licenseContainer.license.isValid) {
+			pluginList = removeDuplicates(pluginList, 'id');
 			const allRequiredPlugins = this._requirePlugins(pluginList);
 
 			allRequiredPlugins.forEach((requiredPlugin) => {
