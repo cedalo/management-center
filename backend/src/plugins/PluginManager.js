@@ -8,6 +8,15 @@ const OS_PLUGINS_IDS = ['login', 'user-profile', 'connect-disconnect'];
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
 const CEDALO_MC_PLUGIN_LIST_PATH = process.env.CEDALO_MC_PLUGIN_LIST_PATH;
 
+
+const printPluginError = (pluginId, error) => {
+	if (error.code === 'MODULE_NOT_FOUND') {
+		console.error(`Plugin "${pluginId}" not found`);
+	} else {
+		console.error(`Something went wrong while loading "${pluginId}" plugin:`, error);
+	}
+};
+
 module.exports = class PluginManager {
 	constructor() {
 		this._plugins = [];
@@ -119,7 +128,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "application-tokens" not found');
+					printPluginError('application-tokens', error);
 				}
 			}
 
@@ -129,7 +138,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "audit-trail" not found');
+					printPluginError('audit-trail', error);
 				}
 			}
 
@@ -139,7 +148,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "broker-restart" not found');
+					printPluginError('broker-restart', error);
 				}
 			}
 
@@ -149,7 +158,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "cert-management" not found');
+					printPluginError('cert-management', error);
 				}
 		    }
 
@@ -159,7 +168,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "client-control" not found');
+					printPluginError('client-control', error);
 				}
 		    }
 
@@ -169,7 +178,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "cluster-management" not found');
+					printPluginError('cluster-management', error);
 				}
 			}
 
@@ -179,7 +188,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "connections-rest-api" not found');
+					printPluginError('broker-restart', error);
 				}
 			}
 
@@ -189,7 +198,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "custom-themes" not found');
+					printPluginError('custom-themes', error);
 				}
 			}
 
@@ -199,7 +208,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "dynamic-security-rest-api" not found');
+					printPluginError('dynamic-security-rest-api', error);
 				}
 			}
 
@@ -209,7 +218,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "https" not found');
+					printPluginError('https', error);
 				}
 			}
 
@@ -220,7 +229,7 @@ module.exports = class PluginManager {
 			//      const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 			// 		plugins.push(requiredPluginObject);
 			// 	} catch(error) {
-			// 		console.error('Plugin "login-rate-limit" not found');
+		    //      printPluginError('login-rate-limit', error);
 			// 	}
 			// }
 
@@ -230,7 +239,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "monitoring-rest-api" not found');
+					printPluginError('monitoring-rest-api', error);
 				}
 			}
 
@@ -240,7 +249,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "multiple-connections" not found');
+					printPluginError('multiple-connections', error);
 				}
 			}
 
@@ -250,7 +259,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "saml-sso" not found');
+					printPluginError('saml-sso', error);
 				}
 			}
 	
@@ -260,7 +269,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "system-status-rest-api" not found');
+					printPluginError('system-status-rest-api', error);
 				}
 			}
 
@@ -270,7 +279,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "tls" not found');
+					printPluginError('tls', error);
 				}
 			}
 
@@ -280,7 +289,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "topictree-rest-api" not found');
+					printPluginError('topictree-rest-api', error);
 				}
 			}
 
@@ -290,7 +299,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "usage-analytics" not found');
+					printPluginError('usage-analytics', error);
 				}
 			}
 	
@@ -300,7 +309,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "user-management" not found');
+					printPluginError('user-management', error);
 				}
 			}
 
@@ -310,7 +319,7 @@ module.exports = class PluginManager {
 					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
 					plugins.push(requiredPluginObject);
 				} catch(error) {
-					console.error('Plugin "user-profile-edit" not found');
+					printPluginError('user-profile-edit', error);
 				}
 			}
 		};
