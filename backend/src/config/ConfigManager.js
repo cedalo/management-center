@@ -32,6 +32,23 @@ const mapStringToMap = (string, converter=(x) => x) => {
 };
 
 
+const processOldPluginsInConfig = (plugins) => {
+	// this function just converts [{name: plugin}] to [{id: plugin}]
+	const processedPlugins = []
+	if (plugins && Array.isArray(plugins)) {
+		for (const plugin of plugins) {
+			if (plugin.name) {
+				processedPlugins.push({id: plugin.name});
+			} else if (plugin.id) {
+				processedPlugins.push(plugin);
+			}
+		}
+
+		return processedPlugins;
+	}
+	return null;
+};
+
 module.exports = class ConfigManager {
 
 	constructor(maxBrokerConnections, pluginList) {
@@ -79,7 +96,7 @@ module.exports = class ConfigManager {
 			this.plugins = pluginList;
 			return;
 		} else if (!pluginList) {
-			this.plugins = this.plugins || null;
+			this.plugins = processOldPluginsInConfig(this.plugins) || null;
 			return;
 		}
 		
