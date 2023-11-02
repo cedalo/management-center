@@ -9,8 +9,6 @@ ENV CEDALO_MC_PROXY_CONFIG=/management-center/config/config.json
 ENV CEDALO_MC_PROXY_HOST=0.0.0.0
 # RUN apk --no-cache add g++ make bash curl gnupg 
 
-RUN apk add --update --no-cache
-
 WORKDIR /management-center
 
 COPY backend backend
