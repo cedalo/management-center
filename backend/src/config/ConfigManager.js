@@ -68,16 +68,24 @@ module.exports = class ConfigManager {
 			return undefined;
 		}
 
-		if (!pluginList || (Array.isArray(pluginList) && !pluginList.length)) {
-			// if no plugins to load or plugin list is null then return right away
-			// if plugins = [] it means that no plugins will be loaded except OSS ones
-			// if plguins = null or similar then it means that everything from the license will be loaded
+		// if no plugins to load or plugin list is null then return right away
+		// if plugins = [] it means that no plugins will be loaded except OSS ones
+		// if plugins = 'all' then it means that everything from the license will be loaded
+		// if plugins = null this means that plugin.json file doesn't exist and we should either check for existing plugins in config file or load all
+		if (pluginList === 'all') {
+			this.plugins = null;
+			return;
+		} else if (Array.isArray(pluginList) && !pluginList.length) {
 			this.plugins = pluginList;
+			return;
+		} else if (!pluginList) {
+			this.plugins = this.plugins || null;
 			return;
 		}
 		
 		const plugins = [];
 		for (const plugin of pluginList) {
+		// in case plugins.json list of plugins changed, we need to synchronize it with plugins section in config.json
 			if (!plugin.id) {
 				console.error('Invalid plugin entry in plugin list:', plugin);
 				continue;

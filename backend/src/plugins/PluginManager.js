@@ -35,7 +35,7 @@ module.exports = class PluginManager {
 			}
 			return null;
 		}
-		return plugins.plugins || null;
+		return plugins.plugins || null; // plugins.plugins can equal to 'all' if we want to skip config check and load all possible plugins from the license
 	}
 
 	_enabledCustomLoginPlugin() {
