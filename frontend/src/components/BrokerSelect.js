@@ -17,6 +17,8 @@ import {handleConnectionChange} from '../utils/connectionUtils/connections';
 import {showConnections} from '../utils/utils';
 import ClusterIcon from '@material-ui/icons/People';
 import LeaderIcon from '@material-ui/icons/Person';
+import Tooltip from '@material-ui/core/Tooltip';
+
 
 const CustomInput = withStyles((theme) => ({
 	root: {
@@ -145,9 +147,13 @@ const BrokerSelect = ({brokerConnections, connected, currentConnectionName, send
 										{brokerConnection.name}
 									</Typography>
 									{clusterConnections[brokerConnection.id] && clusterConnections[brokerConnection.id].isLeader ? (
-										<LeaderIcon fontSize="small" style={{color: green[500]}}/>
+										<Tooltip title={`Leader of "${clusterConnections[brokerConnection.id].clustername}" cluster`}>
+											<LeaderIcon fontSize="small" style={{color: green[500]}}/>
+										</Tooltip>
 									) : (clusterConnections[brokerConnection.id] ? (
-										<ClusterIcon fontSize="small"/>
+										<Tooltip title={`Follower of "${clusterConnections[brokerConnection.id].clustername}" cluster`}>
+											<ClusterIcon fontSize="small"/>
+										</Tooltip>
 									) : null)}
 								</div>
 							</MenuItem>
