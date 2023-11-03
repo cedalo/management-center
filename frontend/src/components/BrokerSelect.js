@@ -15,6 +15,8 @@ import {WebSocketContext} from '../websockets/WebSocket';
 import {BrowserRouter as Router, Route, Switch, useLocation} from 'react-router-dom';
 import {handleConnectionChange} from '../utils/connectionUtils/connections';
 import {showConnections} from '../utils/utils';
+import ClusterIcon from '@material-ui/icons/People';
+import LeaderIcon from '@material-ui/icons/Person';
 
 const CustomInput = withStyles((theme) => ({
 	root: {
@@ -43,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-const BrokerSelect = ({brokerConnections, connected, currentConnectionName, sendMessage, userProfile, appBar}) => {
+const BrokerSelect = ({brokerConnections, connected, currentConnectionName, sendMessage, userProfile, appBar, clusterDetails}) => {
 	const classes = useStyles();
 	const context = useContext(WebSocketContext);
 	const dispatch = useDispatch();
@@ -59,6 +61,16 @@ const BrokerSelect = ({brokerConnections, connected, currentConnectionName, send
 	React.useEffect(() => {
 		setConnection(currentConnectionName);
 	}, [currentConnectionName]);
+
+	const clusterConnections = {};
+	// clusterDetails is a dict of cluternames and their details
+	clusterDetails && Object.keys(clusterDetails).forEach((clustername) => {
+		const clusterDetail = clusterDetails[clustername];
+
+		clusterDetail?.nodes.forEach((node) => {
+			clusterConnections[node.broker] = { clustername, isLeader: node.leader };
+		});
+	});
 
 	const handleConnectionChangeOuter = async (event) => {
 		const connectionID = event.target.value;
@@ -124,14 +136,19 @@ const BrokerSelect = ({brokerConnections, connected, currentConnectionName, send
 								}}
 							>
 								<div style={{display: 'inline-flex', paddingTop: '1px'}}>
-								{brokerConnection?.status.connected ? (
-									<ConnectedIcon fontSize="small" style={{color: green[500]}}/>
-								) : (
-									<DisconnectedIcon fontSize="small" style={{color: red[500]}}/>
-								)}
-								<Typography style={{marginLeft: '8px'}} variant="body2">
-									{brokerConnection.name}
-								</Typography>
+									{brokerConnection?.status.connected ? (
+										<ConnectedIcon fontSize="small" style={{color: green[500]}}/>
+									) : (
+										<DisconnectedIcon fontSize="small" style={{color: red[500]}}/>
+									)}
+									<Typography style={{marginLeft: '8px'}} variant="body2">
+										{brokerConnection.name}
+									</Typography>
+									{clusterConnections[brokerConnection.id] && clusterConnections[brokerConnection.id].isLeader ? (
+										<LeaderIcon fontSize="small" style={{color: green[500]}}/>
+									) : (clusterConnections[brokerConnection.id] ? (
+										<ClusterIcon fontSize="small"/>
+									) : null)}
 								</div>
 							</MenuItem>
 						))
@@ -143,6 +160,7 @@ const BrokerSelect = ({brokerConnections, connected, currentConnectionName, send
 
 const mapStateToProps = (state) => {
 	return {
+		clusterDetails: state.clusters?.clusterDetails,
 		brokerConnections: state.brokerConnections.brokerConnections,
 		connected: state.brokerConnections.connected,
 		currentConnectionName: state.brokerConnections?.currentConnectionName,
