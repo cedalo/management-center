@@ -117,6 +117,14 @@ module.exports = class PluginManager {
 		};
 	}
 
+
+	_getPluginIds(plugins) {
+		const ids = plugins.map((plugin) => {
+			return plugin?.meta?.id;
+		});
+		return ids;
+	}
+
 	_requirePlugins(pluginList) {
 		const plugins = [];
 		let pluginClass;
@@ -349,6 +357,9 @@ module.exports = class PluginManager {
 	init(pluginList, context, swaggerDocument) {
 		this._context = context;
 		const { licenseContainer } = context;
+		let loadedPluginIds = [];
+		let requiredPluginIds = [];
+
 		if (licenseContainer.license.isValid) {
 			if (pluginList) {
 				pluginList = removeDuplicates(pluginList, 'id');
@@ -378,6 +389,7 @@ module.exports = class PluginManager {
 		} else {
 			console.error('Ignore loading plugins: no premium license provided or license not valid');
 		}
+		requiredPluginIds = this._getPluginIds(this._plugins);
 
 		this._loadOSPlugins(context);
 
@@ -397,6 +409,7 @@ module.exports = class PluginManager {
 					plugin.load(context);
 					plugin.setLoaded();
 					console.log(`Loaded plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
+					loadedPluginIds.push(plugin.meta.id);
 				}
 
 			} catch(error) {
@@ -404,6 +417,9 @@ module.exports = class PluginManager {
 				console.error(error);
 			}
 		});
+
+		this._context.loadedPluginIds = loadedPluginIds;
+		this._context.requiredPluginIds = requiredPluginIds;
 	}
 
 	add(plugin) {

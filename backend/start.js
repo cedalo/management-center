@@ -966,6 +966,9 @@ const init = async (licenseContainer) => {
 	};
 
 	context.pluginManager.init(config.plugins, context, swaggerDocument); //!!!!!!
+	if (!configManager.plugins) { // in case we did not specify plugins in plugin.json and don't have them in config, we want to load all the plugins available
+		configManager.plugins = context.requiredPluginIds.map((pluginId) => ({ id: pluginId }));
+	}
 	context.config.parameters.ssoUsed = !!context.pluginManager.plugins.find(
 		(plugin) => plugin._meta.id.includes('_sso') && plugin._status.type === 'loaded'
 	);
