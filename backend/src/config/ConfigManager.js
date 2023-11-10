@@ -34,19 +34,21 @@ const mapStringToMap = (string, converter=(x) => x) => {
 
 const processOldPluginsInConfig = (plugins) => {
 	// this function just converts [{name: plugin}] to [{id: plugin}]
+	let isOldConfigFile = false;
 	const processedPlugins = []
 	if (plugins && Array.isArray(plugins)) {
 		for (const plugin of plugins) {
 			if (plugin.name) {
+				isOldConfigFile = true;
 				processedPlugins.push({id: plugin.name});
 			} else if (plugin.id) {
 				processedPlugins.push(plugin);
 			}
 		}
 
-		return processedPlugins;
+		return {plugins: processedPlugins, isOldConfigFile};
 	}
-	return null;
+	return {plugins: null, isOldConfigFile};
 };
 
 module.exports = class ConfigManager {
@@ -89,6 +91,10 @@ module.exports = class ConfigManager {
 		// if plugins = [] it means that no plugins will be loaded except OSS ones
 		// if plugins = 'all' then it means that everything from the license will be loaded
 		// if plugins = null this means that plugin.json file doesn't exist and we should either check for existing plugins in config file or load all
+		if (pluginList) {
+			this.softMode = false;
+		}
+		
 		if (pluginList === 'all') {
 			this.plugins = null;
 			return;
@@ -96,8 +102,17 @@ module.exports = class ConfigManager {
 			this.plugins = pluginList;
 			return;
 		} else if (!pluginList) {
-			this.plugins = processOldPluginsInConfig(this.plugins) || null;
+			const processedPluginsObject = processOldPluginsInConfig(this.plugins);
+			this.plugins = processedPluginsObject.plugins || null;
+			if (processedPluginsObject.isOldConfigFile) {
+				this.softMode = false;
+				this.permanentHardMode = true;
+			} else if (!this.permanentHardMode) {
+				this.softMode = true;
+			}
 			return;
+		} else {
+			this.softMode = false;
 		}
 		
 		const plugins = [];
@@ -120,6 +135,15 @@ module.exports = class ConfigManager {
 
 	get config() {
 		return db.value();
+	}
+
+	get softMode() {
+		const softMode = db.get('softMode').value();
+		return softMode;
+	}
+
+	set softMode(newMode) {
+		db.update('softMode', (oldMode) => newMode).write();
 	}
 
 	getAllConnections() {

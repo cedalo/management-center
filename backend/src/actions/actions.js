@@ -410,13 +410,21 @@ const startupAction = {
 		
 		console.log(`Starting Mosquitto proxy server at ${protocol}://${host}:${port}`);
 
-		if (context.server instanceof Error) {
+		const isSoftMode = context.config?.softMode;
+		
+		if (context.server instanceof Error && !isSoftMode) {
 			// https plugin tried to be loaded but failed
 			console.error('HTTPS not properly configured. Exiting...');
 			throw new Error('Exit');
-		} else if (!context.server) {
+		} else if (!context.server || (context.server instanceof Error && isSoftMode)) {
 			// https plugin not enabled, switch to http server
 			server = http.createServer(context.app);
+
+			if (context.server instanceof Error) {
+				console.error('HTTPS not properly configured. Falling back to HTTP...');
+				console.log('##################################################\ WARNING ##############################################\n Note that MMC will be run in unencrypted HTTP mode\n You have probably not specified HTTPS in plugins list and have not defined all the necessary variables\n#########################################################################################################');
+			}
+			
 			// context.server = server;
 			protocol = 'http';
 		} else {
