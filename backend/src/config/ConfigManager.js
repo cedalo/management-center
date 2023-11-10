@@ -137,6 +137,15 @@ module.exports = class ConfigManager {
 		return db.value();
 	}
 
+	get permanentHardMode() {
+		const permanentHardMode = db.get('permanentHardMode').value();
+		return permanentHardMode;
+	}
+
+	set permanentHardMode(newMode) {
+		db.update('permanentHardMode', (oldMode) => newMode).write();
+	}
+
 	get softMode() {
 		const softMode = db.get('softMode').value();
 		return softMode;
