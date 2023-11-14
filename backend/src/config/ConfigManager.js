@@ -91,59 +91,73 @@ module.exports = class ConfigManager {
 		// if plugins = [] it means that no plugins will be loaded except OSS ones
 		// if plugins = 'all' then it means that everything from the license will be loaded
 		// if plugins = null this means that plugin.json file doesn't exist and we should either check for existing plugins in config file or load all
-		if (pluginList) {
-			this.softMode = false;
-		}
+		let explicitPluginLoad = true;
+		let plugins = [];
+		
+		// if (pluginList) {
+		// 	this.loadMode = {...this.loadMode, softMode: false};
+		// }
 		
 		if (pluginList === 'all') {
 			this.plugins = null;
-			return;
-		} else if (Array.isArray(pluginList) && !pluginList.length) {
-			this.plugins = pluginList;
-			return;
+			pluginList = [];
 		} else if (!pluginList) {
 			const processedPluginsObject = processOldPluginsInConfig(this.plugins);
-			this.plugins = processedPluginsObject.plugins || null;
-			if (processedPluginsObject.isOldConfigFile) {
-				this.softMode = false;
-				this.permanentHardMode = true;
-			} else if (!this.permanentHardMode) {
-				this.softMode = true;
+			const noPluginsFoundInConfig = !processedPluginsObject.plugins;
+			const pluginsWereImplicitlyLoadedBefore = this.loadMode.explicitPluginLoad === false;
+
+			if ((!processedPluginsObject.isOldConfigFile && pluginsWereImplicitlyLoadedBefore)
+			|| noPluginsFoundInConfig) {
+				// was loaded with license before
+				explicitPluginLoad = false;
+				// plugins stay implicetely loaded
+			} else { // if plugins were loaded explicitly before or we have an old config file
+				if (!Array.isArray(processedPluginsObject.plugins)) {
+					throw new Error('Invalid plugins entry in config file. Must be an array of objects');
+				}
+				plugins = processedPluginsObject.plugins;
 			}
-			return;
+		} else if (!Array.isArray(pluginList)) {
+			throw new Error('Invalid plugins entry in plugin list file. Must be an array of objects');
 		} else {
-			this.softMode = false;
-		}
-		
-		const plugins = [];
-		for (const plugin of pluginList) {
-		// in case plugins.json list of plugins changed, we need to synchronize it with plugins section in config.json
-			if (!plugin.id) {
-				console.error('Invalid plugin entry in plugin list:', plugin);
-				continue;
-			}
-			const pluginInConfig = findPluginInConfig(plugin.id);
-			if (pluginInConfig) {
-				plugins.push(pluginInConfig);
-			} else {
-				plugins.push({id: plugin.id});
+			// if pluginList exists then update (and sync) the plugins in config
+			for (const plugin of pluginList) {
+			// in case plugins.json list of plugins changed, we need to synchronize it with plugins section in config.json
+				if (!plugin.id) {
+					console.error('Invalid plugin entry in plugin list:', plugin);
+					continue;
+				}
+				const pluginInConfig = findPluginInConfig(plugin.id);
+				if (pluginInConfig) {
+					plugins.push(pluginInConfig);
+				} else {
+					plugins.push({id: plugin.id});
+				}
 			}
 		}
 
-		this.plugins = plugins;
+		this.loadMode = {...this.loadMode, explicitPluginLoad: explicitPluginLoad};
+
+		if (explicitPluginLoad) {
+			this.softMode = false;
+			this.plugins = plugins;
+		} else { // if plugins were loaded implicitly (everything that is in the license) before
+			this.softMode = true;
+			this.plugins = null;
+		}
 	}
 
 	get config() {
 		return db.value();
 	}
 
-	get permanentHardMode() {
-		const permanentHardMode = db.get('permanentHardMode').value();
-		return permanentHardMode;
+	get loadMode() {
+		const loadMode = db.get('loadMode').value();
+		return loadMode || {};
 	}
 
-	set permanentHardMode(newMode) {
-		db.update('permanentHardMode', (oldMode) => newMode).write();
+	set loadMode(newMode) {
+		db.update('loadMode', (oldMode) => newMode).write();
 	}
 
 	get softMode() {
@@ -198,6 +212,9 @@ module.exports = class ConfigManager {
 					.find({ id: pluginId })
 					.assign({...plugin})
 					.write();
+		
+		this.loadMode = {...this.loadMode, explicitPluginLoad: true}; // set explicit plugin load because user changed the list of loaded plugins manually. Now this change should be respected on next startup and plugin load
+		this.softMode = false;
 
 		return result;
 	}

@@ -333,7 +333,7 @@ module.exports = class PluginManager {
 		};
 
 
-		if (!pluginList || !Array.isArray(pluginList)) { //  || pluginList.length === 0 if plugin list is null or undefined - everything from license is loaded. if plugin list is an empty list then no plugins are loaded
+		if (!pluginList || !Array.isArray(pluginList)) { // if plugin list is null or undefined - everything from license is loaded. if plugin list is an empty list then no plugins are loaded
 			load({id: 'all'}, plugins);
 			return plugins;
 		}
@@ -346,7 +346,6 @@ module.exports = class PluginManager {
 			) {
 					throw new Error(`Plugin entry "${JSON.stringify(pluginConfiguration)}" in plugin config list is invalid`)
 			}
-			
 			load(pluginConfiguration, plugins);
 		}
 
