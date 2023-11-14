@@ -1245,13 +1245,13 @@ const init = async (licenseContainer) => {
 		} catch (error) {
 			console.log('Error encountered');
 			console.log('Attempting graceful shutdown');
-			await controlElements.stop();
-
+			
 			if (error.message === 'Exit') {
 			} else {
 				console.error(error);
 			}
-
+			
+			await controlElements.stop();
 			setTimeout(() => { // TODO: fix this quick hack which allows us to write shutdown event to syslog and not exit before it
 				process.exit(1);
 			}, 1000);
