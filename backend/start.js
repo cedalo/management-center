@@ -533,7 +533,7 @@ const init = async (licenseContainer) => {
 			});
 		} catch (error) {
 			// disconnect broker client
-			console.error(`Error when connecting "${connectionConfiguration.id}":`);
+			console.error(`Error when connecting "${connectionConfiguration.name}"("${connectionConfiguration.id}"):`);
 			console.error(error);
 			connectionConfiguration.status = {
 				connected: false,
@@ -983,10 +983,10 @@ const init = async (licenseContainer) => {
 		configManager.plugins = context.requiredPluginIds.map((pluginId) => ({ id: pluginId }));
 	}
 	context.config.parameters.ssoUsed = !!context.pluginManager.plugins.find(
-		(plugin) => plugin._meta.id.includes('_sso') && plugin._status.type === 'loaded'
+		(plugin) => plugin._meta.id.includes('-sso') && plugin._status.type === 'loaded'
 	);
 	context.config.parameters.multipleConnectionsAllowed = !!context.pluginManager.plugins.find(
-		(plugin) => plugin._meta.id.includes('_multiple_connections') && plugin._status.type === 'loaded'
+		(plugin) => plugin._meta.id.includes('multiple-connections') && plugin._status.type === 'loaded'
 	);
 
 	const {
