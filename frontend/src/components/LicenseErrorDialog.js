@@ -7,7 +7,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { connect } from 'react-redux';
 
-const LicenseErrorDialog = ({ license }) => {
+const LicenseErrorDialog = ({ license, backendParameters }) => {
 	const handleClose = () => {
 		// setOpen(false);
 	};
@@ -17,6 +17,13 @@ const LicenseErrorDialog = ({ license }) => {
 		error = license.error;
 	} else if (license && license.integrations?.error) {
 		error = license.integrations.error;
+	} else if (license && license.isValid === false) {
+		if (backendParameters.isPremium) {
+			error = {
+				type: "Invalid License",
+				message: "License is invalid, expired, or unavailable"
+			};
+		}
 	}
 
 	return (
@@ -38,9 +45,11 @@ const LicenseErrorDialog = ({ license }) => {
 	);
 };
 
+
 const mapStateToProps = (state) => {
 	return {
 		license: state.license?.license,
+		backendParameters: state.backendParameters?.backendParameters,
 	};
 };
 

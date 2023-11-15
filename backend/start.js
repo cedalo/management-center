@@ -394,7 +394,8 @@ const init = async (licenseContainer) => {
 			CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING: process.env.CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING,
 			CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING: process.env.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING,
 			CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING: process.env.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING
-		}
+		},
+		isPremium: !!licenseContainer.isValid
 	};
 
 	const wss = new WebSocket.Server({
@@ -831,6 +832,7 @@ const init = async (licenseContainer) => {
 					type: 'license',
 					payload: {
 						...licenseContainer.license,
+						isValid: licenseContainer.isValid,
 						...licenseContainer.integrations
 					}
 				}
@@ -950,6 +952,7 @@ const init = async (licenseContainer) => {
 						type: 'license',
 						payload: {
 							...licenseContainer.license,
+							isValid: licenseContainer.isValid,
 							integrations: {
 								error: licenseContainer.integrations.error
 							}
@@ -966,6 +969,7 @@ const init = async (licenseContainer) => {
 						type: 'license',
 						payload: {
 							...licenseContainer.license,
+							isValid: licenseContainer.isValid,
 							integrations: {
 								error: licenseContainer?.integrations?.error
 							}
