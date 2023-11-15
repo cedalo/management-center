@@ -61,9 +61,14 @@ module.exports = class PluginManager {
 		}
 	}
 
-	_loadLoginPlugin(context) {
+	_getLoginPlugin() {
 		const { Plugin } = require('./login');
 		const plugin = new Plugin();
+		return plugin;
+	}
+
+	_loadLoginPlugin(context) {
+		const plugin = this._getLoginPlugin();
 		this._loadPlugin(plugin, context);
 	}
 
@@ -358,6 +363,7 @@ module.exports = class PluginManager {
 		const { licenseContainer } = context;
 		let loadedPluginIds = [];
 		let requiredPluginIds = [];
+		const isSoftMode = context.config?.softMode;
 
 		if (licenseContainer.license.isValid) {
 			if (pluginList) {
@@ -394,7 +400,8 @@ module.exports = class PluginManager {
 
 		this._sortPluginList(this._plugins);
 
-		this._plugins.forEach(plugin => {
+		for (let i = 0; i < this._plugins.length; i++) {
+			const plugin = this._plugins[i];
 			try {
 				plugin.init(context);
 				if (plugin.swagger) {
@@ -414,8 +421,17 @@ module.exports = class PluginManager {
 			} catch(error) {
 				console.error(`Failed loading plugin: "${plugin.meta.id}" (${plugin.meta.name})`);
 				console.error(error);
+				if (CUSTOM_LOGIN_PLUGIN_FEATURE_IDS.includes(plugin.meta.featureId)) {
+					if (isSoftMode) {
+						const loginPlugin = this._getLoginPlugin();
+						this._plugins.splice(i + 1, 0, loginPlugin);
+						console.log('##################################################\ WARNING ##############################################');
+						console.log('Note that standard login plugin will be loaded instead');
+						console.log('#########################################################################################################');
+					}
+				}
 			}
-		});
+		}
 
 		this._context.loadedPluginIds = loadedPluginIds;
 		this._context.requiredPluginIds = requiredPluginIds;
