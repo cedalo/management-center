@@ -223,7 +223,7 @@ const updateSystemTopics = (system, topic, message) => {
 
 const initConnections = (config) => {
 	const connections = config.connections || [];
-	if (process.env.CEDALO_MC_BROKER_NAME && process.env.CEDALO_MC_BROKER_URL && process.env.CEDALO_MC_BROKER_ID) {
+	if (process.env.CEDALO_MC_BROKER_NAME && process.env.CEDALO_MC_BROKER_URL) {
 		let connection = connections.find((connection) => {
 			return (
 				connection.name === process.env.CEDALO_MC_BROKER_NAME &&
@@ -240,7 +240,7 @@ const initConnections = (config) => {
 		const duplicateConnectionExiists = !!duplicateConnection;
 
 		if (!connectionExists && duplicateConnectionExiists) {
-			console.error('The connection specified with CEDALO_MC_BROKER_NAME and CEDALO_MC_BROKER_ID is inconsistent with one of the existing connection (name or id is duplicated). Connection will not be created. To amend this, please adjust your connection informationo and try again');
+			console.error('The connection specified with CEDALO_MC_BROKER_NAME and CEDALO_MC_BROKER_ID is inconsistent with one of the existing connection (name or id is duplicated). Connection will not be created. To amend this, please adjust your connection information (you have to specify both CEDALO_MC_BROKER_NAME and CEDALO_MC_BROKER_ID) and try again');
 			return connections;
 		}
 
@@ -267,8 +267,6 @@ const initConnections = (config) => {
 		} else {
 			// connection did exist previously in configuration file
 			// configuration file needs to be updated from environment variables
-			connection.id = process.env.CEDALO_MC_BROKER_ID;
-			connection.name = process.env.CEDALO_MC_BROKER_NAME;
 			connection.url = process.env.CEDALO_MC_BROKER_URL;
 			connection.supportsRestart = process.env.CEDALO_MC_BROKER_SUPPORTS_RESTART === 'true' ? true : false;
 			connection.serviceName = process.env.CEDALO_MC_BROKER_SERVICE_NAME;
