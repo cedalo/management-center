@@ -32,6 +32,7 @@ import useLocalStorage from './helpers/useLocalStorage';
 import store from './store';
 import getTheme from './theme';
 import WebSocketProvider from './websockets/WebSocket';
+import SnackbarCloseButton from './components/SnackbarCloseButton';
 
 
 const CONFIRM_OPTS = {
@@ -284,7 +285,7 @@ export default function (props) {
 
 	return (
 		<ThemeProvider theme={appliedTheme}>
-			<SnackbarProvider>
+			<SnackbarProvider action={snackbarKey => <SnackbarCloseButton snackbarKey={snackbarKey} />}>
 				<ConfirmProvider defaultOptions={CONFIRM_OPTS}>
 					<CssBaseline/>
 					<Router basename={process.env.PUBLIC_URL}>
