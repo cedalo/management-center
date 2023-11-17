@@ -68,6 +68,8 @@ let currentConnectionName;
 
 
 const init = async (client, dispatch, connectionConfiguration) => {
+	const timeoutMilliseconds = 1000;
+	const licenseInformationTimeoutMilliseconds = 3000;
 	dispatch(updateBrokerLicenseInformation(null));
 	dispatch(updateInspectClients([]));
 	dispatch(updateClients([]));
@@ -245,7 +247,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 	}
 
 	try {
-		const clusters = await client.listClusters();
+		const clusters = await client.listClusters(timeoutMilliseconds);
 		dispatch(updateClusters(clusters));
 		dispatch(updateFeatures({
 			feature: 'clustermanagement',
@@ -264,7 +266,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 
 	if (brokerConnected) {
 		try {
-			const testCollections = await client.listTestCollections();
+			const testCollections = await client.listTestCollections(timeoutMilliseconds);
 			dispatch(updateTestCollections(testCollections));
 		} catch (error) {
 			// TODO: handle error
@@ -274,7 +276,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		try {
 			console.log('Loading dynamic security');
 
-			const clients = await client.listClients(true, 10, 0);
+			const clients = await client.listClients(true, 10, 0, timeoutMilliseconds);
 			dispatch(updateClients(clients));
 			const clientsAll = await client.listClients(false);
 			dispatch(updateClientsAll(clientsAll));
@@ -307,9 +309,10 @@ const init = async (client, dispatch, connectionConfiguration) => {
 				status: error
 			}));
 		}
+
 		try {
 			console.log('Loading license information');
-			const licenseInformation = await client.getLicenseInformation()
+			const licenseInformation = await client.getLicenseInformation(licenseInformationTimeoutMilliseconds)
 			dispatch(updateBrokerLicenseInformation(licenseInformation));
 		} catch (error) {
 			console.error('Error loading license information');
@@ -318,7 +321,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		}
 		try {
 			console.log('Loading inspection');
-			const inspectClients = await client.inspectListClients();
+			const inspectClients = await client.inspectListClients(true, timeoutMilliseconds);
 			dispatch(updateInspectClients(inspectClients));
 			dispatch(updateFeatures({
 				feature: 'inspect',
@@ -337,7 +340,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		}
 		try {
 			console.log('Loading streams');
-			const streams = await client.listStreams();
+			const streams = await client.listStreams(true, timeoutMilliseconds);
 			dispatch(updateStreams(streams));
 			dispatch(updateFeatures({
 				feature: 'streamprocessing',

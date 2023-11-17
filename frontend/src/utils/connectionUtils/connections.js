@@ -25,6 +25,8 @@ import {
 
 
 export const handleConnectionChange = async (dispatch, client, newConnectionName, currentConnectionName, connected) => {
+    const timeoutMilliseconds = 1000;
+    const licenseInformationTimeoutMilliseconds = 3000;
     dispatch(updateBrokerLicenseInformation(null));
     dispatch(updateInspectClients([]));
     dispatch(updateClients([]));
@@ -56,7 +58,7 @@ export const handleConnectionChange = async (dispatch, client, newConnectionName
 
     try {
         console.log('Loading dynamic security');
-        const clients = await client.listClients(true, 10, 0);
+        const clients = await client.listClients(true, 10, 0, timeoutMilliseconds);
         dispatch(updateClients(clients));
         const clientsAll = await client.listClients(false);
         dispatch(updateClientsAll(clientsAll));
@@ -68,7 +70,9 @@ export const handleConnectionChange = async (dispatch, client, newConnectionName
         dispatch(updateAnonymousGroup(anonymousGroup));
         const roles = await client.listRoles(true, 10, 0);
         dispatch(updateRoles(roles));
+        console.log('new roles: ', roles);
         const rolesAll = await client.listRoles(false);
+        console.log('new roles all: ', rolesAll);
         dispatch(updateRolesAll(rolesAll));
 
         const defaultACLAccess = await client.getDefaultACLAccess();
@@ -86,7 +90,8 @@ export const handleConnectionChange = async (dispatch, client, newConnectionName
         }));
     }
     try {
-        const licenseInformation = await client.getLicenseInformation();
+        const licenseInformation = await client.getLicenseInformation(
+            );
         dispatch(updateBrokerLicenseInformation(licenseInformation));
     } catch (error) {
         console.error('Error loading license information');
@@ -95,7 +100,7 @@ export const handleConnectionChange = async (dispatch, client, newConnectionName
     }
     try {
         console.log('Loading inspection');
-        const inspectClients = await client.inspectListClients();
+        const inspectClients = await client.inspectListClients(timeoutMilliseconds);
         dispatch(updateInspectClients(inspectClients));
         dispatch(updateFeatures({
             feature: 'inspect',
@@ -111,7 +116,7 @@ export const handleConnectionChange = async (dispatch, client, newConnectionName
     }
     try {
         console.log('Loading streams');
-        const streams = await client.listStreams();
+        const streams = await client.listStreams(true, timeoutMilliseconds);
         dispatch(updateStreams(streams));
         dispatch(updateFeatures({
             feature: 'streamprocessing',

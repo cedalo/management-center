@@ -769,12 +769,12 @@ module.exports = class BaseMosquittoProxyClient {
 
 	}
 
-	 async listClusters() {
+	 async listClusters(timeout=this._timeout) {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
 			request: 'cluster-management/getClusters'
-		});
+		}, timeout);
 		return response.response;
 	}
 
@@ -1225,12 +1225,12 @@ module.exports = class BaseMosquittoProxyClient {
 				command: 'getClient',
 				username
 			},
-			API_DYNAMIC_SECURITY
+			API_DYNAMIC_SECURITY,	
 		);
 		return data?.client;
 	}
 
-	async listClients(verbose = true, count = -1, offset = 0) {
+	async listClients(verbose = true, count = -1, offset = 0, timeout = this._timeout) {
 		const data = await this.sendCommand(
 			{
 				command: 'listClients',
@@ -1238,7 +1238,9 @@ module.exports = class BaseMosquittoProxyClient {
 				count,
 				offset
 			},
-			API_DYNAMIC_SECURITY
+			API_DYNAMIC_SECURITY,
+			createID(),
+			timeout
 		);
 		return data;
 	}
@@ -1254,7 +1256,7 @@ module.exports = class BaseMosquittoProxyClient {
 		return data?.group;
 	}
 
-	async listGroups(verbose = true, count = -1, offset = 0) {
+	async listGroups(verbose = true, count = -1, offset = 0, timeout = this._timeout) {
 		const data = await this.sendCommand(
 			{
 				command: 'listGroups',
@@ -1262,7 +1264,9 @@ module.exports = class BaseMosquittoProxyClient {
 				count,
 				offset
 			},
-			API_DYNAMIC_SECURITY
+			API_DYNAMIC_SECURITY,
+			createID(),
+			timeout
 		);
 		return data;
 	}
@@ -1273,7 +1277,7 @@ module.exports = class BaseMosquittoProxyClient {
 				command: 'listGroupClients',
 				group
 			},
-			API_DYNAMIC_SECURITY
+			API_DYNAMIC_SECURITY,
 		);
 	}
 
@@ -1348,7 +1352,7 @@ module.exports = class BaseMosquittoProxyClient {
 		return fetchedRole;
 	}
 
-	async listRoles(verbose = true, count = -1, offset = 0) {
+	async listRoles(verbose = true, count = -1, offset = 0, timeout = this._timeout) {
 		const data = await this.sendCommand(
 			{
 				command: 'listRoles',
@@ -1356,7 +1360,9 @@ module.exports = class BaseMosquittoProxyClient {
 				count,
 				offset
 			},
-			API_DYNAMIC_SECURITY
+			API_DYNAMIC_SECURITY,
+			createID(),
+			timeout
 		);
 		return data;
 	}
@@ -1423,12 +1429,12 @@ module.exports = class BaseMosquittoProxyClient {
 		return response?.response;
 	}
 
-	 async listTestCollections() {
+	 async listTestCollections(timeout=this._timeout) {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
 			request: 'listTestCollections',
-		});
+		}, timeout);
 		return response?.response;
 	}
 
@@ -1685,12 +1691,14 @@ module.exports = class BaseMosquittoProxyClient {
 	 * Methods for license management
 	 * ******************************************************************************************
 	 */
-	 async getLicenseInformation() {
+	 async getLicenseInformation(timeout=this._timeout) {
 		const data = await this.sendCommand(
 			{
 				command: 'getLicenseInformation'
 			},
-			API_LICENSE
+			API_LICENSE,
+			createID(),
+			timeout
 		);
 		return data;
 	}
@@ -1701,13 +1709,15 @@ module.exports = class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	async listStreams(verbose = true) {
+	async listStreams(verbose = true, timeout=this._timeout) {
 		const data = await this.sendCommand(
 			{
 				command: 'listStreams',
 				verbose
 			},
-			API_STREAMS_PROCESSING
+			API_STREAMS_PROCESSING,
+			createID(),
+			timeout
 		);
 		return data?.streams;
 	}
@@ -1893,13 +1903,13 @@ module.exports = class BaseMosquittoProxyClient {
 		return this._closeHandler;
 	}
 
-	async sendCommand(command, api, id = createID()) {
+	async sendCommand(command, api, id = createID(), timeout = this._timeout) {
 		const response = await this.sendRequest({
 			id,
 			api,
 			type: 'command',
 			command
-		});
+		}, timeout);
 		return response.data;
 	}
 
@@ -1998,7 +2008,7 @@ module.exports = class BaseMosquittoProxyClient {
 		return data;
 	}
 
-	async inspectListClients(verbose = true) {
+	async inspectListClients(verbose = true, timeout=this._timeout) {
 		const data = await this.sendCommand(
 			{
 				command: 'listClients',
@@ -2006,7 +2016,9 @@ module.exports = class BaseMosquittoProxyClient {
 				count: -1,
 				offset: 0
 			},
-			API_INSPECT
+			API_INSPECT,
+			createID(),
+			timeout
 		);
 		return data?.clients;
 	}
