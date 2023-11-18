@@ -278,9 +278,9 @@ const Clients = (props) => {
 			const promiseClients = brokerClient.listClients(true, rowsPerPage, page * rowsPerPage);
 			const promiseGroups = brokerClient.listGroups(false);
 			const promiseRoles = brokerClient.listRoles(false);
-			const [clientsAll, groups, rolesAll] = await Promise.all([promiseClients, promiseGroups, promiseRoles]);
-			dispatch(updateClients(clientsAll));
-			dispatch(updateGroupsAll(groups));
+			const [clients, groupsAll, rolesAll] = await Promise.all([promiseClients, promiseGroups, promiseRoles]);
+			dispatch(updateClients(clients));
+			dispatch(updateGroupsAll(groupsAll));
 			dispatch(updateRolesAll(rolesAll));
 		};
 		fetchData().catch(error => console.error(error));
@@ -298,7 +298,7 @@ const Clients = (props) => {
 				value: rolename
 			}));
 		setRoleSuggestions(suggestions);
-	}, [clients]);
+	}, [clients, rolesAll]);
 
 	const groupSuggestions = groupsAll
 		.sort()
@@ -306,7 +306,6 @@ const Clients = (props) => {
 			label: groupname,
 			value: groupname
 		}));
-
 
 	const getClassForCell = (client) => `${isAdminClient(client) ? classes.disabled : ''}`;
 
