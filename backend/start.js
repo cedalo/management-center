@@ -1149,6 +1149,8 @@ const init = async (licenseContainer) => {
 			switch (error.code) {
 				case 'ACCEPTED':
 					return response.status(202).send({ code: error.code, message: error.message, successful: true });
+				case 'MULTI_STATUS':
+					return response.status(207).send({ code: error.code, message: error.message, successful: true });
 				case 'CONFLICT':
 					return response.status(409).send({ code: error.code, message: error.message });
 				case 'INVALID':

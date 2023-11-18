@@ -263,7 +263,7 @@ const CertificateDeploy = ({ connections = [] }) => {
 					setCanUpdate(false);
 					break;
 				case 207:
-					showSnackAndReload(deployMessage(certificate).warning, 'warning');
+					showSnackAndReload(deployMessage(certificate).warning + ` ${data.message}`, 'warning');
 					break;
 				default:
 					showSnackAndReload(deployMessage(certificate).error, 'error');
