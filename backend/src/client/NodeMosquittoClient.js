@@ -118,6 +118,10 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		let attemptBackoffMs = ATTEMPT_BACKOFF_MS;
 		this._completeDisconnect = {value: false, reason: undefined};
 		// an ugly way to make mqttClient throw openssl errors instead of silencing them
+		if (process.env.CEDALO_MC_TREAT_USERNAMES_AS_CLIENT_IDS) {
+			options.clientId = options.username;
+			// delete options.username;
+		}
 		const brokerClient = mqtt.connect(url, options);
 
 		this._client = brokerClient;
