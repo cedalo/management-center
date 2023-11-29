@@ -301,7 +301,7 @@ const commandAction = {
 				case 'createClient':
 				case 'modifyClient':
 					const { password: _, ...filtered } = command;
-					return filtered;
+					return { api, command: filtered };
 			}
 		}
 		return { api, command };
