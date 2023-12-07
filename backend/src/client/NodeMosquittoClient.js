@@ -82,10 +82,10 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 					(restOfConnection[property] && restOfConnection[property].data) || restOfConnection[property];
 			}
 		}
-
+		// always try to connect using MQTT 5
+		restOfConnection.protocolVersion = 5;
 		// process no sysmetrics mode
 		if (noMetricsMode) {
-			restOfConnection.protocolVersion = 5;
 			restOfConnection.properties = {
 				userProperties: {
 					'sys-metrics': 'none'
