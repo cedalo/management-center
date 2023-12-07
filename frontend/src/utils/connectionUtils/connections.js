@@ -90,8 +90,7 @@ export const handleConnectionChange = async (dispatch, client, newConnectionName
         }));
     }
     try {
-        const licenseInformation = await client.getLicenseInformation(
-            );
+        const licenseInformation = await client.getLicenseInformation(licenseInformationTimeoutMilliseconds);
         dispatch(updateBrokerLicenseInformation(licenseInformation));
     } catch (error) {
         console.error('Error loading license information');
@@ -100,7 +99,7 @@ export const handleConnectionChange = async (dispatch, client, newConnectionName
     }
     try {
         console.log('Loading inspection');
-        const inspectClients = await client.inspectListClients(timeoutMilliseconds);
+        const inspectClients = await client.inspectListClients(true, timeoutMilliseconds);
         dispatch(updateInspectClients(inspectClients));
         dispatch(updateFeatures({
             feature: 'inspect',
