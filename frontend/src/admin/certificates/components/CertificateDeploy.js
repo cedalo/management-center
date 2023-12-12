@@ -65,6 +65,18 @@ const isLast = (list) => {
 	return (index) => index === last;
 };
 
+const trimMessage = (message, isError=true) => {
+	if (message.length > 200) {
+		const result = `${message.substring(0, 200)}...`;
+		if (isError) {
+			console.error(message);
+		} else {
+			console.log(message);
+		}
+		return result;
+	}
+}
+
 const ListenerSelect = ({ listeners, onSelect }) => {
 	const isLastRow = isLast(listeners);
 	const rowStyle = (index) => (isLastRow(index) ? { borderBottom: 'none' } : {});
@@ -182,6 +194,7 @@ const successMessage = (cert, deployed, undeployed) => {
 	const msgDeployed = deployed.length > 0 ? `deployed to ${portMessage(deployed)}` : '';
 	const msgUndeployed = undeployed.length > 0 ? `undeployed from ${portMessage(undeployed)}` : '';
 	const and = msgDeployed && msgUndeployed ? ' and ' : '';
+	if (!msgDeployed && !msgUndeployed) return `Certificate "${cert.name}" had already been deployed.`;
 	return `Certificate "${cert.name}" successfully ${msgDeployed}${and}${msgUndeployed}.`;
 };
 const deployMessage = (cert, { deployed = 0, undeployed = 0 } = {}) => ({
@@ -269,7 +282,7 @@ const CertificateDeploy = ({ connections = [] }) => {
 					showSnackAndReload(deployMessage(certificate).error, 'error');
 			}
 		} catch (error) {
-			showSnackAndReload(`Error deploying certificate "${certificate.name}". Reason: ${error.message}`, 'error');
+			showSnackAndReload(trimMessage(`Error deploying certificate "${certificate.name}". Reason: ${error.message}`), 'error');
 		}
 	};
 

@@ -148,7 +148,12 @@ const Certificates = ({ connections, isCertSupported }) => {
 			await client
 				.deleteCertificate(cert.id)
 				.then(() => enqueueSnackbar(`Successfully deleted certificate "${cert.name}"!`, { variant: 'success' }))
-				.catch((error) => enqueueSnackbar(failedDeleteMessage(cert, error), { variant: 'error' }));
+				.catch((error) => {
+					enqueueSnackbar(failedDeleteMessage(cert, error), { variant: 'error' });
+					if (error.longError) {
+						console.error(`Deletion of "${cert.name}" certificate failed. Details:`, error.longError);
+					}
+				});
 			await loadCerts();
 		} catch (error) {
 			if (error) enqueueSnackbar(failedDeleteMessage(cert, error), { variant: 'error' });
@@ -164,6 +169,10 @@ const Certificates = ({ connections, isCertSupported }) => {
 	useEffect(() => {
 		loadCerts();
 	}, []);
+
+	useEffect(() => {
+		loadCerts();
+	}, [isCertSupported]);
 
 	return (
 		<ContentContainer

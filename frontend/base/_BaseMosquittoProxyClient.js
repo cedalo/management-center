@@ -18,16 +18,17 @@ const NOT_AUTHORIZED_MESSAGE = 'Not authorized';
 const LOGIN_ENDPOINT = '/login?error=session-expired';
 
 class APIError extends Error {
-	constructor(title, message) {
+	constructor(title, message, longError) {
 		super(message);
 		this.name = 'APIError';
 		this.title = title;
+		this.longError = longError;
 	}
 }
 
 class NotAuthorizedError extends APIError {
-	constructor(error_message) {
-		super('Not authorized', error_message || ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
+	constructor(errorMessage) {
+		super('Not authorized', errorMessage || ERROR_MESSAGE_USER_MANAGEMENT_NOT_AUTHORIZED);
 		this.name = 'NotAuthorizedError';
 	}
 }
@@ -608,7 +609,7 @@ module.exports = class BaseMosquittoProxyClient {
 				case 404:
 					throw new APINotFoundError();
 				case 500:
-					throw new APIError('500', 'Server failed to handle request!');
+					throw new APIError('500', 'Server failed to handle request!', error.response.data.longError);
 				default:
 					throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
 			}

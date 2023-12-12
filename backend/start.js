@@ -1146,30 +1146,35 @@ const init = async (licenseContainer) => {
 
 	router.use('/api/*', (error, request, response, next) => {
 		if (error) {
+			const errorObject = { code: error.code, message: error.message };
+			if (error.longError) {
+				errorObject.longError = error.longError;
+			}
+
 			switch (error.code) {
 				case 'ACCEPTED':
-					return response.status(202).send({ code: error.code, message: error.message, successful: true });
+					return response.status(202).send({ ...errorObject, successful: true });
 				case 'MULTI_STATUS':
-					return response.status(207).send({ code: error.code, message: error.message, successful: true });
+					return response.status(207).send({ ...errorObject, successful: true });
 				case 'CONFLICT':
-					return response.status(409).send({ code: error.code, message: error.message });
+					return response.status(409).send(errorObject);
 				case 'INVALID':
-					return response.status(400).send({ code: error.code, message: error.message });
+					return response.status(400).send(errorObject);
 				case 'NOT_ALLOWED':
-					return response.status(403).send({ code: error.code, message: error.message });
+					return response.status(403).send(errorObject);
 				case 'NOT_FOUND':
-					return response.status(404).send({ code: error.code, message: error.message });
+					return response.status(404).send(errorObject);
 				case 'GONE':
-					return response.status(410).send({ code: error.code, message: error.message });
+					return response.status(410).send(errorObject);
 				case 'SOMETHING_WRONG': {
 					console.error(error);
-					return response.status(500).send({ code: error.code, message: error.message });
+					return response.status(500).send(errorObject);
 				}
 				default: {
 					console.error(error);
 					return response
 						.status(500)
-						.send({ code: 'INTERNAL_ERROR', message: 'An internal server error occurred' });
+						.send({ ...errorObject, code: 'INTERNAL_ERROR', message: 'An internal server error occurred' });
 				}
 			}
 		} else {
