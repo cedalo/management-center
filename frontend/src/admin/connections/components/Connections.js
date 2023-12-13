@@ -287,7 +287,8 @@ const CustomRow = (props) => {
 
 
 const Connections = ({
-						 brokerConnections, onSort, sortBy, sortDirection, connected, userProfile, currentConnectionName, clusterDetails
+						 brokerConnections, onSort, sortBy, sortDirection, connected, userProfile,
+						 currentConnectionName, clusterDetails, backendParameters
 					 }) => {
 	const classes = useStyles();
 	const history = useHistory();
@@ -339,7 +340,7 @@ const Connections = ({
 	const onConnectServerToBroker = async (id, name) => {
 		try {
 			await brokerClient.connectServerToBroker(id);
-			if (!connected) { // if current broker is not connected, then select the one we just connected with connectServerToBroker
+			if (!connected || !backendParameters.multipleConnectionsAllowed) { // if current broker is not connected, then select the one we just connected with connectServerToBroker
 				handleConnectionChange(dispatch, brokerClient, name, currentConnectionName, connected).catch(
 					(error) => console.error('Error while pulling information from the broker on reconnect: ', error));
 				// await brokerClient.connectToBroker(name);
@@ -495,6 +496,7 @@ const mapStateToProps = (state) => {
 		connected: state.brokerConnections.connected,
 		userProfile: state.userProfile?.userProfile,
 		currentConnectionName: state.brokerConnections?.currentConnectionName,
+		backendParameters: state.backendParameters?.backendParameters,
 	};
 };
 
