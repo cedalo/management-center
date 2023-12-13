@@ -10,6 +10,7 @@
 	},
 	"author": "Cedalo AG",
 	"dependencies": {
+		"async-mutex": "^0.4.0",
 		"axios": "^0.27.2",
 		"content-type-parser": "^1.0.2",
 		"cors": "^2.8.5",
