@@ -393,6 +393,11 @@ module.exports = class PluginManager {
 			});
 		} else {
 			console.error('Ignore loading plugins: no premium license provided or license not valid');
+			const timestampNow = new Date().getTime();
+			if (timestampNow > licenseContainer.license.validUntil) {
+				const validUntilDate = new Date(licenseContainer.license.validUntil);
+				console.error("License expired. License was valid until", validUntilDate.toString());
+			}
 		}
 		requiredPluginIds = this._getPluginIds(this._plugins);
 
