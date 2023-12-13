@@ -132,7 +132,7 @@ const createConnectionAction = {
 				if (existingConnection) {
 					throw new Error(`Connection ${connection.id} already exists`);		
 				}
-				configManager.createConnection(connection);
+				await configManager.createConnection(connection);
 			} else {
 				throw new Error('Maximum number of connections reached.');
 			}
@@ -168,7 +168,7 @@ const modifyConnectionAction = {
 		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, oldConnectionId)) {
 			throw AuthError.notAllowed();
 		}
-		configManager.updateConnection(oldConnectionId, connection);
+		await configManager.updateConnection(oldConnectionId, connection);
 
 		return configManager.connections;
 	},
@@ -193,7 +193,7 @@ const deleteConnectionAction = {
 	type: 'connection/delete',
 	isModifying: true,
 	metainfo: metainfo('deleteConnection', 'delete'),
-	fn: ({ user, security, configManager }, { connectionId }) => {
+	fn: async ({ user, security, configManager }, { connectionId }) => {
 		try {
 			if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, connectionId)) {
 				throw AuthError.notAllowed();
@@ -204,7 +204,7 @@ const deleteConnectionAction = {
 					`Could not delete "${connectionId}" because it's part of the cluster "${connection.cluster}". Delete cluster first`
 				);
 			}
-			configManager.deleteConnection(connectionId);
+			await configManager.deleteConnection(connectionId);
 			return configManager.connections;
 		} catch (error) {
 			console.log('error when deleting:', error);

@@ -5,6 +5,8 @@ const { removeCircular, stringToBool } = require('../utils/utils');
 const { isObject } = require('util');
 const { URL } = require('url');
 const { getBaseDirectory } = require('../utils/utils');
+const { Mutex } = require('async-mutex');
+const mutex = new Mutex();
 
 const CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING = process.env.CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING;
 const CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING = process.env.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING;
@@ -139,9 +141,11 @@ module.exports = class ConfigManager {
 		this.loadMode = {...this.loadMode, explicitPluginLoad: explicitPluginLoad};
 
 		if (explicitPluginLoad) {
+			// hard mode
 			this.softMode = false;
 			this.plugins = plugins;
 		} else { // if plugins were loaded implicitly (everything that is in the license) before
+			// soft mode
 			this.softMode = true;
 			this.plugins = null;
 		}
@@ -313,27 +317,37 @@ module.exports = class ConfigManager {
 	}
 
 
-	updateConnection(oldConnectionId, connection) {
+	async updateConnection(oldConnectionId, connection) {
 		const newConnection = this.preprocessConnection(connection);
 
-		const result = db.get('connections')
-			.find({ id: oldConnectionId })
-			.assign({...newConnection})
-			.write();
-		return result;
+		const release = await mutex.acquire();
+		try {
+			const result = db.get('connections')
+				.find({ id: oldConnectionId })
+				.assign({...newConnection})
+				.write();
+			return result;
+		} finally {
+			release();
+		}
 	}
 
 
-	saveConnection(connection, connectionId) {
-		const result = db.get('connections')
+	async saveConnection(connection, connectionId) {
+		const release = await mutex.acquire();
+		try {
+			const result = db.get('connections')
 			.find({ id: connectionId ? connectionId : connection.id })
 			.assign({...connection})
 			.write();
-		return result;	
+			return result;
+		} finally {
+			release();
+		}
 	}
 
 
-	createConnection(connection) {
+	async createConnection(connection) {
 		const newConnection = this.preprocessConnection(connection);
 
 		newConnection.status = {
@@ -341,15 +355,25 @@ module.exports = class ConfigManager {
 			timestamp: Date.now()
 		};
 
-		db.get('connections')
-			.push(newConnection)
-			.write();
+		const release = await mutex.acquire();
+		try {
+			db.get('connections')
+				.push(newConnection)
+				.write();
+		} finally {
+			release();
+		}
 	}
 
 
-	deleteConnection(id) {
-		db.get('connections')
-			.remove({ id })
-			.write();
+	async deleteConnection(id) {
+		const release = await mutex.acquire();
+		try {
+			db.get('connections')
+				.remove({ id })
+				.write();
+		} finally {
+			release();
+		}
 	}
 };
