@@ -145,13 +145,45 @@ const Certificates = ({ connections, isCertSupported }) => {
 				title: 'Confirm delete',
 				description: `Do you really want to delete certificate "${cert.name}" and remove it from all brokers?`
 			});
+
+			const usedConnectionMap = getUsedConnections(connections, cert);
+
+			let disconnectedBrokersCount = 0;
+			for (const connectionId of Object.keys(usedConnectionMap)) {
+				const matchedConnection = connections.find((conn) => conn.id === connectionId);
+				if (matchedConnection && matchedConnection.status?.connected === false) {
+					disconnectedBrokersCount++;
+				}
+			}
+			if (disconnectedBrokersCount && disconnectedBrokersCount === Object.keys(usedConnectionMap).length) {
+				enqueueSnackbar('Cannot remove certificate because the affected brokers are disconnected', { variant: 'error' });
+				return;
+			} else if (disconnectedBrokersCount) {
+				await confirm({
+					title: 'Confirm delete',
+					description: `Some brokers using "${cert.name}" appear to be disconnected. Certificate will not be removed from these brokers. Do you still wish to proceed?`
+				});
+			}
+
 			await client
 				.deleteCertificate(cert.id)
-				.then(() => enqueueSnackbar(`Successfully deleted certificate "${cert.name}"!`, { variant: 'success' }))
+				.then(({ status, data = {} }) => {
+					switch (status) {
+						case 200:
+							enqueueSnackbar(`Successfully deleted certificate "${cert.name}"!`, { variant: 'success' })
+							break;
+						case 207:
+							enqueueSnackbar(`${data.message}`, { variant: 'warning' })
+							console.error('Issues when deleting certificate. Details:', data.longError || data);
+							break;
+						default:
+							enqueueSnackbar(`${data.message}`, { variant: 'error' });
+					}
+				})
 				.catch((error) => {
 					enqueueSnackbar(failedDeleteMessage(cert, error), { variant: 'error' });
 					if (error.longError) {
-						console.error(`Deletion of "${cert.name}" certificate failed. Details:`, error.longError);
+						console.error(`Deletion of "${cert.name}" certificate failed. Details:`, error.longError || error);
 					}
 				});
 			await loadCerts();

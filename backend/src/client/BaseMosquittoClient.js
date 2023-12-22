@@ -43,7 +43,8 @@ module.exports = class BaseMosquittoClient {
 		this._requests = new Map();
 		// TODO: make timeout configurable
 		// request timeout in ms:
-		this._timeout = 10000;
+		// this._timeout = 10000;
+		this._timeout = 5000;
 	}
 
 
@@ -53,8 +54,11 @@ module.exports = class BaseMosquittoClient {
 	}
 
 
-	createConnectionHandler() {
-		return this._createConnectionHandler(...arguments);
+	createConnectionHandler(mqttEndpointURL, ...options) {
+		if (mqttEndpointURL) {
+			this._mqttEndpointURL = mqttEndpointURL;
+		}
+		return this._createConnectionHandler(mqttEndpointURL, ...options);
 	}
 
 
@@ -64,7 +68,9 @@ module.exports = class BaseMosquittoClient {
 			return Promise.resolve({});
 		}
 		this._isConnecting = true;
-		this._mqttEndpointURL = mqttEndpointURL || this._mqttEndpointURL;
+		if (!this._mqttEndpointURL) {
+			this._mqttEndpointURL = mqttEndpointURL || this._mqttEndpointURL;
+		}
 		try {
 			const brokerClient = await this._connectBroker(mqttEndpointURL, options);
 			this._brokerClient = brokerClient;

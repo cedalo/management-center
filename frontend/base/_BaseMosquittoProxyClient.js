@@ -22,7 +22,9 @@ class APIError extends Error {
 		super(message);
 		this.name = 'APIError';
 		this.title = title;
-		this.longError = longError;
+		if (longError) {
+			this.longError = longError;
+		}
 	}
 }
 
@@ -609,7 +611,7 @@ module.exports = class BaseMosquittoProxyClient {
 				case 404:
 					throw new APINotFoundError();
 				case 500:
-					throw new APIError('500', 'Server failed to handle request!', error.response.data.longError);
+					throw new APIError('500', error.response.data.message || 'Server failed to handle request!', error.response.data.longError);
 				default:
 					throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
 			}

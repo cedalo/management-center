@@ -75,6 +75,7 @@ const trimMessage = (message, isError=true) => {
 		}
 		return result;
 	}
+	return message;
 }
 
 const ListenerSelect = ({ listeners, onSelect }) => {
@@ -154,10 +155,16 @@ const ConnectionSelect = ({ connections, selected = {}, onSelect }) => {
 			value={selected.id}
 			onChange={onSelect}
 			label="Connection"
+			native={false}
+			displayEmpty={true}
 			classes={{
 				root: classes.root,
 				icon: classes.icon
 			}}
+			renderValue={(selectedId) => { // on page reload selectedId is for some reason undefined, unlike selected.id. so we use the latter
+				const selectedItem = connections.find(conn => conn.id === selected.id);
+				return selectedItem ? selectedItem.name : '';
+			  }}
 			input={<CustomInput />}
 		>
 			{connections.sort(byName).map((conn) => (
@@ -198,9 +205,9 @@ const successMessage = (cert, deployed, undeployed) => {
 	return `Certificate "${cert.name}" successfully ${msgDeployed}${and}${msgUndeployed}.`;
 };
 const deployMessage = (cert, { deployed = 0, undeployed = 0 } = {}) => ({
-	error: `'Failed to deploy certificate "${cert.name}"`,
+	error: `'Failed to (un)deploy certificate "${cert.name}"`,
 	success: successMessage(cert, deployed, undeployed),
-	warning: `Problems while deploying certificate "${cert.name}"!`
+	warning: `Problems while (un)deploying certificate "${cert.name}"!`
 });
 
 const isConnected = (conn) => conn?.status?.connected;
@@ -210,13 +217,14 @@ const fetchListeners = async (client, connId) => {
 		const { data } = await client.getListeners(connId);
 		return { id: connId, listeners: data };
 	} catch (error) {
-		return { id: connId, listeners: [], error: error.message || error };
+		return { id: connId, listeners: [], error: (error && error.longError && trimMessage(error.longError))
+													|| error.message || error };
 	}
 };
 
 const CertificateDeploy = ({ connections = [] }) => {
 	const history = useHistory();
-	const [certificate] = useState(history.location.state);
+	const [certificate, setCertificate] = useState(history.location.state);
 	const { enqueueSnackbar } = useSnackbar();
 	const [canUpdate, setCanUpdate] = useState(false);
 	const [connection, selectConnection] = useState(connections.find(isConnected) || connections[0]);
@@ -244,12 +252,19 @@ const CertificateDeploy = ({ connections = [] }) => {
 			setListeners([]);
 		}
 	};
-	useEffect(() => {
-		loadListeners();
-	}, [connection]);
 
-	const onCancel = () => {
-		history.goBack();
+	const updateCertificates = async () => {
+		try {
+			const { data } = await client.getCertificates();
+			const updatedCertificate = data.find((cert) => cert.id === certificate?.id);
+			if (updatedCertificate) {
+				setCertificate(updatedCertificate);
+			}
+		} catch (error) {
+			enqueueSnackbar(`Failed to load certificates from server. Reason: ${error.message || error}`, {
+				variant: 'error'
+			});
+		}
 	};
 
 	const onSelectConnection = (event) => {
@@ -260,9 +275,39 @@ const CertificateDeploy = ({ connections = [] }) => {
 		setCanUpdate(false);
 	};
 
-	const showSnackAndReload = (message, variant) => {
-		enqueueSnackbar(message, { variant });
+	useEffect(() => {
 		loadListeners();
+	}, [connection]);
+
+	useEffect(() => {
+		// loadListeners();
+		if (listeners && certificate && connection) {
+			setListeners(markUsedListeners(certificate, getConnectionInfo(connection), listeners));
+		}
+	}, [certificate]);
+
+	useEffect(() => {
+		let currentConnection;
+		if (connection) { // if connection was already chosen
+			currentConnection = connections.find((c) => c.id === connection?.id) || connections[0];
+		} else {
+			currentConnection = connections.find(isConnected) || connections[0];
+			connectionRef.current = currentConnection;
+		}
+		(async () => {
+			await updateCertificates();
+			selectConnection(currentConnection);
+		})();
+	}, [connections]);
+
+
+	const onCancel = () => {
+		history.goBack();
+	};
+
+	const showSnack = (message, variant) => {
+		enqueueSnackbar(message, { variant });
+		// loadListeners();
 		setCanUpdate(false);
 	};
 
@@ -276,13 +321,18 @@ const CertificateDeploy = ({ connections = [] }) => {
 					setCanUpdate(false);
 					break;
 				case 207:
-					showSnackAndReload(deployMessage(certificate).warning + ` ${data.message}`, 'warning');
+					await updateCertificates();
+					showSnack(deployMessage(certificate).warning + ` ${data.message}`, 'warning');
+					console.error('Encountered issues during certificate (un)deploy. Details:', data.longError || data);
 					break;
 				default:
-					showSnackAndReload(deployMessage(certificate).error, 'error');
+					await updateCertificates();
+					showSnack(deployMessage(certificate).error, 'error');
 			}
 		} catch (error) {
-			showSnackAndReload(trimMessage(`Error deploying certificate "${certificate.name}". Reason: ${error.message}`), 'error');
+			await updateCertificates();
+			showSnack(trimMessage(`Error (un)deploying certificate "${certificate.name}". Reason: ${error.message}`), 'error');
+			console.error('Error (un)deploying certificate "${certificate.name}". Details:', error.longError || error);
 		}
 	};
 
