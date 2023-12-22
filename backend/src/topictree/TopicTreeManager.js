@@ -89,16 +89,19 @@ module.exports = class TopicTreeManager {
         const parts = topic.split('/');
         let current = this._topicTree;
         let newTopic = false;
+        let partsAccumulator = '';
         parts.forEach((part, index) => {
             if (!current[part]) {
                 // first time the topic was received
+                partsAccumulator += part;
                 current[part] = {
                     _name: part,
-                    _topic: topic,
+                    _topic: partsAccumulator,
                     _created: Date.now(),
                     _messagesCounter: 1,
                     _topicsCounter: 0
                 };
+                partsAccumulator += '/';
                 newTopic = true;
             } else {
                 // topic already existed in the topic tree
