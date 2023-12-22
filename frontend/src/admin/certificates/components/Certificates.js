@@ -146,16 +146,20 @@ const Certificates = ({ connections, isCertSupported }) => {
 				description: `Do you really want to delete certificate "${cert.name}" and remove it from all brokers?`
 			});
 
-			const usedConnectionMap = getUsedConnections(connections, cert);
+			const usedConnections = getUsedConnections(connections, cert);
 
 			let disconnectedBrokersCount = 0;
-			for (const connectionId of Object.keys(usedConnectionMap)) {
+			for (const conn of usedConnections) {
+				const connectionId = conn.id;
 				const matchedConnection = connections.find((conn) => conn.id === connectionId);
 				if (matchedConnection && matchedConnection.status?.connected === false) {
 					disconnectedBrokersCount++;
 				}
 			}
-			if (disconnectedBrokersCount && disconnectedBrokersCount === Object.keys(usedConnectionMap).length) {
+			console.error('!!!!!connections:', connections);
+			console.error('!!!!!usedConnections:', usedConnections);
+			console.error('!!!!!disconnectedBrokersCount:', disconnectedBrokersCount);
+			if (disconnectedBrokersCount && disconnectedBrokersCount === usedConnections.length) {
 				enqueueSnackbar('Cannot remove certificate because the affected brokers are disconnected', { variant: 'error' });
 				return;
 			} else if (disconnectedBrokersCount) {
