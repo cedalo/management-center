@@ -156,9 +156,6 @@ const Certificates = ({ connections, isCertSupported }) => {
 					disconnectedBrokersCount++;
 				}
 			}
-			console.error('!!!!!connections:', connections);
-			console.error('!!!!!usedConnections:', usedConnections);
-			console.error('!!!!!disconnectedBrokersCount:', disconnectedBrokersCount);
 			if (disconnectedBrokersCount && disconnectedBrokersCount === usedConnections.length) {
 				enqueueSnackbar('Cannot remove certificate because the affected brokers are disconnected', { variant: 'error' });
 				return;
