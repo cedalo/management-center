@@ -17,6 +17,8 @@ COPY frontend/build backend/public
 COPY docker/config.json ./config/
 COPY docker/docker-entrypoint.sh backend
 
+WORKDIR /management-center/backend
+
 VOLUME /management-center/config
 
 EXPOSE 8088
