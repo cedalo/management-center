@@ -1,4 +1,4 @@
-FROM node:16.18.1-alpine
+FROM node:16.18.0-alpine
 LABEL maintainer="philip.ackermann@cedalo.com"
 
 ARG CEDALO_MC_BUILD_DATE
