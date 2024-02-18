@@ -53,9 +53,11 @@ const useStyles = makeStyles((theme) => ({
 const CLIENTS_TABLE_COLUMNS = [
 	{id: 'username', key: 'Name', align: 'left', width: '15%', sortable: true},
 	{id: 'clientid', key: 'Client ID', align: 'left', width: '20%', sortable: true},
-	{id: 'protocol', key: 'Protocol', align: 'left', width: '15%', sortable: false},
-	{id: 'address', key: 'IP Address', align: 'left', width: '15%', sortable: true},
-	{id: 'messagesOut', key: 'Queue Usage', align: 'center', width: '15%', sortable: true},
+	{id: 'protocol', key: 'Protocol', align: 'left', width: '10%', sortable: false},
+	{id: 'address', key: 'IP Address', align: 'left', width: '10%', sortable: true},
+	{id: 'pagedMessagesOut', key: 'Paged Queue', align: 'center', width: '13%', sortable: true},
+	{id: 'messagesOut', key: 'Queue', align: 'center', width: '9%', sortable: true},
+	{id: 'totalMessagesOut', key: 'Total Queue Use', align: 'center', width: '13%', sortable: true},
 	{id: 'connected', key: 'Connected', align: 'center', width: '5%', sortable: true},
 	{id: 'disconnect', key: 'Disconnect', align: 'center', width: '5%', sortable: false},
 ];
@@ -140,12 +142,18 @@ const createClientsTable = (clients, classes, props, onDisconnectClient, onUpdat
 										</TableCell>,
 										<TableCell align={CLIENTS_TABLE_COLUMNS[3].align}>{client.address}</TableCell>,
 										<TableCell align={CLIENTS_TABLE_COLUMNS[4].align}>
+											{client.queues?.pagedMessagesOut === undefined ? '' : `${client.queues?.pagedMessagesOut} / ${client.queues?.pagedMessagesMax}`}
+										</TableCell>,
+										<TableCell align={CLIENTS_TABLE_COLUMNS[5].align}>
 											{client.queues?.messagesOut === undefined ? '' : `${client.queues?.messagesOut} / ${client.queues?.messagesMax}`}
-										</TableCell>
+										</TableCell>,
+										<TableCell align={CLIENTS_TABLE_COLUMNS[6].align}>
+											{(client.queues?.messagesOut === undefined || client.queues?.pagedMessagesOut === undefined) ? '' : `${client.queues?.pagedMessagesOut + client.queues?.messagesOut} / ${client.queues?.messagesMax + client.queues?.pagedMessagesMax}`}
+										</TableCell>,
 									]}
 									{/*<TableCell>{dateToString(unixTimestampToDate(client.lastConnect))}</TableCell>*/}
 									{/*<TableCell>{dateToString(unixTimestampToDate(client.lastDisconnect))}</TableCell>*/}
-									<TableCell align={CLIENTS_TABLE_COLUMNS[5].align}>
+									<TableCell align={CLIENTS_TABLE_COLUMNS[7].align}>
 										<Tooltip title={
 											<>
 												{
@@ -177,7 +185,7 @@ const createClientsTable = (clients, classes, props, onDisconnectClient, onUpdat
 										</Tooltip>
 									</TableCell>
 									{small || medium || (clientControlFeature?.error || !clientControlFeature?.supported) ? null :
-										<TableCell align={CLIENTS_TABLE_COLUMNS[6].align}>
+										<TableCell align={CLIENTS_TABLE_COLUMNS[8].align}>
 											{client.connected ?
 												<Tooltip title="Click to disconnect client">
 													<IconButton
@@ -272,6 +280,8 @@ const Clients = (props) => {
 
 		sortedClients = clients.filter(clientL => clientL.username.startsWith(filter));
 		sortedClients.forEach(cl => cl.queues ? cl.messagesOut = cl.queues.messagesOut : cl.messagesOut = 0);
+		sortedClients.forEach(cl => cl.queues ? cl.pagedMessagesOut = cl.queues.pagedMessagesOut : cl.pagedMessagesOut = 0);
+		sortedClients.forEach(cl => cl.queues ? cl.totalMessagesOut = cl.queues.pagedMessagesOut + cl.queues.messagesOut : cl.totalMessagesOut = 0);
 
 		if (sortBy) {
 			sortedClients = doSort([...sortedClients], sortDirection, (a) => a[sortBy])
