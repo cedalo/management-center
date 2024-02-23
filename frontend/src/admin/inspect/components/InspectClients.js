@@ -106,16 +106,24 @@ const createClientsTable = (clients, classes, props, onDisconnectClient, onUpdat
 									key={column.id}
 									sortDirection={sortBy === column.id ? sortDirection : false}
 								>
-									{column.sortable ?
-										<TableSortLabel
-											active={sortBy === column.id}
-											direction={sortDirection}
-											onClick={() => onSort(column.id)}
-										>
-											{column.key}
-										</TableSortLabel> :
-										column.key
-									}
+									<Tooltip title={column.id === 'messagesOut' ? "Message in subscriber's queue" 
+													: (column.id === 'pagedMessagesOut' ? "Message in subscriber's queue paged to disk"
+														: "")}
+											placement="top"
+									>
+										<div>
+											{column.sortable ?
+												<TableSortLabel
+													active={sortBy === column.id}
+													direction={sortDirection}
+													onClick={() => onSort(column.id)}
+												>
+													{column.key}
+												</TableSortLabel> :
+												column.key
+											}
+										</div>
+									</Tooltip>
 								</TableCell>
 							))}
 						</TableRow>
@@ -142,13 +150,19 @@ const createClientsTable = (clients, classes, props, onDisconnectClient, onUpdat
 										</TableCell>,
 										<TableCell align={CLIENTS_TABLE_COLUMNS[3].align}>{client.address}</TableCell>,
 										<TableCell align={CLIENTS_TABLE_COLUMNS[4].align}>
-											{client.queues?.pagedMessagesOut === undefined ? '' : `${client.queues?.pagedMessagesOut} / ${client.queues?.pagedMessagesMax}`}
+											{client.queues?.pagedMessagesOut === undefined ? '' :
+												`${client.queues?.pagedMessagesOut}`
+											}
 										</TableCell>,
 										<TableCell align={CLIENTS_TABLE_COLUMNS[5].align}>
-											{client.queues?.messagesOut === undefined ? '' : `${client.queues?.messagesOut} / ${client.queues?.messagesMax}`}
+											{client.queues?.messagesOut === undefined ? '' :
+												`${client.queues?.messagesOut}`
+											}
 										</TableCell>,
 										<TableCell align={CLIENTS_TABLE_COLUMNS[6].align}>
-											{(client.queues?.messagesOut === undefined || client.queues?.pagedMessagesOut === undefined) ? '' : `${client.queues?.pagedMessagesOut + client.queues?.messagesOut} / ${client.queues?.messagesMax + client.queues?.pagedMessagesMax}`}
+											{(client.queues?.messagesOut === undefined || client.queues?.pagedMessagesOut === undefined) ? '' : 
+													`${client.queues?.pagedMessagesOut + client.queues?.messagesOut} / ${client.queues?.pagedMessagesMax}`
+											}
 										</TableCell>,
 									]}
 									{/*<TableCell>{dateToString(unixTimestampToDate(client.lastConnect))}</TableCell>*/}
