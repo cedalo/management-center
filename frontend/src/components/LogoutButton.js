@@ -24,7 +24,7 @@ const LogoutButton = (props) => {
 			title: 'Confirm logout',
 			description: `Do you really want to logout?`
 		});
-		window.location.href = '/logout';
+		window.location.href = `${process.env.PUBLIC_URL}/logout`;
 	};
 
 	return <Tooltip title="Logout">
