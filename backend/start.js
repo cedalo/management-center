@@ -1125,11 +1125,13 @@ const init = async (licenseContainer) => {
 		},
 		async (request, response) => {
 			let publicFilePath = safeJoin(__dirname, 'public', request.path);
+			console.log('>>>__dirname:', __dirname);
+			console.log('>>>request.path:',  request.path);
 			console.log('>>>publicFilePath safeJoin:', publicFilePath);
 			let mediaFilePath = safeJoin(__dirname, 'media', request.path);
 			console.log('>>>mediaFilePath safeJoin:', mediaFilePath);
-			publicFilePath = publicFilePath.replace(CEDALO_MC_PROXY_BASE_PATH, '');
-			mediaFilePath = mediaFilePath.replace(CEDALO_MC_PROXY_BASE_PATH, '');
+			// publicFilePath = publicFilePath.replace(CEDALO_MC_PROXY_BASE_PATH, ''); // we don't need it since router is already served from CEDALO_MC_PROXY_BASE_PATH
+			// mediaFilePath = mediaFilePath.replace(CEDALO_MC_PROXY_BASE_PATH, '');
 			console.log('>>>publicFilePath replace:', publicFilePath);
 			console.log('>>>mediaFilePath replace:', mediaFilePath);
 
