@@ -64,7 +64,7 @@ const preprocessBoolEnvVariable = (envVariable) => {
 }
 
 const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
-const LOGIN_ENDPOINT = CEDALO_MC_PROXY_BASE_PATH ? CEDALO_MC_PROXY_BASE_PATH + '/login' : CEDALO_MC_PROXY_BASE_PATH;
+const LOGIN_ENDPOINT = CEDALO_MC_PROXY_BASE_PATH ? CEDALO_MC_PROXY_BASE_PATH + '/login' : '/login';
 const CEDALO_MC_DEVELOPMENT_MODE = preprocessBoolEnvVariable(process.env.CEDALO_MC_DEVELOPMENT_MODE);
 const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
