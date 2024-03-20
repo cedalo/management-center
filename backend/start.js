@@ -1125,47 +1125,32 @@ const init = async (licenseContainer) => {
 		},
 		async (request, response) => {
 			let publicFilePath = safeJoin(__dirname, 'public', request.path);
-			console.log('>>>__dirname:', __dirname);
-			console.log('>>>request.path:',  request.path);
-			console.log('>>>publicFilePath safeJoin:', publicFilePath);
 			let mediaFilePath = safeJoin(__dirname, 'media', request.path);
-			console.log('>>>mediaFilePath safeJoin:', mediaFilePath);
 			// publicFilePath = publicFilePath.replace(CEDALO_MC_PROXY_BASE_PATH, ''); // we don't need it since router is already served from CEDALO_MC_PROXY_BASE_PATH
 			// mediaFilePath = mediaFilePath.replace(CEDALO_MC_PROXY_BASE_PATH, '');
-			console.log('>>>publicFilePath replace:', publicFilePath);
-			console.log('>>>mediaFilePath replace:', mediaFilePath);
 
 			try {
 				const potentialPaths = [
 					{ path: publicFilePath, defaultFile: 'index.html' },
 					{ path: mediaFilePath, defaultFile: 'index.html' },
 				];
-				console.log('>>>potentialPaths:', potentialPaths);
 				
 				for (const potential of potentialPaths) {
-					console.log('>>>potentialPath:', potential);
 					const exists = fs.existsSync(potential.path); // unfortunately, existsAsync from utils doesn't work with pkg's virtual filesystem
-					console.log('>>>exists:', exists);
 					if (exists) {
 						if (await isDirectoryAsync(potential.path)) {
-							console.log('>>>isDirectoryAsync(potential.path): yes');
-							console.log('>>>sending: ', path.join(potential.path, potential.defaultFile));
 							return response.sendFile(path.join(potential.path, potential.defaultFile));
 						}
-						console.log('>>>not sending: ', path.join(potential.path, potential.defaultFile));
-						console.log('>>>isDirectoryAsync(potential.path): no');
 						return response.sendFile(potential.path);
 					}
 				}
 				
-				console.log('>>>resource not found');
 				if (request.path.includes('/api/')) {
 					return response.status(404).send({ code: 'NOT_FOUND', message: 'Resource not found' });
 				}
 				
 				return response.status(404).sendFile(path.join(__dirname, 'public', 'index.html'));
 			} catch (err) {
-				console.log('>>>Error encountered');
 				console.error('Error handling request:', err);
 				return response.status(500).send({ code: 'INTERNAL_ERROR', message: 'Internal Server Error' });
 			}
