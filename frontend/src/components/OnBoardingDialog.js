@@ -116,22 +116,22 @@ function getSteps(newsletterAvailable) {
 		{
 			label: 'Management Center for Eclipse Mosquitto',
 			description: 'Manage everything in one central place',
-			imgPath: '/onboarding-broker.png'
+			imgPath: `${process.env.PUBLIC_URL}/onboarding-broker.png`
 		},
 		{
 			label: 'Role based access control',
 			description: 'Manage clients, groups and roles',
-			imgPath: '/onboarding-dynamic-security.png'
+			imgPath: `${process.env.PUBLIC_URL}/onboarding-dynamic-security.png`
 		},
 		{
 			label: 'Metrics Dashboard',
 			description: 'Analyze the system status of your brokers',
-			imgPath: '/onboarding-dashboard.png'
+			imgPath: `${process.env.PUBLIC_URL}/onboarding-dashboard.png`
 		},
 		{
 			label: 'Topic Tree Inspector',
 			description: 'Visualize and inspect MQTT topics',
-			imgPath: '/onboarding-topic-tree.png'
+			imgPath: `${process.env.PUBLIC_URL}/onboarding-topic-tree.png`
 		},
 	];
 
@@ -139,13 +139,13 @@ function getSteps(newsletterAvailable) {
 		steps = steps.concat([{
 			label: 'Subscribe to our newsletter',
 			description: 'Get the latest news about Mosquitto, MQTT and Streamsheets.',
-			imgPath: '/onboarding-newsletter.png',
+			imgPath: `${process.env.PUBLIC_URL}/onboarding-newsletter.png`,
 			newsletter: true
 		},
 		{
 			label: 'Usage data',
 			description: 'We are continuously improving our software. For that it would be really great if you would allow the tracking of anonymous usage data.',
-			imgPath: '/onboarding-dashboard.png',
+			imgPath: `${process.env.PUBLIC_URL}/onboarding-dashboard.png`,
 			usageData: true
 		}]);
 	}
