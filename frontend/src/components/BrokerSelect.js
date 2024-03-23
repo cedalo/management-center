@@ -18,6 +18,7 @@ import {showConnections} from '../utils/utils';
 import ClusterIcon from '@material-ui/icons/People';
 import LeaderIcon from '@material-ui/icons/Person';
 import Tooltip from '@material-ui/core/Tooltip';
+import { toClusterConnectionEntries } from '../admin/clusters/utils';
 
 
 const CustomInput = withStyles((theme) => ({
@@ -64,15 +65,7 @@ const BrokerSelect = ({brokerConnections, connected, currentConnectionName, send
 		setConnection(currentConnectionName);
 	}, [currentConnectionName]);
 
-	const clusterConnections = {};
-	// clusterDetails is a dict of cluternames and their details
-	clusterDetails && Object.keys(clusterDetails).forEach((clustername) => {
-		const clusterDetail = clusterDetails[clustername];
-
-		clusterDetail?.nodes.forEach((node) => {
-			clusterConnections[node.broker] = { clustername, isLeader: node.leader };
-		});
-	});
+	const clusterConnections = toClusterConnectionEntries(clusterDetails);
 
 	const handleConnectionChangeOuter = async (event) => {
 		const connectionID = event.target.value;

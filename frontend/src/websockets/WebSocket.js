@@ -52,6 +52,9 @@ import {
 	updateInspectClients
 } from '../admin/inspect/actions/actions';
 
+import { allClustersHaveLeaders } from '../admin/clusters/utils';
+import { getChangedOrNewConnectionIds } from '../admin/connections/utils';
+
 import WS_BASE from './config';
 import WebMosquittoProxyClient from '../client/WebMosquittoProxyClient';
 import { useDispatch, useSelector } from 'react-redux';
@@ -65,11 +68,43 @@ const ERROR_MESSAGE = "BaseMosquittoProxyClient: Timeout";
 
 let ws;
 let currentConnectionName;
+let allCurrentConnections;
+const timeoutMilliseconds = 1000;
+const licenseInformationTimeoutMilliseconds = 3000;
+
+const fetchClusterInfo = async (client, dispatch) => {
+	try {
+		const clusters = await client.listClusters(timeoutMilliseconds);
+		dispatch(updateClusters(clusters));
+		dispatch(updateFeatures({
+			feature: 'clustermanagement',
+			status: 'ok'
+		}));
+		const clusterDetails = await generateClusterDetails(client, clusters);
+		dispatch(updateClusterDetails(clusterDetails));
+
+		return clusterDetails;
+	} catch (error) {
+		console.error('Error listing clusters:', error);
+		dispatch(updateFeatures({
+			feature: 'clustermanagement',
+			status: 'failed',
+			error
+		}));
+	}
+};
+
+const scheduleClusterUpdates = async (client, dispatch, times=1, maxTimes=3, interval=1000) => {
+	setTimeout(async () => {
+		const clusterDetails = await fetchClusterInfo(client, dispatch);
+		if (!allClustersHaveLeaders(clusterDetails) && times <= maxTimes) {
+			scheduleClusterUpdates(client, dispatch, times + 1, maxTimes, interval * 1.5);
+		}
+	}, interval);
+};
 
 
 const init = async (client, dispatch, connectionConfiguration) => {
-	const timeoutMilliseconds = 1000;
-	const licenseInformationTimeoutMilliseconds = 3000;
 	dispatch(updateBrokerLicenseInformation(null));
 	dispatch(updateInspectClients([]));
 	dispatch(updateClients([]));
@@ -246,23 +281,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		}));
 	}
 
-	try {
-		const clusters = await client.listClusters(timeoutMilliseconds);
-		dispatch(updateClusters(clusters));
-		dispatch(updateFeatures({
-			feature: 'clustermanagement',
-			status: 'ok'
-		}));
-		const clusterDetails = await generateClusterDetails(client, clusters);
-		dispatch(updateClusterDetails(clusterDetails));
-	} catch (error) {
-		console.error('Error listing clusters:', error);
-		dispatch(updateFeatures({
-			feature: 'clustermanagement',
-			status: 'failed',
-			error
-		}));
-	}
+	await fetchClusterInfo(client, dispatch, timeoutMilliseconds);
 
 	if (brokerConnected) {
 		try {
@@ -363,6 +382,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 
 export default ({ children }) => {
 	const dispatch = useDispatch();
+	allCurrentConnections = useSelector(state => state.brokerConnections?.brokerConnections);
 	currentConnectionName = useSelector(state => state.brokerConnections?.currentConnectionName);
 
 	const sendMessage = (roomId, message) => {
@@ -401,12 +421,23 @@ export default ({ children }) => {
 			dispatch(updateVersion(message.payload));
 		});
 		client.on('connections', async (message) => {
-			dispatch(updateBrokerConnections(message.payload));
-			message.payload.forEach((connection) => {
+			const newConnections = message.payload;
+			const changedOrNewConnectionIds = getChangedOrNewConnectionIds(allCurrentConnections, newConnections); // connections that changed their connected state or new connecitons
+			const clustersToBeUpdatedDueToConnectionChange = new Set();
+			dispatch(updateBrokerConnections(newConnections));
+			
+			newConnections.forEach(async (connection) => {
+				if (connection.cluster && changedOrNewConnectionIds.includes(connection.id)) {
+					clustersToBeUpdatedDueToConnectionChange.add({clustername: connection.cluster});
+				}
 				if (currentConnectionName === connection.name) {
 					dispatch(updateBrokerConnected(connection.status.connected, connection.name));
 				}
 			});
+			if (clustersToBeUpdatedDueToConnectionChange.size) {
+				scheduleClusterUpdates(client, dispatch); // schedule several cluster state pollings until clusters reelect their leaders
+				// we will have to update state of all cluster due to complexities with react state of updating only a certain one
+			}
 		});
 		client.on('sessions-destroyed', async (/* message */) => {
 			// logout if session is not valid anymore:
