@@ -38,7 +38,7 @@ import PremiumFeatureDialog from '../../../components/PremiumFeatureDialog';
 import {atLeastAdmin} from '../../../utils/accessUtils/access';
 import {handleConnectionChange} from '../../../utils/connectionUtils/connections';
 import {WebSocketContext} from '../../../websockets/WebSocket';
-
+import { toClusterConnectionEntries } from '../../clusters/utils';
 
 const CONN_TABLE_COLUMNS = [
 	{id: 'expand', key: '', align: 'left', width: '10px'},
@@ -302,15 +302,7 @@ const Connections = ({
 	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
 	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
 
-	const clusterConnections = {};
-	// clusterDetails is a dict of cluternames and their details
-	clusterDetails && Object.keys(clusterDetails).forEach((clustername) => {
-		const clusterDetail = clusterDetails[clustername];
-
-		clusterDetail?.nodes.forEach((node) => {
-			clusterConnections[node.broker] = { clustername, isLeader: node.leader };
-		});
-	});
+	const clusterConnections = toClusterConnectionEntries(clusterDetails);
 
 	const handleClosePremiumFeatureDialog = () => {
 		setPremiumFeatureDialogOpen(false);
@@ -491,7 +483,6 @@ const Connections = ({
 const mapStateToProps = (state) => {
 	return {
 		clusterDetails: state.clusters?.clusterDetails,
-		brokerConnections: state.brokerConnections?.brokerConnections,
 		brokerConnections: state.brokerConnections?.brokerConnections,
 		connected: state.brokerConnections.connected,
 		userProfile: state.userProfile?.userProfile,
