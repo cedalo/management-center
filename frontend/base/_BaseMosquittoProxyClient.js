@@ -761,13 +761,13 @@ module.exports = class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	async createCluster(clusterConfiguration) {
+	async createCluster(clusterConfiguration, timeout=this._timeout) {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
 			request: 'cluster-management/createCluster',
 			clusterConfiguration
-		});
+		}, timeout);
 		return response.response;
 
 	}
