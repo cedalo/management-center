@@ -14,6 +14,7 @@ import SelectNodeComponent from './SelectNodeComponent';
 import {
 	getNodeIdsUniqueValidator,
     getPrivateAddressesPresentValidator,
+	getPrivateAddressesUniqueValidator,
     getBrokersPresentValidator
 } from '../validators';
 
@@ -60,10 +61,12 @@ const getDialogContent = ({
 }) => {
 	const areNodeIdsUnique = getNodeIdsUniqueValidator([...cluster.nodes, node]);
 	const arePrivateAddressesPresent = getPrivateAddressesPresentValidator([...cluster.nodes, node]);
+	const arePrivateAddressesUnique = getPrivateAddressesUniqueValidator([...cluster.nodes, node]);
 	const areBrokersPresent = getBrokersPresentValidator([...cluster.nodes, node]);
 
 	const validate = () => {
 		const valid = arePrivateAddressesPresent()
+					&& arePrivateAddressesUnique()
 					&& areBrokersPresent()
 					&& areNodeIdsUnique(); 
 		return valid;
@@ -96,6 +99,7 @@ const getDialogContent = ({
 						defaultNode={node}
 						cluster={cluster}
 						setNode={setNode}
+						message={"Note that you may need to adjust IP field, e.g. if node is in a different private network"}
 						checkAllNodeIds={areNodeIdsUnique}
 					/>
 				</Grid>

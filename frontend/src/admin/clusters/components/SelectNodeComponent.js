@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-
-import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import { connect } from 'react-redux';
-import { trimString } from '../../../utils/utils';
+import Collapse from '@material-ui/core/Collapse';
+
+import { trimString, parseUrl } from '../../../utils/utils';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -35,20 +33,48 @@ const clusterDoesNotContainNode = (brokerConnection, cluster) => {
 	return result ? false : true;
 }
 
+const brokerNotPartOfExistingCluster = (brokerConnection) => {
+	return !brokerConnection.cluster;
+};
+
 const validNodeIdRange = (nodeid) => {
 	return nodeid >= 1 && nodeid <= 1023;
 };
 
-const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, defaultNode = {}, setNode, checkAllNodeIds }) => {
+const validateIpAddressOrHostname = (address) => { // also mau be a DNS name with "_"
+	const ipRegex = new RegExp('^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$');
+	const hostnameRegex = new RegExp('^(([a-zA-Z0-9][a-zA-Z0-9_.-]*[a-zA-Z0-9])|[a-zA-Z0-9_])$');
+	return ipRegex.test(address) || hostnameRegex.test(address);
+};
+
+const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, defaultNode = {}, setNode, checkAllNodeIds, message }) => {
+	const node = defaultNode;
 	const classes = useStyles();
 	const [validNodeId, setValidNodeId] = useState(true);
+	const [validIpAddress, setValidIpAddress] = useState(true);
+	const [showIpInput, setShowIpInput] = useState(false);
+	const [ipAddress, setIpAddress] = useState(node.address);
 
 	const availableBrokerConnections = brokerConnections?.filter((brokerConnection) => clusterDoesNotContainNode(brokerConnection, cluster))
+		.filter((brokerConnection) => brokerNotPartOfExistingCluster(brokerConnection))
 		.filter((brokerConnection) => brokerConnection.status ? brokerConnection.status.connected : false) || [];
 
 	const handleSelectBroker = (broker) => {
-		setNode({...defaultNode, broker});
-	}
+		setShowIpInput(true);
+		if (broker.url) {
+			try {
+				const hostname = parseUrl(broker.url).host;
+				setIpAddress(hostname);
+				setNode({...node, broker: broker.id, address: trimString(hostname)}); // todo: try throw here
+			} catch (error) {
+				console.error('Could not parse hostname from URL:', broker.url, error);
+				setNode({...node, broker: broker.id});
+			}
+		} else {
+			console.log('No url found for the broker:', broker.id);
+			setNode({...node, broker: broker.id});
+		}
+	};
 
 	useEffect(() => {
 		setValidNodeId(checkAllNodeIds()); // check nodeids after setting. This checks their uniqueness
@@ -69,25 +95,12 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 						const valid = validNodeIdRange(nodeid);
 						setValidNodeId(valid);
 						if (valid) {
-							setNode({...defaultNode, nodeid: parseInt(event.target.value)});
+							setNode({...node, nodeid: parseInt(event.target.value)});
 						}
 					}}
 					error={!validNodeId}
 					helperText={!validNodeId && 'Node ID must be a unique number from 1 to 1023.'}
-					defaultValue={defaultNode.nodeid}
-					variant="outlined"
-					fullWidth
-					className={classes.textField}
-				/>
-			</Grid>
-			<Grid item xs={12} align="center">
-				<TextField
-					required={true}
-					size="small"
-					id="private-ip-address"
-					label="Private IP address"
-					onChange={(event) => setNode({...defaultNode, address: trimString(event.target.value)})}
-					defaultValue={defaultNode.address}
+					defaultValue={node.nodeid}
 					variant="outlined"
 					fullWidth
 					className={classes.textField}
@@ -102,22 +115,66 @@ const SelectNodeComponent = ({ brokerConnections, cluster, handleSelectNode, def
 						defaultValue=""
 						fullWidth
 						placeholder='Please select an instance'
-						value={defaultNode.broker}
-						onChange={(event) => handleSelectBroker(event.target.value)}
+						value={node.broker}
+						onChange={(event) => handleSelectBroker(
+							availableBrokerConnections.find(brokerConnection => {
+								return brokerConnection.id === event.target.value
+							})
+						)}
 					>
 						{
-							availableBrokerConnections.map(brokerConnection =>
+							 availableBrokerConnections.length > 0 ? (
+								availableBrokerConnections.map(brokerConnection =>
+									<MenuItem
+										value={brokerConnection.id}
+										classes={{
+											root: classes.select
+										}}
+									>
+										{`${brokerConnection.name} (${brokerConnection.id})`}
+									</MenuItem>
+								)
+							) : (
 								<MenuItem
-									value={brokerConnection.id}
+									disabled
+									value=""
 									classes={{
 										root: classes.select
 									}}
 								>
-									{`${brokerConnection.name} (${brokerConnection.id})`}
+									No available brokers
 								</MenuItem>
 							)
 						}
 					</TextField>
+			</Grid>
+			<Grid item xs={12} align="center">
+				<Collapse in={showIpInput} timeout={500}>
+					<TextField
+						required={true}
+						size="small"
+						id="private-ip-address"
+						label="Private IP address"
+						onChange={(event) => {
+								const address = event.target.value;
+								const valid = validateIpAddressOrHostname(address);
+								setValidIpAddress(valid);
+								setIpAddress(address);
+								if (valid) {
+									setNode({...node, address: trimString(event.target.value)});
+								} else {
+									setNode({...node, address: undefined}); // save button validator will detect an empty address and block the save button
+								}
+							}
+						}
+						value={ipAddress || ''}
+						variant="outlined"
+						fullWidth
+						className={classes.textField}
+						error={!validIpAddress}
+						helperText={(!validIpAddress && 'IP address/hostname is invalid.') || message}
+					/>
+				</Collapse>
 			</Grid>
 		</Grid>
 	);
