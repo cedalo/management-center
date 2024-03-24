@@ -28,6 +28,7 @@ import { defaultNodeAddress,
 import {
 	getNodeIdsUniqueValidator,
     getPrivateAddressesPresentValidator,
+	getPrivateAddressesUniqueValidator,
     getBrokersPresentValidator
 } from '../validators';
 
@@ -60,22 +61,13 @@ const ClusterNew = (props) => {
 
 	const areNodeIdsUnique = getNodeIdsUniqueValidator(nodes);
 	const arePrivateAddressesPresent = getPrivateAddressesPresentValidator(nodes);
+	const arePrivateAddressesUnique = getPrivateAddressesUniqueValidator(nodes);
 	const areBrokersPresent = getBrokersPresentValidator(nodes);
-	// const areNodeIdsUnique = () => {
-	// 	return (new Set([node1.nodeid, node2.nodeid, node3.nodeid])).size === 3;
-	// };
-
-	// const arePrivateAddressesPresent = () => {
-	// 	return node1.address && node2.address && node3.address;
-	// };
-
-	// const areBrokersPresent = () => {
-	// 	return node1.broker && node2.broker && node3.broker;
-	// };
 
 	const validate = () => {
 		const valid = !clusternameExists && clustername !== ''
 			&& arePrivateAddressesPresent()
+			&& arePrivateAddressesUnique()
 			&& areBrokersPresent()
 			&& areNodeIdsUnique();
 		return valid;
@@ -90,6 +82,7 @@ const ClusterNew = (props) => {
 
 	const onSaveCluster = async () => {
 		let clusters;
+		const timeoutMs = 14 * 1000;
 
 		try {
 			await client.createCluster({
@@ -97,7 +90,7 @@ const ClusterNew = (props) => {
 				description: clusterDescription,
 				syncmode,
 				nodes
-			});
+			}, timeoutMs);
 			clusters = await client.listClusters();
 			dispatch(updateClusters(clusters));
 			history.push(`/clusters`);
@@ -153,7 +146,7 @@ const ClusterNew = (props) => {
 			/>
 			{!clusterManagementFeature?.error && (
 				<FormGroup>
-					<Grid container spacing={2} alignItems="flex-end">
+					<Grid container spacing={2} alignItems="flex-start">
 						<Grid item xs={12} sm={4}>
 							<TextField
 								error={clusternameExists}
@@ -215,6 +208,7 @@ const ClusterNew = (props) => {
 										defaultNode={node1}
 										setNode={setNode1}
 										checkAllNodeIds={areNodeIdsUnique}
+										message={"Note that you may need to adjust IP fields, e.g. if nodes are in a different private network"}
 									/>
 								</CardContent>
 							</Card>

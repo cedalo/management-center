@@ -200,6 +200,7 @@ const Clusters = (props) => {
 		});
 		try {
 			await brokerClient.deleteCluster(clustername);
+			// connections will be updated here via a websocket callback from the backend. It will trigger 'connections' event from WebSocket.js
 			enqueueSnackbar(`Cluster "${clustername}" deleted successfully`, {
 				variant: 'success'
 			});
