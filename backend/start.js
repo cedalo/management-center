@@ -163,6 +163,7 @@ let context = {
 		}
 	},
 	actions: {},
+	callbacks: {},
 };
 
 const checker = new LicenseChecker(context);
@@ -746,7 +747,7 @@ const init = async (licenseContainer) => {
 		// we need to filter connections to make sure the user that is using socket connections only sees connections that he is allowed to see (user groups feature)
 		const username = stash?.username;
 		const connectionsToUpdate = message.event.payload;
-		if (!username) {
+		if (!username) { // if no user is associated with websocket connection we return nothing, I believe
 			return;
 		}
 		const userAssociatedWithClient = stash?.request?.session?.passport?.user;
@@ -778,8 +779,9 @@ const init = async (licenseContainer) => {
 				payload
 			}
 		};
-		notifyWebSocketClients(messageObject, brokerClient);
+		notifyWebSocketClients(messageObject, brokerClient); // for connection update action we don't even have to pass brokerClient, because connections update is applied to all clients. the passing of this argument is historical
 	};
+	context.callbacks.sendConnectionsUpdate = sendConnectionsUpdate;
 
 	const sendSystemStatusUpdate = (system, brokerClient) => {
 		const messageObject = {
@@ -805,7 +807,7 @@ const init = async (licenseContainer) => {
 
 	const notifyWebSocketClients = (message, brokerClient) => {
 		wss.clients.forEach((client) => {
-			if (message.event.type == 'connections') {
+			if (message.event.type == 'connections') { // connections update is broadcasted to every client
 				const filteredConnectionsMessage = createConnectionsUpdateWebsocketMessage(message, client.cedaloStash);
 				client.send(JSON.stringify(filteredConnectionsMessage));
 				return;
@@ -813,7 +815,7 @@ const init = async (licenseContainer) => {
 			
 			const broker = context.brokerManager.getBroker(client);
 			if (broker === brokerClient) {
-				// this WebSocket client is connected to this broker
+				// this WebSocket client is connected to this broker (this particular broker is selected)
 				client.send(JSON.stringify(message));
 			}
 		});
