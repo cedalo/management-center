@@ -377,13 +377,16 @@ const init = async (client, dispatch, connectionConfiguration) => {
 			}));
 		}
 	}
-}
+};
 
 
 export default ({ children }) => {
 	const dispatch = useDispatch();
 	allCurrentConnections = useSelector(state => state.brokerConnections?.brokerConnections);
 	currentConnectionName = useSelector(state => state.brokerConnections?.currentConnectionName);
+	let initializeWebSocket;
+	let reconnectWebsocket;
+	const reconnectionDelay = 2000;
 
 	const sendMessage = (roomId, message) => {
 		const payload = {
@@ -391,10 +394,18 @@ export default ({ children }) => {
 		};
 	};
 
-	if (!ws?.client) {
-		let client = new WebMosquittoProxyClient({ logger: console });
+	reconnectWebsocket = () => {
+		setTimeout(() => {
+			initializeWebSocket();
+		}, reconnectionDelay);
+	};
+
+	initializeWebSocket = () => {
+		const client = new WebMosquittoProxyClient({ logger: console });
 		client.closeHandler = (event) => {
 			dispatch(updateProxyConnected(false));
+			console.log('Websocket connection closed, reconnecting')
+			reconnectWebsocket();
 		};
 		client.on('license-invalid', (message) => {
 			dispatch(updateLicenseStatus({
@@ -448,6 +459,14 @@ export default ({ children }) => {
 		client.on('error', (message) => {
 			console.error(message);
 		});
+
+		return client;
+	};
+
+	
+
+	if (!ws?.client) {
+		let client = initializeWebSocket();
 		
 		dispatch(updateLoading(true));
 		init(client, dispatch, { socketEndpointURL: WS_BASE.url, httpEndpointURL: WS_BASE.urlHTTP })
