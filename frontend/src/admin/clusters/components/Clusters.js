@@ -282,7 +282,7 @@ const Clusters = (props) => {
 		>
 			<ContainerHeader
 				title="Clusters"
-				subTitle="Clusters enable Mosquitto High Availabiliy. Here you can and modify the cluster setup by creating or deleting a cluster, adding or deleting a node in a cluster and more."
+				subTitle="Clusters enable Mosquitto High Availability. Here you can and modify the cluster setup by creating or deleting a cluster, adding or deleting a node in a cluster and more."
 				featureWarning={clusterManagementFeature?.supported === false ? "Clusters" : undefined}
 				warnings={() => {
 					const alerts = [];
