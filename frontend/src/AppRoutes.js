@@ -10,6 +10,7 @@ import Streams from './components/Streams';
 import Streamsheets from './components/Streamsheets';
 import Status from './components/Status';
 import TopicTree from './components/TopicTree';
+import Integrations from './components/Integrations';
 import GroupDetail from './components/GroupDetail';
 import RoleDetail from './components/RoleDetail';
 import ClientDetail from './components/ClientDetail';
@@ -123,6 +124,9 @@ function AppRoutes(props) {
 				</Route>
 				<Route path="/home">
 					<Status/>
+				</Route>
+				<Route path="/integrations">
+					<Integrations/>
 				</Route>
 				<Route path="/topics">
 					<TopicTree/>
