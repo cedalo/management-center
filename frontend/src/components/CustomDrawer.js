@@ -37,6 +37,16 @@ import UserGroupsIcon from '@material-ui/icons/PeopleOutline';
 import CertificateIcon from '@material-ui/icons/VerifiedUserOutlined'; // GppGoodOutlined';
 import {atLeastAdmin, atLeastEditor, atLeastViewer} from '../utils/accessUtils/access';
 import { isAdminOpen } from '../utils/utils';
+import AddIcon from '@material-ui/icons/Add';
+import Badge from '@material-ui/core/Badge';
+
+
+const RedBadge = withStyles((theme) => ({
+	dot: {
+	  backgroundColor: 'red', // This changes the dot color to red
+	},
+  }))(Badge);
+
 
 const drawerWidth = 240;
 
@@ -203,6 +213,14 @@ const CustomDrawer = ({
 						to="/home"
 						primary="Home"
 						icon={<HomeIcon fontSize="small"/>}
+					/>
+					<ListItemLink
+						tour="navbar-integartions"
+						id="menu-item-integartions"
+						classes={classes}
+						to="/integrations"
+						primary="Integrations"
+						icon={<RedBadge variant="dot"><AddIcon fontSize="small"/></RedBadge>}
 					/>
 					<ListItemLink
 						tour="navbar-topics"
