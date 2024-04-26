@@ -158,7 +158,7 @@ const Integrations = ({topicTree, lastUpdated, currentConnectionName, settings, 
 		>
 			<ContainerHeader
 				title="Integrations"
-				subTitle="Here is a non-exhaustive list of integrations which can be configured for your personal project with Pro Mosquitto"
+				subTitle="Pro Mosquitto offers several enterprise-grade integrations, enabling seamless connectivity between MQTT and widely-used services"
 			>
 			</ContainerHeader>
             <Grid container justify="center" spacing={3}>  
