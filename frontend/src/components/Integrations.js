@@ -59,84 +59,84 @@ const integrations = [
         name: 'PostgreSQL Bridge',
         descriptions: 'PostgreSQL is a powerful open-source object-relational database management system recognized for its advanced features and extensibility.',
         // image: 'https://1000logos.net/wp-content/uploads/2020/08/PostgreSQL-Logo.png',
-        image: 'https://wiki.postgresql.org/images/thumb/a/a4/PostgreSQL_logo.3colors.svg/540px-PostgreSQL_logo.3colors.svg.png',
+        image: '/integration-logos/postgres.png',
         link: 'https://docs.cedalo.com/mosquitto/broker/Mosquitto%20Manual/Bridges/mosquitto-sql-bridge',
         emailTopic: 'PostgreSQL Bridge' 
     },
     {
         name: 'MySQL Bridge',
         descriptions: 'MySQL is a widely used open-source relational database management system known for its reliability and scalability.',
-        image: 'https://www.mysql.com/common/logos/logo-mysql-170x115.png',
+        image: '/integration-logos/mysql.png',
         link: 'https://docs.cedalo.com/mosquitto/broker/Mosquitto%20Manual/Bridges/mosquitto-sql-bridge',
         emailTopic: 'MySQL Bridge' 
     },
     {
         name: 'AlloyDB Bridge',
         descriptions: 'Google AlloyDB is a scalable, fully managed relational database service designed to handle high volumes of data and support mission-critical applications with high availability and strong consistency.',
-        image: 'https://lh3.googleusercontent.com/A7NDzHSjhN7otiP1pd3-d37aQgC0c07khXBeOO5ILx_PO_I8690EcpLH5Uun0QwNVy7khMrqil8=s1200-w1200-rw-lo',
+        image: '/integration-logos/alloydb.webp',
         link: 'https://docs.cedalo.com/mosquitto/broker/Mosquitto%20Manual/Bridges/mosquitto-sql-bridge',
         emailTopic: 'AlloyDB Bridge' 
     },
     {
         name: 'TimescaleDB Bridge',
         descriptions: 'TimescaleDB is a leading open-source time-series database built on top of PostgreSQL, designed for handling time-series data at scale with SQL simplicity.',
-        image: 'https://www.timescale.com/static/4abd368bff083b2ae5cdf6a7becfd3f5/Timescale-Brandmark-Black-SVG.svg',
+        image: '/integration-logos/timescaledb.svg',
         link: 'https://docs.cedalo.com/mosquitto/broker/Mosquitto%20Manual/Bridges/mosquitto-sql-bridge',
         emailTopic: 'TimescaleDB Bridge' 
     },
     {
         name: 'MongoDB Bridge',
         descriptions: 'The MongoDB Bridge enables one-way data transfer from the MQTT broker to MongoDB. It’s built for effortless data migration, allowing users to handle MQTT-generated data in MongoDB efficiently.',
-        image: 'https://storage-us-gcs.bfldr.com/85s8xk2j3k89b67xr8c7vwmv/v/1069931049/original/MongoDB_ForestGreen.png?Expires=1714236260&KeyName=gcs-bfldr-prod&Signature=pvMsvV54S5xX5SsXrgCfeL2V-hQ=',
+        image: '/integration-logos/mongodb.png',
         link: 'https://docs.cedalo.com/mosquitto/broker/Mosquitto%20Manual/Bridges/mosquitto-mongodb-bridge',
         emailTopic: 'MongoDB Bridge' 
     },
     {
         name: 'MongoDB Atlas Bridge',
         descriptions: 'MongoDB Atlas is a fully managed cloud database service for MongoDB, offering a flexible and scalable solution for modern application development.',
-        image: 'https://storage-us-gcs.bfldr.com/6x3q9bsq4nj777n8sbbnp6/v/1069931050/original/MongoDB_Logomark_ForestGreen.png?Expires=1714237967&KeyName=gcs-bfldr-prod&Signature=uU0nA-f50BRX53pWZ1ojCYsJf1E=',
+        image: '/integration-logos/mongodbatlas.png',
         link: 'https://docs.cedalo.com/mosquitto/broker/Mosquitto%20Manual/Bridges/mosquitto-mongodb-bridge',
         emailTopic: 'MongoDB Atlas Bridge' 
     },
     {
         name: 'Google Pub/Sub Bridge',
         descriptions: 'Google Pub/Sub is a managed messaging service provided by Google that enables users to send and receive messages between independent applications asynchronously.',
-        image: 'https://lh3.googleusercontent.com/VEnnK2SyklusfxZ3dIYjlQH3xSwK2BFSJ69TFQ9g8HjM6m3CouRlTia5FW3z3GS0x83WC9TylZCaA9Jf_2kmr7mXxI9_HYLZTFy_bg',
+        image: '/integration-logos/googlecloud.png',
         link: 'https://docs.cedalo.com/mosquitto/broker/Mosquitto%20Manual/Bridges/mosquitto-google-pubsub-bridge',
         emailTopic: 'Google Pub/Sub Bridge' 
     },
     {
         name: 'Kafka Bridge',
         descriptions: 'The MQTT to Kafka bridge facilitates a unidirectional data transfer mechanism, enabling seamless MQTT data transmission from Pro Mosquitto to Kafka.',
-        image: 'https://apache.org/logos/res/kafka/kafka_highres.png',
+        image: '/integration-logos/kafka.png',
         link: 'https://docs.cedalo.com/mosquitto/broker/Mosquitto%20Manual/Bridges/mosquitto-kafka-bridge',
         emailTopic: 'Kafka Bridge' 
     },
     {
         name: 'Kubernetes',
         descriptions: 'Kubernetes container deployment support enables users to install and run Pro Mosquitto within Kubernetes.',
-        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Kubernetes_logo.svg/1596px-Kubernetes_logo.svg.png',
+        image: '/integration-logos/kubernetes.png',
         link: 'https://docs.cedalo.com/mosquitto/kubernetes/introduction',
         emailTopic: 'Kubernetes' 
     },
     {
         name: 'Openshift',
         descriptions: 'OpenShift is a containerization platform developed by Red Hat based on Kubernetes. OpenShift support enables users to install and run Pro Mosquitto within OpenShift clusters.',
-        image: 'https://upload.wikimedia.org/wikipedia/commons/3/3a/OpenShift-LogoType.svg',
+        image: '/integration-logos/openshift.svg',
         link: 'https://docs.cedalo.com/mosquitto/openshift/introduction',
         emailTopic: 'Openshift' 
     },
     {
         name: 'InfluxDB Metrics Exporter',
         descriptions: 'InfluxDB is an open-source time-series database designed to handle high write and query loads, ideal for IoT, monitoring, and analytics applications.',
-        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Influxdb_logo.svg/1024px-Influxdb_logo.svg.png',
+        image: '/integration-logos/influxdb.png',
         link: 'https://docs.cedalo.com/mosquitto/broker/Mosquitto%20Manual/mosquitto-metrics-exporter',
         emailTopic: 'InfluxDB Metrics Exporter' 
     },
     {
         name: 'Prometheus Metrics Exporter',
         descriptions: 'Prometheus is a very popular monitoring solution that is used for gaining insights into metrics. Pro Mosquitto now implements a Prometheus exporter.',
-        image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Prometheus_software_logo.svg/230px-Prometheus_software_logo.svg.png',
+        image: '/integration-logos/prometheus.png',
         link: 'https://docs.cedalo.com/mosquitto/broker/Mosquitto%20Manual/mosquitto-metrics-exporter',
         emailTopic: 'Prometheus Metrics Exporter' 
     },
