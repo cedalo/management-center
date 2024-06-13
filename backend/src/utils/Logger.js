@@ -5,15 +5,22 @@ class Logger {
         this.silentMode = silentMode;
     }
 
+    formatTimestamp() {
+        const date = new Date();
+        return (date.toISOString()) + ' (' + date.getTime() + '): '; 
+    }
+
     log() {
         if (!this.silentMode) {
-            this.logger.log(...arguments);
+            const timestamp = this.formatTimestamp();
+            this.logger.log(timestamp, ...arguments);
         }
     }
 
     error() {
         if (!this.silentMode) {
-            this.logger.error(...arguments);
+            const timestamp = this.formatTimestamp();
+            this.logger.error(timestamp, ...arguments);
         }
     }
 
