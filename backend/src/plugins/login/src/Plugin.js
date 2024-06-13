@@ -77,7 +77,7 @@ module.exports = class Plugin extends BasePlugin {
 					return next(error);
 				}
 				context.runAction(user, 'user/logout', { username: user?.username }, { request });
-				response.redirect('/login');
+				response.redirect(`${CEDALO_MC_PROXY_BASE_PATH}/login`);
 			});
 		});
 
