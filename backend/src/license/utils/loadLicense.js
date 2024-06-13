@@ -30,6 +30,7 @@ const loadLicense = async () => {
 		const licenseKey = await loadLicenseKey();
 		license = await LicenseKey.verify(licenseKey, publicKey);
 	} catch (error) {
+		console.error(error);
 		license = License.Invalid;
 	}
 	return license;

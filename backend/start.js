@@ -65,7 +65,6 @@ const preprocessBoolEnvVariable = (envVariable) => {
 
 const LOGIN_ENDPOINT = '/login';
 const CEDALO_MC_DEVELOPMENT_MODE = preprocessBoolEnvVariable(process.env.CEDALO_MC_DEVELOPMENT_MODE);
-const CEDALO_MC_PROXY_CONFIG = process.env.CEDALO_MC_PROXY_CONFIG || '../config/config.json';
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
 const CEDALO_MC_ENABLE_FULL_LOG = preprocessBoolEnvVariable(process.env.CEDALO_MC_ENABLE_FULL_LOG);
 const CEDALO_MC_SHOW_FEEDBACK_FORM = preprocessBoolEnvVariable(process.env.CEDALO_MC_SHOW_FEEDBACK_FORM);
@@ -89,7 +88,10 @@ switch(licenseMode) {
     case 'google':
 		LicenseChecker = require('../../integrations/google/index.js')
         break
-    default:
+	case 'ctrlx':
+		LicenseChecker = require('../../integrations/ctrlx/src/HTTPLicenseChecker.js');
+		break;
+	default:
 		LicenseChecker = require('./src/license/LicenseChecker');
 }
 
@@ -112,6 +114,7 @@ let context = {
 	brokerManager: new BrokerManager(),
 	requestHandlers: new Map(),
 	httpClient: HTTPClient.getInstance(),
+	licenseContainer,
 	security: {
 		acl: {
 			...acl
@@ -953,10 +956,10 @@ const init = async (licenseContainer) => {
             }
 		},
 		preprocessUserFunctions: preprocessUserFunctions,
-		licenseCheckCallback: (async (error, license) => {
+		licenseCheckCallback: context.licenseCheckCallback || (async (error, license) => {
 			// this is a default licenseCheckCallback. Particular licenseCheckers might ignore this function altogether and instead set their own when calling schedule method.
 			// in such cases the only parameter that can be levaraged is the crontab string (i.e. the frequency of executing the license check)
-			// in principle, specific plugins can also override this callback through the context if need be and sent for example a notification to the API about the invalid license and so on.
+			// in principle, specific plugins can also override this callback through the context if need be and for example send a notification to the API about the invalid license and so on.
 			if (error) {
 				licenseContainer.license = license;
 				licenseContainer.isValid = false;
@@ -1241,7 +1244,7 @@ const init = async (licenseContainer) => {
 	}, USAGE_TRACKER_INTERVAL);
 
 	if (context.licenseCheckCallback) {
-		await checker.scheduleEvery(CEDALO_MC_LICENSE_CRON_TAB_STRING, context.licenseCheckCallback);
+		await checker.scheduleEvery(CEDALO_MC_LICENSE_CRON_TAB_STRING, context.licenseCheckCallback, context);
 	}
 
 	stopFunctions.push(() => context.server.close());
