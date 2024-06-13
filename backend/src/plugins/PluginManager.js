@@ -3,7 +3,7 @@ const path = require('path');
 
 const { getBaseDirectory, removeDuplicates } = require('../utils/utils');
 
-const CUSTOM_LOGIN_PLUGIN_FEATURE_IDS = ['saml-sso'];
+const CUSTOM_LOGIN_PLUGIN_FEATURE_IDS = ['saml-sso', 'ctrlx-integration'];
 const OS_PLUGINS_IDS = ['login', 'user-profile', 'connect-disconnect'];
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
 const CEDALO_MC_PLUGIN_LIST_PATH = process.env.CEDALO_MC_PLUGIN_LIST_PATH;
@@ -99,7 +99,7 @@ module.exports = class PluginManager {
 		// also load application-tokens first as it redefines isLoggedIn function
 		// saml-sso redefines the whole login
 		// multiple-connections add MultiBrokerManager to context which is needed by cert management plugin
-		const PLUGIN_IDS_OF_HIGHEST_PRIORITY = ['multiple-connections', /* 'login_rate_limit' */, 'saml-sso', ...OS_PLUGINS_IDS, 'application-tokens', 'user-management'];
+		const PLUGIN_IDS_OF_HIGHEST_PRIORITY = ['multiple-connections', /* 'login_rate_limit' */, 'saml-sso', 'ctrlx-integration', ...OS_PLUGINS_IDS, 'application-tokens', 'user-management'];
 
 		for (const pluginId of PLUGIN_IDS_OF_HIGHEST_PRIORITY.reverse()) {
 			const pluginIndex = plugins.findIndex((el) => {
@@ -333,6 +333,16 @@ module.exports = class PluginManager {
 					plugins.push(requiredPluginObject);
 				} catch(error) {
 					printPluginError('user-profile-edit', error);
+				}
+			}
+
+			if (pluginConfiguration.id === 'ctrlx-integration' || pluginConfiguration.id === 'all') {
+				try {
+					pluginClass = require('../../../../integrations/ctrlx/plugins/ctrlx-integration-authentication').Plugin;
+					const requiredPluginObject = this._preprocessRequiredPlugin(pluginClass, pluginConfiguration);
+					plugins.push(requiredPluginObject);
+				} catch(error) {
+					printPluginError('ctrlx-authentication', error);
 				}
 			}
 		};
