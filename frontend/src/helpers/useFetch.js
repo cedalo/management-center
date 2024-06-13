@@ -30,7 +30,7 @@ export default function useFetch(url, opts) {
 					) {
 						// If the session has expired, redirect to login
 						console.error('Session has expired or is invalid');
-						window.location.href = LOGIN_ENDPOINT;
+						window.location.href = (process.env.PUBLIC_URL || '') + LOGIN_ENDPOINT;
 					} else {
 						console.error(errorData);
 					}

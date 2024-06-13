@@ -63,7 +63,8 @@ const preprocessBoolEnvVariable = (envVariable) => {
 	return !!((envVariable && typeof envVariable === 'string' && envVariable.toLowerCase() === 'false') ? false : envVariable);
 }
 
-const LOGIN_ENDPOINT = '/login';
+const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
+const LOGIN_ENDPOINT = `${CEDALO_MC_PROXY_BASE_PATH || ''}/login`;
 const CEDALO_MC_DEVELOPMENT_MODE = preprocessBoolEnvVariable(process.env.CEDALO_MC_DEVELOPMENT_MODE);
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
 const CEDALO_MC_ENABLE_FULL_LOG = preprocessBoolEnvVariable(process.env.CEDALO_MC_ENABLE_FULL_LOG);
@@ -71,7 +72,6 @@ const CEDALO_MC_SHOW_FEEDBACK_FORM = preprocessBoolEnvVariable(process.env.CEDAL
 const CEDALO_MC_SHOW_STREAMSHEETS = preprocessBoolEnvVariable(process.env.CEDALO_MC_SHOW_STREAMSHEETS || false);
 const CEDALO_MC_USERNAME = process.env.CEDALO_MC_USERNAME;
 
-const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
 const CEDALO_MC_LICENSE_CRON_TAB_STRING = process.env.CEDALO_MC_LICENSE_CRON_TAB_STRING || '*/10 * * * * *';
 

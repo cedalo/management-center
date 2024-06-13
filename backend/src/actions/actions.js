@@ -11,6 +11,7 @@ const HTTP_PORT = 80;
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
 const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
 const CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST = process.env.CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST;
+const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 
 const metainfo = (operation, operationType) => ({ source: 'core', operation, operationType });
 
@@ -437,7 +438,7 @@ const startupAction = {
 				httpPlainApp = express();
 				// set up a route to redirect http to https
 				httpPlainApp.get('*', function(request, response) {
-					response.redirect('https://' + CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST || request.headers.host + `:${port}` + request.url);
+					response.redirect('https://' + CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST || request.headers.host + `:${port}` + request.url + CEDALO_MC_PROXY_BASE_PATH);
 				});
 				httpPlainServer =  http.createServer(httpPlainApp);
 				// have it listen on 80

@@ -187,7 +187,7 @@ const Users = (props) => {
 				title: 'Confirm user deletion',
 				description: `Are you sure? You are about to delete the user that you are currently using. If you proceed you will be logged out and cannot access the system any longer with that user.`
 			});
-			window.location.href = '/logout';
+			window.location.href = `${process.env.PUBLIC_URL || ''}/logout`;
 		}
 		try {
 			await brokerClient.deleteUser(username);

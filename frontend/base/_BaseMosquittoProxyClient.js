@@ -53,7 +53,7 @@ axios.interceptors.response.use(
         if (sessionExpired) {
             // replace this with your login route
 			console.error('Session expired or invalid')
-			window.location.href = LOGIN_ENDPOINT;
+			window.location.href = (process.env.PUBLIC_URL || '') + LOGIN_ENDPOINT;
 			return Promise.reject('Session expired or invalid');
         }
         
