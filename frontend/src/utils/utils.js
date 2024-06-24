@@ -3,21 +3,21 @@ export const trimString = (value) => {
 };
 
 export const isAdminOpen = () => {
-	return location.pathname.startsWith('/user-groups') ||
-		location.pathname.startsWith('/tokens') ||
-		location.pathname.startsWith('/info') ||
-		location.pathname.startsWith('/users') ||
-		location.pathname.startsWith('/settings');
+	return location.pathname.startsWith(`${process.env.PUBLIC_URL || ''}/user-groups`) ||
+		location.pathname.startsWith(`${process.env.PUBLIC_URL || ''}/tokens`) ||
+		location.pathname.startsWith(`${process.env.PUBLIC_URL || ''}/info`) ||
+		location.pathname.startsWith(`${process.env.PUBLIC_URL || ''}/users`) ||
+		location.pathname.startsWith(`${process.env.PUBLIC_URL || ''}/settings`);
 };
 export const showConnections = () => {
-	return !(location.pathname.startsWith('/user-groups') ||
-		location.pathname.startsWith('/tokens') ||
-		location.pathname.startsWith('/info') ||
-		location.pathname.startsWith('/users') ||
-		location.pathname.startsWith('/certs') ||
-		location.pathname.startsWith('/connections') ||
-		location.pathname.startsWith('/clusters') ||
-		location.pathname.startsWith('/settings'));
+	return !(location.pathname.startsWith(`${process.env.PUBLIC_URL || ''}/user-groups`) ||
+		location.pathname.startsWith(`${process.env.PUBLIC_URL || ''}/tokens`) ||
+		location.pathname.startsWith(`${process.env.PUBLIC_URL || ''}/info`) ||
+		location.pathname.startsWith(`${process.env.PUBLIC_URL || ''}/users`) ||
+		location.pathname.startsWith(`${process.env.PUBLIC_URL || ''}/certs`) ||
+		location.pathname.startsWith(`${process.env.PUBLIC_URL || ''}/connections`) ||
+		location.pathname.startsWith(`${process.env.PUBLIC_URL || ''}/clusters`) ||
+		location.pathname.startsWith(`${process.env.PUBLIC_URL || ''}/settings`));
 };
 
 export const getHelpBasePath = () => {

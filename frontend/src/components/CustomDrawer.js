@@ -177,7 +177,7 @@ const CustomDrawer = ({
 		setAdminOpen(isAdminOpen());
 	}, [location.pathname]);
 
-	setShowFilter('/clientinspection' === location.pathname);
+	setShowFilter(`${process.env.PUBLIC_URL || ''}/clientinspection` === location.pathname);
 
 	return <Drawer
 		data-tour="navigation"

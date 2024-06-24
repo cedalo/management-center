@@ -53,8 +53,8 @@ function AppRoutes(props) {
 
 	const {selectedConnectionToEdit: connection} = props;
 	const {userProfile, userManagementFeature, currentConnectionName} = props;
-	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/theme`);
-	const [responseConfig, loadingConfig, hasErrorConfig] = useFetch(`${process.env.PUBLIC_URL}/api/config`);
+	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL || ''}/api/theme`);
+	const [responseConfig, loadingConfig, hasErrorConfig] = useFetch(`${process.env.PUBLIC_URL || ''}/api/config`);
 
 	if ((hasError || response) && (hasErrorConfig || responseConfig)) {
 		let hideConnections = (typeof responseConfig?.hideConnections === 'boolean') ? responseConfig?.hideConnections : false;
