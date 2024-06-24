@@ -173,8 +173,8 @@ export default function (props) {
 	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');
 	const [filter, setFilter] = useState('');
 	const [showFilter, setShowFilter] = useState(false);
-	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/theme`);
-	const [responseConfig, loadingConfig, hasErrorConfig] = useFetch(`${process.env.PUBLIC_URL}/api/config`);
+	const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL || ''}/api/theme`);
+	const [responseConfig, loadingConfig, hasErrorConfig] = useFetch(`${process.env.PUBLIC_URL || ''}/api/config`);
 	const [title, setTitle] = useState('Mosquitto Management Center');
 	const [logo, setLogo] = useState('');
 	const [appliedTheme, setAppliedTheme] = useState(createTheme(getTheme(darkMode === 'true' ? 'dark' : 'light')));
