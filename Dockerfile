@@ -1,18 +1,4 @@
-FROM ubuntu:20.04
-
-# Avoiding user interaction with tzdata
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Update the package repository and install necessary packages
-RUN apt-get update && apt-get install -y \
-    curl \
-    xz-utils \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Node.js v16
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
-RUN apt-get install -y nodejs
+FROM node:16-alpine
 LABEL maintainer="philip.ackermann@cedalo.com"
 
 ARG CEDALO_MC_BUILD_DATE
