@@ -1,17 +1,7 @@
 FROM ubuntu:20.04
-LABEL maintainer="philip.ackermann@cedalo.com"
+
 # Avoiding user interaction with tzdata
 ENV DEBIAN_FRONTEND=noninteractive
-
-ARG CEDALO_MC_BUILD_DATE
-ENV CEDALO_MC_BUILD_DATE=${CEDALO_MC_BUILD_DATE}
-ARG CEDALO_MC_BUILD_NUMBER
-ENV CEDALO_MC_BUILD_NUMBER=${CEDALO_MC_BUILD_NUMBER}
-ENV CEDALO_MC_PROXY_CONFIG=/management-center/config/config.json
-ENV CEDALO_MC_PROXY_HOST=0.0.0.0
-ARG CEDALO_MC_PROXY_BASE_PATH
-ENV CEDALO_MC_PROXY_BASE_PATH=${CEDALO_MC_PROXY_BASE_PATH}
-
 
 # Update the package repository and install necessary packages
 RUN apt-get update && apt-get install -y \
@@ -23,11 +13,16 @@ RUN apt-get update && apt-get install -y \
 # Install Node.js v16
 RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs
+LABEL maintainer="philip.ackermann@cedalo.com"
 
-# Install Yarn
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-    RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-    RUN apt-get update && apt-get install -y yarn
+ARG CEDALO_MC_BUILD_DATE
+ENV CEDALO_MC_BUILD_DATE=${CEDALO_MC_BUILD_DATE}
+ARG CEDALO_MC_BUILD_NUMBER
+ENV CEDALO_MC_BUILD_NUMBER=${CEDALO_MC_BUILD_NUMBER}
+ENV CEDALO_MC_PROXY_CONFIG=/management-center/config/config.json
+ENV CEDALO_MC_PROXY_HOST=0.0.0.0
+ARG CEDALO_MC_PROXY_BASE_PATH
+ENV CEDALO_MC_PROXY_BASE_PATH=${CEDALO_MC_PROXY_BASE_PATH}
 
 WORKDIR /management-center
 
