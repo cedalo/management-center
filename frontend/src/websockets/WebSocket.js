@@ -169,7 +169,9 @@ const init = async (client, dispatch, connectionConfiguration) => {
 	try {
 		const {systemStatus, ...backendParameters} = await client.getBackendParameters();
 		if (systemStatus) {
-			dispatch(updateSystemStatus(systemStatus));
+			for (const key of Object.keys(systemStatus)) {
+				dispatch(updateSystemStatus(systemStatus[key]));
+			}
 		}
 		dispatch(updateBackendParameters(backendParameters));
 	} catch (error) {
