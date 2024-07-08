@@ -169,6 +169,22 @@ let context = {
 	callbacks: {},
 };
 
+const clearTopicTree = () => {
+	if (context.actions['topictree-rest-api/deleteTopictree']) {
+		context.runAction({username: 'system'}, 'topictree-rest-api/deleteTopictree');
+	}
+};
+const resourcesWatcher = () => {
+	const BYTES_IN_GB = 1024 * 1024 * 1024;
+	if (process.memoryUsage().rss > 1 * BYTES_IN_GB) {
+		clearTopicTree();
+	}
+};
+if (!process.env.CEDALO_MC_DISABLE_TOPIC_TREE_LIMIT) {
+	const _intervalHanlder = setInterval(resourcesWatcher, 30_000);
+}
+
+
 const checker = new LicenseChecker(context);
 
 context.registerAction(unloadPluginAction);
