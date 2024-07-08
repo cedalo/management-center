@@ -150,9 +150,27 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		}));
 	}
 
+	let brokerConnected = false;
+	const brokerConnections = await client.getBrokerConnections();
+	dispatch(updateBrokerConnections(brokerConnections));
+
+	// Select first broker that is connected to the MMC
+	for(let i=0; i<brokerConnections.length; i++) {
+		const connection = brokerConnections[i];
+		if(connection.status.connected) {
+			const connectionName = connection.name;
+			await client.connectToBroker(connectionName);
+			dispatch(updateBrokerConnected(true, connectionName));
+			brokerConnected = true;
+			break;
+		}
+	}
 
 	try {
-		const backendParameters = await client.getBackendParameters();
+		const {systemStatus, ...backendParameters} = await client.getBackendParameters();
+		if (systemStatus) {
+			dispatch(updateSystemStatus(systemStatus));
+		}
 		dispatch(updateBackendParameters(backendParameters));
 	} catch (error) {
 		console.error('backendParameters could not be fetched. Reason:', error);
@@ -230,23 +248,6 @@ const init = async (client, dispatch, connectionConfiguration) => {
 		  	status: {message: ERROR_MESSAGE, satatus: 'failed'},
 			error
 		}));
-	}
-
-
-	let brokerConnected = false;
-	const brokerConnections = await client.getBrokerConnections();
-	dispatch(updateBrokerConnections(brokerConnections));
-
-	// Select first broker that is connected to the MMC
-	for(let i=0; i<brokerConnections.length; i++) {
-		const connection = brokerConnections[i];
-		if(connection.status.connected) {
-			const connectionName = connection.name;
-			await client.connectToBroker(connectionName);
-			dispatch(updateBrokerConnected(true, connectionName));
-			brokerConnected = true;
-			break;
-		}
 	}
 
 	
@@ -420,6 +421,7 @@ export default ({ children }) => {
 			}));
 		});
 		client.on('system_status', (message) => {
+			console.log('"system_status" message received. updating...', message.payload)
 			dispatch(updateSystemStatus(message.payload));
 		});
 		client.on('topic_tree', (message) => {
