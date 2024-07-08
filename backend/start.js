@@ -416,7 +416,7 @@ const init = async (licenseContainer) => {
 			CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING: process.env.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING
 		},
 		isPremium: !!licenseContainer.isValid,
-		systemStatus: undefined // TODO: ideally it should be moved out of here since it's not a config parameter but a buffer with sys topic data
+		systemStatus: {} // TODO: ideally it should be moved out of here since it's not a config parameter but a buffer with sys topic data
 	};
 
 	const wss = new WebSocket.Server({
@@ -490,7 +490,7 @@ const init = async (licenseContainer) => {
 				brokerClient.on('message', (topic, message, packet) => {
 					if (topic.startsWith('$SYS')) {
 						updateSystemTopics(system, topic, message, packet);
-						config.parameters.systemStatus = system;
+						config.parameters.systemStatus[system?._name] = system;
 						sendSystemStatusUpdate(system, brokerClient);
 					} else if (
 						// TODO: change topic
