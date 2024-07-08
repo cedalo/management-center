@@ -423,7 +423,6 @@ export default ({ children }) => {
 			}));
 		});
 		client.on('system_status', (message) => {
-			console.log('"system_status" message received. updating...', message.payload)
 			dispatch(updateSystemStatus(message.payload));
 		});
 		client.on('topic_tree', (message) => {
