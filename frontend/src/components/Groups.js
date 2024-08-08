@@ -7,7 +7,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
-import {makeStyles} from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -23,28 +23,28 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ReloadIcon from '@material-ui/icons/Replay';
-import {useConfirm} from 'material-ui-confirm';
-import {useSnackbar} from 'notistack';
+import { useConfirm } from 'material-ui-confirm';
+import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
-import {connect, useDispatch} from 'react-redux';
-import {useHistory} from 'react-router-dom';
-import {updateAnonymousGroup,
-		updateGroup,
-		updateGroups,
-		updateGroupsRowsPerPage,
-		updateGroupsPage,
-		updateClientsAll,
-		updateRolesAll
+import React, { useContext } from 'react';
+import { connect, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import {
+	updateAnonymousGroup,
+	updateGroup,
+	updateGroups,
+	updateGroupsRowsPerPage,
+	updateGroupsPage,
+	updateClientsAll,
+	updateRolesAll
 } from '../actions/actions';
-import {WebSocketContext} from '../websockets/WebSocket';
+import { WebSocketContext } from '../websockets/WebSocket';
 import AnonymousGroupSelect from './AnonymousGroupSelect';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import ContentContainer from './ContentContainer';
 import SelectList from './SelectList';
 import { getIsAdminClient } from '../helpers/utils';
-
 
 const useStyles = makeStyles((theme) => ({
 	tableContainer: {
@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
 		'& > *': {
 			margin: theme.spacing(0.5)
 		}
-	},
+	}
 }));
 
 const groupShape = PropTypes.shape({
@@ -69,22 +69,22 @@ const groupShape = PropTypes.shape({
 });
 
 const GROUP_TABLE_COLUMNS = [
-	{id: 'name', key: 'Name', width: '10%', align: 'left'},
-	{id: 'textname', key: 'Text Name', width: '10%', align: 'left'},
-	{id: 'textdescription', key: 'Description', width: '25%', align: 'left'},
-	{id: 'clients', key: 'Clients', width: '25%', align: 'left'},
-	{id: 'roles', key: 'Roles', width: '25%', align: 'left'},
-	{id: 'action', key: 'Delete', width: '5%', align: 'center'}
+	{ id: 'name', key: 'Name', width: '10%', align: 'left' },
+	{ id: 'textname', key: 'Text Name', width: '10%', align: 'left' },
+	{ id: 'textdescription', key: 'Description', width: '25%', align: 'left' },
+	{ id: 'clients', key: 'Clients', width: '25%', align: 'left' },
+	{ id: 'roles', key: 'Roles', width: '25%', align: 'left' },
+	{ id: 'action', key: 'Delete', width: '5%', align: 'center' }
 ];
 
 const byUserName = (c1, c2) => c1.username > c2.username;
 
 const FormattedGroupType = (props) => {
 	switch (props.provider) {
-	case 'local':
-		return 'Local';
-	default:
-		return props.provider || '';
+		case 'local':
+			return 'Local';
+		default:
+			return props.provider || '';
 	}
 };
 
@@ -94,10 +94,10 @@ const Groups = (props) => {
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const confirm = useConfirm();
-	const {enqueueSnackbar} = useSnackbar();
-	const {client} = context;
-	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
-	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
+	const { enqueueSnackbar } = useSnackbar();
+	const { client } = context;
+	const small = useMediaQuery((theme) => theme.breakpoints.down('xs'));
+	const medium = useMediaQuery((theme) => theme.breakpoints.between('sm', 'sm'));
 	const [page, setPage] = React.useState(props.page || 0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(props.rowsPerPage || 10);
 
@@ -115,7 +115,7 @@ const Groups = (props) => {
 		const offset = page * rowsPerPage;
 		const groups = await client.listGroups(true, count, offset);
 		dispatch(updateGroups(groups));
-	}
+	};
 
 	const handleChangeRowsPerPage = async (event) => {
 		const rowsPerPage = parseInt(event.target.value, 10);
@@ -181,11 +181,11 @@ const Groups = (props) => {
 			enqueueSnackbar('Anonymous group successfully set', {
 				variant: 'success'
 			});
-		} catch(error) {
+		} catch (error) {
 			console.error(error);
 			enqueueSnackbar(`${error}`, { variant: 'error' });
 		}
-	}
+	};
 
 	const onSelectGroup = async (groupname) => {
 		const group = await client.getGroup(groupname);
@@ -211,7 +211,7 @@ const Groups = (props) => {
 			dispatch(updateGroups(groups));
 			// const clients = await client.listClients(); //??????
 			// dispatch(updateClients(clients));
-		} catch(error) {
+		} catch (error) {
 			console.error(error);
 			enqueueSnackbar(`${error}`, { variant: 'error' });
 		}
@@ -222,7 +222,7 @@ const Groups = (props) => {
 			await client.removeGroupClient(username, group);
 			const groups = await client.listGroups(true, rowsPerPage, page * rowsPerPage);
 			dispatch(updateGroups(groups));
-		} catch(error) {
+		} catch (error) {
 			console.error(error);
 			enqueueSnackbar(`${error}`, { variant: 'error' });
 		}
@@ -231,33 +231,39 @@ const Groups = (props) => {
 	const {
 		dynamicsecurityFeature,
 		anonymousGroup,
-		groups = [],
-		rolesAll = [],
-		clientsAll = [],
+		groups,
+		rolesAll,
+		clientsAll,
 		onSort,
 		sortBy,
 		sortDirection,
-		defaultClient,
+		defaultClient
 	} = props;
-
 
 	// TODO: probably extract into reducer
 
 	const isAdminClient = getIsAdminClient(defaultClient);
 
-	const clientSuggestions = clientsAll.sort(byUserName).map((clientname) => ({
-		label: clientname,
-		value: clientname,
-		disabled: isAdminClient(clientname)
-	}));
+	const clientSuggestions = clientsAll
+		? clientsAll
+				.concat()
+				.sort(byUserName)
+				.map((clientname) => ({
+					label: clientname,
+					value: clientname,
+					disabled: isAdminClient(clientname)
+				}))
+		: [];
 
 	const roleSuggestions = rolesAll
-		.sort()
-		.map((rolename) => ({
-			label: rolename,
-			value: rolename
-		}));
-
+		? rolesAll
+				.concat()
+				.sort()
+				.map((rolename) => ({
+					label: rolename,
+					value: rolename
+				}))
+		: [];
 
 	React.useEffect(() => {
 		const fetchData = async () => {
@@ -269,24 +275,24 @@ const Groups = (props) => {
 			dispatch(updateGroups(groups));
 			dispatch(updateRolesAll(rolesAll));
 		};
-		fetchData().catch(error => console.error(error));
+		fetchData().catch((error) => console.error(error));
 	}, []);
 
 	return (
 		<ContentContainer
 			dataTour="page-groups"
-			breadCrumbs={<div>
-				<ContainerBreadCrumbs title="Groups" links={[{name: 'Home', route: '/home'}]}/>
-				<AnonymousGroupSelect
-					onUpdateAnonymousGroup={onUpdateAnonymousGroup}
-				/>
-			</div>}
+			breadCrumbs={
+				<div>
+					<ContainerBreadCrumbs title="Groups" links={[{ name: 'Home', route: '/home' }]} />
+					<AnonymousGroupSelect onUpdateAnonymousGroup={onUpdateAnonymousGroup} />
+				</div>
+			}
 		>
 			<ContainerHeader
 				title="Groups"
 				subTitle="List of existing groups. Groups serve as a hub to gather multiple clients and roles. The more clients are added to your broker the harder it gets to administer them. Groups can help you structure and quickly adjust your current setup."
 				connectedWarning={!props.connected}
-				brokerFeatureWarning={dynamicsecurityFeature?.supported === false ? "dynamic security" : null}
+				brokerFeatureWarning={dynamicsecurityFeature?.supported === false ? 'dynamic security' : null}
 			>
 				{dynamicsecurityFeature?.supported !== false && [
 					<Button
@@ -294,8 +300,8 @@ const Groups = (props) => {
 						color="primary"
 						size="small"
 						id="new-group-button"
-						startIcon={<AddIcon/>}
-						style={{marginRight: '10px'}}
+						startIcon={<AddIcon />}
+						style={{ marginRight: '10px' }}
 						onClick={(event) => {
 							event.stopPropagation();
 							onNewGroup();
@@ -308,8 +314,8 @@ const Groups = (props) => {
 						color="primary"
 						size="small"
 						id="reload-button-groups"
-						style={{paddingRight: '0px', minWidth: '30px'}}
-						startIcon={<ReloadIcon/>}
+						style={{ paddingRight: '0px', minWidth: '30px' }}
+						startIcon={<ReloadIcon />}
 						onClick={(event) => {
 							event.stopPropagation();
 							onReload();
@@ -329,11 +335,14 @@ const Groups = (props) => {
 										align={column.align}
 										style={{
 											width: column.width,
-											display: (!small && !medium) ||
-											(column.id === 'name' && (small || medium)) ||
-											(column.id === 'roles' && (small || medium)) ||
-											(column.id === 'action' && (small || medium)) ||
-											(column.id === 'clients' && medium) ? undefined : 'none'
+											display:
+												(!small && !medium) ||
+												(column.id === 'name' && (small || medium)) ||
+												(column.id === 'roles' && (small || medium)) ||
+												(column.id === 'action' && (small || medium)) ||
+												(column.id === 'clients' && medium)
+													? undefined
+													: 'none'
 										}}
 									>
 										{/*<TableSortLabel*/}
@@ -358,17 +367,19 @@ const Groups = (props) => {
 												onSelectGroup(group.groupname);
 											}
 										}}
-										style={{cursor: 'pointer'}}
+										style={{ cursor: 'pointer' }}
 									>
 										<TableCell>{group.groupname}</TableCell>
-										{small || medium ? null : [
-											<TableCell>{group.textname}</TableCell>,
-											<TableCell>{group.textdescription}</TableCell>
-										]}
+										{small || medium
+											? null
+											: [
+													<TableCell>{group.textname}</TableCell>,
+													<TableCell>{group.textdescription}</TableCell>
+											  ]}
 										<TableCell className={classes.badges}>
 											<SelectList
 												values={group.clients}
-												getValue={value => value.username}
+												getValue={(value) => value.username}
 												onChange={(event, value) => {
 													onUpdateGroupClients(group, value);
 												}}
@@ -376,11 +387,11 @@ const Groups = (props) => {
 												suggestions={clientSuggestions}
 											/>
 										</TableCell>
-										{small ? null :
+										{small ? null : (
 											<TableCell className={classes.badges}>
 												<SelectList
 													values={group.roles}
-													getValue={value => value.rolename}
+													getValue={(value) => value.rolename}
 													onChange={(event, value) => {
 														onUpdateGroupRoles(group, value);
 													}}
@@ -388,7 +399,7 @@ const Groups = (props) => {
 													suggestions={roleSuggestions}
 												/>
 											</TableCell>
-										}
+										)}
 										<TableCell align="center">
 											<Tooltip title="Delete group">
 												<IconButton
@@ -399,7 +410,7 @@ const Groups = (props) => {
 														onDeleteGroup(group.groupname);
 													}}
 												>
-													<DeleteIcon fontSize="small"/>
+													<DeleteIcon fontSize="small" />
 												</IconButton>
 											</Tooltip>
 										</TableCell>
@@ -421,9 +432,9 @@ const Groups = (props) => {
 						</TableFooter>
 					</Table>
 				</TableContainer>
-			) : (
-				props.connected ? <div>No groups found</div> : null
-			)}
+			) : props.connected ? (
+				<div>No groups found</div>
+			) : null}
 		</ContentContainer>
 	);
 };

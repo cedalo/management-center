@@ -1,6 +1,6 @@
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import {makeStyles} from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -15,15 +15,15 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import ReloadIcon from '@material-ui/icons/Replay';
-import {useConfirm} from 'material-ui-confirm';
-import {useSnackbar} from 'notistack';
+import { useConfirm } from 'material-ui-confirm';
+import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
-import {connect, useDispatch} from 'react-redux';
-import {useHistory} from 'react-router-dom';
-import {updateRole, updateRoles, updateRolesRowsPerPage, updateRolesPage} from '../actions/actions';
-import {getAdminRoles} from '../helpers/utils';
-import {WebSocketContext} from '../websockets/WebSocket';
+import React, { useContext } from 'react';
+import { connect, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { updateRole, updateRoles, updateRolesRowsPerPage, updateRolesPage } from '../actions/actions';
+import { getAdminRoles } from '../helpers/utils';
+import { WebSocketContext } from '../websockets/WebSocket';
 import ContainerBreadCrumbs from './ContainerBreadCrumbs';
 import ContainerHeader from './ContainerHeader';
 import ContentContainer from './ContentContainer';
@@ -40,18 +40,18 @@ const rolesShape = PropTypes.shape({
 });
 
 const ROLE_TABLE_COLUMNS = [
-	{id: 'name', key: 'Name'},
-	{id: 'textname', key: 'Text Name'},
-	{id: 'textdescription', key: 'Description'},
-	{id: "action", key: ""},
+	{ id: 'name', key: 'Name' },
+	{ id: 'textname', key: 'Text Name' },
+	{ id: 'textdescription', key: 'Description' },
+	{ id: 'action', key: '' }
 ];
 
 const FormattedGroupType = (props) => {
 	switch (props.provider) {
-	case 'local':
-		return 'Local';
-	default:
-		return props.provider || '';
+		case 'local':
+			return 'Local';
+		default:
+			return props.provider || '';
 	}
 };
 
@@ -61,12 +61,13 @@ const Roles = (props) => {
 	const dispatch = useDispatch();
 	const history = useHistory();
 	const confirm = useConfirm();
-	const {enqueueSnackbar} = useSnackbar();
-	const {client} = context;
+	const { enqueueSnackbar } = useSnackbar();
+	const { client } = context;
 	const [page, setPage] = React.useState(props.page || 0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(props.rowsPerPage || 10);
-	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
-	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
+	const small = useMediaQuery((theme) => theme.breakpoints.down('xs'));
+	const medium = useMediaQuery((theme) => theme.breakpoints.between('sm', 'sm'));
+
 	const handleChangePage = async (event, newPage) => {
 		setPage(newPage);
 		const count = rowsPerPage;
@@ -81,7 +82,7 @@ const Roles = (props) => {
 		const offset = page * rowsPerPage;
 		const roles = await client.listRoles(true, count, offset);
 		dispatch(updateRoles(roles));
-	}
+	};
 
 	const handleChangeRowsPerPage = async (event) => {
 		const rowsPerPage = parseInt(event.target.value, 10);
@@ -95,7 +96,7 @@ const Roles = (props) => {
 
 	const onEditDefaultACLAccess = () => {
 		history.push('/roles/acl');
-	}
+	};
 
 	const onNewRole = () => {
 		history.push('/roles/new');
@@ -106,7 +107,7 @@ const Roles = (props) => {
 			const roles = await client.listRoles(true, rowsPerPage, page * rowsPerPage);
 			dispatch(updateRoles(roles));
 		};
-		fetchData().catch(error => console.error(error));
+		fetchData().catch((error) => console.error(error));
 	}, []);
 
 	const onDeleteRole = async (rolename) => {
@@ -118,7 +119,8 @@ const Roles = (props) => {
 					variant: 'contained'
 				},
 				confirmationButtonProps: {
-					color: 'primary', variant: 'contained'
+					color: 'primary',
+					variant: 'contained'
 				}
 			});
 		} catch (_) {
@@ -153,7 +155,7 @@ const Roles = (props) => {
 			// dispatch(updateClients(clients));
 			// const groups = await client.listGroups();
 			// dispatch(updateGroups(groups));
-		} catch(error) {
+		} catch (error) {
 			console.error(error);
 			enqueueSnackbar(`${error}`, { variant: 'error' });
 		}
@@ -165,20 +167,13 @@ const Roles = (props) => {
 		history.push(`/roles/${rolename}`);
 	};
 
-	const {dynamicsecurityFeature,
-			roles = [],
-			onSort,
-			sortBy,
-			sortDirection,
-			clients,
-			defaultClient
-		} = props;
+	const { dynamicsecurityFeature, roles, onSort, sortBy, sortDirection, clients, defaultClient } = props;
 
 	const adminRoles = getAdminRoles(defaultClient, clients);
 
 	return (
 		<ContentContainer
-			breadCrumbs={<ContainerBreadCrumbs title="Roles" links={[{name: 'Home', route: '/home'}]}/>}
+			breadCrumbs={<ContainerBreadCrumbs title="Roles" links={[{ name: 'Home', route: '/home' }]} />}
 			dataTour="page-roles"
 		>
 			<ContainerHeader
@@ -192,10 +187,10 @@ const Roles = (props) => {
 					<Button
 						variant="outlined"
 						color="primary"
-						style={{marginRight: '10px'}}
+						style={{ marginRight: '10px' }}
 						size="small"
 						id="new-role-button"
-						startIcon={<AddIcon/>}
+						startIcon={<AddIcon />}
 						onClick={(event) => {
 							event.stopPropagation();
 							onNewRole();
@@ -207,9 +202,9 @@ const Roles = (props) => {
 				<Button
 					variant="outlined"
 					color="primary"
-					style={{marginRight: '10px'}}
+					style={{ marginRight: '10px' }}
 					size="small"
-					startIcon={<EditIcon/>}
+					startIcon={<EditIcon />}
 					onClick={onEditDefaultACLAccess}
 				>
 					Edit default ACL access
@@ -220,8 +215,8 @@ const Roles = (props) => {
 						color="primary"
 						size="small"
 						id="reload-button-roles"
-						style={{paddingRight: '0px', minWidth: '30px'}}
-						startIcon={<ReloadIcon/>}
+						style={{ paddingRight: '0px', minWidth: '30px' }}
+						startIcon={<ReloadIcon />}
 						onClick={(event) => {
 							event.stopPropagation();
 							onReload();
@@ -230,8 +225,8 @@ const Roles = (props) => {
 				)}
 			</ContainerHeader>
 			{dynamicsecurityFeature?.supported !== false && roles?.roles?.length > 0 ? (
-				<div style={{height: '100%', overflowY: 'auto'}}>
-					<div style={{height: '100%', overflowY: 'auto'}}>
+				<div style={{ height: '100%', overflowY: 'auto' }}>
+					<div style={{ height: '100%', overflowY: 'auto' }}>
 						<TableContainer>
 							<Table stickyHeader size="small" aria-label="sticky table">
 								<TableHead>
@@ -267,7 +262,7 @@ const Roles = (props) => {
 											hover
 											key={role.rolename}
 											onClick={() => onSelectRole(role.rolename)}
-											style={{cursor: 'pointer'}}
+											style={{ cursor: 'pointer' }}
 										>
 											<TableCell>
 												<StyledTypography
@@ -302,7 +297,7 @@ const Roles = (props) => {
 															onDeleteRole(role.rolename);
 														}}
 													>
-														<DeleteIcon fontSize="small"/>
+														<DeleteIcon fontSize="small" />
 													</IconButton>
 												</Tooltip>
 											</TableCell>
@@ -341,7 +336,8 @@ Roles.propTypes = {
 };
 
 Roles.defaultProps = {
-	sortBy: undefined, sortDirection: undefined
+	sortBy: undefined,
+	sortDirection: undefined
 };
 
 const mapStateToProps = (state) => {
@@ -352,7 +348,7 @@ const mapStateToProps = (state) => {
 		defaultClient: state.brokerConnections?.defaultClient,
 		clients: state.clients?.clients?.clients,
 		dynamicsecurityFeature: state.systemStatus?.features?.dynamicsecurity,
-		connected: state.brokerConnections?.connected,
+		connected: state.brokerConnections?.connected
 	};
 };
 
