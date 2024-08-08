@@ -1,8 +1,10 @@
 import BaseMosquittoProxyClient from './BaseMosquittoProxyClient';
 
 export default class WebMosquittoProxyClient extends BaseMosquittoProxyClient {
-	constructor({ name = 'Web Mosquitto Proxy Client', logger, defaultListener } = {},
-				{ socketEndpointURL, httpEndpointURL } = {}, headers=undefined
+	constructor(
+		{ name = 'Web Mosquitto Proxy Client', logger, defaultListener } = {},
+		{ socketEndpointURL, httpEndpointURL } = {},
+		headers = undefined
 	) {
 		super({ name, logger, defaultListener }, { socketEndpointURL, httpEndpointURL }, headers);
 	}
@@ -19,6 +21,9 @@ export default class WebMosquittoProxyClient extends BaseMosquittoProxyClient {
 				reject(event);
 			};
 			ws.onclose = (event) => this._handleSocketClose(event);
-		}).catch((error) => this._handleSocketError(error));
+		}).catch((error) => {
+			// this._handleSocketError(error);
+			throw error;
+		});
 	}
 }
