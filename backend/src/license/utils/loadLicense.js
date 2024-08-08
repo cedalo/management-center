@@ -4,6 +4,8 @@ const License = require('../License');
 const LicenseKey = require('../LicenseKey');
 const readFile = require('./readFile');
 
+let loaded = false;
+
 const loadPublicKey = () =>
 	readFile(process.env.CEDALO_MC_LICENSE_PUBLIC_KEY_PATH || path.join(__dirname, 'config', 'public.pem'));
 const loadLicenseKey = () => {
@@ -15,12 +17,17 @@ const loadLicenseKey = () => {
 			process.env.CEDALO_LICENSE_FILE ||
 			process.env.CEDALO_MC_LICENSE_PATH ||
 			path.join(__dirname, 'config', 'license.lic');
-		console.log(`Loading license from ${licensePath} ...`);
+		if (!loaded) {
+			console.log(`Loading license from ${licensePath} ...`);
+		}
 		return readFile(licensePath)
 			.then((key) => key.toString().trim())
 			.catch((error) => {
 				console.log('No license key found or provided.');
 				throw error;
+			})
+			.finally(() => {
+				loaded = true;
 			});
 	}
 };
