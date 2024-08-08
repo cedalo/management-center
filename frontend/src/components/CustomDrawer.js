@@ -173,9 +173,9 @@ const CustomDrawer = ({
 	const theme = useTheme();
 	const [adminOpen, setAdminOpen] = useState(false);
 
-	// useEffect(() => {
-	// 	setAdminOpen(isAdminOpen());
-	// }, [location.pathname]);
+	useEffect(() => {
+		setAdminOpen(isAdminOpen());
+	}, [location.pathname]);
 
 	setShowFilter(`${process.env.PUBLIC_URL || ''}/clientinspection` === location.pathname);
 
