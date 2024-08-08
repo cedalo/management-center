@@ -420,7 +420,7 @@ export default ({ children }) => {
 	let initializeWebSocket;
 	let connectWebSocketAndInitApp;
 	let reconnectWebsocket;
-	const reconnectionDelay = 2000;
+	const reconnectionDelay = 3000;
 
 	const sendMessage = (roomId, message) => {
 		const payload = {
