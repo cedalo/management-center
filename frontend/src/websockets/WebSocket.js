@@ -44,9 +44,6 @@ import { updateInspectClients } from '../admin/inspect/actions/actions';
 import { allClustersHaveLeaders } from '../admin/clusters/utils';
 import { getChangedOrNewConnectionIds } from '../admin/connections/utils';
 
-import { allClustersHaveLeaders } from '../admin/clusters/utils';
-import { getChangedOrNewConnectionIds } from '../admin/connections/utils';
-
 import WS_BASE from './config';
 import WebMosquittoProxyClient from '../client/WebMosquittoProxyClient';
 import { useDispatch, useSelector } from 'react-redux';
