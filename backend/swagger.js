@@ -1,5 +1,5 @@
 const CEDALO_MC_PROXY_PORT = process.env.CEDALO_MC_PROXY_PORT || 8088;
-const CEDALO_MC_PROXY_HOST = process.env.CEDALO_MC_PROXY_HOST || 'localhost';
+const CEDALO_MC_PROXY_HOST = process.env.HOSTNAME || process.env.CEDALO_MC_PROXY_HOST || 'localhost';
 
 module.exports = {
   "openapi": "3.0.3",

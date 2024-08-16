@@ -1,7 +1,6 @@
 const { v1: uuid } = require('uuid');
 const axios = require('axios');
 
-
 const createError = (code, message) => ({
 	code,
 	message
@@ -43,22 +42,23 @@ class APINotFoundError extends APIError {
 }
 
 axios.interceptors.response.use(
-    response => response, // if the response is successful, just return it
-    error => {
-		const sessionExpired = error.response
-								&& error.response.status === 401
-								&& error.response?.data?.code === 'UNAUTHORIZED' 
-								&& !error.response?.data?.data?.session; 
+	(response) => response, // if the response is successful, just return it
+	(error) => {
+		const sessionExpired =
+			error.response &&
+			error.response.status === 401 &&
+			error.response?.data?.code === 'UNAUTHORIZED' &&
+			!error.response?.data?.data?.session;
 
-        if (sessionExpired) {
-            // replace this with your login route
-			console.error('Session expired or invalid')
+		if (sessionExpired) {
+			// replace this with your login route
+			console.error('Session expired or invalid');
 			window.location.href = (process.env.PUBLIC_URL || '') + LOGIN_ENDPOINT;
 			return Promise.reject('Session expired or invalid');
-        }
-        
-        return Promise.reject(error);
-    }
+		}
+
+		return Promise.reject(error);
+	}
 );
 
 // TODO: merge with method deletePendingRequest()
@@ -80,23 +80,27 @@ const timeoutHandler = (requestId, requests) => {
 
 const createID = () => uuid();
 
-
 // TODO: refactor error handling!
 module.exports = class BaseMosquittoProxyClient {
-	constructor({ name, logger, defaultListener } = {}, { socketEndpointURL, httpEndpointURL } = {}, headers=undefined, version=undefined) {
+	constructor(
+		{ name, logger, defaultListener } = {},
+		{ socketEndpointURL, httpEndpointURL } = {},
+		headers = undefined,
+		version = undefined
+	) {
 		if (!version) {
 			version = 1;
 		}
 		this.name = name || 'Default Base Mosquitto Proxy Client';
 		this._logger = logger || {
-			log() { },
-			info() { },
-			warn() { },
-			debug() { },
-			error() { }
+			log() {},
+			info() {},
+			warn() {},
+			debug() {},
+			error() {}
 		};
-		const acceptHeader = {'Accept': `application/json;version=${version}`};
-		this._headers = headers ? { headers: {...acceptHeader,  ...headers} } :  { headers: acceptHeader };
+		const acceptHeader = { Accept: `application/json;version=${version}` };
+		this._headers = headers ? { headers: { ...acceptHeader, ...headers } } : { headers: acceptHeader };
 		this._socketEndpointURL = socketEndpointURL;
 		this._httpEndpointURL = httpEndpointURL;
 		this._eventHandler = (event) => this.logger.info(event);
@@ -114,7 +118,7 @@ module.exports = class BaseMosquittoProxyClient {
 	}
 
 	// eslint-disable-next-line consistent-return
-	async connect({ socketEndpointURL, httpEndpointURL } = {}, sid=undefined) {
+	async connect({ socketEndpointURL, httpEndpointURL } = {}, sid = undefined) {
 		if (this._isConnected || this._isConnecting) {
 			return Promise.resolve({});
 		}
@@ -130,6 +134,7 @@ module.exports = class BaseMosquittoProxyClient {
 		} catch (error) {
 			this._isConnected = false;
 			this.logger.error(error);
+			throw error;
 		}
 	}
 
@@ -144,6 +149,8 @@ module.exports = class BaseMosquittoProxyClient {
 		if (this._ws) {
 			this._ws.close();
 			this._cancelKeepAlive();
+			this._isConnected = false;
+			this._isConnecting = false;
 		}
 		return Promise.resolve();
 	}
@@ -210,7 +217,6 @@ module.exports = class BaseMosquittoProxyClient {
 		});
 	}
 
-
 	async getBackendParameters() {
 		try {
 			const url = `${this._httpEndpointURL}/api/backend-parameters`;
@@ -224,7 +230,6 @@ module.exports = class BaseMosquittoProxyClient {
 			}
 		}
 	}
-
 
 	/**
 	 * ******************************************************************************************
@@ -241,7 +246,7 @@ module.exports = class BaseMosquittoProxyClient {
 		}
 	}
 
-	 async getUser(username) {
+	async getUser(username) {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/users/${username}`;
 			const response = await axios.get(url, this._headers);
@@ -282,9 +287,13 @@ module.exports = class BaseMosquittoProxyClient {
 	async updateUserRoles(user, roles) {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/users/${user.username}`;
-			const response = await axios.put(url, {
-				roles
-			}, this._headers);
+			const response = await axios.put(
+				url,
+				{
+					roles
+				},
+				this._headers
+			);
 			return response.data;
 		} catch (error) {
 			if (error?.response?.status === 404) {
@@ -319,7 +328,7 @@ module.exports = class BaseMosquittoProxyClient {
 				username,
 				password,
 				roles
-			}
+			};
 			const url = `${this._httpEndpointURL}/api/user-management/users`;
 			const response = await axios.post(url, user, this._headers);
 			return response.data;
@@ -380,8 +389,6 @@ module.exports = class BaseMosquittoProxyClient {
 		}
 	}
 
-
-
 	async getUserGroup(groupname) {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/groups/${groupname}`;
@@ -395,7 +402,6 @@ module.exports = class BaseMosquittoProxyClient {
 			}
 		}
 	}
-
 
 	async listUserGroupsOfUser(username) {
 		try {
@@ -411,7 +417,6 @@ module.exports = class BaseMosquittoProxyClient {
 		}
 	}
 
-
 	async listUserGroups() {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/groups`;
@@ -426,16 +431,15 @@ module.exports = class BaseMosquittoProxyClient {
 		}
 	}
 
-
-	async createUserGroup(name, role, description='', users=[], connections=[]) {
+	async createUserGroup(name, role, description = '', users = [], connections = []) {
 		try {
 			const group = {
 				name,
 				description,
 				role,
 				users,
-				connections,
-			}
+				connections
+			};
 			const url = `${this._httpEndpointURL}/api/user-management/groups`;
 			const response = await axios.post(url, group, this._headers);
 			return response.data;
@@ -447,7 +451,6 @@ module.exports = class BaseMosquittoProxyClient {
 			}
 		}
 	}
-
 
 	// async checkTLSEnabled() {
 	// 	try {
@@ -463,7 +466,6 @@ module.exports = class BaseMosquittoProxyClient {
 	// 	}
 	// }
 
-
 	async listUserGroupsOfUser(username) {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/groups/user/${username}`;
@@ -477,7 +479,6 @@ module.exports = class BaseMosquittoProxyClient {
 			}
 		}
 	}
-
 
 	async listUserGroups() {
 		try {
@@ -493,16 +494,15 @@ module.exports = class BaseMosquittoProxyClient {
 		}
 	}
 
-
-	async createUserGroup(name, role, description='', users=[], connections=[]) {
+	async createUserGroup(name, role, description = '', users = [], connections = []) {
 		try {
 			const group = {
 				name,
 				description,
 				role,
 				users,
-				connections,
-			}
+				connections
+			};
 			const url = `${this._httpEndpointURL}/api/user-management/groups`;
 			const response = await axios.post(url, group, this._headers);
 			return response.data;
@@ -514,7 +514,6 @@ module.exports = class BaseMosquittoProxyClient {
 			}
 		}
 	}
-
 
 	async deleteUserGroup(groupname) {
 		try {
@@ -532,7 +531,6 @@ module.exports = class BaseMosquittoProxyClient {
 		}
 	}
 
-
 	async updateUserGroup(group) {
 		try {
 			const url = `${this._httpEndpointURL}/api/user-management/groups/${group.name}`;
@@ -549,13 +547,11 @@ module.exports = class BaseMosquittoProxyClient {
 		}
 	}
 
-
 	/**
 	 * ******************************************************************************************
 	 * Methods for TLS plugin
 	 * ******************************************************************************************
 	 */
-
 
 	async checkTLSEnabled() {
 		try {
@@ -571,14 +567,11 @@ module.exports = class BaseMosquittoProxyClient {
 		}
 	}
 
-
-
 	/**
 	 * ******************************************************************************************
 	 * Methods for connections
 	 * ******************************************************************************************
 	 */
-
 
 	async getConnections() {
 		try {
@@ -611,7 +604,11 @@ module.exports = class BaseMosquittoProxyClient {
 				case 404:
 					throw new APINotFoundError();
 				case 500:
-					throw new APIError('500', error.response.data.message || 'Server failed to handle request!', error.response.data.longError);
+					throw new APIError(
+						'500',
+						error.response.data.message || 'Server failed to handle request!',
+						error.response.data.longError
+					);
 				default:
 					throw new NotAuthorizedError(NOT_AUTHORIZED_MESSAGE);
 			}
@@ -648,12 +645,31 @@ module.exports = class BaseMosquittoProxyClient {
 
 	/**
 	 * ******************************************************************************************
+	 * Methods for general health checks
+	 * ******************************************************************************************
+	 */
+
+	async checkServerStatus() {
+		try {
+			const url = `${this._httpEndpointURL}/api/status-check`;
+			const response = await axios.get(url, this._headers);
+			return response.data;
+		} catch (error) {
+			if (error?.response?.status === 404) {
+				throw new APINotFoundError();
+			} else {
+				throw new APIError('Could not connect');
+			}
+		}
+	}
+
+	/**
+	 * ******************************************************************************************
 	 * Methods for application token management
 	 * ******************************************************************************************
 	 */
 
-
-	 async listApplicationTokens() {
+	async listApplicationTokens() {
 		try {
 			const url = `${this._httpEndpointURL}/api/tokens`;
 			const response = await axios.get(url, this._headers);
@@ -666,7 +682,6 @@ module.exports = class BaseMosquittoProxyClient {
 			}
 		}
 	}
-
 
 	async getApplicationToken(tokenHash) {
 		try {
@@ -682,13 +697,12 @@ module.exports = class BaseMosquittoProxyClient {
 		}
 	}
 
-
 	async createApplicationToken(name, role, validUntil) {
 		try {
 			const tokenPayload = {
 				name,
 				role,
-				validUntil,
+				validUntil
 			};
 			const url = `${this._httpEndpointURL}/api/tokens`;
 			const response = await axios.post(url, tokenPayload, this._headers);
@@ -701,7 +715,6 @@ module.exports = class BaseMosquittoProxyClient {
 			}
 		}
 	}
-
 
 	async deleteApplicationToken(tokenHash) {
 		try {
@@ -717,13 +730,11 @@ module.exports = class BaseMosquittoProxyClient {
 		}
 	}
 
-
-
 	/**
-	* ******************************************************************************************
-	* Methods for topic tree management
-	* ******************************************************************************************
-	*/
+	 * ******************************************************************************************
+	 * Methods for topic tree management
+	 * ******************************************************************************************
+	 */
 
 	async clearTopicTreeCache() {
 		try {
@@ -738,7 +749,7 @@ module.exports = class BaseMosquittoProxyClient {
 			}
 		}
 	}
-	
+
 	async checkTopictreeRestEnabled() {
 		try {
 			const url = `${this._httpEndpointURL}/api/system/topictree/ping`;
@@ -753,42 +764,48 @@ module.exports = class BaseMosquittoProxyClient {
 		}
 	}
 
-
-
 	/**
 	 * ******************************************************************************************
 	 * Methods for cluster management
 	 * ******************************************************************************************
 	 */
 
-	async createCluster(clusterConfiguration, timeout=this._timeout) {
-		const response = await this.sendRequest({
-			id: createID(),
-			type: 'request',
-			request: 'cluster-management/createCluster',
-			clusterConfiguration
-		}, timeout);
+	async createCluster(clusterConfiguration, timeout = this._timeout) {
+		const response = await this.sendRequest(
+			{
+				id: createID(),
+				type: 'request',
+				request: 'cluster-management/createCluster',
+				clusterConfiguration
+			},
+			timeout
+		);
 		return response.response;
-
 	}
 
-	 async listClusters(timeout=this._timeout) {
-		const response = await this.sendRequest({
-			id: createID(),
-			type: 'request',
-			request: 'cluster-management/getClusters'
-		}, timeout);
+	async listClusters(timeout = this._timeout) {
+		const response = await this.sendRequest(
+			{
+				id: createID(),
+				type: 'request',
+				request: 'cluster-management/getClusters'
+			},
+			timeout
+		);
 		return response.response;
 	}
 
 	async getCluster(clustername, numberOfNodes) {
 		const timeout = numberOfNodes ? numberOfNodes * 20000 : 20000;
-		const response = await this.sendRequest({
-			id: createID(),
-			type: 'request',
-			request: 'cluster-management/getCluster',
-			clustername
-		}, timeout);
+		const response = await this.sendRequest(
+			{
+				id: createID(),
+				type: 'request',
+				request: 'cluster-management/getCluster',
+				clustername
+			},
+			timeout
+		);
 		return response.response;
 	}
 
@@ -833,33 +850,42 @@ module.exports = class BaseMosquittoProxyClient {
 	}
 
 	async deleteAllClusters() {
-		const response = await this.sendRequest({
-			id: createID(),
-			type: 'request',
-			request: 'cluster-management/deleteAllClusters',
-		}, 20000);
+		const response = await this.sendRequest(
+			{
+				id: createID(),
+				type: 'request',
+				request: 'cluster-management/deleteAllClusters'
+			},
+			20000
+		);
 		return response.response;
 	}
 
 	async joinCluster(clustername, node) {
-		const response = await this.sendRequest({
-			id: createID(),
-			type: 'request',
-			request: 'cluster-management/joinCluster',
-			clustername,
-			node
-		}, 20000);
+		const response = await this.sendRequest(
+			{
+				id: createID(),
+				type: 'request',
+				request: 'cluster-management/joinCluster',
+				clustername,
+				node
+			},
+			20000
+		);
 		return response.response;
 	}
 
 	async leaveCluster(clustername, brokerId) {
-		const response = await this.sendRequest({
-			id: createID(),
-			type: 'request',
-			request: 'cluster-management/leaveCluster',
-			clustername,
-			brokerId
-		}, 20000);
+		const response = await this.sendRequest(
+			{
+				id: createID(),
+				type: 'request',
+				request: 'cluster-management/leaveCluster',
+				clustername,
+				brokerId
+			},
+			20000
+		);
 		return response.response;
 	}
 
@@ -1150,7 +1176,7 @@ module.exports = class BaseMosquittoProxyClient {
 	async getAnonymousGroup() {
 		const data = await this.sendCommand(
 			{
-				command: 'getAnonymousGroup',
+				command: 'getAnonymousGroup'
 			},
 			API_DYNAMIC_SECURITY
 		);
@@ -1161,7 +1187,7 @@ module.exports = class BaseMosquittoProxyClient {
 		return this.sendCommand(
 			{
 				command: 'setAnonymousGroup',
-				groupname,
+				groupname
 			},
 			API_DYNAMIC_SECURITY
 		);
@@ -1218,7 +1244,7 @@ module.exports = class BaseMosquittoProxyClient {
 			return false;
 		}
 		const client = await this.getClient(username);
-		const hasRole = !!client.roles.find(role => role.rolename === rolename);
+		const hasRole = !!client.roles.find((role) => role.rolename === rolename);
 		return hasRole;
 	}
 
@@ -1228,7 +1254,7 @@ module.exports = class BaseMosquittoProxyClient {
 				command: 'getClient',
 				username
 			},
-			API_DYNAMIC_SECURITY,	
+			API_DYNAMIC_SECURITY
 		);
 		return data?.client;
 	}
@@ -1280,7 +1306,7 @@ module.exports = class BaseMosquittoProxyClient {
 				command: 'listGroupClients',
 				group
 			},
-			API_DYNAMIC_SECURITY,
+			API_DYNAMIC_SECURITY
 		);
 	}
 
@@ -1409,7 +1435,7 @@ module.exports = class BaseMosquittoProxyClient {
 	async getDefaultACLAccess() {
 		return this.sendCommand(
 			{
-				command: 'getDefaultACLAccess',
+				command: 'getDefaultACLAccess'
 			},
 			API_DYNAMIC_SECURITY
 		);
@@ -1421,7 +1447,7 @@ module.exports = class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	 async restartBroker(connectionName, serviceName) {
+	async restartBroker(connectionName, serviceName) {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
@@ -1432,16 +1458,19 @@ module.exports = class BaseMosquittoProxyClient {
 		return response?.response;
 	}
 
-	 async listTestCollections(timeout=this._timeout) {
-		const response = await this.sendRequest({
-			id: createID(),
-			type: 'request',
-			request: 'listTestCollections',
-		}, timeout);
+	async listTestCollections(timeout = this._timeout) {
+		const response = await this.sendRequest(
+			{
+				id: createID(),
+				type: 'request',
+				request: 'listTestCollections'
+			},
+			timeout
+		);
 		return response?.response;
 	}
 
-	 async listTests(testCollectionId) {
+	async listTests(testCollectionId) {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
@@ -1492,7 +1521,7 @@ module.exports = class BaseMosquittoProxyClient {
 		}
 	}
 
-	 async getTestCollection(testCollectionId) {
+	async getTestCollection(testCollectionId) {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
@@ -1502,7 +1531,7 @@ module.exports = class BaseMosquittoProxyClient {
 		return response?.response;
 	}
 
-	 async getTest(testCollectionId, testId) {
+	async getTest(testCollectionId, testId) {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
@@ -1513,7 +1542,7 @@ module.exports = class BaseMosquittoProxyClient {
 		return response?.response;
 	}
 
-	 async sendTestRequest(request) {
+	async sendTestRequest(request) {
 		const response = await this.sendRequest({
 			id: createID(),
 			type: 'request',
@@ -1524,11 +1553,9 @@ module.exports = class BaseMosquittoProxyClient {
 	}
 
 	async listPlugins() {
-		return this.sendCommand(
-			{
-				command: 'listPlugins',
-			}
-		);
+		return this.sendCommand({
+			command: 'listPlugins'
+		});
 	}
 
 	async testConnection(connection) {
@@ -1694,7 +1721,7 @@ module.exports = class BaseMosquittoProxyClient {
 	 * Methods for license management
 	 * ******************************************************************************************
 	 */
-	 async getLicenseInformation(timeout=this._timeout) {
+	async getLicenseInformation(timeout = this._timeout) {
 		const data = await this.sendCommand(
 			{
 				command: 'getLicenseInformation'
@@ -1712,7 +1739,7 @@ module.exports = class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	async listStreams(verbose = true, timeout=this._timeout) {
+	async listStreams(verbose = true, timeout = this._timeout) {
 		const data = await this.sendCommand(
 			{
 				command: 'listStreams',
@@ -1808,7 +1835,20 @@ module.exports = class BaseMosquittoProxyClient {
 		);
 	}
 
-	async modifyStream({ streamname, sourcetopic, targettopic, targetqos, ttl, key, query, active, persist, process, textname, textdescription }) {
+	async modifyStream({
+		streamname,
+		sourcetopic,
+		targettopic,
+		targetqos,
+		ttl,
+		key,
+		query,
+		active,
+		persist,
+		process,
+		textname,
+		textdescription
+	}) {
 		return this.sendCommand(
 			{
 				command: 'modifyStream',
@@ -1862,7 +1902,17 @@ module.exports = class BaseMosquittoProxyClient {
 		);
 	}
 
-	async createStream({ streamname, sourceTopic, targetTopic, targetQoS, ttl, key, query, textname, textdescription }) {
+	async createStream({
+		streamname,
+		sourceTopic,
+		targetTopic,
+		targetQoS,
+		ttl,
+		key,
+		query,
+		textname,
+		textdescription
+	}) {
 		return this.sendCommand(
 			{
 				command: 'createStream',
@@ -1907,12 +1957,15 @@ module.exports = class BaseMosquittoProxyClient {
 	}
 
 	async sendCommand(command, api, id = createID(), timeout = this._timeout) {
-		const response = await this.sendRequest({
-			id,
-			api,
-			type: 'command',
-			command
-		}, timeout);
+		const response = await this.sendRequest(
+			{
+				id,
+				api,
+				type: 'command',
+				command
+			},
+			timeout
+		);
 		return response.data;
 	}
 
@@ -1981,18 +2034,19 @@ module.exports = class BaseMosquittoProxyClient {
 	}
 
 	_handleSocketClose(event) {
+		this._isConnected = false;
+		this._isConnecting = false;
 		this.logger.info('Websocket closed');
 		this.closeHandler(event);
 		this._handleEvent({
 			type: 'disconnected'
 		});
-		this.reconnect();
+		// this.reconnect();
 	}
 
 	_handleSocketError(event) {
 		this.logger.info('Websocket error', event);
 	}
-
 
 	/**
 	 * ******************************************************************************************
@@ -2000,7 +2054,7 @@ module.exports = class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	 async inspectGetClient(clientid) {
+	async inspectGetClient(clientid) {
 		const data = await this.sendCommand(
 			{
 				command: 'getClient',
@@ -2011,7 +2065,7 @@ module.exports = class BaseMosquittoProxyClient {
 		return data;
 	}
 
-	async inspectListClients(verbose = true, timeout=this._timeout) {
+	async inspectListClients(verbose = true, timeout = this._timeout) {
 		const data = await this.sendCommand(
 			{
 				command: 'listClients',
@@ -2025,7 +2079,6 @@ module.exports = class BaseMosquittoProxyClient {
 		);
 		return data?.clients;
 	}
-
 
 	/**
 	 * ******************************************************************************************
@@ -2044,7 +2097,6 @@ module.exports = class BaseMosquittoProxyClient {
 		return response.response;
 	}
 
-
 	async checkClientControlEnabled() {
 		try {
 			const url = `${this._httpEndpointURL}/api/client-control/ping`;
@@ -2058,4 +2110,4 @@ module.exports = class BaseMosquittoProxyClient {
 			}
 		}
 	}
-}
+};
