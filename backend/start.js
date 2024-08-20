@@ -67,9 +67,29 @@ const CEDALO_MC_ENABLE_FULL_LOG = preprocessBoolEnvVariable(process.env.CEDALO_M
 const CEDALO_MC_SHOW_FEEDBACK_FORM = preprocessBoolEnvVariable(process.env.CEDALO_MC_SHOW_FEEDBACK_FORM);
 const CEDALO_MC_SHOW_STREAMSHEETS = preprocessBoolEnvVariable(process.env.CEDALO_MC_SHOW_STREAMSHEETS || false);
 const CEDALO_MC_USERNAME = process.env.CEDALO_MC_USERNAME;
+const CEDALO_MC_SESSION_IDLE_TIMEOUT =
+	process.env.CEDALO_MC_SESSION_IDLE_TIMEOUT &&
+	parseInt(process.env.CEDALO_MC_SESSION_IDLE_TIMEOUT) !== -1 &&
+	parseInt(process.env.CEDALO_MC_SESSION_IDLE_TIMEOUT);
+const CEDALO_MC_SESSION_MAXAGE =
+	process.env.CEDALO_MC_SESSION_MAXAGE &&
+	parseInt(process.env.CEDALO_MC_SESSION_MAXAGE) !== -1 &&
+	parseInt(process.env.CEDALO_MC_SESSION_MAXAGE);
 
 const USAGE_TRACKER_INTERVAL = 1000 * 60 * 60;
 const CEDALO_MC_LICENSE_CRON_TAB_STRING = process.env.CEDALO_MC_LICENSE_CRON_TAB_STRING || '*/10 * * * * *';
+
+const MAX_TIMEOUT = 2147483647; // Maximum value for setTimeout (2^31-1 milliseconds)
+
+function createLongTimeout(callback, delay) {
+	if (delay > MAX_TIMEOUT) {
+		return setTimeout(() => {
+			createLongTimeout(callback, delay - MAX_TIMEOUT);
+		}, MAX_TIMEOUT);
+	} else {
+		return setTimeout(callback, delay);
+	}
+}
 
 console.log(`Mosquitto Management Center version ${version.version || 'unknown'}`);
 console.log(`MMC is starting in ${process.env.CEDALO_MC_MODE === 'offline' ? 'offline' : 'online'} mode`);
@@ -353,6 +373,37 @@ eventify(stopFunctions, async function (array, element) {
 	} // in this case as soon as the broker connected, it's stop functions which disconnects it is added to the stopFunctions array
 }); // and due to the callback it checks if stop signal has already been issued and gets executed immediately.
 
+const sessionTimers = {};
+const sessionWsReferences = {};
+
+const resetIdleExpirationTimer = (sessionID, sessionStore) => {
+	const ws = sessionWsReferences[sessionID];
+
+	if (!ws) {
+		return;
+	}
+
+	clearTimeout(sessionTimers[sessionID]);
+	sessionTimers[sessionID] = createLongTimeout(() => {
+		sessionStore.destroy(sessionID, (err) => {
+			if (err) {
+				console.error(`Failed to destroy session ${sessionID}:`, err);
+			} else {
+				ws.send(
+					JSON.stringify({
+						type: 'event',
+						event: {
+							type: 'sessions-destroyed',
+							payload: [sessionID]
+						}
+					})
+				);
+				ws.close();
+			}
+		});
+	}, CEDALO_MC_SESSION_IDLE_TIMEOUT);
+};
+
 const init = async (licenseContainer) => {
 	const installation = loadInstallation();
 	const usageTracker = new UsageTracker({ license: licenseContainer, version, installation });
@@ -382,11 +433,7 @@ const init = async (licenseContainer) => {
 
 	const sessionParser = session({
 		secret: process.env.CEDALO_MC_SESSION_SECRET || generateSecret(),
-		cookie: process.env.CEDALO_MC_SESSION_MAXAGE
-			? parseInt(process.env.CEDALO_MC_SESSION_MAXAGE) === -1
-				? undefined
-				: { maxAge: parseInt(process.env.CEDALO_MC_SESSION_MAXAGE) }
-			: undefined
+		cookie: process.env.CEDALO_MC_SESSION_MAXAGE ? { maxAge: CEDALO_MC_SESSION_MAXAGE } : undefined
 	});
 	app.use(sessionParser);
 	app.use(express.json());
@@ -394,6 +441,27 @@ const init = async (licenseContainer) => {
 	app.use(cors());
 	app.use(contentTypeParser);
 	app.use(noCache);
+
+	if (CEDALO_MC_SESSION_IDLE_TIMEOUT) {
+		// Middleware to track and invalidate idle sessions
+		app.use((request, response, next) => {
+			if (!request.session) {
+				return next();
+			}
+
+			if (request.session.lastActivity) {
+				const now = Date.now();
+				const idleTime = now - request.session.lastActivity;
+
+				if (idleTime < CEDALO_MC_SESSION_IDLE_TIMEOUT) {
+					resetIdleExpirationTimer(request.sessionID, request.sessionStore);
+				}
+			}
+			request.session.lastActivity = Date.now();
+
+			next();
+		});
+	}
 
 	// TODO: add error handling
 	const config = loadConfig();
@@ -851,6 +919,12 @@ const init = async (licenseContainer) => {
 	wss.on('connection', (ws, request) => {
 		context.brokerManager.handleNewClientWebSocketConnection(ws);
 		const user = request.session?.passport?.user;
+		const sessionID = request.sessionID;
+		const sessionStore = request.sessionStore;
+		if (CEDALO_MC_SESSION_IDLE_TIMEOUT) {
+			sessionWsReferences[sessionID] = ws;
+			resetIdleExpirationTimer(sessionID, sessionStore);
+		}
 		// send license information
 		ws.cedaloStash = {
 			// the name of the property is cedaloStash to make any collision with ws object's internal arguments in the future version highly unlickly
@@ -896,6 +970,10 @@ const init = async (licenseContainer) => {
 		ws.on('message', (message) => {
 			try {
 				const messageObject = JSON.parse(message);
+
+				if (CEDALO_MC_SESSION_IDLE_TIMEOUT && messageObject.type != 'ping') {
+					resetIdleExpirationTimer(sessionID, sessionStore);
+				}
 				handleClientMessage(messageObject, ws, user);
 			} catch (error) {
 				console.error(error);
@@ -903,6 +981,10 @@ const init = async (licenseContainer) => {
 		});
 		ws.on('close', (message) => {
 			context.brokerManager.handleCloseClientWebSocketConnection(ws);
+			if (CEDALO_MC_SESSION_IDLE_TIMEOUT) {
+				clearTimeout(sessionTimers[sessionID]);
+				sessionWsReferences[sessionID] = undefined;
+			}
 		});
 	});
 

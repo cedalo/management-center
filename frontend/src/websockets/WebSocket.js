@@ -498,7 +498,7 @@ export default ({ children }) => {
 		client.on('sessions-destroyed', async (/* message */) => {
 			// logout if session is not valid anymore:
 			const { valid } = await client.validateSession();
-			if (!valid) window.location.href = `${process.env.PUBLIC_URL || ''}/logout`;
+			if (!valid) window.location.href = `${process.env.PUBLIC_URL || ''}/login?error=session-expired`;
 		});
 
 		client.on('error', (message) => {
