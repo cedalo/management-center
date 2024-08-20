@@ -289,7 +289,8 @@ module.exports = class ConfigManager {
 
 
 	preprocessConnection(connection, keepStatusProperty=false) {
-		if (!isObject(connection)) {
+		const isConnectionAnObject = (connection !== null && typeof connection === 'object');
+		if (!isConnectionAnObject) {
 			throw new Error('Connection is of invalid type/empty/not provided');
 		}
 		connection = removeCircular(connection);
