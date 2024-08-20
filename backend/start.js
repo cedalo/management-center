@@ -932,6 +932,28 @@ const init = async (licenseContainer) => {
 			username: user?.username
 		}; // store request object in the websocket object itself. This is mainly done to access x-real-ip later on in audit trail plugin
 
+		let sessionMaxAgeTimer;
+		if (CEDALO_MC_SESSION_MAXAGE) {
+			sessionMaxAgeTimer = createLongTimeout(() => {
+				sessionStore.destroy(sessionID, (err) => {
+					if (err) {
+						console.error(`Failed to destroy session ${sessionID} on expire maxage:`, err);
+					} else {
+						ws.send(
+							JSON.stringify({
+								type: 'event',
+								event: {
+									type: 'sessions-destroyed',
+									payload: [sessionID]
+								}
+							})
+						);
+						ws.close();
+					}
+				});
+			}, CEDALO_MC_SESSION_MAXAGE);
+		}
+
 		ws.send(
 			JSON.stringify({
 				type: 'event',
@@ -956,6 +978,7 @@ const init = async (licenseContainer) => {
 			})
 		);
 
+		// TODO: figure out if the below is still relevant
 		context.eventEmitter.on('user-updated', (updatedUser) => {
 			if (updatedUser.username !== request.session?.passport?.user?.username) {
 				return;
@@ -983,6 +1006,7 @@ const init = async (licenseContainer) => {
 			context.brokerManager.handleCloseClientWebSocketConnection(ws);
 			if (CEDALO_MC_SESSION_IDLE_TIMEOUT) {
 				clearTimeout(sessionTimers[sessionID]);
+				clearTimeout(sessionMaxAgeTimer);
 				sessionWsReferences[sessionID] = undefined;
 			}
 		});
