@@ -187,7 +187,8 @@ const UserNew = (props) => {
 						values={roles}
 						getValue={value => value}
 						onChange={(event, value) => {
-							setRoles((value && value.map((role) => role.value)) || []);
+							// setRoles((value && value.map((role) => role.value)) || []);
+							setRoles((value && value.find(role => !roles.includes(role.value))?.value && [value.find(role => !roles.includes(role.value)).value] || []));
 						}}
 						disabled={false}
 						suggestions={roleSuggestions}
