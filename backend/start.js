@@ -294,7 +294,8 @@ const initConnections = (config) => {
 			if (process.env.CEDALO_MC_BROKER_USERNAME && process.env.CEDALO_MC_BROKER_PASSWORD) {
 				connection.credentials = {
 					username: process.env.CEDALO_MC_BROKER_USERNAME,
-					password: process.env.CEDALO_MC_BROKER_PASSWORD
+					password: process.env.CEDALO_MC_BROKER_PASSWORD,
+					clientId: process.env.CEDALO_MC_BROKER_CLIENT_ID
 				};
 			}
 			connection.status = {
@@ -311,7 +312,8 @@ const initConnections = (config) => {
 			if (process.env.CEDALO_MC_BROKER_USERNAME && process.env.CEDALO_MC_BROKER_PASSWORD) {
 				connection.credentials = {
 					username: process.env.CEDALO_MC_BROKER_USERNAME,
-					password: process.env.CEDALO_MC_BROKER_PASSWORD
+					password: process.env.CEDALO_MC_BROKER_PASSWORD,
+					clientId: process.env.CEDALO_MC_BROKER_CLIENT_ID
 				};
 			}
 		}
@@ -432,6 +434,8 @@ const init = async (licenseContainer) => {
 	app.set('views', path.join(__dirname, 'views'));
 
 	const sessionParser = session({
+		resave: false,
+		saveUninitialized: true,
 		secret: process.env.CEDALO_MC_SESSION_SECRET || generateSecret(),
 		cookie: process.env.CEDALO_MC_SESSION_MAXAGE ? { maxAge: CEDALO_MC_SESSION_MAXAGE } : undefined
 	});
