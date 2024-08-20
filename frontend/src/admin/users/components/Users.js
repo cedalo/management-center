@@ -84,6 +84,9 @@ const createUserTable = (users, classes, props, onDeleteUser, onUpdateUserRoles,
 										hover
 										key={user.username}
 										onClick={(event) => {
+											if (user.editable === false) {
+												return;
+											}
 											if (event.target.nodeName?.toLowerCase() === 'td') {
 												onSelectUser(user.username);
 											}
@@ -146,7 +149,8 @@ const Users = (props) => {
 		if (!roles) {
 			roles = [];
 		}
-		const rolenames = roles.map((role) => role.value);
+		// const rolenames = roles.map((role) => role.value);
+		const rolenames = roles.find(role => !user.roles.includes(role.value))?.value && [roles.find(role => !user.roles.includes(role.value)).value] || []
 		try {
 			await brokerClient.updateUserRoles(user, rolenames);
 		} catch (error) {
