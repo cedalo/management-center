@@ -2,7 +2,7 @@ import { useConfirm } from 'material-ui-confirm';
 
 const CANCEL_CONFIRM_OPTS = {
 	confirmationText: 'Yes, cancel',
-	cancellationText: 'No, sorry'
+	cancellationText: 'No'
 };
 
 // simple wrapper around useConfirm to create specialized confirm dialogs
