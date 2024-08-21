@@ -174,6 +174,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog, bac
 	});
 	const sameConnectionWithClientIDExists = !treatUsernamesAsClientIds ? connections?.find((searchConnection) => {
 		return connection.url && connection.credentials?.clientId
+			&& searchConnection.id !== connection.id
 			&& searchConnection.url === connection.url
 			&& searchConnection.credentials?.clientId === connection.credentials.clientId;
 	}) : false;
