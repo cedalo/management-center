@@ -13,7 +13,7 @@ import { useSnackbar } from 'notistack';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
 import { WebSocketContext } from '../../../websockets/WebSocket';
-import { WarningHint } from './AlertHint';
+import { ErrorHint, WarningHint } from './AlertHint';
 import ChipsList from './ChipsList';
 import ContentContainer from '../../../components/ContentContainer';
 import ContentTable from './ContentTable';
@@ -124,6 +124,7 @@ const Certificates = ({ connections, isCertSupported }) => {
 	const { client } = useContext(WebSocketContext);
 	const [certs, setCerts] = useState([]);
 	const certNames = certs.map((cert) => cert.name);
+	const [errorWhenLoadingCerts, setErrorWhenLoadingCerts] = useState(null);
 
 	const loadCerts = async () => {
 		if (isCertSupported) {
@@ -131,9 +132,10 @@ const Certificates = ({ connections, isCertSupported }) => {
 				const { data } = await client.getCertificates();
 				setCerts(Array.from(Object.values(data)));
 			} catch (error) {
-				enqueueSnackbar(`Failed to load certificates from server. Reason: ${error.message || error}`, {
-					variant: 'error'
-				});
+				setErrorWhenLoadingCerts(error?.message);
+				// enqueueSnackbar(`Failed to load certificates from server. Reason: ${error.message || error}`, {
+				// 	variant: 'error'
+				// });
 			}
 		}
 	};
@@ -199,9 +201,9 @@ const Certificates = ({ connections, isCertSupported }) => {
 		history.push('/certs/detail/new', { name: '', filename: '', certNames });
 	};
 
-	useEffect(() => {
-		loadCerts();
-	}, []);
+	// useEffect(() => {
+	// 	loadCerts();
+	// }, []);
 
 	useEffect(() => {
 		loadCerts();
@@ -212,7 +214,7 @@ const Certificates = ({ connections, isCertSupported }) => {
 			breadCrumbs={<ContainerBreadCrumbs title="Certificates" links={[{name: 'Home', route: '/home'}]}/>}
 			dataTour="page-certs"
 		>
-			{isCertSupported ? (
+			{isCertSupported && !errorWhenLoadingCerts ? (
 				<>
 					<ContainerHeader
 						title="Client certificate management"
@@ -236,10 +238,17 @@ const Certificates = ({ connections, isCertSupported }) => {
 					</ContentTable>
 				</>
 			) : (
-				WarningHint({
-					title: 'Certificate management feature is not available',
-					message: 'Make sure that support for certificate management is included in your MMC license.'
-				})
+				!isCertSupported ?
+					WarningHint({
+						title: 'Certificate management feature is not available',
+						message: 'Make sure that support for certificate management is included in your MMC license.'
+					})
+				: (
+					ErrorHint({
+						title: 'Error on certificates load',
+						message: errorWhenLoadingCerts
+					})
+				)
 			)}
 		</ContentContainer>
 	);
