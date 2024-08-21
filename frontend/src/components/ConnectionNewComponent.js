@@ -124,10 +124,11 @@ const useStyles = makeStyles((theme) => ({
 
 const makeFileField = (fieldName) => {
 	return `${fieldName}File`;
-}
+};
 
 
-const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) => {
+const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog, backendParameters}) => {
+	const treatUsernamesAsClientIds = !!backendParameters.treatUsernamesAsClientIds;
 	const [errors, setErrors] = React.useState({});
 	const customCACertificateFieldName = 'ca';
 	const clientCertificateFieldName = 'cert';
@@ -171,6 +172,11 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 	const connectionWithNameExists = connections?.find((searchConnection) => {
 		return searchConnection.name === connection.name;
 	});
+	const sameConnectionWithClientIDExists = !treatUsernamesAsClientIds ? connections?.find((searchConnection) => {
+		return connection.url && connection.credentials?.clientId
+			&& searchConnection.url === connection.url
+			&& searchConnection.credentials?.clientId === connection.credentials.clientId;
+	}) : false;
 
 	const validate = () => {
 		if (errors[customCACertificateFieldName] || errors[clientCertificateFieldName] || errors[clientPrivateKeyFieldName]) {
@@ -179,33 +185,34 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 
 		return !connectionExists
 			&& !connectionWithNameExists
+			&& !sameConnectionWithClientIDExists
 			&& connection.id !== ''
 			&& connection.name !== ''
 			&& connection.url !== '';
 	};
 
-	const onTestConnection = async (connection) => {
-		try {
-			const response = await brokerClient.testConnection(connection);
-			if (response.connected) {
-				setConnected(response.connected);
-				enqueueSnackbar('Connection successfully tested', {
-					variant: 'success'
-				});
-			} else {
-				const {error} = response;
-				setConnected(false);
-				enqueueSnackbar(`Error connecting "${connection.name}". Reason: ${error.message || error}`, {
-					variant: 'error'
-				});
-			}
-		} catch (error) {
-			setConnected(false);
-			enqueueSnackbar(`Error connecting "${connection.name}". Reason: ${error.message || error}`, {
-				variant: 'error'
-			});
-		}
-	};
+	// const onTestConnection = async (connection) => {
+	// 	try {
+	// 		const response = await brokerClient.testConnection(connection);
+	// 		if (response.connected) {
+	// 			setConnected(response.connected);
+	// 			enqueueSnackbar('Connection successfully tested', {
+	// 				variant: 'success'
+	// 			});
+	// 		} else {
+	// 			const {error} = response;
+	// 			setConnected(false);
+	// 			enqueueSnackbar(`Error connecting "${connection.name}". Reason: ${error.message || error}`, {
+	// 				variant: 'error'
+	// 			});
+	// 		}
+	// 	} catch (error) {
+	// 		setConnected(false);
+	// 		enqueueSnackbar(`Error connecting "${connection.name}". Reason: ${error.message || error}`, {
+	// 			variant: 'error'
+	// 		});
+	// 	}
+	// };
 
 	const doConnect = async (connection) => {
 		const response = await brokerClient.testConnection(connection);
@@ -438,6 +445,29 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog}) =>
 					setConnected(false);
 				}}
 			/>
+			{!treatUsernamesAsClientIds && <TextField
+				id="client-id"
+				error={sameConnectionWithClientIDExists}
+				helperText={sameConnectionWithClientIDExists && 'A connection to the same broker with the same client ID already exists.'}
+				label="ClientID"
+				value={connection.credentials?.clientId}
+				defaultValue=""
+				variant="outlined"
+				fullWidth
+				size="small"
+				margin="normal"
+				className={formClasses.textField}
+				onChange={(event) => {
+					setConnection({
+						...connection,
+						credentials: {
+							...connection.credentials,
+							clientId: event.target.value
+						}
+					});
+					setConnected(false);
+				}}
+			/>}
 			<TextField
 				id="password"
 				type={showPassword ? "text" : "password"}
@@ -766,6 +796,7 @@ const mapStateToProps = (state) => {
 		connections: state.brokerConnections?.brokerConnections,
 		selectedConnectionToEdit: state.brokerConnections?.selectedConnectionToEdit,
 		tlsFeature: state.systemStatus?.features?.tls,
+		backendParameters: state.backendParameters?.backendParameters,
 	};
 };
 
