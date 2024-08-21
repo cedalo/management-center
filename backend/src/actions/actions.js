@@ -133,6 +133,7 @@ const createConnectionAction = {
 				if (existingConnection) {
 					throw new Error(`Connection ${connection.id} already exists`);		
 				}
+				configManager.validateConnection(connection);
 				await configManager.createConnection(connection);
 			} else {
 				throw new Error('Maximum number of connections reached.');
@@ -169,6 +170,7 @@ const modifyConnectionAction = {
 		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, oldConnectionId)) {
 			throw AuthError.notAllowed();
 		}
+		configManager.validateConnection(connection);
 		await configManager.updateConnection(oldConnectionId, connection);
 
 		return configManager.connections;

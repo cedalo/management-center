@@ -243,6 +243,32 @@ module.exports = class ConfigManager {
 		return filteredConnection;
 	}
 
+	validateConnection(connection, connections=null) {
+		const allConnections = connections || this.connections;
+
+		const isConnectionAnObject = (connection !== null && typeof connection === 'object');
+		if (!isConnectionAnObject) {
+			throw new Error('Connection is of invalid type/empty/not provided');
+		}
+
+		if (!allConnections || !allConnections?.length) {
+			throw new Error(`No connections found when validating connection: ${connection.name}(${connection.id})`);
+		}
+
+		for (let i = 0; i < allConnections.lenght; ++i) {
+			const connectionItem = allConnections[i];
+			if (connectionItem.id === connection.id) {
+				continue;
+			}
+			if (connectionItem.clientId && connection.clientId
+				&& connectionItem.url === connection.url
+				&& connectionItem.clientId === connection.clientId) {
+				throw new Error(`Connection ${connection.name}(${connection.id}) has the same clientId and broker as ${connectionItem.name}(${connectionItem.id})`);
+			}
+			// TODO: we can also validate uniqueness of connection's id and name
+		}
+	}
+
 	processInternalExternalURLs(connection) {
 		if (connection.internalUrl || connection.websocketsUrl ||
 			connection.externalEncryptedUrl || connection.externalUnencryptedUrl
