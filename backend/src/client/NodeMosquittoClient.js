@@ -290,7 +290,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 			brokerClient.on('error', (error) => {
 				// promise can only be rejected once, subsequent calls are ignored, so this code will not cause any harm when executed subsequently
 				// also safe to call reject in case both close and error events are emitted which is usually the case
-				reject(new Error(error));
+				reject(new Error(error?.errors?.[error?.errors?.length - 1] || error));
 			});
 
 			brokerClient.on('connect', () => {
