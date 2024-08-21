@@ -255,14 +255,14 @@ module.exports = class ConfigManager {
 			throw new Error(`No connections found when validating connection: ${connection.name}(${connection.id})`);
 		}
 
-		for (let i = 0; i < allConnections.lenght; ++i) {
+		for (let i = 0; i < allConnections.length; ++i) {
 			const connectionItem = allConnections[i];
 			if (connectionItem.id === connection.id) {
 				continue;
 			}
-			if (connectionItem.clientId && connection.clientId
+			if (connectionItem.credentials?.clientId && connection.credentials?.clientId
 				&& connectionItem.url === connection.url
-				&& connectionItem.clientId === connection.clientId) {
+				&& connectionItem.credentials.clientId === connection.credentials.clientId) {
 				throw new Error(`Connection ${connection.name}(${connection.id}) has the same clientId and broker as ${connectionItem.name}(${connectionItem.id})`);
 			}
 			// TODO: we can also validate uniqueness of connection's id and name
