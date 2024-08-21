@@ -155,14 +155,20 @@ const init = async (client, dispatch, connectionConfiguration) => {
 	const brokerConnections = await client.getBrokerConnections();
 	dispatch(updateBrokerConnections(brokerConnections));
 
+	const selectedConnectionName = sessionStorage.getItem('selected-connection-name');
 	// Select first broker that is connected to the MMC
 	for (let i = 0; i < brokerConnections.length; i++) {
 		const connection = brokerConnections[i];
-		if (connection.status.connected) {
-			const connectionName = connection.name;
-			await client.connectToBroker(connectionName);
-			dispatch(updateBrokerConnected(true, connectionName));
-			brokerConnected = true;
+		const connectionName = connection.name;
+		if ((selectedConnectionName && selectedConnectionName === connectionName) || (!selectedConnectionName && connection.status.connected)) {
+			try {
+				await client.connectToBroker(connectionName);
+				brokerConnected = true;
+			} catch(error) {
+				console.error(`Could not connect to the broker ${connectionName}, reason:`, error)
+				brokerConnected = false;
+			}
+			dispatch(updateBrokerConnected(brokerConnected, connectionName));
 			break;
 		}
 	}

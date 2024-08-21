@@ -46,6 +46,8 @@ export const handleConnectionChange = async (dispatch, client, newConnectionName
 		console.error(error);
 		dispatch(updateBrokerConnected(false, newConnectionName));
 		return;
+	} finally {
+		sessionStorage.setItem('selected-connection-name', newConnectionName);
 	}
 	const settings = await client.getSettings();
 	dispatch(updateSettings(settings));
