@@ -186,6 +186,7 @@ const ConnectionDetailComponent = (props) => {
 
 	const sameConnectionWithClientIDExists = !treatUsernamesAsClientIds ? connections?.find((searchConnection) => {
 		return updatedConnection.url && updatedConnection.credentials?.clientId
+			&& searchConnection.id !== connection.id
 			&& searchConnection.url === updatedConnection.url
 			&& searchConnection.credentials?.clientId === updatedConnection.credentials.clientId;
 	}) : false;
