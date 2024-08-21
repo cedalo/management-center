@@ -8,6 +8,13 @@ const fs = require('fs');
 const sessions = require('./sessions');
 
 
+const preprocessBoolEnvVariable = (envVariable) => {
+	return !!(envVariable && typeof envVariable === 'string' && envVariable.toLowerCase() === 'false'
+		? false
+		: envVariable);
+};
+
+
 const getBaseDirectory = (dirname) => {
 	if (process.env.CEDALO_MC_DATA_DIRECTORY_PATH) {
 		return process.env.CEDALO_MC_DATA_DIRECTORY_PATH;
@@ -197,6 +204,7 @@ const removeDuplicates = (array, key) => {
 };
 
 module.exports = {
+    preprocessBoolEnvVariable,
 	loadInstallation,
 	removeCircular,
     stringToBool,

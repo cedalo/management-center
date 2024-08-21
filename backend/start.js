@@ -53,19 +53,14 @@ console = new Logger(console, false);
 
 const version = require('./src/utils/version');
 
-const preprocessBoolEnvVariable = (envVariable) => {
-	return !!(envVariable && typeof envVariable === 'string' && envVariable.toLowerCase() === 'false'
-		? false
-		: envVariable);
-};
-
 const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 const LOGIN_ENDPOINT = `${CEDALO_MC_PROXY_BASE_PATH || ''}/login`;
-const CEDALO_MC_DEVELOPMENT_MODE = preprocessBoolEnvVariable(process.env.CEDALO_MC_DEVELOPMENT_MODE);
+const CEDALO_MC_DEVELOPMENT_MODE = utilityFunctions.preprocessBoolEnvVariable(process.env.CEDALO_MC_DEVELOPMENT_MODE);
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
-const CEDALO_MC_ENABLE_FULL_LOG = preprocessBoolEnvVariable(process.env.CEDALO_MC_ENABLE_FULL_LOG);
-const CEDALO_MC_SHOW_FEEDBACK_FORM = preprocessBoolEnvVariable(process.env.CEDALO_MC_SHOW_FEEDBACK_FORM);
-const CEDALO_MC_SHOW_STREAMSHEETS = preprocessBoolEnvVariable(process.env.CEDALO_MC_SHOW_STREAMSHEETS || false);
+const CEDALO_MC_ENABLE_FULL_LOG = utilityFunctions.preprocessBoolEnvVariable(process.env.CEDALO_MC_ENABLE_FULL_LOG);
+const CEDALO_MC_SHOW_FEEDBACK_FORM = utilityFunctions.preprocessBoolEnvVariable(process.env.CEDALO_MC_SHOW_FEEDBACK_FORM);
+const CEDALO_MC_SHOW_STREAMSHEETS = utilityFunctions.preprocessBoolEnvVariable(process.env.CEDALO_MC_SHOW_STREAMSHEETS || false);
+const CEDALO_MC_TREAT_USERNAMES_AS_CLIENT_IDS = utilityFunctions.preprocessBoolEnvVariable(process.env.CEDALO_MC_TREAT_USERNAMES_AS_CLIENT_IDS);
 const CEDALO_MC_USERNAME = process.env.CEDALO_MC_USERNAME;
 const CEDALO_MC_SESSION_IDLE_TIMEOUT =
 	process.env.CEDALO_MC_SESSION_IDLE_TIMEOUT &&
@@ -484,6 +479,7 @@ const init = async (licenseContainer) => {
 				process.env.CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING,
 			CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING: process.env.CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING
 		},
+		treatUsernamesAsClientIds: CEDALO_MC_TREAT_USERNAMES_AS_CLIENT_IDS,
 		isPremium: !!licenseContainer.isValid,
 		systemStatus: {} // TODO: ideally it should be moved out of here since it's not a config parameter but a buffer with sys topic data
 	};

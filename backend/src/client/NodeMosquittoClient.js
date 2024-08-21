@@ -1,6 +1,7 @@
 const mqtt = require('mqtt');
 const util = require('util');
-const { replaceNaN, addTimeout, generateSecureClientId } = require('../utils/utils');
+const { replaceNaN, addTimeout, generateSecureClientId, preprocessBoolEnvVariable } = require('../utils/utils');
+const CEDALO_MC_TREAT_USERNAMES_AS_CLIENT_IDS = preprocessBoolEnvVariable(process.env.CEDALO_MC_TREAT_USERNAMES_AS_CLIENT_IDS);
 
 const socketErrors = [ // defined in mqttjs (client.js)
 	'ECONNREFUSED',
@@ -26,7 +27,7 @@ const CONNECT_TIMEOUT_MS = (process.env.CEDALO_MC_MQTT_CONNECT_TIMEOUT_MS
 							) || 5000;
 
 const TOPIC_NAME = 'brokerReconnect';
-     
+
 
 const TOPICS_TO_SUBSCRIBE = ['$CONTROL/#',
 							'$SYS/#',
@@ -118,7 +119,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		let attemptBackoffMs = ATTEMPT_BACKOFF_MS;
 		this._completeDisconnect = {value: false, reason: undefined};
 		// an ugly way to make mqttClient throw openssl errors instead of silencing them
-		if (process.env.CEDALO_MC_TREAT_USERNAMES_AS_CLIENT_IDS) {
+		if (CEDALO_MC_TREAT_USERNAMES_AS_CLIENT_IDS) {
 			options.clientId = options.username;
 			// delete options.username;
 		}

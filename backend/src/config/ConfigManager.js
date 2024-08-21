@@ -232,10 +232,11 @@ module.exports = class ConfigManager {
 		const filteredConnection = {
 			id: connection.id,
 			name: connection.name,
-			url: connection.url,
+			url: connection.url?.trim(),
 			credentials: {
-				username: connection.credentials?.username,
+				username: connection.credentials?.username?.trim() || undefined,
 				password: connection.credentials?.password,
+				clientId: connection.credentials?.clientId?.trim() || undefined,
 			},
 			noMetricsMode: connection.noMetricsMode,
 		};

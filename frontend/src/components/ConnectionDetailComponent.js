@@ -132,10 +132,12 @@ const useStyles = makeStyles((theme) => ({
 
 const makeFileField = (fieldName) => {
 	return `${fieldName}File`;
-}
+};
 
 
 const ConnectionDetailComponent = (props) => {
+	const { connections, backendParameters } = props;
+	const treatUsernamesAsClientIds = !!backendParameters.treatUsernamesAsClientIds;
 	const [errors, setErrors] = React.useState({});
 	const customCACertificateFieldName = 'ca';
 	const clientCertificateFieldName = 'cert';
@@ -157,7 +159,7 @@ const ConnectionDetailComponent = (props) => {
 	
 	const classes = useStyles();
 	const formClasses = useFormStyles();
-	const [value, setValue] = React.useState(0);
+	// const [value, setValue] = React.useState(0);
 	const [showPassword, setShowPassword] = React.useState(false);
 	const [externalEncryptedUrl, setExternalEncryptedUrl] = React.useState(connection.externalEncryptedUrl || 'None');
 	const [externalUnencryptedUrl, setExternalUnencryptedUrl] = React.useState(connection.externalUnencryptedUrl || 'None');
@@ -182,6 +184,11 @@ const ConnectionDetailComponent = (props) => {
 	const history = useHistory();
 	const {client: brokerClient} = context;
 
+	const sameConnectionWithClientIDExists = !treatUsernamesAsClientIds ? connections?.find((searchConnection) => {
+		return updatedConnection.url && updatedConnection.credentials?.clientId
+			&& searchConnection.url === updatedConnection.url
+			&& searchConnection.credentials?.clientId === updatedConnection.credentials.clientId;
+	}) : false;
 
 	const validate = () => {
 		if (errors[customCACertificateFieldName] || errors[clientCertificateFieldName] || errors[clientPrivateKeyFieldName]) {
@@ -191,34 +198,35 @@ const ConnectionDetailComponent = (props) => {
 		if (editMode) {
 			return connection.id !== ''
 				&& connection.name !== ''
-				&& connection.url !== '';
+				&& connection.url !== ''
+				&& !sameConnectionWithClientIDExists;
 		} else {
 			return connection.id !== '';
 		}
 	};
 
-	const onTestConnection = async (connection) => {
-		try {
-			const response = await brokerClient.testConnection(connection);
-			if (response.connected) {
-				setConnected(response.connected);
-				enqueueSnackbar('Connection successfully tested', {
-					variant: 'success'
-				});
-			} else {
-				const {error} = response;
-				setConnected(false);
-				enqueueSnackbar(`Error connecting "${connection.name}". Reason: ${error.message || error}`, {
-					variant: 'error'
-				});
-			}
-		} catch (error) {
-			setConnected(false);
-			enqueueSnackbar(`Error connecting "${connection.name}". Reason: ${error.message || error}`, {
-				variant: 'error'
-			});
-		}
-	};
+	// const onTestConnection = async (connection) => {
+	// 	try {
+	// 		const response = await brokerClient.testConnection(connection);
+	// 		if (response.connected) {
+	// 			setConnected(response.connected);
+	// 			enqueueSnackbar('Connection successfully tested', {
+	// 				variant: 'success'
+	// 			});
+	// 		} else {
+	// 			const {error} = response;
+	// 			setConnected(false);
+	// 			enqueueSnackbar(`Error connecting "${connection.name}". Reason: ${error.message || error}`, {
+	// 				variant: 'error'
+	// 			});
+	// 		}
+	// 	} catch (error) {
+	// 		setConnected(false);
+	// 		enqueueSnackbar(`Error connecting "${connection.name}". Reason: ${error.message || error}`, {
+	// 			variant: 'error'
+	// 		});
+	// 	}
+	// };
 
 	const doConnect = async (connection) => {
 		const response = await brokerClient.testConnection(connection);
@@ -537,12 +545,40 @@ const ConnectionDetailComponent = (props) => {
 							credentials: {
 								username: event.target.value || undefined,
 								password: updatedConnection.credentials.password,
+								clientId: updatedConnection.credentials.clientId,
 							}
 						});
 						setConnected(false);
 					}
 				}}
 			/>
+			{!treatUsernamesAsClientIds && <TextField
+				required={false}
+				disabled={!editMode}
+				error={sameConnectionWithClientIDExists}
+				helperText={sameConnectionWithClientIDExists && 'A connection to the same broker with the same client ID already exists.'}
+				id="client-id"
+				label="ClientID"
+				value={updatedConnection.credentials?.clientId}
+				defaultValue=""
+				variant="outlined"
+				fullWidth
+				size="small"
+				margin="normal"
+				className={formClasses.textField}
+				onChange={(event) => {
+					if (editMode) {
+						setUpdatedConnection({
+							...updatedConnection,
+							credentials: {
+								...updatedConnection.credentials,
+								clientId: event.target.value || undefined,
+							}
+						});
+						setConnected(false);
+					}
+				}}
+			/>}
 			<TextField
 				required={false}
 				disabled={!editMode}
@@ -563,6 +599,7 @@ const ConnectionDetailComponent = (props) => {
 							credentials: {
 								username: updatedConnection.credentials.username,
 								password: event.target.value || undefined,
+								clientId: updatedConnection.credentials.clientId,
 							}
 						});
 						setConnected(false);
@@ -927,6 +964,8 @@ const mapStateToProps = (state) => {
 		alreadyConnected: state.brokerConnections.connected,
 		currentConnectionName: state.brokerConnections?.currentConnectionName,
 		connected: state.brokerConnections?.connected,
+		connections: state.brokerConnections?.brokerConnections,
+		backendParameters: state.backendParameters?.backendParameters,
 	};
 };
 
