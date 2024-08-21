@@ -126,7 +126,6 @@ export const handleConnectionChange = async (dispatch, client, newConnectionName
 				status: 'ok'
 			})
 		);
-		console.log('streams received:', streams);
 	} catch (error) {
 		console.error('Error loading streams');
 		console.error(error);
