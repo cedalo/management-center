@@ -694,6 +694,15 @@ const init = async (licenseContainer) => {
 		for (let i = 0; i < connections.length; i++) {
 			if (i < maxBrokerConnections) {
 				// preprocess connection to insert any external urls coming from env variables
+				try {
+					configManager.validateConnection(connections[i]);
+				} catch(error) {
+					console.error(
+						`Invalid connection found in the config file "${connections[i].name}"("${connections[i].id}"). Reason:`,
+						error.message
+					);
+					continue;
+				}
 				const connection = configManager.preprocessConnection(connections[i], true);
 				await configManager.saveConnection(connection);
 
