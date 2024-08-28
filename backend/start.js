@@ -67,9 +67,15 @@ const LOGIN_ENDPOINT = `${CEDALO_MC_PROXY_BASE_PATH || ''}/login`;
 const CEDALO_MC_DEVELOPMENT_MODE = utilityFunctions.preprocessBoolEnvVariable(process.env.CEDALO_MC_DEVELOPMENT_MODE);
 const CEDALO_MC_OFFLINE = process.env.CEDALO_MC_MODE === 'offline';
 const CEDALO_MC_ENABLE_FULL_LOG = utilityFunctions.preprocessBoolEnvVariable(process.env.CEDALO_MC_ENABLE_FULL_LOG);
-const CEDALO_MC_SHOW_FEEDBACK_FORM = utilityFunctions.preprocessBoolEnvVariable(process.env.CEDALO_MC_SHOW_FEEDBACK_FORM);
-const CEDALO_MC_SHOW_STREAMSHEETS = utilityFunctions.preprocessBoolEnvVariable(process.env.CEDALO_MC_SHOW_STREAMSHEETS || false);
-const CEDALO_MC_TREAT_USERNAMES_AS_CLIENT_IDS = utilityFunctions.preprocessBoolEnvVariable(process.env.CEDALO_MC_TREAT_USERNAMES_AS_CLIENT_IDS);
+const CEDALO_MC_SHOW_FEEDBACK_FORM = utilityFunctions.preprocessBoolEnvVariable(
+	process.env.CEDALO_MC_SHOW_FEEDBACK_FORM
+);
+const CEDALO_MC_SHOW_STREAMSHEETS = utilityFunctions.preprocessBoolEnvVariable(
+	process.env.CEDALO_MC_SHOW_STREAMSHEETS || false
+);
+const CEDALO_MC_TREAT_USERNAMES_AS_CLIENT_IDS = utilityFunctions.preprocessBoolEnvVariable(
+	process.env.CEDALO_MC_TREAT_USERNAMES_AS_CLIENT_IDS
+);
 const CEDALO_MC_USERNAME = process.env.CEDALO_MC_USERNAME;
 const CEDALO_MC_SESSION_IDLE_TIMEOUT =
 	process.env.CEDALO_MC_SESSION_IDLE_TIMEOUT &&
@@ -710,7 +716,7 @@ const init = async (licenseContainer) => {
 				// preprocess connection to insert any external urls coming from env variables
 				try {
 					configManager.validateConnection(connections[i]);
-				} catch(error) {
+				} catch (error) {
 					console.error(
 						`Invalid connection found in the config file "${connections[i].name}"("${connections[i].id}"). Reason:`,
 						error.message
@@ -940,6 +946,7 @@ const init = async (licenseContainer) => {
 
 	// TODO: handle disconnect of clients
 	wss.on('connection', (ws, request) => {
+		console.log('Creating new ws connection');
 		context.brokerManager.handleNewClientWebSocketConnection(ws);
 		const user = request.session?.passport?.user;
 		const sessionID = request.sessionID;
@@ -1026,6 +1033,7 @@ const init = async (licenseContainer) => {
 			}
 		});
 		ws.on('close', (message) => {
+			console.log('Closing websocket connection');
 			context.brokerManager.handleCloseClientWebSocketConnection(ws);
 			if (CEDALO_MC_SESSION_IDLE_TIMEOUT) {
 				clearTimeout(sessionTimers[sessionID]);
