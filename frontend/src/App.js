@@ -168,6 +168,7 @@ function Tour(props) {
 };
 
 export default function (props) {
+	console.log('App rerendered')
 	const classes = useStyles();
 	const [open, setOpen] = React.useState(false);
 	const [darkMode, setDarkMode] = useLocalStorage('cedalo.managementcenter.darkMode');

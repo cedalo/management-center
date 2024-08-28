@@ -62,6 +62,8 @@ const getNodeIcon = (node) => {
 }
 
 const ClusterDetail = (props) => {
+	console.log('ClusterDetail rerendered');
+	console.log('Props:', props);
 	const classes = useStyles();
 	const [value, setValue] = React.useState(0);
 	const [editMode, setEditMode] = React.useState(false);
