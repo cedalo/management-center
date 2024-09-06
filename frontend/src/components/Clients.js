@@ -207,6 +207,9 @@ const Clients = (props) => {
 			dispatch(updateClients(clients));
 			// const groups = await brokerClient.listGroups(); //?????
 			// dispatch(updateGroups(groups));
+			if (!clients?.clients?.length && page > 0) {
+				return handleChangePage(null, page - 1);
+			}
 		} catch (error) {
 			console.error(error);
 			enqueueSnackbar(`${error}`, { variant: 'error' });

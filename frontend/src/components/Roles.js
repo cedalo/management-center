@@ -155,6 +155,9 @@ const Roles = (props) => {
 			// dispatch(updateClients(clients));
 			// const groups = await client.listGroups();
 			// dispatch(updateGroups(groups));
+			if (!roles?.roles?.length && page > 0) {
+				return handleChangePage(null, page - 1);
+			}
 		} catch (error) {
 			console.error(error);
 			enqueueSnackbar(`${error}`, { variant: 'error' });

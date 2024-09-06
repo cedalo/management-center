@@ -211,6 +211,9 @@ const Groups = (props) => {
 			dispatch(updateGroups(groups));
 			// const clients = await client.listClients(); //??????
 			// dispatch(updateClients(clients));
+			if (!groups?.groups?.length && page > 0) {
+				return handleChangePage(null, page - 1);
+			}
 		} catch (error) {
 			console.error(error);
 			enqueueSnackbar(`${error}`, { variant: 'error' });
