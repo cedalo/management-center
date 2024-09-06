@@ -72,11 +72,19 @@ module.exports = class BaseMosquittoClient {
 			this._mqttEndpointURL = mqttEndpointURL || this._mqttEndpointURL;
 		}
 		try {
-			const brokerClient = await this._connectBroker(mqttEndpointURL, options);
-			this._brokerClient = brokerClient;
-			this._isConnected = true;
-		} catch (error) {
 			this._isConnected = false;
+			const {brokerClient, initialConnectionPromise} = this._connectBroker(mqttEndpointURL, options, () => {
+				this._isConnecting = false;
+				this._isConnected = true;
+			}, () => {
+				this._isConnecting = false;
+				this._isConnected = false;
+			});
+			this._brokerClient = brokerClient;
+			await initialConnectionPromise;
+			// this._isConnected = true;
+		} catch (error) {
+			// this._isConnected = false;
 			this.logger.error(error);
 			throw error;
 		}

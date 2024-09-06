@@ -577,52 +577,68 @@ const init = async (licenseContainer) => {
 					// TODO: add proper (handling maybe reemit with context.eventEmitter)
 				});
 
-				await brokerClient.connect();
-				context.eventEmitter.emit('connect', connectionConfiguration);
+				brokerClient.on('connect', async () => {
+					if (brokerClient.connectCount === 1) {
+						context.eventEmitter.emit('connect', connectionConfiguration);
+	
+						topicTreeManager.start();
+		
+						connectionConfiguration.status.connected = true;
+						connectionConfiguration.status.timestamp = Date.now();
+						console.log(`Connected to '${connection.name}' at ${connection.url}`);
+	
+						context.brokerManager.handleNewBrokerConnection(
+							connection,
+							brokerClient,
+							system,
+							topicTreeManager /*, proxyClient */
+						);
 
-				topicTreeManager.start();
-
-				connectionConfiguration.status.connected = true;
-				connectionConfiguration.status.timestamp = Date.now();
-				console.log(`Connected to '${connection.name}' at ${connection.url}`);
-
-				brokerClient.on('close', async () => {
-					context.eventEmitter.emit('close', connectionConfiguration);
-					connectionConfiguration.status = {
-						connected: false,
-						timestamp: Date.now(),
-						error: {
-							errno: 1,
-							code: 'ECONNCLOSED',
-							syscall: 'on',
-							interrupted: !brokerClient.disconnectedByUser // interuppted means it was not a normal disconnect, not disconnected by user
-						}
-					};
-					// if (brokerClient.disconnectedByUser) {
-					// 	brokerClient.disconnectedByUser = false;
-					// }
-					sendConnectionsUpdate(brokerClient);
-					await configManager.saveConnection(connectionConfiguration, connection.id);
-
-					if (brokerClient.completeDisconnect.value) {
-						// context.handleDisconnectServerFromBroker(connection); // this will remove brokerClient from brokerManager
-						context.brokerManager.handleDeleteBrokerConnection(connection); // this will remove brokerClient from brokerManager
-						globalTopicTree[connection.name] = undefined;
-						globalSystem[connection.name] = undefined;
+						connectionConfiguration.status = {
+							connected: true,
+							timestamp: Date.now()
+						};
+						await configManager.saveConnection(connectionConfiguration, connection.id);
+						sendConnectionsUpdate(brokerClient);
+	
+						brokerClient.on('close', async () => {
+							context.eventEmitter.emit('close', connectionConfiguration);
+							connectionConfiguration.status = {
+								connected: false,
+								timestamp: Date.now(),
+								error: {
+									errno: 1,
+									code: 'ECONNCLOSED',
+									syscall: 'on',
+									interrupted: !brokerClient.disconnectedByUser // interuppted means it was not a normal disconnect, not disconnected by user
+								}
+							};
+							// if (brokerClient.disconnectedByUser) {
+							// 	brokerClient.disconnectedByUser = false;
+							// }
+							sendConnectionsUpdate(brokerClient);
+							await configManager.saveConnection(connectionConfiguration, connection.id);
+			
+							if (brokerClient.completeDisconnect.value) {
+								// context.handleDisconnectServerFromBroker(connection); // this will remove brokerClient from brokerManager
+								context.brokerManager.handleDeleteBrokerConnection(connection); // this will remove brokerClient from brokerManager
+								globalTopicTree[connection.name] = undefined;
+								globalSystem[connection.name] = undefined;
+							}
+						});
+					} else {
+						context.eventEmitter.emit('reconnect', connectionConfiguration); // reconnect exclusively in case of failure. In cases we disconnect user manually brokerClient and all it's listeners are actually deleted
+						connectionConfiguration.status = {
+							connected: true,
+							timestamp: Date.now(),
+							reconnect: true
+						};
+						sendConnectionsUpdate(brokerClient);
+						configManager.saveConnection(connectionConfiguration, connection.id);
 					}
 				});
-				// this listener is applied only on reconnect (at the time we apply this listener the conenction had already been established and the first connect event alrady fired)
-				// this is important to set up this event here, after brokerClient.connect(); and not before since otherwise it will not be a called exclusively on reconnect
-				brokerClient.on('connect', () => {
-					context.eventEmitter.emit('reconnect', connectionConfiguration); // reconnect exclusively in case of failure. In cases we disconnect user manually brokerClient and all it's listeners are actually deleted
-					connectionConfiguration.status = {
-						connected: true,
-						timestamp: Date.now(),
-						reconnect: true
-					};
-					sendConnectionsUpdate(brokerClient);
-					configManager.saveConnection(connectionConfiguration, connection.id);
-				});
+
+				await brokerClient.connect();
 			} catch (error) {
 				// disconnect broker client
 				console.error(
@@ -644,24 +660,9 @@ const init = async (licenseContainer) => {
 				});
 			}
 
-			context.brokerManager.handleNewBrokerConnection(
-				connection,
-				brokerClient,
-				system,
-				topicTreeManager /*, proxyClient */
-			);
-
 			let error;
 
-			if (!connectionConfiguration.status.error) {
-				// means we have connected successfully
-				connectionConfiguration.status = {
-					connected: true,
-					timestamp: Date.now()
-				};
-				await configManager.saveConnection(connectionConfiguration, connection.id);
-				sendConnectionsUpdate(brokerClient);
-			} else {
+			if (connectionConfiguration.status.error) {
 				error = connectionConfiguration.status.error;
 			}
 

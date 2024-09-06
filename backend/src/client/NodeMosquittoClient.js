@@ -66,6 +66,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		this._disconnectedByUser = false;
 		this._topicsToSubscribe = TOPICS_TO_SUBSCRIBE;
 		this.subscribedTopics = [];
+		this.connectCount = 0;
 	}
 
 	static createOptions(connection) {
@@ -114,7 +115,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		}
 
 		let timeoutID = undefined;
-		let wasConnected = false; // maybe delete this
+		let wasConnected = false;
 		let attemptNumber = 1;
 		let attemptBackoffMs = ATTEMPT_BACKOFF_MS;
 		this._completeDisconnect = {value: false, reason: undefined};
@@ -155,6 +156,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		});
 
 		brokerClient.on('connect', () => {
+			this.connectCount += 1;
 			attemptNumber = 1;
 			attemptBackoffMs = ATTEMPT_BACKOFF_MS;
 			wasConnected = true;
@@ -190,14 +192,14 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				this._completeDisconnect = {value: true, reason: 'MAX_NUMBER_OF_ATTEMPTS'};
 				return;
 			}
-			if (!wasConnected) {
-				this.logger.error(`${this._brokerIdentifier} closed before connect`);
-				console.error(`${this._brokerIdentifier} closed before connect`);
-				// brokerClient.end(); // has no effect
-				brokerClient.emit('error', new Error(`Could not connect to ${this._brokerIdentifier}. Connection closed`)); // propagete the error further inside brokerClient listeners
-				this._completeDisconnect = {value: true, reason: 'CLOSED_BEFORE_CONNECT'};
-				return;
-			}
+			// if (!wasConnected) {
+			// 	this.logger.error(`${this._brokerIdentifier} closed before connect`);
+			// 	console.error(`${this._brokerIdentifier} closed before connect`);
+			// 	// brokerClient.end(); // has no effect
+			// 	brokerClient.emit('error', new Error(`Could not connect to ${this._brokerIdentifier}. Connection closed`)); // propagete the error further inside brokerClient listeners
+			// 	this._completeDisconnect = {value: true, reason: 'CLOSED_BEFORE_CONNECT'};
+			// 	return;
+			// }
 			if (this._disconnectedByUser) {
 				this.logger.log(`Connection to ${this._brokerIdentifier} closed by the user`);
 				console.log(`Connection to ${this._brokerIdentifier} closed by the user`);
@@ -260,27 +262,27 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 	}
 
 
-	_connectBroker(url, options) {
-		return new Promise((resolve, reject) => {
+	_connectBroker(url, options, successCallback=() => {}, errorCallback=() => {}) {
+		let brokerClient = this._client;
+
+		// if brokerClient wasn't already initialised, this means that the parameters are passed and we should create a handle first. otherwise, we can just use the existing one
+		if (!brokerClient) {
+			if (!url || !options) {
+				throw new Error('connection handle not initialized and no arguments given, invalid call to _connectBroker');
+			}
+			try {
+				brokerClient = this._createConnectionHandler(url, options);
+			} catch(error) {
+				throw error;
+			}	
+		}
+		const initialConnectionPromise = new Promise((resolve, reject) => {
 			const timeoutHandler = setTimeout(() => {
 				reject(new Error(`Connection to ${this._brokerIdentifier} timed out`));
 			}, CONNECT_TIMEOUT_MS);
 
-			let brokerClient = this._client;
-
-			// if brokerClient wasn't already initialised, this means that the parameters are passed and we should create a handle first. otherwise, we can just use the existing one
-			if (!brokerClient) {
-				if (!url || !options) {
-					reject(new Error('connection handle not initialized and no arguments given, invalid call to _connectBroker'));
-				}
-				try {
-					brokerClient = this._createConnectionHandler(url, options);
-				} catch(error) {
-					reject(error);
-				}
-			}
-
 			brokerClient.on('close', () => {
+				errorCallback();
 				// promise can only be rejected or resolved once, subsequent calls are ignored, so in the fact that this code is getting called on every close connection (in case of reconnect), doesn't matter
 				// we are only intereseted in the first close event which happens before any connect can occur. there is no guarantee that we will catch it with this code
 				// but for such casees we have timeout hanlder in the beginning of this funciton
@@ -288,12 +290,14 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				reject(new Error(`Connection to ${this._brokerIdentifier} closed`));
 			});
 			brokerClient.on('error', (error) => {
+				errorCallback(error);
 				// promise can only be rejected once, subsequent calls are ignored, so this code will not cause any harm when executed subsequently
 				// also safe to call reject in case both close and error events are emitted which is usually the case
 				reject(new Error(error?.errors?.[error?.errors?.length - 1] || error));
 			});
 
 			brokerClient.on('connect', () => {
+				successCallback();
 				this._subscribeToSystemTopics();
 
 				brokerClient.on('message', (topic, message) => {
@@ -301,9 +305,11 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				}); // TODO: can we move it out of connect?
 
 				clearTimeout(timeoutHandler);
-				resolve(brokerClient);
+				resolve({connected: true});
 			});
 		});
+
+		return {brokerClient, initialConnectionPromise};
 	}
 
 

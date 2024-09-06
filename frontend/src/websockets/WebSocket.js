@@ -57,6 +57,7 @@ const ERROR_MESSAGE = 'BaseMosquittoProxyClient: Timeout';
 let ws;
 let currentConnectionName;
 let allCurrentConnections;
+let currentConnectionConnected;
 const timeoutMilliseconds = 1000;
 const licenseInformationTimeoutMilliseconds = 3000;
 let wasWSAlertMessageDisplayed = false;
@@ -160,7 +161,8 @@ const init = async (client, dispatch, connectionConfiguration) => {
 	for (let i = 0; i < brokerConnections.length; i++) {
 		const connection = brokerConnections[i];
 		const connectionName = connection.name;
-		if ((selectedConnectionName && selectedConnectionName === connectionName) || (!selectedConnectionName && connection.status.connected)) {
+		if ((selectedConnectionName && selectedConnectionName === connectionName) || (!selectedConnectionName && connection.status.connected)
+		|| (!selectedConnectionName && i === brokerConnections.length - 1)) {
 			try {
 				await client.connectToBroker(connectionName);
 				brokerConnected = true;
@@ -311,7 +313,7 @@ const init = async (client, dispatch, connectionConfiguration) => {
 	}
 
 	await fetchClusterInfo(client, dispatch, timeoutMilliseconds);
-
+	
 	if (brokerConnected) {
 		try {
 			const testCollections = await client.listTestCollections(timeoutMilliseconds);
@@ -423,6 +425,7 @@ export default ({ children }) => {
 	const dispatch = useDispatch();
 	allCurrentConnections = useSelector((state) => state.brokerConnections?.brokerConnections);
 	currentConnectionName = useSelector((state) => state.brokerConnections?.currentConnectionName);
+	currentConnectionConnected = useSelector((state) => state.brokerConnections?.connected);
 	let initializeWebSocket;
 	let connectWebSocketAndInitApp;
 	let reconnectWebsocket;
@@ -493,7 +496,25 @@ export default ({ children }) => {
 					clustersToBeUpdatedDueToConnectionChange.add({ clustername: connection.cluster });
 				}
 				if (currentConnectionName === connection.name) {
+					const currenlyConnected = currentConnectionConnected;
 					dispatch(updateBrokerConnected(connection.status.connected, connection.name));
+					if (!connection.status.connected) {
+						return;
+					}
+					if (!currenlyConnected) {
+						try {
+							await client.connectToBroker(connection.name);
+						} catch(error) {
+							console.error(`Could not connect to client to the broker ${connection.name}, reason:`, error);
+							dispatch(updateBrokerConnected(false, connection.name));
+						}
+					}
+					try {
+						const licenseInformation = await client.getLicenseInformation(licenseInformationTimeoutMilliseconds);
+						dispatch(updateBrokerLicenseInformation(licenseInformation));
+					} catch(error) {
+						console.error('Error loading license information:', error);
+					}
 				}
 			});
 			if (clustersToBeUpdatedDueToConnectionChange.size) {
