@@ -1,6 +1,15 @@
 const fs = require('fs');
-const os = require('os');
 const path = require('path');
+
+if (!process.env.CEDALO_MC_BUILD_NUMBER && !process.env.TRAVIS_BUILD_NUMBER) {
+	const buildNumberPath = path.resolve(__dirname, 'build-number.txt');
+	if (fs.existsSync(buildNumberPath)) {
+		const buildNumber = fs.readFileSync(buildNumberPath).toString().trim();
+		process.env.CEDALO_MC_BUILD_NUMBER = buildNumber;
+	}
+}
+
+const os = require('os');
 const EventEmitter = require('events');
 const { v4: uuidv4 } = require('uuid');
 const express = require('express');
