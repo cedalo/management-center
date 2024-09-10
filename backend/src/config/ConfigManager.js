@@ -251,8 +251,12 @@ module.exports = class ConfigManager {
 			throw new Error('Connection is of invalid type/empty/not provided');
 		}
 
-		if (!allConnections || !allConnections?.length) {
+		if (!allConnections) {
 			throw new Error(`No connections found when validating connection: ${connection.name}(${connection.id})`);
+		}
+
+		if (!allConnections?.length) {
+			return true; // nothing to validate
 		}
 
 		for (let i = 0; i < allConnections.length; ++i) {
