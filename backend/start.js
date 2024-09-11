@@ -598,13 +598,6 @@ const init = async (licenseContainer) => {
 						connectionConfiguration.status.connected = true;
 						connectionConfiguration.status.timestamp = Date.now();
 						console.log(`Connected to '${connection.name}' at ${connection.url}`);
-	
-						context.brokerManager.handleNewBrokerConnection(
-							connection,
-							brokerClient,
-							system,
-							topicTreeManager /*, proxyClient */
-						);
 
 						connectionConfiguration.status = {
 							connected: true,
@@ -649,6 +642,13 @@ const init = async (licenseContainer) => {
 						configManager.saveConnection(connectionConfiguration, connection.id);
 					}
 				});
+
+				context.brokerManager.handleNewBrokerConnection(
+					connection,
+					brokerClient,
+					system,
+					topicTreeManager /*, proxyClient */
+				);
 
 				await brokerClient.connect({ oneshot });
 			} catch (error) {
