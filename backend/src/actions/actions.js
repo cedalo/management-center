@@ -95,7 +95,8 @@ const testConnectionAction = {
 		// try {
 		await testClient.connect({
 			mqttEndpointURL: filteredConnection.url,
-			options: NodeMosquittoClient.createOptions(filteredConnection)
+			options: NodeMosquittoClient.createOptions(filteredConnection),
+			oneshot: true,
 		});
 		const isNormalDisconnect = true; // used to indicate proper disconnection in order not to trigger reconnect
 		await testClient.disconnect(isNormalDisconnect);

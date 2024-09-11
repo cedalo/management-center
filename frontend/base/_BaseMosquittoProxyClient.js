@@ -895,12 +895,13 @@ module.exports = class BaseMosquittoProxyClient {
 	 * ******************************************************************************************
 	 */
 
-	async connectServerToBroker(connectionId) {
+	async connectServerToBroker(connectionId, oneshot=false) {
 		return this.sendRequest({
 			id: createID(),
 			type: 'request',
 			request: 'connectServerToBroker',
-			connectionId
+			connectionId,
+			oneshot
 		});
 	}
 

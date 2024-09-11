@@ -104,9 +104,10 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 	}
 
 
-	_createConnectionHandler(url, options) {
+	_createConnectionHandler(url, options, oneshot=false) {
 		// make a shallow copy of the options. This is enough for our purposes. We don't change the nested object to need a deep copy plus deep copy is cumbersome because options contain Buffers which JSON.parse(JSON.stringify()) doesn't know how to serialize 
 		options = {...options};
+		this.oneshot = oneshot;
 
 		if (options) {
 			options.reconnectPeriod = 0;
@@ -156,6 +157,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		});
 
 		brokerClient.on('connect', () => {
+			this.oneshot = false;
 			this.connectCount += 1;
 			attemptNumber = 1;
 			attemptBackoffMs = ATTEMPT_BACKOFF_MS;
@@ -176,6 +178,9 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 
 		brokerClient.on('close', () => {
 			this.connected = false;
+			if (this.oneshot) {
+				return;
+			}
 			if (attemptNumber === 1) {
 				console.log(`Closing connection to ${this._brokerIdentifier}`);
 				this.logger.log(`Closing connection to ${this._brokerIdentifier}`);
@@ -254,17 +259,17 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 					console.log(`Unsubscribed to ${topicname} topic for ${this._brokerIdentifier}`);
 					this.logger.log(`Unsubscribed to ${topicname} topic for ${this._brokerIdentifier}`);
 				}).catch((error) => {
-					console.error(`Error unsubscriting to ${topicname} topic for ${this._brokerIdentifier}:`, error);
-					this.logger.error(`Error unsubscriting to ${topicname} topic for ${this._brokerIdentifier}: ${error}`);
+					console.error(`Error unsubscribing to ${topicname} topic for ${this._brokerIdentifier}:`, error);
+					this.logger.error(`Error unsubscribing to ${topicname} topic for ${this._brokerIdentifier}: ${error}`);
 				});
 			return promise;
 		}));
 	}
 
 
-	_connectBroker(url, options, successCallback=() => {}, errorCallback=() => {}) {
+	_connectBroker(url, options, oneshot, successCallback=() => {}, errorCallback=() => {}) {
 		let brokerClient = this._client;
-
+		
 		// if brokerClient wasn't already initialised, this means that the parameters are passed and we should create a handle first. otherwise, we can just use the existing one
 		if (!brokerClient) {
 			if (!url || !options) {
@@ -276,6 +281,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 				throw error;
 			}	
 		}
+		this.oneshot = oneshot;
 		const initialConnectionPromise = new Promise((resolve, reject) => {
 			const timeoutHandler = setTimeout(() => {
 				reject(new Error(`Connection to ${this._brokerIdentifier} timed out`));

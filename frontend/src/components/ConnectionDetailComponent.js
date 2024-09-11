@@ -265,7 +265,7 @@ const ConnectionDetailComponent = (props) => {
 					if (!connection?.status?.connected) {
 						await doConnect(updatedConnection);
 					}
-					await brokerClient.connectServerToBroker(connection.id);
+					await brokerClient.connectServerToBroker(connection.id, true);
 					if (!alreadyConnected) {
 						handleConnectionChange(dispatch, brokerClient, currentConnectionName,
 							currentConnectionName, brokerCurrentlyConnected).catch((error) => console.error(

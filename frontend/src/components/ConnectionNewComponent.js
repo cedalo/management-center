@@ -238,7 +238,7 @@ const ConnectionNewComponent = ({connections, tlsFeature, handleCloseDialog, bac
 			if (connect) {
 				try {
 					await doConnect(connection);
-					await brokerClient.connectServerToBroker(connection.id);
+					await brokerClient.connectServerToBroker(connection.id, true);
 				} catch (error) {
 					enqueueSnackbar(`Error creating connection "${connection.name}". Reason: ${error.message || error}`,
 						{

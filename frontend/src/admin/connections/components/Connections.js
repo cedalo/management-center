@@ -331,7 +331,7 @@ const Connections = ({
 
 	const onConnectServerToBroker = async (id, name) => {
 		try {
-			await brokerClient.connectServerToBroker(id);
+			await brokerClient.connectServerToBroker(id, true);
 			if (!connected || !backendParameters.multipleConnectionsAllowed) { // if current broker is not connected, then select the one we just connected with connectServerToBroker
 				handleConnectionChange(dispatch, brokerClient, name, currentConnectionName, connected).catch(
 					(error) => console.error('Error while pulling information from the broker on reconnect: ', error));

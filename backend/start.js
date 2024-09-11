@@ -513,7 +513,10 @@ const init = async (licenseContainer) => {
 
 	config.connections = connections;
 
-	const handleConnectServerToBroker = async (connection, user) => {
+	const handleConnectServerToBroker = async (connection, user, oneshot=false) => {
+		if (!oneshot) {
+			oneshot = !!connection.status?.userControl;
+		}
 		const multipleConnectionsAllowed = context.config.parameters.multipleConnectionsAllowed;
 		let release;
 		if (!multipleConnectionsAllowed) {
@@ -647,7 +650,7 @@ const init = async (licenseContainer) => {
 					}
 				});
 
-				await brokerClient.connect();
+				await brokerClient.connect({ oneshot });
 			} catch (error) {
 				// disconnect broker client
 				console.error(
@@ -657,7 +660,8 @@ const init = async (licenseContainer) => {
 				connectionConfiguration.status = {
 					connected: false,
 					timestamp: Date.now(),
-					error: error?.message || error
+					error: error?.message || error,
+					userControl: oneshot ? true : undefined,
 				};
 
 				sendConnectionsUpdate(brokerClient);

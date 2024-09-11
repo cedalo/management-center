@@ -6,11 +6,11 @@ const createActions = (plugin) => ({
 		type: 'connect-disconnect/connectToBroker',
 		isModifying: true,
 		metainfo: { source: 'core'/*plugin.featureId*/, operation: 'connectServerToBroker', operationType: 'update' },
-		fn: async (context, { connectionId }) => {
+		fn: async (context, { connectionId, oneshot=false }) => {
 			const { user, security, configManager } = context;
 			if (security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, connectionId)) {
 				const connection = configManager.getConnection(connectionId);
-				await context.handleConnectServerToBroker(connection, user);
+				await context.handleConnectServerToBroker(connection, user, oneshot);
 				if (connection.status?.error) {
 					throw new Error(connection.status?.error);
 				} else {
