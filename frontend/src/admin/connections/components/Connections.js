@@ -331,6 +331,7 @@ const Connections = ({
 
 	const onConnectServerToBroker = async (id, name) => {
 		try {
+			await brokerClient.disconnectServerFromBroker(id);
 			await brokerClient.connectServerToBroker(id, true);
 			if (!connected || !backendParameters.multipleConnectionsAllowed) { // if current broker is not connected, then select the one we just connected with connectServerToBroker
 				handleConnectionChange(dispatch, brokerClient, name, currentConnectionName, connected).catch(
@@ -389,6 +390,7 @@ const Connections = ({
 				title: 'Confirm connection deletion',
 				description: `Do you really want to delete connection "${id}"?`
 			});
+			await brokerClient.disconnectServerFromBroker(id);
 			await brokerClient.deleteConnection(id);
 			enqueueSnackbar(`Connection "${id}" successfully deleted`, {
 				variant: 'success'
