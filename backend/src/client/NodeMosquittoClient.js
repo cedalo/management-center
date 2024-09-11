@@ -286,6 +286,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 			const timeoutHandler = setTimeout(() => {
 				reject(new Error(`Connection to ${this._brokerIdentifier} timed out`));
 			}, CONNECT_TIMEOUT_MS);
+			this.timeoutHandler = timeoutHandler;
 
 			brokerClient.on('close', () => {
 				errorCallback();
@@ -326,6 +327,7 @@ module.exports = class NodeMosquittoClient extends BaseMosquittoClient {
 		await this._unsubscribeFromAllTopics();
 		// this._client?.end();
 		await addTimeout(closeBrokerConnection(this._client), 5000, `Disconnecting broker ${this._brokerIdentifier} timed out`);
+		clearTimeout(this.timeoutHandler);
 	}
 
 
