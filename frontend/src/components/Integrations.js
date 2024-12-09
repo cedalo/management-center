@@ -144,7 +144,7 @@ const integrations = [
     {
         name: 'MySQL Bridge',
         descriptions: 'MySQL is a widely used open-source relational database management system known for its reliability and scalability.',
-        image: `${process.env.PUBLIC_URL || ''}/integration-logos/mysql.png`,
+        image: `${process.env.PUBLIC_URL || ''}/integration-logos/mysql.svg`,
         link: 'https://docs.cedalo.com/mosquitto/broker/Mosquitto%20Manual/Bridges/mosquitto-sql-bridge',
         emailTopic: 'MySQL Bridge' 
     },
