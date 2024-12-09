@@ -946,7 +946,7 @@ const init = async (licenseContainer) => {
 
 	// TODO: handle disconnect of clients
 	wss.on('connection', (ws, request) => {
-		console.log('Creating new ws connection', request.url);
+		console.log('Creating new ws connection');
 		context.brokerManager.handleNewClientWebSocketConnection(ws);
 		const user = request.session?.passport?.user;
 		const sessionID = request.sessionID;
@@ -1191,12 +1191,6 @@ const init = async (licenseContainer) => {
 
 	await connectServerToAllBrokers();
 
-	app.post('/api/logPageVisit', (req, res) => {
-		const { path } = req.body;
-		console.log(`User visited: ${path}`);
-		res.status(200).send({ status: 'Page visit logged' });
-	});
-
 	router.use('/api/docs', swaggerUi.serve);
 	router.get('/api/docs', context.security.isLoggedIn, swaggerUi.setup(swaggerDocument));
 	router.get('/api/docs/export', context.security.isLoggedIn, (request, response) => {
@@ -1323,7 +1317,7 @@ const init = async (licenseContainer) => {
 				if (request.path.includes('/api/')) {
 					return response.status(404).send({ code: 'NOT_FOUND', message: 'Resource not found' });
 				}
-				console.log('sending react bundle to the client');
+
 				return response.status(404).sendFile(path.join(__dirname, 'public', 'index.html'));
 			} catch (err) {
 				console.error('Error handling request:', err);
