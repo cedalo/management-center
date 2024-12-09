@@ -438,7 +438,6 @@ export default ({ children }) => {
 	};
 
 	reconnectWebsocket = () => {
-		console.log('reconnecting websocket...');
 		setTimeout(() => {
 			// this function also reinitializes websocket
 			if (!ws) {
@@ -452,7 +451,6 @@ export default ({ children }) => {
 	};
 
 	initializeWebSocket = () => {
-		console.log('initializing websocket...');
 		const client = new WebMosquittoProxyClient({ logger: console });
 		client.closeHandler = (event) => {
 			dispatch(updateProxyConnected(false));
@@ -587,7 +585,6 @@ export default ({ children }) => {
 	};
 
 	if (!ws?.client) {
-		console.log('websocket is about to initialize...')
 		let client = initializeWebSocket();
 		ws = {
 			client: client,
