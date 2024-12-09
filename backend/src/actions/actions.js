@@ -96,7 +96,7 @@ const testConnectionAction = {
 		await testClient.connect({
 			mqttEndpointURL: filteredConnection.url,
 			options: NodeMosquittoClient.createOptions(filteredConnection),
-			oneshot: true,
+			oneshot: true
 		});
 		const isNormalDisconnect = true; // used to indicate proper disconnection in order not to trigger reconnect
 		await testClient.disconnect(isNormalDisconnect);
@@ -117,6 +117,11 @@ const testConnectionAction = {
 		return {
 			connected: true
 		};
+	},
+	filter: (data) => {
+		const { connection = {} } = data;
+		const { credentials, ...keep } = connection;
+		return { connection: { ...keep } };
 	}
 };
 const createConnectionAction = {
@@ -124,7 +129,8 @@ const createConnectionAction = {
 	isModifying: true,
 	metainfo: metainfo('createConnection', 'create'),
 	fn: async ({ user, security, configManager, licenseContainer }, { connection }) => {
-		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, null, 'createConnection')) { // passing security.acl.atLeastAdmin is not needed here, we can just pass null instead
+		if (!security.acl.isConnectionAuthorized(user, security.acl.atLeastAdmin, null, null, 'createConnection')) {
+			// passing security.acl.atLeastAdmin is not needed here, we can just pass null instead
 			throw AuthError.notAllowed();
 		}
 
@@ -132,7 +138,7 @@ const createConnectionAction = {
 			if (configManager.connections.length < licenseContainer.license.maxBrokerConnections) {
 				const existingConnection = configManager.getConnection(connection.id);
 				if (existingConnection) {
-					throw new Error(`Connection ${connection.id} already exists`);		
+					throw new Error(`Connection ${connection.id} already exists`);
 				}
 				configManager.validateConnection(connection);
 				await configManager.createConnection(connection);
@@ -158,7 +164,7 @@ const createConnectionAction = {
 				caFile: !!caFile,
 				certFile: !!certFile,
 				keyFile: !!keyFile,
-				credentials: credentials && Object.keys(credentials).length >0
+				credentials: credentials && Object.keys(credentials).length > 0
 			}
 		};
 	}
@@ -188,7 +194,7 @@ const modifyConnectionAction = {
 				caFile: !!caFile,
 				certFile: !!certFile,
 				keyFile: !!keyFile,
-				credentials: credentials && Object.keys(credentials).length >0
+				credentials: credentials && Object.keys(credentials).length > 0
 			}
 		};
 	}
@@ -386,16 +392,16 @@ const getPluginsAction = {
 	metainfo: metainfo('getPlugins', 'other'),
 	fn: (context) => {
 		return context.pluginManager.plugins
-				.filter((plugin) => !plugin.options.hidden)
-				.map((plugin) => {
-					const removeProp = 'context';
-					const { [removeProp]: removedPropFromOptions, ...restOptions } = plugin.options;
-					return {
-						...plugin.meta,
-						...restOptions,
-						status: plugin.status
-					};
-				});
+			.filter((plugin) => !plugin.options.hidden)
+			.map((plugin) => {
+				const removeProp = 'context';
+				const { [removeProp]: removedPropFromOptions, ...restOptions } = plugin.options;
+				return {
+					...plugin.meta,
+					...restOptions,
+					status: plugin.status
+				};
+			});
 	}
 };
 
@@ -408,14 +414,14 @@ const startupAction = {
 		const host = CEDALO_MC_PROXY_HOST;
 		const port = CEDALO_MC_PROXY_PORT;
 		let protocol = context.config.plugins?.find((plugin) => plugin.name === 'https') ? 'https' : 'http';
-		
+
 		let httpPlainApp;
 		let httpPlainServer;
-		
+
 		console.log(`Starting Mosquitto proxy server at ${protocol}://${host}:${port}`);
 
 		const isSoftMode = context.config?.softMode;
-		
+
 		if (context.server instanceof Error && !isSoftMode) {
 			// https plugin tried to be loaded but failed
 			console.error('HTTPS not properly configured. Exiting...');
@@ -426,36 +432,45 @@ const startupAction = {
 
 			if (context.server instanceof Error) {
 				console.error('HTTPS not properly configured. Falling back to HTTP...');
-				console.log('##################################################\ WARNING ##############################################\n Note that MMC will be run in unencrypted HTTP mode\n You have probably not specified HTTPS in plugins list and have not defined all the necessary variables\n#########################################################################################################');
+				console.log(
+					'################################################## WARNING ##############################################\n Note that MMC will be run in unencrypted HTTP mode\n You have probably not specified HTTPS in plugins list and have not defined all the necessary variables\n#########################################################################################################'
+				);
 			}
-			
+
 			// context.server = server;
 			protocol = 'http';
 		} else {
 			// https plugin was successfully enabled
 			server = context.server;
-	
+
 			// if https is not setup on the default HTTP port (which doesn't make sense but we don't restrict this), we open an http listener on default HTTP port
 			if (parseInt(port) !== parseInt(HTTP_PORT)) {
 				// set up plain http server
 				httpPlainApp = express();
 				// set up a route to redirect http to https
-				httpPlainApp.get('*', function(request, response) {
-					response.redirect('https://' + CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST || request.headers.host + `:${port}` + request.url + CEDALO_MC_PROXY_BASE_PATH);
+				httpPlainApp.get('*', function (request, response) {
+					response.redirect(
+						'https://' + CEDALO_MC_PLUGIN_HTTPS_REDIRECT_HTTP_TO_HOST ||
+							request.headers.host + `:${port}` + request.url + CEDALO_MC_PROXY_BASE_PATH
+					);
 				});
-				httpPlainServer =  http.createServer(httpPlainApp);
+				httpPlainServer = http.createServer(httpPlainApp);
 				// have it listen on 80
 				// httpPlainServer.listen(HTTP_PORT)
-				httpPlainServer.listen({
-					host,
-					port: HTTP_PORT
-				}, () => {
+				httpPlainServer.listen(
+					{
+						host,
+						port: HTTP_PORT
+					},
+					() => {
 						console.log(`HTTP to HTTPS redirect set up for http://${host}:${HTTP_PORT}`);
 					}
 				);
 				// context.httpPlainServer = httpPlainServer;
 			} else {
-				console.log(`HTTP to HTTPS redirect is not set up. Same port used for HTTPS and HTTP (port ${port}). Change port in CEDALO_MC_PROXY_PORT variable to solve this`);
+				console.log(
+					`HTTP to HTTPS redirect is not set up. Same port used for HTTPS and HTTP (port ${port}). Change port in CEDALO_MC_PROXY_PORT variable to solve this`
+				);
 			}
 		}
 
@@ -475,7 +490,7 @@ const startupAction = {
 			});
 		});
 
-		return  { host: hostname, port, protocol, hostIPs, server, httpPlainServer }
+		return { host: hostname, port, protocol, hostIPs, server, httpPlainServer };
 	}
 };
 
@@ -491,9 +506,6 @@ const shutdownAction = {
 		controlElements.serverStarted = false;
 	}
 };
-
-
-
 
 module.exports = {
 	unloadPluginAction,
