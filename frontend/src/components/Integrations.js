@@ -111,7 +111,7 @@ const integrations = [
     },
     {
         name: 'Snowflake Bridge',
-        descriptions: 'TimescaleDB is a leading open-source time-series database built on top of PostgreSQL, designed for handling time-series data at scale with SQL simplicity.',
+        descriptions: 'Snowflake is a cloud-based data warehousing platform designed for scalability, performance, and flexibility in handling large-scale data storage and analytics.',
         image: `${process.env.PUBLIC_URL || ''}/integration-logos/snowflake.svg`,
         link: 'https://docs.cedalo.com/mosquitto/broker/Mosquitto%20Manual/Bridges/mosquitto-sql-bridge',
         emailTopic: 'Snowflake Bridge',
