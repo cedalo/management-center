@@ -1,73 +1,73 @@
 {
-	"name": "@cedalo/management-center-frontend",
-	"version": "2.9.5",
-	"private": true,
-	"author": "Cedalo AG",
-	"homepage": ".",
-	"scripts": {
-		"start": "react-scripts start",
-		"build": "cross-env SKIP_PREFLIGHT_CHECK=true PUBLIC_URL=$CEDALO_MC_PROXY_BASE_PATH react-scripts build",
-		"build-without-base-path": "cross-env SKIP_PREFLIGHT_CHECK=true run-script-os",
-		"build-without-base-path:win32": "(if exist ..\\backend\\public rmdir ..\\backend\\public /s /q) && cross-env PUBLIC_URL=/ react-scripts build && move build ../backend/public",
-		"build-without-base-path:darwin:linux": "rm -rf ../backend/public && cross-env PUBLIC_URL=/ react-scripts build && mv build ../backend/public",
-		"build-with-base-path": "cross-env SKIP_PREFLIGHT_CHECK=true run-script-os",
-		"build-with-base-path:win32": "(if exist ..\\backend\\public rmdir ..\\backend\\public /s /q) && cross-env PUBLIC_URL=/mosquitto-management-center react-scripts build --verbose && move build ../backend/public",
-		"build-with-base-path:darwin:linux": "rm -rf ../backend/public && cross-env PUBLIC_URL=/mosquitto-management-center react-scripts build --verbose && mv build ../backend/public",
-		"test": "react-scripts test",
-		"test-client": "npx jest tests/client.test.js --detectOpenHandles",
-		"eject": "react-scripts eject",
-		"import-sort": "npx import-sort-cli --write src/**/*.js"
-	},
-	"dependencies": {
-		"@emotion/react": "11.7.1",
-		"@material-ui/core": "4.12.4",
-		"@material-ui/icons": "^4.11.3",
-		"@material-ui/lab": "^4.0.0-alpha.61",
-		"@reactour/tour": "^3.3.0",
-		"@reactour/utils": "^0.4.7",
-		"ajv": "^7.1.1",
-		"base-mc-classes": "file:./base",
-		"brace": "^0.11.1",
-		"buffer": "^6.0.3",
-		"express": "^4.18.1",
-		"file-saver": "^2.0.5",
-		"jsoneditor": "^9.7.4",
-		"jsoneditor-react": "^3.1.2",
-		"material-ui-confirm": "^2.1.1",
-		"notistack": "1.0.10",
-		"react": "^18.0.1",
-		"react-chartjs-2": "^2.10.0",
-		"react-d3-speedometer": "^2.1.0-rc.0",
-		"react-dom": "^18.0.1",
-		"react-redux": "^7.2.1",
-		"react-router-dom": "^5.2.0",
-		"react-scripts": "^5.0.1",
-		"react-select": "^3.1.0",
-		"redux": "^4.2.0",
-		"styled-components": "^5.3.5",
-		"sweetalert2": "^11.4.14",
-		"sweetalert2-react-content": "^5.0.0",
-		"terminal-in-react": "^4.3.1"
-	},
-	"devDependencies": {
-		"@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-		"chart.js": "^2.9.3",
-		"clsx": "latest",
-		"cross-env": "^7.0.3",
-		"form-data": "^4.0.0",
-		"jest": "^29.1.2",
-		"run-script-os": "^1.1.6"
-	},
-	"browserslist": {
-		"production": [
-			">0.2%",
-			"not dead",
-			"not op_mini all"
-		],
-		"development": [
-			"last 1 chrome version",
-			"last 1 firefox version",
-			"last 1 safari version"
-		]
-	}
+    "name": "@cedalo/management-center-frontend",
+    "version": "2.9.5",
+    "private": true,
+    "author": "Cedalo AG",
+    "homepage": ".",
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "cross-env SKIP_PREFLIGHT_CHECK=true PUBLIC_URL=$CEDALO_MC_PROXY_BASE_PATH react-scripts build",
+        "build-without-base-path": "cross-env SKIP_PREFLIGHT_CHECK=true run-script-os",
+        "build-without-base-path:win32": "(if exist ..\\backend\\public rmdir ..\\backend\\public /s /q) && cross-env PUBLIC_URL=/ react-scripts build && move build ../backend/public",
+        "build-without-base-path:darwin:linux": "rm -rf ../backend/public && cross-env PUBLIC_URL=/ react-scripts build && mv build ../backend/public",
+        "build-with-base-path": "cross-env SKIP_PREFLIGHT_CHECK=true run-script-os",
+        "build-with-base-path:win32": "(if exist ..\\backend\\public rmdir ..\\backend\\public /s /q) && cross-env PUBLIC_URL=/mosquitto-management-center react-scripts build --verbose && move build ../backend/public",
+        "build-with-base-path:darwin:linux": "rm -rf ../backend/public && cross-env PUBLIC_URL=/mosquitto-management-center react-scripts build --verbose && mv build ../backend/public",
+        "test": "react-scripts test",
+        "test-client": "npx jest tests/client.test.js --detectOpenHandles",
+        "eject": "react-scripts eject",
+        "import-sort": "npx import-sort-cli --write src/**/*.js"
+    },
+    "dependencies": {
+        "@emotion/react": "11.7.1",
+        "@material-ui/core": "4.12.4",
+        "@material-ui/icons": "^4.11.3",
+        "@material-ui/lab": "^4.0.0-alpha.61",
+        "@reactour/tour": "^3.3.0",
+        "@reactour/utils": "^0.4.7",
+        "ajv": "^7.1.1",
+        "base-mc-classes": "file:./base",
+        "brace": "^0.11.1",
+        "buffer": "^6.0.3",
+        "express": "^4.18.1",
+        "file-saver": "^2.0.5",
+        "jsoneditor": "^9.7.4",
+        "jsoneditor-react": "^3.1.2",
+        "material-ui-confirm": "^2.1.1",
+        "notistack": "1.0.10",
+        "react": "^18.0.1",
+        "react-chartjs-2": "^2.10.0",
+        "react-d3-speedometer": "^2.1.0-rc.0",
+        "react-dom": "^18.0.1",
+        "react-redux": "^7.2.1",
+        "react-router-dom": "^5.2.0",
+        "react-scripts": "^5.0.1",
+        "react-select": "^3.1.0",
+        "redux": "^4.2.0",
+        "styled-components": "^5.3.5",
+        "sweetalert2": "^11.4.14",
+        "sweetalert2-react-content": "^5.0.0",
+        "terminal-in-react": "^4.3.1"
+    },
+    "devDependencies": {
+        "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+        "chart.js": "^2.9.3",
+        "clsx": "latest",
+        "cross-env": "^7.0.3",
+        "form-data": "^4.0.0",
+        "jest": "^29.1.2",
+        "run-script-os": "^1.1.6"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    }
 }

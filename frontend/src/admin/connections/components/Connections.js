@@ -5,8 +5,8 @@ import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import {green} from '@material-ui/core/colors';
-import {makeStyles, withStyles} from '@material-ui/core/styles';
+import { green } from '@material-ui/core/colors';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -23,474 +23,575 @@ import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import ClusterIcon from '@material-ui/icons/People';
 import LeaderIcon from '@material-ui/icons/Person';
-import {useConfirm} from 'material-ui-confirm';
-import {useSnackbar} from 'notistack';
-import React, {useContext} from 'react';
-import {connect, useDispatch} from 'react-redux';
-import {useHistory} from 'react-router-dom';
-import {updateBrokerConfigurations, updateBrokerConnections, updateSelectedConnection} from '../../../actions/actions';
+import { useConfirm } from 'material-ui-confirm';
+import { useSnackbar } from 'notistack';
+import React, { useContext } from 'react';
+import { connect, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import {
+    updateBrokerConfigurations,
+    updateBrokerConnections,
+    updateSelectedConnection,
+} from '../../../actions/actions';
 import BrokerStatusIcon from '../../../components/BrokerStatusIcon';
 import ContainerBox from '../../../components/ContainerBox';
 import ContainerBreadCrumbs from '../../../components/ContainerBreadCrumbs';
 import ContainerHeader from '../../../components/ContainerHeader';
 import ContentContainer from '../../../components/ContentContainer';
 import PremiumFeatureDialog from '../../../components/PremiumFeatureDialog';
-import {atLeastAdmin} from '../../../utils/accessUtils/access';
-import {handleConnectionChange} from '../../../utils/connectionUtils/connections';
-import {WebSocketContext} from '../../../websockets/WebSocket';
+import { atLeastAdmin } from '../../../utils/accessUtils/access';
+import { handleConnectionChange } from '../../../utils/connectionUtils/connections';
+import { WebSocketContext } from '../../../websockets/WebSocket';
 import { toClusterConnectionEntries } from '../../clusters/utils';
 
 const CONN_TABLE_COLUMNS = [
-	{id: 'expand', key: '', align: 'left', width: '10px'},
-	{id: 'cluster', key: '', align: 'left', width: '10px'},
-	{id: 'name', key: 'Name', align: 'left'},
-	{id: 'id', key: 'ID', align: 'left'},
-	{id: 'url', key: 'URL', align: 'left'},
-	{id: 'status', key: 'Connected', align: 'center', width: '10px'},
-	{id: 'action', key: 'Actions', align: 'center', width: '100px'}
+    { id: 'expand', key: '', align: 'left', width: '10px' },
+    { id: 'cluster', key: '', align: 'left', width: '10px' },
+    { id: 'name', key: 'Name', align: 'left' },
+    { id: 'id', key: 'ID', align: 'left' },
+    { id: 'url', key: 'URL', align: 'left' },
+    { id: 'status', key: 'Connected', align: 'center', width: '10px' },
+    { id: 'action', key: 'Actions', align: 'center', width: '100px' },
 ];
 
 const StyledTableRow = withStyles((theme) => ({
-	root: {
-		'&:nth-of-type(odd)': {
-			backgroundColor: theme.palette.tables?.odd
-		}
-	}
+    root: {
+        '&:nth-of-type(odd)': {
+            backgroundColor: theme.palette.tables?.odd,
+        },
+    },
 }))(TableRow);
 
 const useStyles = makeStyles((theme) => ({
-	avatar: {
-		backgroundColor: 'white'
-	}, imageIcon: {
-		height: '100%', width: '20px'
-	}, iconRoot: {
-		textAlign: 'center'
-	}, cursorPointer: {
-		cursor: 'pointer'
-	}, invisibleButton: {
-		display: 'none',
-	},
+    avatar: {
+        backgroundColor: 'white',
+    },
+    imageIcon: {
+        height: '100%',
+        width: '20px',
+    },
+    iconRoot: {
+        textAlign: 'center',
+    },
+    cursorPointer: {
+        cursor: 'pointer',
+    },
+    invisibleButton: {
+        display: 'none',
+    },
 }));
 
-
 const CustomRow = (props) => {
-	const {enqueueSnackbar} = useSnackbar();
-	const initialCursorPosInfo = {
-		mouseX: null, mouseY: null,
-	};
-	const {
-		brokerConnection,
-		clusterConnection,
-		handleBrokerConnectionConnectDisconnect,
-		onDeleteConnection,
-		userProfile,
-		small,
-		medium
-	} = props;
-	const [open, setOpen] = React.useState(false);
-	const [cursorPosInfo, setCursorPosInfo] = React.useState(initialCursorPosInfo);
+    const { enqueueSnackbar } = useSnackbar();
+    const initialCursorPosInfo = {
+        mouseX: null,
+        mouseY: null,
+    };
+    const {
+        brokerConnection,
+        clusterConnection,
+        handleBrokerConnectionConnectDisconnect,
+        onDeleteConnection,
+        userProfile,
+        small,
+        medium,
+    } = props;
+    const [open, setOpen] = React.useState(false);
+    const [cursorPosInfo, setCursorPosInfo] = React.useState(initialCursorPosInfo);
 
-	const handleClick = (event) => {
-		event.preventDefault();
-		setCursorPosInfo({
-			mouseX: event.clientX - 2, mouseY: event.clientY - 4,
-		});
-	};
+    const handleClick = (event) => {
+        event.preventDefault();
+        setCursorPosInfo({
+            mouseX: event.clientX - 2,
+            mouseY: event.clientY - 4,
+        });
+    };
 
-	const handleClose = () => {
-		setCursorPosInfo(initialCursorPosInfo);
-	};
+    const handleClose = () => {
+        setCursorPosInfo(initialCursorPosInfo);
+    };
 
+    const copyText = (text) => {
+        try {
+            navigator.clipboard.writeText(text);
+            enqueueSnackbar(`Text copied successfully`, {
+                variant: 'success',
+            });
+        } catch (error) {
+            enqueueSnackbar(`Couldn't copy text: ${error.message ? error.message : error}`, {
+                variant: 'error',
+            });
+        }
 
-	const copyText = (text) => {
-		try {
-			navigator.clipboard.writeText(text);
-			enqueueSnackbar(`Text copied successfully`, {
-				variant: 'success'
-			});
-		} catch (error) {
-			enqueueSnackbar(`Couldn't copy text: ${error.message ? error.message : error}`, {
-				variant: 'error'
-			});
-		}
+        handleClose();
+    };
 
-		handleClose();
-	}
+    const someExternalURLExists = !!(brokerConnection.externalUnencryptedUrl || brokerConnection.externalEncryptedUrl);
+    const bothExternalURLExists = !!(brokerConnection.externalUnencryptedUrl && brokerConnection.externalEncryptedUrl);
 
-	const someExternalURLExists = !!(brokerConnection.externalUnencryptedUrl || brokerConnection.externalEncryptedUrl);
-	const bothExternalURLExists = !!(brokerConnection.externalUnencryptedUrl && brokerConnection.externalEncryptedUrl);
+    const oneExternalURLExists = someExternalURLExists && !bothExternalURLExists;
+    const makeCollapsible =
+        someExternalURLExists || brokerConnection.ca || brokerConnection.cert || brokerConnection.key;
 
-	const oneExternalURLExists = someExternalURLExists && !bothExternalURLExists;
-	const makeCollapsible = someExternalURLExists || brokerConnection.ca || brokerConnection.cert || brokerConnection.key;
+    const numberOfAdditionalFields =
+        !!brokerConnection.websocketsUrl +
+        !!brokerConnection.externalUnencryptedUrl +
+        !!brokerConnection.externalEncryptedUrl +
+        !!brokerConnection.ca +
+        !!brokerConnection.cert +
+        !!brokerConnection.key;
 
-	const numberOfAdditionalFields = !!brokerConnection.websocketsUrl + !!brokerConnection.externalUnencryptedUrl + !!brokerConnection.externalEncryptedUrl + !!brokerConnection.ca + !!brokerConnection.cert + !!brokerConnection.key;
+    const columnSize = numberOfAdditionalFields === 1 ? 12 : 6;
 
-	const columnSize = (numberOfAdditionalFields === 1) ? 12 : 6;
+    const url =
+        brokerConnection.externalEncryptedUrl ||
+        brokerConnection.externalUnencryptedUrl ||
+        brokerConnection.internalUrl ||
+        brokerConnection.url;
 
-	const url = brokerConnection.externalEncryptedUrl || brokerConnection.externalUnencryptedUrl || brokerConnection.internalUrl || brokerConnection.url;
-
-	return <>
-		<StyledTableRow
-			//   style={{ cursor: "pointer" }}
-			// onClick={() => onSelectConnection(brokerConnection)}
-			onClick={props.onClick}
-			key={brokerConnection.name}
-			onContextMenu={handleClick}
-			className={atLeastAdmin(userProfile, brokerConnection.name) ? props.classes.cursorPointer : ''}
-		>
-			{medium || small ? null :
-				<TableCell align={CONN_TABLE_COLUMNS[0].align} style={{padding: '6px'}}>
-					<IconButton aria-label="expand row" size="small"
-								disabled={!makeCollapsible}
-								style={makeCollapsible ? {opacity: "100%"} : {opacity: "0%"}}
-								onClick={(event) => {
-									event.stopPropagation();
-									setOpen(!open);
-								}}>
-						{open ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
-					</IconButton>
-				</TableCell>
-			}
-			{medium || small ? null :
-				<TableCell align={CONN_TABLE_COLUMNS[1].align} style={{padding: '6px'}}>
-					{clusterConnection ? <Tooltip title={clusterConnection.isLeader ? `Leader of "${clusterConnection.clustername}" cluster` : `Follower of "${clusterConnection.clustername}" cluster`}>
-						{
-							clusterConnection.isLeader ? 
-								<LeaderIcon fontSize="small" style={{color: green[500]}}/>
-								:
-								<ClusterIcon fontSize="small"/>
-						}
-					</Tooltip> : null}
-				</TableCell>
-			}
-			<TableCell align={CONN_TABLE_COLUMNS[2].align} style={{padding: '6px'}}>{brokerConnection.name}</TableCell>
-			{medium || small ? null :
-				<TableCell align={CONN_TABLE_COLUMNS[3].align}
-						   style={{padding: '6px'}}>{brokerConnection.id}</TableCell>
-			}
-			{small ? null :
-				<TableCell align={CONN_TABLE_COLUMNS[4].align} style={{padding: '6px'}}>{url}</TableCell>
-			}
-			<TableCell align={CONN_TABLE_COLUMNS[5].align} style={{padding: '6px'}}>
-				<BrokerStatusIcon brokerConnection={brokerConnection}/>
-				{}
-			</TableCell>
-			{medium || small ? null :
-				<TableCell align={CONN_TABLE_COLUMNS[6].align} style={{padding: '6px'}}>
-					<Tooltip title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'} aria-label={`conn-switch-${brokerConnection.id}`}>
-						<Switch
-							color="primary"
-							disabled={!atLeastAdmin(userProfile, brokerConnection.name)}
-							checked={brokerConnection.status?.connected}
-							name="connectionConnected"
-							onClick={(event) => {
-								event.stopPropagation();
-								handleBrokerConnectionConnectDisconnect(brokerConnection.id, brokerConnection.name,
-									event.target.checked);
-							}}
-							inputProps={{'aria-label': 'Connection connected'}}
-						/>
-					</Tooltip>
-					<IconButton
-						disabled={brokerConnection.status?.connected || !atLeastAdmin(userProfile,
-							brokerConnection.name)}
-						id={`delete-connection-${brokerConnection.name}`}
-						size="small"
-						onClick={(event) => {
-							event.stopPropagation();
-							onDeleteConnection(brokerConnection.id);
-						}}
-					>
-						<DeleteIcon fontSize="small"/>
-					</IconButton>
-				</TableCell>}
-		</StyledTableRow>
-		<TableRow>
-			<TableCell style={{paddingBottom: 0, paddingTop: 0}} colSpan={6}>
-				<Collapse in={open} timeout="auto" unmountOnExit>
-					<Box margin={1} style={{marginTop: '16px'}} align="center">
-						{/* {brokerConnection.externalUrl ? <Typography>Internal URL: {brokerConnection.url}</Typography> : null} */}
-						<Grid container spacing={2} alignItems="flex-end">
-							{brokerConnection.internalUrl ? <Grid item xs={columnSize} align="center">
-								<Typography style={{fontSize: 'small'}}>
-										<span
-											style={{fontWeight: 'bold'}}>Internal URL: </span>{brokerConnection.internalUrl}
-								</Typography>
-							</Grid> : null}
-							{brokerConnection.externalEncryptedUrl ? <Grid item xs={columnSize} align="center">
-								<Typography style={{fontSize: 'small'}}>
-										<span
-											style={{fontWeight: 'bold'}}>External MQTTS URL: </span>{brokerConnection.externalEncryptedUrl}
-								</Typography>
-							</Grid> : null}
-							{brokerConnection.externalUnencryptedUrl ? <Grid item xs={columnSize} align="center">
-								<Typography style={{fontSize: 'small'}}>
-										<span
-											style={{fontWeight: 'bold'}}>External MQTT URL: </span>{brokerConnection.externalUnencryptedUrl}
-								</Typography>
-							</Grid> : null}
-							{brokerConnection.websocketsUrl ? <Grid item xs={columnSize} align="center">
-								<Typography style={{fontSize: 'small'}}>
-										<span
-											style={{fontWeight: 'bold'}}>External WS URL: </span>{brokerConnection.websocketsUrl}
-								</Typography>
-							</Grid> : null}
-							{brokerConnection.ca ? <Grid item xs={columnSize} align="center">
-								<Typography style={{fontSize: 'small'}}>
-									<span style={{fontWeight: 'bold'}}>CA Cert File: </span>{brokerConnection.caFile}
-								</Typography>
-							</Grid> : null}
-							{brokerConnection.cert ? <Grid item md={columnSize} align="center">
-								<Typography style={{fontSize: 'small'}}>
-										<span
-											style={{fontWeight: 'bold'}}>Client Cert File: </span>{brokerConnection.certFile}
-								</Typography>
-							</Grid> : null}
-							{brokerConnection.key ? <Grid item md={columnSize} align="center">
-								<Typography style={{fontSize: 'small'}}>
-										<span
-											style={{fontWeight: 'bold'}}>Private Key File: </span>{brokerConnection.keyFile}
-								</Typography>
-							</Grid> : null}
-						</Grid>
-					</Box>
-				</Collapse>
-			</TableCell>
-		</TableRow>
-		<Menu
-			keepMounted
-			open={cursorPosInfo.mouseY !== null}
-			onClose={handleClose}
-			anchorReference="anchorPosition"
-			anchorPosition={cursorPosInfo.mouseY !== null && cursorPosInfo.mouseX !== null ? {
-				top: cursorPosInfo.mouseY,
-				left: cursorPosInfo.mouseX
-			} : undefined}
-		>
-			{!oneExternalURLExists && !brokerConnection.internalUrl ?
-				<MenuItem onClick={() => copyText(brokerConnection.url)}>Copy URL</MenuItem> : null}
-			{brokerConnection.internalUrl ?
-				<MenuItem onClick={() => copyText(brokerConnection.internalUrl)}>Copy Internal URL</MenuItem> : null}
-			{oneExternalURLExists ? <MenuItem onClick={() => copyText(
-				brokerConnection.externalUnencryptedUrl || brokerConnection.externalEncryptedUrl)}>Copy External
-				URL</MenuItem> : bothExternalURLExists ? (<>
-				<MenuItem onClick={() => copyText(brokerConnection.externalUnencryptedUrl)}>Copy External MQTT
-					URL</MenuItem>
-				<MenuItem onClick={() => copyText(brokerConnection.externalEncryptedUrl)}>Copy External MWTTS
-					URL</MenuItem>
-			</>) : null}
-			{brokerConnection.websocketsUrl ?
-				<MenuItem onClick={() => copyText(brokerConnection.websocketsUrl)}>Copy WS URL</MenuItem> : null}
-		</Menu>
-	</>
+    return (
+        <>
+            <StyledTableRow
+                //   style={{ cursor: "pointer" }}
+                // onClick={() => onSelectConnection(brokerConnection)}
+                onClick={props.onClick}
+                key={brokerConnection.name}
+                onContextMenu={handleClick}
+                className={atLeastAdmin(userProfile, brokerConnection.name) ? props.classes.cursorPointer : ''}
+            >
+                {medium || small ? null : (
+                    <TableCell align={CONN_TABLE_COLUMNS[0].align} style={{ padding: '6px' }}>
+                        <IconButton
+                            aria-label="expand row"
+                            size="small"
+                            disabled={!makeCollapsible}
+                            style={makeCollapsible ? { opacity: '100%' } : { opacity: '0%' }}
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                setOpen(!open);
+                            }}
+                        >
+                            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                        </IconButton>
+                    </TableCell>
+                )}
+                {medium || small ? null : (
+                    <TableCell align={CONN_TABLE_COLUMNS[1].align} style={{ padding: '6px' }}>
+                        {clusterConnection ? (
+                            <Tooltip
+                                title={
+                                    clusterConnection.isLeader
+                                        ? `Leader of "${clusterConnection.clustername}" cluster`
+                                        : `Follower of "${clusterConnection.clustername}" cluster`
+                                }
+                            >
+                                {clusterConnection.isLeader ? (
+                                    <LeaderIcon fontSize="small" style={{ color: green[500] }} />
+                                ) : (
+                                    <ClusterIcon fontSize="small" />
+                                )}
+                            </Tooltip>
+                        ) : null}
+                    </TableCell>
+                )}
+                <TableCell align={CONN_TABLE_COLUMNS[2].align} style={{ padding: '6px' }}>
+                    {brokerConnection.name}
+                </TableCell>
+                {medium || small ? null : (
+                    <TableCell align={CONN_TABLE_COLUMNS[3].align} style={{ padding: '6px' }}>
+                        {brokerConnection.id}
+                    </TableCell>
+                )}
+                {small ? null : (
+                    <TableCell align={CONN_TABLE_COLUMNS[4].align} style={{ padding: '6px' }}>
+                        {url}
+                    </TableCell>
+                )}
+                <TableCell align={CONN_TABLE_COLUMNS[5].align} style={{ padding: '6px' }}>
+                    <BrokerStatusIcon brokerConnection={brokerConnection} />
+                    {}
+                </TableCell>
+                {medium || small ? null : (
+                    <TableCell align={CONN_TABLE_COLUMNS[6].align} style={{ padding: '6px' }}>
+                        <Tooltip
+                            title={brokerConnection.status?.connected ? 'Disconnect' : 'Connect'}
+                            aria-label={`conn-switch-${brokerConnection.id}`}
+                        >
+                            <Switch
+                                color="primary"
+                                disabled={!atLeastAdmin(userProfile, brokerConnection.name)}
+                                checked={brokerConnection.status?.connected}
+                                name="connectionConnected"
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleBrokerConnectionConnectDisconnect(
+                                        brokerConnection.id,
+                                        brokerConnection.name,
+                                        event.target.checked
+                                    );
+                                }}
+                                inputProps={{ 'aria-label': 'Connection connected' }}
+                            />
+                        </Tooltip>
+                        <IconButton
+                            disabled={
+                                brokerConnection.status?.connected || !atLeastAdmin(userProfile, brokerConnection.name)
+                            }
+                            id={`delete-connection-${brokerConnection.name}`}
+                            size="small"
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                onDeleteConnection(brokerConnection.id);
+                            }}
+                        >
+                            <DeleteIcon fontSize="small" />
+                        </IconButton>
+                    </TableCell>
+                )}
+            </StyledTableRow>
+            <TableRow>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                    <Collapse in={open} timeout="auto" unmountOnExit>
+                        <Box margin={1} style={{ marginTop: '16px' }} align="center">
+                            {/* {brokerConnection.externalUrl ? <Typography>Internal URL: {brokerConnection.url}</Typography> : null} */}
+                            <Grid container spacing={2} alignItems="flex-end">
+                                {brokerConnection.internalUrl ? (
+                                    <Grid item xs={columnSize} align="center">
+                                        <Typography style={{ fontSize: 'small' }}>
+                                            <span style={{ fontWeight: 'bold' }}>Internal URL: </span>
+                                            {brokerConnection.internalUrl}
+                                        </Typography>
+                                    </Grid>
+                                ) : null}
+                                {brokerConnection.externalEncryptedUrl ? (
+                                    <Grid item xs={columnSize} align="center">
+                                        <Typography style={{ fontSize: 'small' }}>
+                                            <span style={{ fontWeight: 'bold' }}>External MQTTS URL: </span>
+                                            {brokerConnection.externalEncryptedUrl}
+                                        </Typography>
+                                    </Grid>
+                                ) : null}
+                                {brokerConnection.externalUnencryptedUrl ? (
+                                    <Grid item xs={columnSize} align="center">
+                                        <Typography style={{ fontSize: 'small' }}>
+                                            <span style={{ fontWeight: 'bold' }}>External MQTT URL: </span>
+                                            {brokerConnection.externalUnencryptedUrl}
+                                        </Typography>
+                                    </Grid>
+                                ) : null}
+                                {brokerConnection.websocketsUrl ? (
+                                    <Grid item xs={columnSize} align="center">
+                                        <Typography style={{ fontSize: 'small' }}>
+                                            <span style={{ fontWeight: 'bold' }}>External WS URL: </span>
+                                            {brokerConnection.websocketsUrl}
+                                        </Typography>
+                                    </Grid>
+                                ) : null}
+                                {brokerConnection.ca ? (
+                                    <Grid item xs={columnSize} align="center">
+                                        <Typography style={{ fontSize: 'small' }}>
+                                            <span style={{ fontWeight: 'bold' }}>CA Cert File: </span>
+                                            {brokerConnection.caFile}
+                                        </Typography>
+                                    </Grid>
+                                ) : null}
+                                {brokerConnection.cert ? (
+                                    <Grid item md={columnSize} align="center">
+                                        <Typography style={{ fontSize: 'small' }}>
+                                            <span style={{ fontWeight: 'bold' }}>Client Cert File: </span>
+                                            {brokerConnection.certFile}
+                                        </Typography>
+                                    </Grid>
+                                ) : null}
+                                {brokerConnection.key ? (
+                                    <Grid item md={columnSize} align="center">
+                                        <Typography style={{ fontSize: 'small' }}>
+                                            <span style={{ fontWeight: 'bold' }}>Private Key File: </span>
+                                            {brokerConnection.keyFile}
+                                        </Typography>
+                                    </Grid>
+                                ) : null}
+                            </Grid>
+                        </Box>
+                    </Collapse>
+                </TableCell>
+            </TableRow>
+            <Menu
+                keepMounted
+                open={cursorPosInfo.mouseY !== null}
+                onClose={handleClose}
+                anchorReference="anchorPosition"
+                anchorPosition={
+                    cursorPosInfo.mouseY !== null && cursorPosInfo.mouseX !== null
+                        ? {
+                              top: cursorPosInfo.mouseY,
+                              left: cursorPosInfo.mouseX,
+                          }
+                        : undefined
+                }
+            >
+                {!oneExternalURLExists && !brokerConnection.internalUrl ? (
+                    <MenuItem onClick={() => copyText(brokerConnection.url)}>Copy URL</MenuItem>
+                ) : null}
+                {brokerConnection.internalUrl ? (
+                    <MenuItem onClick={() => copyText(brokerConnection.internalUrl)}>Copy Internal URL</MenuItem>
+                ) : null}
+                {oneExternalURLExists ? (
+                    <MenuItem
+                        onClick={() =>
+                            copyText(brokerConnection.externalUnencryptedUrl || brokerConnection.externalEncryptedUrl)
+                        }
+                    >
+                        Copy External URL
+                    </MenuItem>
+                ) : bothExternalURLExists ? (
+                    <>
+                        <MenuItem onClick={() => copyText(brokerConnection.externalUnencryptedUrl)}>
+                            Copy External MQTT URL
+                        </MenuItem>
+                        <MenuItem onClick={() => copyText(brokerConnection.externalEncryptedUrl)}>
+                            Copy External MWTTS URL
+                        </MenuItem>
+                    </>
+                ) : null}
+                {brokerConnection.websocketsUrl ? (
+                    <MenuItem onClick={() => copyText(brokerConnection.websocketsUrl)}>Copy WS URL</MenuItem>
+                ) : null}
+            </Menu>
+        </>
+    );
 };
 
-
 const Connections = ({
-						 brokerConnections, onSort, sortBy, sortDirection, connected, userProfile,
-						 currentConnectionName, clusterDetails, backendParameters
-					 }) => {
-	const classes = useStyles();
-	const history = useHistory();
-	const dispatch = useDispatch();
-	const context = useContext(WebSocketContext);
-	const confirm = useConfirm();
-	const {enqueueSnackbar} = useSnackbar();
-	const {client: brokerClient} = context;
-	const [connection, setConnection] = React.useState('');
-	const [premiumFeatureDialogOpen, setPremiumFeatureDialogOpen] = React.useState(false);
-	const small = useMediaQuery(theme => theme.breakpoints.down('xs'));
-	const medium = useMediaQuery(theme => theme.breakpoints.between('sm', 'sm'));
+    brokerConnections,
+    onSort,
+    sortBy,
+    sortDirection,
+    connected,
+    userProfile,
+    currentConnectionName,
+    clusterDetails,
+    backendParameters,
+}) => {
+    const classes = useStyles();
+    const history = useHistory();
+    const dispatch = useDispatch();
+    const context = useContext(WebSocketContext);
+    const confirm = useConfirm();
+    const { enqueueSnackbar } = useSnackbar();
+    const { client: brokerClient } = context;
+    const [connection, setConnection] = React.useState('');
+    const [premiumFeatureDialogOpen, setPremiumFeatureDialogOpen] = React.useState(false);
+    const small = useMediaQuery((theme) => theme.breakpoints.down('xs'));
+    const medium = useMediaQuery((theme) => theme.breakpoints.between('sm', 'sm'));
 
-	const clusterConnections = toClusterConnectionEntries(clusterDetails);
+    const clusterConnections = toClusterConnectionEntries(clusterDetails);
 
-	const handleClosePremiumFeatureDialog = () => {
-		setPremiumFeatureDialogOpen(false);
-	}
+    const handleClosePremiumFeatureDialog = () => {
+        setPremiumFeatureDialogOpen(false);
+    };
 
-	const onNewConnection = () => {
-		history.push('/connections/new');
-	};
+    const onNewConnection = () => {
+        history.push('/connections/new');
+    };
 
+    const onSelectConnection = async (connection) => {
+        if (!atLeastAdmin(userProfile, connection.name)) {
+            return;
+        }
+        dispatch(updateSelectedConnection(connection));
+        history.push(`/connections/${connection.id}`);
+    };
 
-	const onSelectConnection = async (connection) => {
-		if (!atLeastAdmin(userProfile, connection.name)) {
-			return;
-		}
-		dispatch(updateSelectedConnection(connection));
-		history.push(`/connections/${connection.id}`);
-	};
+    const loadConnections = async () => {
+        const brokerConnections = await brokerClient.getBrokerConnections();
+        dispatch(updateBrokerConnections(brokerConnections));
+        const brokerConfigurations = await brokerClient.getBrokerConfigurations();
+        dispatch(updateBrokerConfigurations(brokerConfigurations));
+    };
 
+    const onConnectServerToBroker = async (id, name) => {
+        try {
+            await brokerClient.disconnectServerFromBroker(id);
+            await brokerClient.connectServerToBroker(id, true);
+            if (!connected || !backendParameters.multipleConnectionsAllowed) {
+                // if current broker is not connected, then select the one we just connected with connectServerToBroker
+                handleConnectionChange(dispatch, brokerClient, name, currentConnectionName, connected).catch((error) =>
+                    console.error('Error while pulling information from the broker on reconnect: ', error)
+                );
+                // await brokerClient.connectToBroker(name);
+                // dispatch(updateBrokerConnected(true, name));
+            }
 
-	const loadConnections = async () => {
-		const brokerConnections = await brokerClient.getBrokerConnections();
-		dispatch(updateBrokerConnections(brokerConnections));
-		const brokerConfigurations = await brokerClient.getBrokerConfigurations();
-		dispatch(updateBrokerConfigurations(brokerConfigurations));
-	}
+            enqueueSnackbar(`Connection "${id}" successfully established`, {
+                variant: 'success',
+            });
+        } catch (error) {
+            // setPremiumFeatureDialogOpen(true);
+            enqueueSnackbar(`Error connecting broker. Reason: ${error.message ? error.message : error}`, {
+                variant: 'error',
+            });
+        }
+        await loadConnections();
+    };
 
-	const onConnectServerToBroker = async (id, name) => {
-		try {
-			await brokerClient.disconnectServerFromBroker(id);
-			await brokerClient.connectServerToBroker(id, true);
-			if (!connected || !backendParameters.multipleConnectionsAllowed) { // if current broker is not connected, then select the one we just connected with connectServerToBroker
-				handleConnectionChange(dispatch, brokerClient, name, currentConnectionName, connected).catch(
-					(error) => console.error('Error while pulling information from the broker on reconnect: ', error));
-				// await brokerClient.connectToBroker(name);
-				// dispatch(updateBrokerConnected(true, name));
-			}
+    const onDisconnectServerFromBroker = async (id, name) => {
+        try {
+            await confirm({
+                title: 'Confirm disconnecting',
+                description: `Do you really want to disconnect the connection "${id}"?`,
+            });
 
-			enqueueSnackbar(`Connection "${id}" successfully established`, {
-				variant: 'success'
-			});
-		} catch (error) {
-			// setPremiumFeatureDialogOpen(true);
-			enqueueSnackbar(`Error connecting broker. Reason: ${error.message ? error.message : error}`, {
-				variant: 'error'
-			});
-		}
-		await loadConnections();
-	}
+            await brokerClient.disconnectServerFromBroker(id);
+            enqueueSnackbar(`Connection "${id}" successfully closed`, {
+                variant: 'success',
+            });
+            // const connections = await brokerClient.getBrokerConnections(); // this will anyway be called in handleConnectionChange
+            // dispatch(updateBrokerConnections(connections));
+            handleConnectionChange(dispatch, brokerClient, currentConnectionName, name, connected).catch((error) =>
+                console.error('Error while pulling information from the broker on disconnect: ', error)
+            );
+        } catch (error) {
+            // setPremiumFeatureDialogOpen(true);
+            enqueueSnackbar(`Error disconnecting broker. Reason: ${error.message ? error.message : error}`, {
+                variant: 'error',
+            });
+        }
+        await loadConnections();
+    };
 
-	const onDisconnectServerFromBroker = async (id, name) => {
-		try {
-			await confirm({
-				title: 'Confirm disconnecting',
-				description: `Do you really want to disconnect the connection "${id}"?`
-			});
+    const handleBrokerConnectionConnectDisconnect = async (id, name, connect) => {
+        if (connect) {
+            await onConnectServerToBroker(id, name);
+        } else {
+            await onDisconnectServerFromBroker(id, name);
+        }
+    };
 
-			await brokerClient.disconnectServerFromBroker(id);
-			enqueueSnackbar(`Connection "${id}" successfully closed`, {
-				variant: 'success'
-			});
-			// const connections = await brokerClient.getBrokerConnections(); // this will anyway be called in handleConnectionChange
-			// dispatch(updateBrokerConnections(connections));
-			handleConnectionChange(dispatch, brokerClient, currentConnectionName, name, connected).catch(
-				(error) => console.error('Error while pulling information from the broker on disconnect: ', error));
-		} catch (error) {
-		    // setPremiumFeatureDialogOpen(true);
-			enqueueSnackbar(`Error disconnecting broker. Reason: ${error.message ? error.message : error}`, {
-				variant: 'error'
-			});
-		}
-		await loadConnections();
-	}
+    const onDeleteConnection = async (id) => {
+        try {
+            await confirm({
+                title: 'Confirm connection deletion',
+                description: `Do you really want to delete connection "${id}"?`,
+            });
+            await brokerClient.disconnectServerFromBroker(id);
+            await brokerClient.deleteConnection(id);
+            enqueueSnackbar(`Connection "${id}" successfully deleted`, {
+                variant: 'success',
+            });
+            const connections = await brokerClient.getBrokerConnections();
+            dispatch(updateBrokerConnections(connections));
+        } catch (error) {
+            // setPremiumFeatureDialogOpen(true);
+            enqueueSnackbar(`Error deleting connection. Reason: ${error.message ? error.message : error}`, {
+                variant: 'error',
+            });
+            // enqueueSnackbar(`Error disconnecting broker. Note that this feature is only available in the premium
+            // version.`, { variant: 'error' });
+        }
+    };
 
-	const handleBrokerConnectionConnectDisconnect = async (id, name, connect) => {
-		if (connect) {
-			await onConnectServerToBroker(id, name);
-		} else {
-			await onDisconnectServerFromBroker(id, name);
-		}
-	};
-
-	const onDeleteConnection = async (id) => {
-		try {
-			await confirm({
-				title: 'Confirm connection deletion',
-				description: `Do you really want to delete connection "${id}"?`
-			});
-			await brokerClient.disconnectServerFromBroker(id);
-			await brokerClient.deleteConnection(id);
-			enqueueSnackbar(`Connection "${id}" successfully deleted`, {
-				variant: 'success'
-			});
-			const connections = await brokerClient.getBrokerConnections();
-			dispatch(updateBrokerConnections(connections));
-		} catch (error) {
-			// setPremiumFeatureDialogOpen(true);
-			enqueueSnackbar(`Error deleting connection. Reason: ${error.message ? error.message : error}`, {
-				variant: 'error'
-			});
-			// enqueueSnackbar(`Error disconnecting broker. Note that this feature is only available in the premium
-			// version.`, { variant: 'error' });
-		}
-	};
-
-	return [
-		<PremiumFeatureDialog open={premiumFeatureDialogOpen} handleClose={handleClosePremiumFeatureDialog}/>,
-		<ContentContainer
-			breadCrumbs={<ContainerBreadCrumbs title="Connections" links={[{name: 'Home', route: '/home'}]}/>}
-			dataTour="page-connections"
-		>
-			<ContainerHeader
-				title="Broker Connections"
-				subTitle="List of Connections. Connections configure the access to an existing broker instance.
+    return [
+        <PremiumFeatureDialog open={premiumFeatureDialogOpen} handleClose={handleClosePremiumFeatureDialog} />,
+        <ContentContainer
+            breadCrumbs={<ContainerBreadCrumbs title="Connections" links={[{ name: 'Home', route: '/home' }]} />}
+            dataTour="page-connections"
+        >
+            <ContainerHeader
+                title="Broker Connections"
+                subTitle="List of Connections. Connections configure the access to an existing broker instance.
 				You have to be connected to a broker to view and manage its settings or inspect broker information."
-			>
-				{ atLeastAdmin(userProfile) ? <Button
-					variant="outlined"
-					color="primary"
-					size="small"
-					id="new-connection-button"
-					// className={classes.button}
-					startIcon={<AddIcon/>}
-					onClick={(event) => {
-						event.stopPropagation();
-						onNewConnection();
-					}}
-				>
-					New Connection
-				</Button> : null }
-			</ContainerHeader>
-			{brokerConnections && brokerConnections?.length > 0 ? (
-				<TableContainer style={{maxHeight: '100%'}}>
-					<Table stickyHeader size="small" aria-label="sticky table">
-						<TableHead>
-							<TableRow>
-								{CONN_TABLE_COLUMNS.map((column) => (<TableCell
-									align={column.align}
-									style={{
-										padding: '6px',
-										width: column.width,
-										display: (!small && !medium) || (column.id === 'name' && (small || medium)) || (column.id === 'status' && (small || medium)) || (column.id === 'url' && medium) ? undefined : 'none'
-									}}
-									key={column.id}
-									// sortDirection={sortBy === column.id ? sortDirection : false}
-								>
-									{/* <TableSortLabel
+            >
+                {atLeastAdmin(userProfile) ? (
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        size="small"
+                        id="new-connection-button"
+                        // className={classes.button}
+                        startIcon={<AddIcon />}
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            onNewConnection();
+                        }}
+                    >
+                        New Connection
+                    </Button>
+                ) : null}
+            </ContainerHeader>
+            {brokerConnections && brokerConnections?.length > 0 ? (
+                <TableContainer style={{ maxHeight: '100%' }}>
+                    <Table stickyHeader size="small" aria-label="sticky table">
+                        <TableHead>
+                            <TableRow>
+                                {CONN_TABLE_COLUMNS.map((column) => (
+                                    <TableCell
+                                        align={column.align}
+                                        style={{
+                                            padding: '6px',
+                                            width: column.width,
+                                            display:
+                                                (!small && !medium) ||
+                                                (column.id === 'name' && (small || medium)) ||
+                                                (column.id === 'status' && (small || medium)) ||
+                                                (column.id === 'url' && medium)
+                                                    ? undefined
+                                                    : 'none',
+                                        }}
+                                        key={column.id}
+                                        // sortDirection={sortBy === column.id ? sortDirection : false}
+                                    >
+                                        {/* <TableSortLabel
 													active={sortBy === column.id}
 													direction={sortDirection}
 													// onClick={() => onSort(column.id)}
 												>
 													{column.key}
 												</TableSortLabel> */}
-									{column.key}
-								</TableCell>))}
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{brokerConnections && brokerConnections
-								.sort((a, b) => a.name.localeCompare(b.name))
-								.map((brokerConnection) => (<CustomRow
-									small={small}
-									medium={medium}
-									hover
-									onClick={() => onSelectConnection(brokerConnection)}
-									brokerConnection={brokerConnection}
-									handleBrokerConnectionConnectDisconnect={handleBrokerConnectionConnectDisconnect}
-									onDeleteConnection={onDeleteConnection}
-									userProfile={userProfile}
-									classes={classes}
-									clusterConnection={clusterConnections[brokerConnection.id]}
-								/>))}
-						</TableBody>
-					</Table>
-				</TableContainer>
-			) : (<div>No connections found</div>)}
-		</ContentContainer>
-	];
+                                        {column.key}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {brokerConnections &&
+                                brokerConnections
+                                    .sort((a, b) => a.name.localeCompare(b.name))
+                                    .map((brokerConnection) => (
+                                        <CustomRow
+                                            small={small}
+                                            medium={medium}
+                                            hover
+                                            onClick={() => onSelectConnection(brokerConnection)}
+                                            brokerConnection={brokerConnection}
+                                            handleBrokerConnectionConnectDisconnect={
+                                                handleBrokerConnectionConnectDisconnect
+                                            }
+                                            onDeleteConnection={onDeleteConnection}
+                                            userProfile={userProfile}
+                                            classes={classes}
+                                            clusterConnection={clusterConnections[brokerConnection.id]}
+                                        />
+                                    ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            ) : (
+                <div>No connections found</div>
+            )}
+        </ContentContainer>,
+    ];
 };
 
 const mapStateToProps = (state) => {
-	return {
-		clusterDetails: state.clusters?.clusterDetails,
-		brokerConnections: state.brokerConnections?.brokerConnections,
-		connected: state.brokerConnections.connected,
-		userProfile: state.userProfile?.userProfile,
-		currentConnectionName: state.brokerConnections?.currentConnectionName,
-		backendParameters: state.backendParameters?.backendParameters,
-	};
+    return {
+        clusterDetails: state.clusters?.clusterDetails,
+        brokerConnections: state.brokerConnections?.brokerConnections,
+        connected: state.brokerConnections.connected,
+        userProfile: state.userProfile?.userProfile,
+        currentConnectionName: state.brokerConnections?.currentConnectionName,
+        backendParameters: state.backendParameters?.backendParameters,
+    };
 };
 
 export default connect(mapStateToProps)(Connections);

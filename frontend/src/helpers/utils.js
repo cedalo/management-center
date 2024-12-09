@@ -1,5 +1,5 @@
 const getBrokerById = (brokerConnections, id) =>
-	brokerConnections.find((brokerConnection) => brokerConnection.id === id);
+    brokerConnections.find((brokerConnection) => brokerConnection.id === id);
 
 const getIsAdminClient = (defaultClient) => {
     const defClientUsername = defaultClient?.username;
@@ -9,9 +9,9 @@ const getIsAdminClient = (defaultClient) => {
 
 const getAdminRoles = (defaultClient, clients) => {
     const isAdmin = getIsAdminClient(defaultClient);
-	clients = clients || [];
-	const adminClient = clients.find(isAdmin);
-	return adminClient ? adminClient.roles.map((r) => r.rolename) : [];
+    clients = clients || [];
+    const adminClient = clients.find(isAdmin);
+    return adminClient ? adminClient.roles.map((r) => r.rolename) : [];
 };
 
 export { getIsAdminClient, getAdminRoles, getBrokerById };

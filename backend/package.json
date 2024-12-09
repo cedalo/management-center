@@ -1,35 +1,35 @@
 {
-	"name": "@cedalo/management-center-backend",
-	"version": "2.9.5",
-	"description": "",
-	"main": "index.js",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"start": "node start.js",
-		"start:dev": "node -r ./esbuild.js"
-	},
-	"author": "Cedalo AG",
-	"dependencies": {
-		"async-mutex": "^0.4.0",
-		"axios": "^0.27.2",
-		"content-type-parser": "^1.0.2",
-		"cors": "^2.8.5",
-		"ejs": "^3.1.8",
-		"eventemitter2": "^6.4.9",
-		"express": "^4.18.1",
-		"express-session": "^1.17.3",
-		"jsonwebtoken": "^9.0.0",
-		"lowdb": "^1.0.0",
-		"mqtt": "^4.3.7",
-		"node-cron": "^2.0.3",
-		"passport": "^0.6.0",
-		"passport-local": "^1.0.0",
-		"swagger-ui-express": "^3.0.10",
-		"uuid": "^8.3.2",
-		"winston": "^3.6.0",
-		"ws": "^8.6.0"
-	},
-	"devDependencies": {
-		"esbuild": "^0.17.4"
-	}
+    "name": "@cedalo/management-center-backend",
+    "version": "2.9.5",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node start.js",
+        "start:dev": "node -r ./esbuild.js"
+    },
+    "author": "Cedalo AG",
+    "dependencies": {
+        "async-mutex": "^0.4.0",
+        "axios": "^0.27.2",
+        "content-type-parser": "^1.0.2",
+        "cors": "^2.8.5",
+        "ejs": "^3.1.8",
+        "eventemitter2": "^6.4.9",
+        "express": "^4.18.1",
+        "express-session": "^1.17.3",
+        "jsonwebtoken": "^9.0.0",
+        "lowdb": "^1.0.0",
+        "mqtt": "^4.3.7",
+        "node-cron": "^2.0.3",
+        "passport": "^0.6.0",
+        "passport-local": "^1.0.0",
+        "swagger-ui-express": "^3.0.10",
+        "uuid": "^8.3.2",
+        "winston": "^3.6.0",
+        "ws": "^8.6.0"
+    },
+    "devDependencies": {
+        "esbuild": "^0.17.4"
+    }
 }

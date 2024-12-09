@@ -1,13 +1,12 @@
-
 class Logger {
-    constructor(logger, silentMode=false) {
-        this.logger     = logger;
+    constructor(logger, silentMode = false) {
+        this.logger = logger;
         this.silentMode = silentMode;
     }
 
     formatTimestamp() {
         const date = new Date();
-        return (date.toISOString()) + ' (' + date.getTime() + '): '; 
+        return date.toISOString() + ' (' + date.getTime() + '): ';
     }
 
     log() {

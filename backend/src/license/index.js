@@ -5,5 +5,5 @@ const LicenseKey = require('./LicenseKey');
 module.exports = {
     License,
     LicenseChecker,
-    LicenseKey
-}
+    LicenseKey,
+};

@@ -9,116 +9,114 @@ const swagger = require('./swagger');
 const { createActions } = require('./actions');
 const { hasSession } = require('../../../utils/utils');
 
-
 const CEDALO_MC_PROXY_BASE_PATH = process.env.CEDALO_MC_PROXY_BASE_PATH || '';
 
 module.exports = class Plugin extends BasePlugin {
-	constructor() {
-		super(meta);
-		this._swagger = swagger;
-	}
+    constructor() {
+        super(meta);
+        this._swagger = swagger;
+    }
 
-	init(context) {
-		const { router, registerAction } = context;
+    init(context) {
+        const { router, registerAction } = context;
 
-		const { loginAction, logoutAction } = createActions(this);
+        const { loginAction, logoutAction } = createActions(this);
 
-		registerAction(loginAction);
-		registerAction(logoutAction);
+        registerAction(loginAction);
+        registerAction(logoutAction);
 
-		// app.use(passport.initialize());
-		// app.use(passport.session());
+        // app.use(passport.initialize());
+        // app.use(passport.session());
 
-		router.use(passport.initialize());
-		router.use(passport.session());
+        router.use(passport.initialize());
+        router.use(passport.session());
 
-		passport.use(
-			new LocalStrategy(
-				{ passReqToCallback: true },
-				// function of username, password, done(callback)
-				async (request, username, password, done) => {
-					try {
-						const user = await context.runAction(null, 'user/login', { username, password }, { request });
-						done(null, user);
-					} catch (error) {
-						done(null, false, error);
-					}
-				}
-			)
-		);
+        passport.use(
+            new LocalStrategy(
+                { passReqToCallback: true },
+                // function of username, password, done(callback)
+                async (request, username, password, done) => {
+                    try {
+                        const user = await context.runAction(null, 'user/login', { username, password }, { request });
+                        done(null, user);
+                    } catch (error) {
+                        done(null, false, error);
+                    }
+                }
+            )
+        );
 
-		passport.serializeUser(function (user, done) {
-			done(null, user);
-		});
+        passport.serializeUser(function (user, done) {
+            done(null, user);
+        });
 
-		passport.deserializeUser(function (user, done) {
-			done(null, user);
-		});
+        passport.deserializeUser(function (user, done) {
+            done(null, user);
+        });
 
-		router.use(context.middleware.preprocessUser);
+        router.use(context.middleware.preprocessUser);
 
-		context.security.isLoggedIn = (request, response, next, doRedirectOnFail=false) => {
-			if (request.isAuthenticated()) {
-				return next();
-			}
-			return context.security.handleSessionExpiredOrInvalidResponse(request, response, doRedirectOnFail);
-		};
+        context.security.isLoggedIn = (request, response, next, doRedirectOnFail = false) => {
+            if (request.isAuthenticated()) {
+                return next();
+            }
+            return context.security.handleSessionExpiredOrInvalidResponse(request, response, doRedirectOnFail);
+        };
 
-		router.use(express.static(path.join(__dirname, '..', 'component')));
+        router.use(express.static(path.join(__dirname, '..', 'component')));
 
-		router.get('/login', (request, response) => {
-			response.sendFile(path.join(__dirname, '..', 'component', 'login.html'));
-		});
+        router.get('/login', (request, response) => {
+            response.sendFile(path.join(__dirname, '..', 'component', 'login.html'));
+        });
 
-		router.get('/logout', (request, response, next) => {
-			const { user } = request;
-			request.logout(function (error) {
-				if (error) {
-					return next(error);
-				}
-				context.runAction(user, 'user/logout', { username: user?.username }, { request });
-				response.redirect(`${CEDALO_MC_PROXY_BASE_PATH}/login`);
-			});
-		});
+        router.get('/logout', (request, response, next) => {
+            const { user } = request;
+            request.logout(function (error) {
+                if (error) {
+                    return next(error);
+                }
+                context.runAction(user, 'user/logout', { username: user?.username }, { request });
+                response.redirect(`${CEDALO_MC_PROXY_BASE_PATH}/login`);
+            });
+        });
 
-		router.get(
-			'/validate-session',
-			(request, response) => {
-				return response.send(hasSession(request) ? { valid: true } : { valid: false });
-				// return hasSession(request) ? next() : response.redirect(303, `${CEDALO_MC_PROXY_BASE_PATH}/login`);
-			}
-		);
-	
-		router.post('/auth', (request, response, next) => {
-			passport.authenticate('local', (error, user, info) => {
-				if (error) {
-					return next(error);
-				}
-				if (!user) {
-					if (!request.query.json) {
-						return response.redirect(`${CEDALO_MC_PROXY_BASE_PATH}/login?error=authentication-failed`);
-					} else {
-						return response.status(401).send({ code: 'UNAUTHORIZED', message: 'Unauthorized'});
-					}
-				} else {
-					request.login(user, function (error_) {
-						if (error_) {
-							return next(error_);
-						}
-						if (!request.query.json) {
-							return response.redirect(`${CEDALO_MC_PROXY_BASE_PATH}/`);
-						} else {
-							return response.status(200).send({ code: 'SUCCESS', message: 'Authorized', successful: true});
-						}
-					});
-				}
-			})(request, response, next);
-		});
+        router.get('/validate-session', (request, response) => {
+            return response.send(hasSession(request) ? { valid: true } : { valid: false });
+            // return hasSession(request) ? next() : response.redirect(303, `${CEDALO_MC_PROXY_BASE_PATH}/login`);
+        });
 
-		// router.post('/auth', passport.authenticate('local', {
-		// 		successRedirect: `${CEDALO_MC_PROXY_BASE_PATH}/`,
-		// 		failureRedirect : `${CEDALO_MC_PROXY_BASE_PATH}/login?error=authentication-failed`,
-		// 	}
-		// ));
-	}
+        router.post('/auth', (request, response, next) => {
+            passport.authenticate('local', (error, user, info) => {
+                if (error) {
+                    return next(error);
+                }
+                if (!user) {
+                    if (!request.query.json) {
+                        return response.redirect(`${CEDALO_MC_PROXY_BASE_PATH}/login?error=authentication-failed`);
+                    } else {
+                        return response.status(401).send({ code: 'UNAUTHORIZED', message: 'Unauthorized' });
+                    }
+                } else {
+                    request.login(user, function (error_) {
+                        if (error_) {
+                            return next(error_);
+                        }
+                        if (!request.query.json) {
+                            return response.redirect(`${CEDALO_MC_PROXY_BASE_PATH}/`);
+                        } else {
+                            return response
+                                .status(200)
+                                .send({ code: 'SUCCESS', message: 'Authorized', successful: true });
+                        }
+                    });
+                }
+            })(request, response, next);
+        });
+
+        // router.post('/auth', passport.authenticate('local', {
+        // 		successRedirect: `${CEDALO_MC_PROXY_BASE_PATH}/`,
+        // 		failureRedirect : `${CEDALO_MC_PROXY_BASE_PATH}/login?error=authentication-failed`,
+        // 	}
+        // ));
+    }
 };

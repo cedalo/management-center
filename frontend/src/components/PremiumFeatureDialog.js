@@ -13,15 +13,14 @@ import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
-	actions: {
-        justifyContent: 'center'
-    }
+    actions: {
+        justifyContent: 'center',
+    },
 }));
 
-// Quick fix: use data URL in cause the proxy server 
+// Quick fix: use data URL in cause the proxy server
 // is not available and does not host the image any more
-const image = 
-`data:image/png;base64,
+const image = `data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAPoAAAD6CAYAAACI7Fo9AAAFYmlUWHRYTUw6Y29tLmFkb2JlLnhtc
 AAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz
 4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS4
@@ -253,58 +252,57 @@ H7Q0IIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBC
 CCGEEEIIIYQQHvx/U3pMvcXL4PYAAAAASUVORK5CYII=`;
 
 const getDialogContent = () => {
-		return <>
-			<DialogTitle align="center" id="not-connected-dialog-title">
-				Premium feature
-			</DialogTitle>
-			<DialogContent>
-				<Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
-					<Grid item xs={12} align="center">
-						<img src={image} />
-					</Grid>
-					<Grid item xs={12} align="center">
-						<DialogContentText id="alert-dialog-description">
-							This is a premium feature. Please make sure that you have the premium plugin enabled for dynamic connecting and disconnecting a broker.
-						</DialogContentText>
-					</Grid>
-				</Grid>
-			</DialogContent>
-		</>
-}
+    return (
+        <>
+            <DialogTitle align="center" id="not-connected-dialog-title">
+                Premium feature
+            </DialogTitle>
+            <DialogContent>
+                <Grid container spacing={24} justifyContent="center" style={{ maxWidth: '100%' }}>
+                    <Grid item xs={12} align="center">
+                        <img src={image} />
+                    </Grid>
+                    <Grid item xs={12} align="center">
+                        <DialogContentText id="alert-dialog-description">
+                            This is a premium feature. Please make sure that you have the premium plugin enabled for
+                            dynamic connecting and disconnecting a broker.
+                        </DialogContentText>
+                    </Grid>
+                </Grid>
+            </DialogContent>
+        </>
+    );
+};
 const PremiumFeatureDialog = ({ open, handleClose }) => {
+    const classes = useStyles();
 
-	const classes = useStyles();
+    return (
+        <Dialog
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="not-connected-dialog-title"
+            aria-describedby="not-connected-dialog-description"
+        >
+            {getDialogContent()}
 
-	return (
-		<Dialog
-			open={open}
-			onClose={handleClose}
-			aria-labelledby="not-connected-dialog-title"
-			aria-describedby="not-connected-dialog-description"
-		>
-			{
-				getDialogContent()
-			}
-
-			<DialogActions classes={{root: classes.actions}}>
-				<Button
-					variant="outlined"
-					color="default"
-					size="small"
-					href="https://www.cedalo.com"
-					target="_blank"
-					startIcon={<PremiumPluginIcon style={{ color: amber[500] }} fontSize="small" />}
-				>
-						Get premium version
-				</Button>
-			</DialogActions>
-		</Dialog>
-	);
+            <DialogActions classes={{ root: classes.actions }}>
+                <Button
+                    variant="outlined"
+                    color="default"
+                    size="small"
+                    href="https://www.cedalo.com"
+                    target="_blank"
+                    startIcon={<PremiumPluginIcon style={{ color: amber[500] }} fontSize="small" />}
+                >
+                    Get premium version
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
 };
 
 const mapStateToProps = (state) => {
-	return {
-	};
+    return {};
 };
 
 export default connect(mapStateToProps)(PremiumFeatureDialog);

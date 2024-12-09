@@ -1,261 +1,264 @@
 const { v1: uuid } = require('uuid');
 
 const createError = (code, message) => ({
-	code,
-	message
+    code,
+    message,
 });
 
 // TODO: merge with method deletePendingRequest()
 const deletePendingRequest = (correlationData, requests) => {
-	const request = requests.get(correlationData);
-	if (request) {
-		clearTimeout(request.timeoutId);
-		requests.delete(correlationData);
-	}
-	return request;
+    const request = requests.get(correlationData);
+    if (request) {
+        clearTimeout(request.timeoutId);
+        requests.delete(correlationData);
+    }
+    return request;
 };
 const timeoutHandler = (correlationData, requests) => {
-	const { reject } = deletePendingRequest(correlationData, requests);
-	reject({
-		message: 'BaseMosquittoClient: Timeout',
-		correlationData
-	});
+    const { reject } = deletePendingRequest(correlationData, requests);
+    reject({
+        message: 'BaseMosquittoClient: Timeout',
+        correlationData,
+    });
 };
 
 const createID = () => uuid();
 
 module.exports = class BaseMosquittoClient {
-	constructor({ name, logger, defaultListener, brokerId, brokerName } = {}) {
-		this.name = name || 'Default Base Mosquitto Client';
-		this.brokerId = brokerId;
-		this.brokerName = brokerName;
-		this._logger = logger || {
-			log() {},
-			info() {},
-			warn() {},
-			debug() {},
-			error() {}
-		};
-		this._eventHandler = (event) => this.logger.info(event);
-		this._closeHandler = () => this.logger.info('Close Mosquitto Client');
-		this._eventListeners = new Map();
-		this._isConnected = false;
-		this._requests = new Map();
-		// TODO: make timeout configurable
-		// request timeout in ms:
-		// this._timeout = 10000;
-		this._timeout = 5000;
-	}
+    constructor({ name, logger, defaultListener, brokerId, brokerName } = {}) {
+        this.name = name || 'Default Base Mosquitto Client';
+        this.brokerId = brokerId;
+        this.brokerName = brokerName;
+        this._logger = logger || {
+            log() {},
+            info() {},
+            warn() {},
+            debug() {},
+            error() {},
+        };
+        this._eventHandler = (event) => this.logger.info(event);
+        this._closeHandler = () => this.logger.info('Close Mosquitto Client');
+        this._eventListeners = new Map();
+        this._isConnected = false;
+        this._requests = new Map();
+        // TODO: make timeout configurable
+        // request timeout in ms:
+        // this._timeout = 10000;
+        this._timeout = 5000;
+    }
 
+    // abstract method to be overwritten in subclass
+    _createConnectionHandler() {
+        throw new Error('No implementation of abstract method _createConnectionHandler() in subclass.');
+    }
 
-	// abstract method to be overwritten in subclass
-	_createConnectionHandler() {
-		throw new Error('No implementation of abstract method _createConnectionHandler() in subclass.')
-	}
+    createConnectionHandler(mqttEndpointURL, ...options) {
+        if (mqttEndpointURL) {
+            this._mqttEndpointURL = mqttEndpointURL;
+        }
+        return this._createConnectionHandler(mqttEndpointURL, ...options);
+    }
 
+    // eslint-disable-next-line consistent-return
+    async connect({ mqttEndpointURL, options, oneshot = false } = {}) {
+        if (this._isConnected || this._isConnecting) {
+            return Promise.resolve({});
+        }
+        this._isConnecting = true;
+        if (!this._mqttEndpointURL) {
+            this._mqttEndpointURL = mqttEndpointURL || this._mqttEndpointURL;
+        }
+        try {
+            this._isConnected = false;
+            const { brokerClient, initialConnectionPromise } = this._connectBroker(
+                mqttEndpointURL,
+                options,
+                oneshot,
+                () => {
+                    this._isConnecting = false;
+                    this._isConnected = true;
+                },
+                () => {
+                    this._isConnecting = false;
+                    this._isConnected = false;
+                }
+            );
+            this._brokerClient = brokerClient;
+            await initialConnectionPromise;
+            // this._isConnected = true;
+        } catch (error) {
+            // this._isConnected = false;
+            this.logger.error(error);
+            throw error;
+        }
+    }
 
-	createConnectionHandler(mqttEndpointURL, ...options) {
-		if (mqttEndpointURL) {
-			this._mqttEndpointURL = mqttEndpointURL;
-		}
-		return this._createConnectionHandler(mqttEndpointURL, ...options);
-	}
+    async disconnect(isNormalDisconnect) {
+        await this._disconnectBroker(isNormalDisconnect);
+    }
 
+    get logger() {
+        return this._logger;
+    }
 
-	// eslint-disable-next-line consistent-return
-	async connect({ mqttEndpointURL, options, oneshot=false } = {}) {
-		if (this._isConnected || this._isConnecting) {
-			return Promise.resolve({});
-		}
-		this._isConnecting = true;
-		if (!this._mqttEndpointURL) {
-			this._mqttEndpointURL = mqttEndpointURL || this._mqttEndpointURL;
-		}
-		try {
-			this._isConnected = false;
-			const {brokerClient, initialConnectionPromise} = this._connectBroker(mqttEndpointURL, options, oneshot, () => {
-				this._isConnecting = false;
-				this._isConnected = true;
-			}, () => {
-				this._isConnecting = false;
-				this._isConnected = false;
-			});
-			this._brokerClient = brokerClient;
-			await initialConnectionPromise;
-			// this._isConnected = true;
-		} catch (error) {
-			// this._isConnected = false;
-			this.logger.error(error);
-			throw error;
-		}
-	}
+    get url() {
+        return this._mqttEndpointURL;
+    }
 
-	async disconnect(isNormalDisconnect) {
-		await this._disconnectBroker(isNormalDisconnect);
-	}
+    /**
+     * ******************************************************************************************
+     * Method for sending command messages
+     * ******************************************************************************************
+     */
 
-	get logger() {
-		return this._logger;
-	}
+    async sendCommandMessage(feature, commandMessage, timeout) {
+        return this._sendCommands(feature, commandMessage, createID(), timeout);
+    }
 
-	get url() {
-		return this._mqttEndpointURL;
-	}
+    on(event, listener) {
+        let listeners = this._eventListeners.get(event);
+        if (!listeners) {
+            listeners = [];
+            this._eventListeners.set(event, listeners);
+        }
+        listeners.push(listener);
+    }
 
-	/**
-	 * ******************************************************************************************
-	 * Method for sending command messages
-	 * ******************************************************************************************
-	 */
+    off(event, listener) {
+        const listeners = this._eventListeners.get(event);
+        if (listeners) {
+            const index = listeners.indexOf(listener);
+            if (index > -1) {
+                listeners.splice(index, 1);
+            }
+        }
+    }
 
-	async sendCommandMessage(feature, commandMessage, timeout) {
-		return this._sendCommands(feature, commandMessage, createID(), timeout);
-	}
+    set eventHandler(eventHandler) {
+        this._eventHandler = eventHandler;
+    }
 
-	on(event, listener) {
-		let listeners = this._eventListeners.get(event);
-		if (!listeners) {
-			listeners = [];
-			this._eventListeners.set(event, listeners);
-		}
-		listeners.push(listener);
-	}
+    get eventHandler() {
+        return this._eventHandler;
+    }
 
-	off(event, listener) {
-		const listeners = this._eventListeners.get(event);
-		if (listeners) {
-			const index = listeners.indexOf(listener);
-			if (index > -1) {
-				listeners.splice(index, 1);
-			}
-		}
-	}
+    set closeHandler(closeHandler) {
+        this._closeHandler = closeHandler;
+    }
 
-	set eventHandler(eventHandler) {
-		this._eventHandler = eventHandler;
-	}
+    get closeHandler() {
+        return this._closeHandler;
+    }
 
-	get eventHandler() {
-		return this._eventHandler;
-	}
+    async _sendCommands(feature, commandMessage, correlationData = createID(), timeout = this._timeout) {
+        commandMessage.correlationData = correlationData;
+        const commands = {
+            commands: [commandMessage],
+        };
+        return this.sendFeatureRequest(feature, commands, correlationData, timeout);
+    }
 
-	set closeHandler(closeHandler) {
-		this._closeHandler = closeHandler;
-	}
+    async sendFeatureRequest(feature, request, correlationData = createID(), timeout = this._timeout) {
+        if (feature) {
+            return this.sendRequest(`$CONTROL/${feature}/v1`, request, correlationData, timeout);
+        } else {
+            return this.sendRequest(`$CONTROL`, request, correlationData, timeout);
+        }
+    }
 
-	get closeHandler() {
-		return this._closeHandler;
-	}
+    async sendRequest(requestTopic, request, correlationData = createID(), timeout = this._timeout) {
+        /* eslint-disable */
+        this.logger.debug('Sending request to Mosquitto', request);
+        return new Promise((resolve, reject) => {
+            const timeoutId = setTimeout(() => timeoutHandler(correlationData, this._requests), timeout);
+            this._requests.set(correlationData, {
+                resolve,
+                reject,
+                timeoutId,
+                request,
+            });
+            return new Promise((resolve, reject) => {
+                if (!this._brokerClient) {
+                    reject(new Error('Not connected to broker'));
+                } else {
+                    this._brokerClient.publish(requestTopic, JSON.stringify(request));
+                    resolve();
+                }
+            }).catch((error) => {
+                this.logger.error('Sending request to Mosquitto', request);
+                this.logger.error(
+                    `Error while communicating with Mosquitto while executing request '${request}'`,
+                    error
+                );
+                reject(error);
+            });
+        });
+        /* eslint-enable */
+    }
 
-	async _sendCommands(feature, commandMessage, correlationData = createID(), timeout = this._timeout) {
-		commandMessage.correlationData = correlationData;
-		const commands = {
-			commands: [commandMessage]
-		};
-		return this.sendFeatureRequest(feature, commands, correlationData, timeout);
-	}
+    // abstract method to be overwritten in subclass
+    _connectBroker() {
+        return Promise.reject(new Error('No implementation of abstract method _connectBroker() in subclass.'));
+    }
 
-	async sendFeatureRequest(feature, request, correlationData = createID(), timeout = this._timeout) {
-		if (feature) {
-			return this.sendRequest(`$CONTROL/${feature}/v1`, request, correlationData, timeout);
-		} else {
-			return this.sendRequest(`$CONTROL`, request, correlationData, timeout);
-		}
-	}
+    _isResponse(topic, message) {
+        if (
+            topic === '$CONTROL/dynamic-security/v1/response' ||
+            topic === '$CONTROL/broker/v1/response' ||
+            topic === '$CONTROL/stream-processing/v1/response' ||
+            topic === '$CONTROL/cedalo/ha/v1/response' ||
+            topic === '$CONTROL/cedalo/client-control/v1/response' ||
+            topic === '$CONTROL/cedalo/inspect/v1/response' ||
+            topic === '$CONTROL/cedalo/license/v1/response' ||
+            topic === '$CONTROL/certificate-management/v1/response'
+        ) {
+            return true;
+        }
+        try {
+            const parsedMessage = JSON.parse(message);
+            if (parsedMessage.result || parsedMessage.data) {
+                return true;
+            }
+        } catch (error) {
+            return false;
+        }
+    }
 
-	async sendRequest(requestTopic, request, correlationData = createID(), timeout = this._timeout) {
-		/* eslint-disable */
-		this.logger.debug('Sending request to Mosquitto', request);
-		return new Promise((resolve, reject) => {
-			const timeoutId = setTimeout(() => timeoutHandler(correlationData, this._requests), timeout);
-			this._requests.set(correlationData, {
-				resolve,
-				reject,
-				timeoutId,
-				request
-			});
-			return new Promise((resolve, reject) => {
-				if (!this._brokerClient) {
-					reject(new Error('Not connected to broker'));
-				} else {
-					this._brokerClient.publish(requestTopic, JSON.stringify(request));
-					resolve();
-				}
-			}).catch((error) => {
-				this.logger.error('Sending request to Mosquitto', request);
-				this.logger.error(
-					`Error while communicating with Mosquitto while executing request '${request}'`,
-					error
-				);
-				reject(error);
-			});
-		});
-		/* eslint-enable */
-	}
+    _handleBrokerMessage(topic, message) {
+        if (topic.startsWith('$CONTROL')) {
+            const parsedMessage = JSON.parse(message);
+            const isResponse = this._isResponse(topic, message);
+            if (isResponse) {
+                parsedMessage.responses.forEach((response) => {
+                    const request = deletePendingRequest(response.correlationData, this._requests);
+                    if (request) {
+                        this.logger.debug('Got response from Mosquitto', response);
+                        delete response.correlationData;
+                        // WHY NOT REJECT?
+                        // if (response.error) {
+                        // 	request.reject(response);
+                        // }
+                        request.resolve(response);
+                    }
+                });
+            } else if (parsedMessage.type === 'event') {
+                this._handleEvent(parsedMessage.event);
+            }
+        }
+    }
 
-	// abstract method to be overwritten in subclass
-	_connectBroker() {
-		return Promise.reject(new Error('No implementation of abstract method _connectBroker() in subclass.'));
-	}
+    _handleEvent(event) {
+        const listeners = this._eventListeners.get(event.type);
+        if (listeners) {
+            listeners.forEach((listener) => listener(event));
+        }
+    }
 
-	_isResponse(topic, message) {
-		if (topic === '$CONTROL/dynamic-security/v1/response'
-			|| topic === '$CONTROL/broker/v1/response'
-			|| topic === '$CONTROL/stream-processing/v1/response'
-			|| topic === '$CONTROL/cedalo/ha/v1/response'
-			|| topic === '$CONTROL/cedalo/client-control/v1/response'
-			|| topic === '$CONTROL/cedalo/inspect/v1/response'
-			|| topic === '$CONTROL/cedalo/license/v1/response'
-			|| topic === '$CONTROL/certificate-management/v1/response'
-		) {
-			return true;
-		}
-		try {
-			const parsedMessage = JSON.parse(message);
-			if (parsedMessage.result || parsedMessage.data) {
-				return true;
-			}
-		} catch (error) {
-			return false;
-		}
-	}
+    get connected() {
+        return this._isConnected;
+    }
 
-	_handleBrokerMessage(topic, message) {
-		if (topic.startsWith('$CONTROL')) {
-			const parsedMessage = JSON.parse(message);
-			const isResponse = this._isResponse(topic, message);
-			if (isResponse) {
-				parsedMessage.responses.forEach((response) => {
-					const request = deletePendingRequest(response.correlationData, this._requests);
-					if (request) {
-						this.logger.debug('Got response from Mosquitto', response);
-						delete response.correlationData;
-						// WHY NOT REJECT?
-						// if (response.error) {
-						// 	request.reject(response);
-						// }
-						request.resolve(response);
-					}
-				});
-			} else if (parsedMessage.type === 'event') {
-				this._handleEvent(parsedMessage.event);
-			}
-		}
-	}
-
-	_handleEvent(event) {
-		const listeners = this._eventListeners.get(event.type);
-		if (listeners) {
-			listeners.forEach((listener) => listener(event));
-		}
-	}
-
-	get connected() {
-		return this._isConnected;
-	}
-
-
-	set connected(value) {
-		this._isConnected = value;
-	}
+    set connected(value) {
+        this._isConnected = value;
+    }
 };

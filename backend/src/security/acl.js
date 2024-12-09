@@ -71,5 +71,5 @@ module.exports = {
     },
     allowConditions() {
         return true;
-    }
-}
+    },
+};

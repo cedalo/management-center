@@ -45,191 +45,191 @@ import { getBrokerById } from '../helpers/utils';
 import BrokerStatusIcon from './BrokerStatusIcon';
 
 const StyledTableRow = withStyles((theme) => ({
-	root: {
-		'&:nth-of-type(odd)': {
-			backgroundColor: theme.palette.tables?.odd
-		}
-	}
+    root: {
+        '&:nth-of-type(odd)': {
+            backgroundColor: theme.palette.tables?.odd,
+        },
+    },
 }))(TableRow);
 
 const useStyles = makeStyles((theme) => ({
-	tableContainer: {
-		minHeight: '500px',
-		'& td:nth-child(2)': {
-			minWidth: '100px'
-		}
-	},
-	badges: {
-		'& > *': {
-			margin: theme.spacing(0.3)
-		}
-	},
-	// fab: {
-	// 	position: 'absolute',
-	// 	bottom: theme.spacing(2),
-	// 	right: theme.spacing(2)
-	// },
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+    tableContainer: {
+        minHeight: '500px',
+        '& td:nth-child(2)': {
+            minWidth: '100px',
+        },
+    },
+    badges: {
+        '& > *': {
+            margin: theme.spacing(0.3),
+        },
+    },
+    // fab: {
+    // 	position: 'absolute',
+    // 	bottom: theme.spacing(2),
+    // 	right: theme.spacing(2)
+    // },
+    breadcrumbItem: theme.palette.breadcrumbItem,
+    breadcrumbLink: theme.palette.breadcrumbLink,
 }));
 
 const TABLE_COLUMNS = [
-	// { id: 'test-status', key: 'Test Status' },
-	{ id: 'broker-status', key: 'Broker Status' },
-	{ id: 'testName', key: 'Test name' },
-	{ id: 'requestTopic', key: 'Request Topic' },
-	{ id: 'target', key: 'Target' },
-	{ id: 'protocol', key: 'Protocol' },
-	{ id: 'payloadFormat', key: 'Payload format' },
+    // { id: 'test-status', key: 'Test Status' },
+    { id: 'broker-status', key: 'Broker Status' },
+    { id: 'testName', key: 'Test name' },
+    { id: 'requestTopic', key: 'Request Topic' },
+    { id: 'target', key: 'Target' },
+    { id: 'protocol', key: 'Protocol' },
+    { id: 'payloadFormat', key: 'Payload format' },
 ];
 
-
 const TestCollectionDetail = (props) => {
-	const classes = useStyles();
-	const context = useContext(WebSocketContext);
-	const dispatch = useDispatch();
-	const history = useHistory();
-	const confirm = useConfirm();
-	const { enqueueSnackbar } = useSnackbar();
-	const { client: brokerClient } = context;
+    const classes = useStyles();
+    const context = useContext(WebSocketContext);
+    const dispatch = useDispatch();
+    const history = useHistory();
+    const confirm = useConfirm();
+    const { enqueueSnackbar } = useSnackbar();
+    const { client: brokerClient } = context;
 
-	const { testCollection: testCollectionList, brokerConnections, onSort, sortBy, sortDirection } = props;
+    const { testCollection: testCollectionList, brokerConnections, onSort, sortBy, sortDirection } = props;
 
-	const [testCollection, setTestCollection] = React.useState(testCollectionList);
+    const [testCollection, setTestCollection] = React.useState(testCollectionList);
 
-	console.log(brokerConnections);
-	const onSelectTest = async (id) => {
-		const test = await brokerClient.getTest(testCollection?.info?.id, id);
-		dispatch(updateTest(test));
-		history.push(`/testcollections/tests/detail/${id}`);
-	};
+    console.log(brokerConnections);
+    const onSelectTest = async (id) => {
+        const test = await brokerClient.getTest(testCollection?.info?.id, id);
+        dispatch(updateTest(test));
+        history.push(`/testcollections/tests/detail/${id}`);
+    };
 
-	const onDeleteTest = async (id) => {
-	};
+    const onDeleteTest = async (id) => {};
 
-	const onRunTest = async (test) => {
-		const id = test.id;
-		try {
+    const onRunTest = async (test) => {
+        const id = test.id;
+        try {
+            // let newTestCollection = testCollection.items.map((item) => {
+            // 	if (item.id === id) {
+            // 	  const updatedItem = {
+            // 		...item,
+            // 		isRunning: true,
+            // 	  };
+            // 	  return updatedItem;
+            // 	}
+            // 	return item;
+            //   });
 
-			// let newTestCollection = testCollection.items.map((item) => {
-			// 	if (item.id === id) {
-			// 	  const updatedItem = {
-			// 		...item,
-			// 		isRunning: true,
-			// 	  };
-			// 	  return updatedItem;
-			// 	}
-			// 	return item;
-			//   });
-		  
-			// setTestCollection(newTestCollection);
+            // setTestCollection(newTestCollection);
 
-			console.log(test);
-			const response = await brokerClient.runTest(testCollection?.info?.id, id);
+            console.log(test);
+            const response = await brokerClient.runTest(testCollection?.info?.id, id);
 
-			// newTestCollection = testCollection.items.map((item) => {
-			// 	if (item.id === id) {
-			// 	  const updatedItem = {
-			// 		...item,
-			// 		isRunning: false,
-			// 	  };
-			// 	  return updatedItem;
-			// 	}
-			// 	return item;
-			//   });
-		  
-			// setTestCollection(newTestCollection);
+            // newTestCollection = testCollection.items.map((item) => {
+            // 	if (item.id === id) {
+            // 	  const updatedItem = {
+            // 		...item,
+            // 		isRunning: false,
+            // 	  };
+            // 	  return updatedItem;
+            // 	}
+            // 	return item;
+            //   });
 
-			console.log(test);
-			console.log(response);
-			enqueueSnackbar(`Test successfully executed.`, {
-				variant: 'success'
-			});
-		} catch(error) {
-			enqueueSnackbar(`Error executing test. Reason: ${error.message || error}`, {
-				variant: 'error'
-			});
-			throw error;
-		}
-	};
+            // setTestCollection(newTestCollection);
 
-	return (
-		<div>
-			<Breadcrumbs aria-label="breadcrumb">
-				<RouterLink className={classes.breadcrumbLink} to="/home">
-					Home
-				</RouterLink>
-				<RouterLink className={classes.breadcrumbLink} to="/testcollections">
-					Test Collections
-				</RouterLink>
-				<Typography className={classes.breadcrumbItem} color="textPrimary">
-					{testCollection?.info?.name}
-				</Typography>
-			</Breadcrumbs>
-			<br/>
+            console.log(test);
+            console.log(response);
+            enqueueSnackbar(`Test successfully executed.`, {
+                variant: 'success',
+            });
+        } catch (error) {
+            enqueueSnackbar(`Error executing test. Reason: ${error.message || error}`, {
+                variant: 'error',
+            });
+            throw error;
+        }
+    };
 
-			{testCollection && testCollection.items?.length > 0 ? (
-				<div>
-					<Hidden xsDown implementation="css">
-						<TableContainer component={Paper} className={classes.tableContainer}>
-							<Table size="medium">
-								<TableHead>
-									<TableRow>
-										{TABLE_COLUMNS.map((column) => (
-											<TableCell
-												key={column.id}
-												sortDirection={sortBy === column.id ? sortDirection : false}
-											>
-												{/* <TableSortLabel
+    return (
+        <div>
+            <Breadcrumbs aria-label="breadcrumb">
+                <RouterLink className={classes.breadcrumbLink} to="/home">
+                    Home
+                </RouterLink>
+                <RouterLink className={classes.breadcrumbLink} to="/testcollections">
+                    Test Collections
+                </RouterLink>
+                <Typography className={classes.breadcrumbItem} color="textPrimary">
+                    {testCollection?.info?.name}
+                </Typography>
+            </Breadcrumbs>
+            <br />
+
+            {testCollection && testCollection.items?.length > 0 ? (
+                <div>
+                    <Hidden xsDown implementation="css">
+                        <TableContainer component={Paper} className={classes.tableContainer}>
+                            <Table size="medium">
+                                <TableHead>
+                                    <TableRow>
+                                        {TABLE_COLUMNS.map((column) => (
+                                            <TableCell
+                                                key={column.id}
+                                                sortDirection={sortBy === column.id ? sortDirection : false}
+                                            >
+                                                {/* <TableSortLabel
                       active={sortBy === column.id}
                       direction={sortDirection}
                       onClick={() => onSort(column.id)}
                     > */}
-												{column.key}
-												{/* </TableSortLabel> */}
-											</TableCell>
-										))}
-										<TableCell />
-									</TableRow>
-								</TableHead>
-								<TableBody>
-									{testCollection &&
-										testCollection.items.map((item) => (
-											<StyledTableRow
-												hover
-												key={item?.name}
-												onClick={(event) => {
-														if (
-															event.target.nodeName?.toLowerCase() === 'td'
-														) {
-															onSelectTest(item?.id)
-														}
-													}
-												
-												}
-												style={{ cursor: 'pointer' }}
-											>
-												{/* <TableCell> {item.isRunning ? 'isRunning' : 'isStopped'} </TableCell> */}
-												<TableCell><BrokerStatusIcon brokerConnection={getBrokerById(brokerConnections, item?.target?.brokerId)} /></TableCell>
-												<TableCell>{item?.name}</TableCell>
-												<TableCell>{item?.requestTopic}</TableCell>
-												<TableCell>{item?.target?.brokerId}</TableCell>
-												<TableCell>{item?.target?.protocol}</TableCell>
-												<TableCell>{item?.request?.body?.mode}</TableCell>
-												<TableCell align="right">
-													<Tooltip title="Run test">
-														<IconButton
-															size="small"
-															onClick={(event) => {
-																event.stopPropagation();
-																onRunTest(item);
-																event.stopPropagation();
-															}}
-														>
-															<RunTestIcon fontSize="small" />
-														</IconButton>
-													</Tooltip>
-													{/* <Tooltip title="Delete test">
+                                                {column.key}
+                                                {/* </TableSortLabel> */}
+                                            </TableCell>
+                                        ))}
+                                        <TableCell />
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {testCollection &&
+                                        testCollection.items.map((item) => (
+                                            <StyledTableRow
+                                                hover
+                                                key={item?.name}
+                                                onClick={(event) => {
+                                                    if (event.target.nodeName?.toLowerCase() === 'td') {
+                                                        onSelectTest(item?.id);
+                                                    }
+                                                }}
+                                                style={{ cursor: 'pointer' }}
+                                            >
+                                                {/* <TableCell> {item.isRunning ? 'isRunning' : 'isStopped'} </TableCell> */}
+                                                <TableCell>
+                                                    <BrokerStatusIcon
+                                                        brokerConnection={getBrokerById(
+                                                            brokerConnections,
+                                                            item?.target?.brokerId
+                                                        )}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>{item?.name}</TableCell>
+                                                <TableCell>{item?.requestTopic}</TableCell>
+                                                <TableCell>{item?.target?.brokerId}</TableCell>
+                                                <TableCell>{item?.target?.protocol}</TableCell>
+                                                <TableCell>{item?.request?.body?.mode}</TableCell>
+                                                <TableCell align="right">
+                                                    <Tooltip title="Run test">
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={(event) => {
+                                                                event.stopPropagation();
+                                                                onRunTest(item);
+                                                                event.stopPropagation();
+                                                            }}
+                                                        >
+                                                            <RunTestIcon fontSize="small" />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                    {/* <Tooltip title="Delete test">
 														<IconButton
 															size="small"
 															onClick={(event) => {
@@ -240,83 +240,80 @@ const TestCollectionDetail = (props) => {
 															<DeleteIcon fontSize="small" />
 														</IconButton>
 													</Tooltip> */}
-												</TableCell>
-											</StyledTableRow>
-										))}
-								</TableBody>
-							</Table>
-						</TableContainer>
-					</Hidden>
-					<Hidden smUp implementation="css">
-						<Paper>
-							<List className={classes.root}>
-								{testCollection?.items.map((item) => (
-									<React.Fragment>
-										<ListItem
-											alignItems="flex-start"
-											onClick={(event) => onSelectTest(item?.id)}
-										>
-											<ListItemText
-												primary={<span>{item?.id}</span>}
-												secondary={
-													<React.Fragment>
-														<Typography
-															component="span"
-															variant="body2"
-															className={classes.inline}
-															color="textPrimary"
-														>
-															{item?.name}
-														</Typography>
-														<span></span>
-													</React.Fragment>
-												}
-											/>
-											<ListItemSecondaryAction>
-												<IconButton
-													edge="end"
-													size="small"
-													onClick={(event) => {
-														event.stopPropagation();
-														onSelectTest(item?.id);
-													}}
-													aria-label="edit"
-												>
-													<EditIcon fontSize="small" />
-												</IconButton>
+                                                </TableCell>
+                                            </StyledTableRow>
+                                        ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Hidden>
+                    <Hidden smUp implementation="css">
+                        <Paper>
+                            <List className={classes.root}>
+                                {testCollection?.items.map((item) => (
+                                    <React.Fragment>
+                                        <ListItem alignItems="flex-start" onClick={(event) => onSelectTest(item?.id)}>
+                                            <ListItemText
+                                                primary={<span>{item?.id}</span>}
+                                                secondary={
+                                                    <React.Fragment>
+                                                        <Typography
+                                                            component="span"
+                                                            variant="body2"
+                                                            className={classes.inline}
+                                                            color="textPrimary"
+                                                        >
+                                                            {item?.name}
+                                                        </Typography>
+                                                        <span></span>
+                                                    </React.Fragment>
+                                                }
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <IconButton
+                                                    edge="end"
+                                                    size="small"
+                                                    onClick={(event) => {
+                                                        event.stopPropagation();
+                                                        onSelectTest(item?.id);
+                                                    }}
+                                                    aria-label="edit"
+                                                >
+                                                    <EditIcon fontSize="small" />
+                                                </IconButton>
 
-												<IconButton
-													edge="end"
-													size="small"
-													onClick={(event) => {
-														event.stopPropagation();
-														onDeleteTest(item?.id);
-													}}
-													aria-label="delete"
-												>
-													<DeleteIcon fontSize="small" />
-												</IconButton>
-											</ListItemSecondaryAction>
-										</ListItem>
-										<Divider />
-									</React.Fragment>
-								))}
-							</List>
-						</Paper>
-					</Hidden>
-				</div>
-			) : (
-				<div>No items found</div>
-			)}
-		</div>
-	);
+                                                <IconButton
+                                                    edge="end"
+                                                    size="small"
+                                                    onClick={(event) => {
+                                                        event.stopPropagation();
+                                                        onDeleteTest(item?.id);
+                                                    }}
+                                                    aria-label="delete"
+                                                >
+                                                    <DeleteIcon fontSize="small" />
+                                                </IconButton>
+                                            </ListItemSecondaryAction>
+                                        </ListItem>
+                                        <Divider />
+                                    </React.Fragment>
+                                ))}
+                            </List>
+                        </Paper>
+                    </Hidden>
+                </div>
+            ) : (
+                <div>No items found</div>
+            )}
+        </div>
+    );
 };
 
 const mapStateToProps = (state) => {
-	return {
-		brokerConnections: state.brokerConnections?.brokerConnections,
-		testCollection: state.tests.testCollection
-	};
+    return {
+        brokerConnections: state.brokerConnections?.brokerConnections,
+        testCollection: state.tests.testCollection,
+    };
 };
 
 export default connect(mapStateToProps)(TestCollectionDetail);

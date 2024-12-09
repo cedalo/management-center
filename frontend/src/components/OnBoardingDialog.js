@@ -42,330 +42,334 @@ import { updateSettings } from '../actions/actions';
 import { useSnackbar } from 'notistack';
 import useFetch from '../helpers/useFetch';
 
-
 const useStyles = makeStyles((theme) => ({
-	root: {
-		flexGrow: 1,
-		minWidth: 290,
-		width: 550
-	},
-	input: {
-		display: 'flex',
-		padding: 0,
-		height: 'auto'
-	},
-	valueContainer: {
-		display: 'flex',
-		flexWrap: 'wrap',
-		flex: 1,
-		alignItems: 'center',
-		overflow: 'hidden',
-		'& > *': {
-			margin: theme.spacing(0.3)
-		}
-	},
-	chip: {
-		margin: theme.spacing(1, 1)
-	},
-	chipFocused: {
-		backgroundColor: emphasize(
-			theme.palette.type === 'light' ? theme.palette.grey[300] : theme.palette.grey[700],
-			0.08
-		)
-	},
-	noOptionsMessage: {
-		padding: theme.spacing(1, 2)
-	},
-	singleValue: {
-		fontSize: 16
-	},
-	placeholder: {
-		position: 'absolute',
-		left: 2,
-		bottom: 6,
-		fontSize: 16
-	},
-	paper: {
-		position: 'absolute',
-		zIndex: 1,
-		marginTop: theme.spacing(1),
-		left: 0,
-		right: 0
-	},
-	divider: {
-		height: theme.spacing(2)
-	},
-	header: {
-		display: 'flex',
-		alignItems: 'center',
-		height: 50,
-		paddingLeft: theme.spacing(4),
-		backgroundColor: theme.palette.background.default
-	},
-	img: {
-		height: 255,
-		// maxWidth: 400,
-		overflow: 'hidden',
-		// display: 'block',
-		width: '100%'
-	}
+    root: {
+        flexGrow: 1,
+        minWidth: 290,
+        width: 550,
+    },
+    input: {
+        display: 'flex',
+        padding: 0,
+        height: 'auto',
+    },
+    valueContainer: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        flex: 1,
+        alignItems: 'center',
+        overflow: 'hidden',
+        '& > *': {
+            margin: theme.spacing(0.3),
+        },
+    },
+    chip: {
+        margin: theme.spacing(1, 1),
+    },
+    chipFocused: {
+        backgroundColor: emphasize(
+            theme.palette.type === 'light' ? theme.palette.grey[300] : theme.palette.grey[700],
+            0.08
+        ),
+    },
+    noOptionsMessage: {
+        padding: theme.spacing(1, 2),
+    },
+    singleValue: {
+        fontSize: 16,
+    },
+    placeholder: {
+        position: 'absolute',
+        left: 2,
+        bottom: 6,
+        fontSize: 16,
+    },
+    paper: {
+        position: 'absolute',
+        zIndex: 1,
+        marginTop: theme.spacing(1),
+        left: 0,
+        right: 0,
+    },
+    divider: {
+        height: theme.spacing(2),
+    },
+    header: {
+        display: 'flex',
+        alignItems: 'center',
+        height: 50,
+        paddingLeft: theme.spacing(4),
+        backgroundColor: theme.palette.background.default,
+    },
+    img: {
+        height: 255,
+        // maxWidth: 400,
+        overflow: 'hidden',
+        // display: 'block',
+        width: '100%',
+    },
 }));
 
 function getSteps(newsletterAvailable) {
-	let steps = [
-		{
-			label: 'Management Center for Eclipse Mosquitto',
-			description: 'Manage everything in one central place',
-			imgPath: '/onboarding-broker.png'
-		},
-		{
-			label: 'Role based access control',
-			description: 'Manage clients, groups and roles',
-			imgPath: '/onboarding-dynamic-security.png'
-		},
-		{
-			label: 'Metrics Dashboard',
-			description: 'Analyze the system status of your brokers',
-			imgPath: '/onboarding-dashboard.png'
-		},
-		{
-			label: 'Topic Tree Inspector',
-			description: 'Visualize and inspect MQTT topics',
-			imgPath: '/onboarding-topic-tree.png'
-		},
-	];
+    let steps = [
+        {
+            label: 'Management Center for Eclipse Mosquitto',
+            description: 'Manage everything in one central place',
+            imgPath: '/onboarding-broker.png',
+        },
+        {
+            label: 'Role based access control',
+            description: 'Manage clients, groups and roles',
+            imgPath: '/onboarding-dynamic-security.png',
+        },
+        {
+            label: 'Metrics Dashboard',
+            description: 'Analyze the system status of your brokers',
+            imgPath: '/onboarding-dashboard.png',
+        },
+        {
+            label: 'Topic Tree Inspector',
+            description: 'Visualize and inspect MQTT topics',
+            imgPath: '/onboarding-topic-tree.png',
+        },
+    ];
 
-	if (newsletterAvailable) {
-		steps = steps.concat([{
-			label: 'Subscribe to our newsletter',
-			description: 'Get the latest news about Mosquitto, MQTT and Streamsheets.',
-			imgPath: '/onboarding-newsletter.png',
-			newsletter: true
-		},
-		{
-			label: 'Usage data',
-			description: 'We are continuously improving our software. For that it would be really great if you would allow the tracking of anonymous usage data.',
-			imgPath: '/onboarding-dashboard.png',
-			usageData: true
-		}]);
-	}
+    if (newsletterAvailable) {
+        steps = steps.concat([
+            {
+                label: 'Subscribe to our newsletter',
+                description: 'Get the latest news about Mosquitto, MQTT and Streamsheets.',
+                imgPath: '/onboarding-newsletter.png',
+                newsletter: true,
+            },
+            {
+                label: 'Usage data',
+                description:
+                    'We are continuously improving our software. For that it would be really great if you would allow the tracking of anonymous usage data.',
+                imgPath: '/onboarding-dashboard.png',
+                usageData: true,
+            },
+        ]);
+    }
 
-	return steps;
+    return steps;
 }
 
 const OnBoardingDialog = ({ settings }) => {
-	const classes = useStyles();
-	const theme = useTheme();
-	const { enqueueSnackbar } = useSnackbar();
-	const dispatch = useDispatch();
-	const context = useContext(WebSocketContext);
-	const { client: brokerClient } = context;
-	const [activeStep, setActiveStep] = React.useState(0);
-	const [email, setEMail] = React.useState('');
-	const [subscribed, setSubscribed] = useLocalStorage('cedalo.managementcenter.subscribedToNewsletter');
-	const [newsletterEndpointResponse, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/newsletter/subscribe`);
+    const classes = useStyles();
+    const theme = useTheme();
+    const { enqueueSnackbar } = useSnackbar();
+    const dispatch = useDispatch();
+    const context = useContext(WebSocketContext);
+    const { client: brokerClient } = context;
+    const [activeStep, setActiveStep] = React.useState(0);
+    const [email, setEMail] = React.useState('');
+    const [subscribed, setSubscribed] = useLocalStorage('cedalo.managementcenter.subscribedToNewsletter');
+    const [newsletterEndpointResponse, loading, hasError] = useFetch(
+        `${process.env.PUBLIC_URL}/api/newsletter/subscribe`
+    );
 
-	const steps = getSteps(hasError ? null : newsletterEndpointResponse?.newsletterEndpointAvailable);
+    const steps = getSteps(hasError ? null : newsletterEndpointResponse?.newsletterEndpointAvailable);
 
-	const [showOnBoardingDialog, setShowOnBoardingDialog] = useLocalStorage(
-		'cedalo.managementcenter.showOnBoardingDialog'
-	);
+    const [showOnBoardingDialog, setShowOnBoardingDialog] = useLocalStorage(
+        'cedalo.managementcenter.showOnBoardingDialog'
+    );
 
-	const onChangeAllowTrackingUsageData = async (allowTrackingUsageData) => {
-		try {
-			const updatedSettings = await brokerClient.updateSettings({
-				allowTrackingUsageData
-			});
-			dispatch(updateSettings(updatedSettings));
-		} catch (error) {
-			enqueueSnackbar(`Error disconnecting broker. Reason: ${error.message ? error.message : error}`, {
-				variant: 'error'
-			});
-		}
-	};
+    const onChangeAllowTrackingUsageData = async (allowTrackingUsageData) => {
+        try {
+            const updatedSettings = await brokerClient.updateSettings({
+                allowTrackingUsageData,
+            });
+            dispatch(updateSettings(updatedSettings));
+        } catch (error) {
+            enqueueSnackbar(`Error disconnecting broker. Reason: ${error.message ? error.message : error}`, {
+                variant: 'error',
+            });
+        }
+    };
 
-	const handleClose = () => {
-		setShowOnBoardingDialog('false');
-	};
+    const handleClose = () => {
+        setShowOnBoardingDialog('false');
+    };
 
-	const handleNext = () => {
-		if (activeStep < steps.length - 1) {
-			setActiveStep((prevActiveStep) => prevActiveStep + 1);
-		} else {
-			handleClose();
-		}
-	};
+    const handleNext = () => {
+        if (activeStep < steps.length - 1) {
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        } else {
+            handleClose();
+        }
+    };
 
-	const handleBack = () => {
-		setActiveStep((prevActiveStep) => prevActiveStep - 1);
-	};
+    const handleBack = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    };
 
-	const handleReset = () => {
-		setActiveStep(0);
-	};
+    const handleReset = () => {
+        setActiveStep(0);
+    };
 
-	const subscribeNewsletter = async () => {
-		try {
-			const response = await fetch(`/api/newsletter/subscribe`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					email
-				})
-			});
-			setSubscribed('true');
-		} catch (error) {
-			// TODO: add error handling
-			console.error(error);
-		}
-	};
+    const subscribeNewsletter = async () => {
+        try {
+            const response = await fetch(`/api/newsletter/subscribe`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email,
+                }),
+            });
+            setSubscribed('true');
+        } catch (error) {
+            // TODO: add error handling
+            console.error(error);
+        }
+    };
 
-	return (
-		<Dialog
-			open={showOnBoardingDialog === '' || showOnBoardingDialog === 'true'}
-			// onClose={handleClose}
-			aria-labelledby="alert-dialog-title"
-			aria-describedby="alert-dialog-description"
-		>
-			{/* <DialogTitle id="alert-dialog-title">{steps[activeStep].label}</DialogTitle> */}
-			<DialogContent>
-				{/* <Paper square elevation={0} className={classes.header}>
+    return (
+        <Dialog
+            open={showOnBoardingDialog === '' || showOnBoardingDialog === 'true'}
+            // onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+            {/* <DialogTitle id="alert-dialog-title">{steps[activeStep].label}</DialogTitle> */}
+            <DialogContent>
+                {/* <Paper square elevation={0} className={classes.header}>
       </Paper> */}
-				<div style={{ textAlign: 'center' }}>
-					<img
-						style={{ width: '555px' }}
-						className={classes.img}
-						src={steps[activeStep].imgPath}
-						alt={steps[activeStep].label}
-					/>
-				</div>
-				<br />
+                <div style={{ textAlign: 'center' }}>
+                    <img
+                        style={{ width: '555px' }}
+                        className={classes.img}
+                        src={steps[activeStep].imgPath}
+                        alt={steps[activeStep].label}
+                    />
+                </div>
+                <br />
 
-				<Typography variant="h6" style={{ textAlign: 'center' }}>
-					<strong>{steps[activeStep].label}</strong>
-				</Typography>
-				<Typography style={{ textAlign: 'center' }}>{steps[activeStep].description}</Typography>
+                <Typography variant="h6" style={{ textAlign: 'center' }}>
+                    <strong>{steps[activeStep].label}</strong>
+                </Typography>
+                <Typography style={{ textAlign: 'center' }}>{steps[activeStep].description}</Typography>
 
-				{steps[activeStep].newsletter && subscribed !== 'true' ? (
-					<div style={{ textAlign: 'center' }}>
-						<Grid container spacing={3} alignItems="flex-end">
-							<Grid item xs={9}>
-								<TextField
-									id="email"
-									label="E-Mail"
-									type="email"
-									value={email}
-									onChange={(event) => {
-										event.stopPropagation();
-										setEMail(event.target.value);
-									}}
-									style={{
-										width: '100%'
-									}}
-								/>
-							</Grid>
-							<Grid item xs={3}>
-								<Button
-									disabled={email === ''}
-									onClick={subscribeNewsletter}
-									variant="contained"
-									color="primary"
-								>
-									Subscribe
-								</Button>
-							</Grid>
-						</Grid>
-					</div>
-				) : null}
-				{steps[activeStep].newsletter && subscribed === 'true' ? (
-					<div style={{ textAlign: 'center' }}>
-						<SubscribedIcon style={{ color: green[500] }} />
-						<Typography>
-							<strong>Thanks for subscribing!</strong>
-						</Typography>
-					</div>
-				) : null}
+                {steps[activeStep].newsletter && subscribed !== 'true' ? (
+                    <div style={{ textAlign: 'center' }}>
+                        <Grid container spacing={3} alignItems="flex-end">
+                            <Grid item xs={9}>
+                                <TextField
+                                    id="email"
+                                    label="E-Mail"
+                                    type="email"
+                                    value={email}
+                                    onChange={(event) => {
+                                        event.stopPropagation();
+                                        setEMail(event.target.value);
+                                    }}
+                                    style={{
+                                        width: '100%',
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={3}>
+                                <Button
+                                    disabled={email === ''}
+                                    onClick={subscribeNewsletter}
+                                    variant="contained"
+                                    color="primary"
+                                >
+                                    Subscribe
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </div>
+                ) : null}
+                {steps[activeStep].newsletter && subscribed === 'true' ? (
+                    <div style={{ textAlign: 'center' }}>
+                        <SubscribedIcon style={{ color: green[500] }} />
+                        <Typography>
+                            <strong>Thanks for subscribing!</strong>
+                        </Typography>
+                    </div>
+                ) : null}
 
-				{steps[activeStep].usageData ? (
-					<div style={{ textAlign: 'center' }}>
-						<Grid container spacing={3} alignItems="flex-end">
-							<Grid item xs={12}>
-								<FormGroup row>
-									<FormControlLabel
-										control={
-											<Switch
-												checked={settings?.allowTrackingUsageData}
-												onClick={(event) => {
-													event.stopPropagation();
-													if (event.target.checked) {
-														onChangeAllowTrackingUsageData(true);
-													} else {
-														onChangeAllowTrackingUsageData(false);
-													}
-												}}
-												name="allowTrackingUsageData"
-												color="primary"
-											/>
-										}
-										label="Allow tracking of usage data"
-									/>
-								</FormGroup>
-							</Grid>
-						</Grid>
-					</div>
-				) : null}
+                {steps[activeStep].usageData ? (
+                    <div style={{ textAlign: 'center' }}>
+                        <Grid container spacing={3} alignItems="flex-end">
+                            <Grid item xs={12}>
+                                <FormGroup row>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={settings?.allowTrackingUsageData}
+                                                onClick={(event) => {
+                                                    event.stopPropagation();
+                                                    if (event.target.checked) {
+                                                        onChangeAllowTrackingUsageData(true);
+                                                    } else {
+                                                        onChangeAllowTrackingUsageData(false);
+                                                    }
+                                                }}
+                                                name="allowTrackingUsageData"
+                                                color="primary"
+                                            />
+                                        }
+                                        label="Allow tracking of usage data"
+                                    />
+                                </FormGroup>
+                            </Grid>
+                        </Grid>
+                    </div>
+                ) : null}
 
-				<DialogContentText id="alert-dialog-description"></DialogContentText>
+                <DialogContentText id="alert-dialog-description"></DialogContentText>
 
-				<MobileStepper
-					steps={steps.length}
-					activeStep={activeStep}
-					variant="dots"
-					position="static"
-					className={classes.root}
-					nextButton={
-						<Button size="small" onClick={handleNext} disabled={activeStep + 1 > steps.length}>
-							{activeStep === (steps.length - 1) ? 'Finish' : 'Next'}
-							{theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-						</Button>
-					}
-					backButton={
-						<Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-							{theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-							Back
-						</Button>
-					}
-				>
-					{steps.map((label, index) => (
-						<Step key={label}>
-							<StepLabel>{label}</StepLabel>
-							<StepContent>
-								<div className={classes.actionsContainer}>
-									<div>
-										<Button
-											disabled={activeStep === 0}
-											onClick={handleBack}
-											className={classes.button}
-										>
-											Back
-										</Button>
-										<Button
-											variant="contained"
-											color="primary"
-											onClick={handleNext}
-											className={classes.button}
-										>
-											{activeStep === (steps.length - 1) ? 'Finish' : 'Next'}
-										</Button>
-									</div>
-								</div>
-							</StepContent>
-						</Step>
-					))}
-				</MobileStepper>
-				{/* {activeStep === steps.length && (
+                <MobileStepper
+                    steps={steps.length}
+                    activeStep={activeStep}
+                    variant="dots"
+                    position="static"
+                    className={classes.root}
+                    nextButton={
+                        <Button size="small" onClick={handleNext} disabled={activeStep + 1 > steps.length}>
+                            {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                            {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+                        </Button>
+                    }
+                    backButton={
+                        <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+                            {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+                            Back
+                        </Button>
+                    }
+                >
+                    {steps.map((label, index) => (
+                        <Step key={label}>
+                            <StepLabel>{label}</StepLabel>
+                            <StepContent>
+                                <div className={classes.actionsContainer}>
+                                    <div>
+                                        <Button
+                                            disabled={activeStep === 0}
+                                            onClick={handleBack}
+                                            className={classes.button}
+                                        >
+                                            Back
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={handleNext}
+                                            className={classes.button}
+                                        >
+                                            {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                                        </Button>
+                                    </div>
+                                </div>
+                            </StepContent>
+                        </Step>
+                    ))}
+                </MobileStepper>
+                {/* {activeStep === steps.length && (
 					<Paper square elevation={0} className={classes.resetContainer}>
 						<Typography>All steps completed - you&apos;re finished</Typography>
 						<Button onClick={handleReset} className={classes.button}>
@@ -373,23 +377,23 @@ const OnBoardingDialog = ({ settings }) => {
 						</Button>
 					</Paper>
 				)} */}
-			</DialogContent>
-			<DialogActions>
-				{/* <Button onClick={handleClose} color="primary">
+            </DialogContent>
+            <DialogActions>
+                {/* <Button onClick={handleClose} color="primary">
             Disagree
           </Button> */}
-				<Button onClick={handleClose} color="secondary" autoFocus id="get-started-button">
-					Get started!
-				</Button>
-			</DialogActions>
-		</Dialog>
-	);
-}
+                <Button onClick={handleClose} color="secondary" autoFocus id="get-started-button">
+                    Get started!
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
 
 const mapStateToProps = (state) => {
-	return {
-		settings: state.settings?.settings
-	};
+    return {
+        settings: state.settings?.settings,
+    };
 };
 
 export default connect(mapStateToProps)(OnBoardingDialog);

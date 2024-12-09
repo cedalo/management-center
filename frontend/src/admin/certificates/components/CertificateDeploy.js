@@ -15,16 +15,16 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import {
-	Checkbox,
-	InputBase,
-	MenuItem,
-	Select,
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableRow,
-	Typography
+    Checkbox,
+    InputBase,
+    MenuItem,
+    Select,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+    Typography,
 } from '@material-ui/core';
 import { green, red } from '@material-ui/core/colors';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -40,375 +40,387 @@ import ContentContainer from '../../../components/ContentContainer';
 import { getConnectionInfo } from './certutils';
 
 const CustomInput = withStyles((theme) => ({
-	root: {
-		'label + &': {
-			marginTop: theme.spacing(1)
-		}
-	}
+    root: {
+        'label + &': {
+            marginTop: theme.spacing(1),
+        },
+    },
 }))(InputBase);
 
 const useStyles = makeStyles((theme) => ({
-	root: {
-		paddingLeft: '20px',
-		backgroundColor: 'rgba(255,255,255,0.2)',
-		border: theme.palette.type === 'dark' ? 'thin solid rgba(255,255,255,1)' : 'thin solid rgba(0,0,0,0.5)',
-		// color: 'white',
-		fontSize: '14px'
-	},
-	select: {
-		fontSize: '14px'
-	}
+    root: {
+        paddingLeft: '20px',
+        backgroundColor: 'rgba(255,255,255,0.2)',
+        border: theme.palette.type === 'dark' ? 'thin solid rgba(255,255,255,1)' : 'thin solid rgba(0,0,0,0.5)',
+        // color: 'white',
+        fontSize: '14px',
+    },
+    select: {
+        fontSize: '14px',
+    },
 }));
 
 const isLast = (list) => {
-	const last = list.length - 1;
-	return (index) => index === last;
+    const last = list.length - 1;
+    return (index) => index === last;
 };
 
-const trimMessage = (message, isError=true) => {
-	if (message.length > 200) {
-		const result = `${message.substring(0, 200)}...`;
-		if (isError) {
-			console.error(message);
-		} else {
-			console.log(message);
-		}
-		return result;
-	}
-	return message;
-}
+const trimMessage = (message, isError = true) => {
+    if (message.length > 200) {
+        const result = `${message.substring(0, 200)}...`;
+        if (isError) {
+            console.error(message);
+        } else {
+            console.log(message);
+        }
+        return result;
+    }
+    return message;
+};
 
 const ListenerSelect = ({ listeners, onSelect }) => {
-	const isLastRow = isLast(listeners);
-	const rowStyle = (index) => (isLastRow(index) ? { borderBottom: 'none' } : {});
+    const isLastRow = isLast(listeners);
+    const rowStyle = (index) => (isLastRow(index) ? { borderBottom: 'none' } : {});
 
-	return (
-		<Table size="small" aria-label="listeners">
-			<TableHead>
-				<TableRow>
-					<TableCell padding="checkbox">Deploy</TableCell>
-					<TableCell>Protocol</TableCell>
-					<TableCell>Port</TableCell>
-					<TableCell>Bind Address</TableCell>
-					<TableCell>Require Certificate</TableCell>
-					<TableCell>TLS</TableCell>
-				</TableRow>
-			</TableHead>
-			<TableBody>
-				{listeners.map((listener, index) => (
-					<TableRow key={listener.id}>
-						<TableCell padding="checkbox" style={rowStyle(index)}>
-							<Checkbox
-								disabled={!listener.tls || !listener.requireCertificate}
-								checked={!!listener.isUsed}
-								onChange={onSelect}
-								inputProps={{
-									'data-listener': `${listener.id}`
-								}}
-							/>
-						</TableCell>
-						<TableCell style={rowStyle(index)}>{listener.protocol}</TableCell>
-						<TableCell style={rowStyle(index)}>{listener.port}</TableCell>
-						<TableCell style={rowStyle(index)}>{listener.bindAddress || 'not configured'}</TableCell>
-						<TableCell style={rowStyle(index)}>
-							{listener.requireCertificate ? (
-								<EnabledIcon fontSize="small" style={{ color: green[500] }} />
-							) : (
-								<DisabledIcon fontSize="small" style={{ color: red[500] }} />
-							)}
-						</TableCell>
-						<TableCell style={rowStyle(index)}>
-							{listener.tls ? (
-								<EnabledIcon fontSize="small" style={{ color: green[500] }} />
-							) : (
-								<DisabledIcon fontSize="small" style={{ color: red[500] }} />
-							)}
-						</TableCell>
-					</TableRow>
-				))}
-			</TableBody>
-		</Table>
-	);
+    return (
+        <Table size="small" aria-label="listeners">
+            <TableHead>
+                <TableRow>
+                    <TableCell padding="checkbox">Deploy</TableCell>
+                    <TableCell>Protocol</TableCell>
+                    <TableCell>Port</TableCell>
+                    <TableCell>Bind Address</TableCell>
+                    <TableCell>Require Certificate</TableCell>
+                    <TableCell>TLS</TableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
+                {listeners.map((listener, index) => (
+                    <TableRow key={listener.id}>
+                        <TableCell padding="checkbox" style={rowStyle(index)}>
+                            <Checkbox
+                                disabled={!listener.tls || !listener.requireCertificate}
+                                checked={!!listener.isUsed}
+                                onChange={onSelect}
+                                inputProps={{
+                                    'data-listener': `${listener.id}`,
+                                }}
+                            />
+                        </TableCell>
+                        <TableCell style={rowStyle(index)}>{listener.protocol}</TableCell>
+                        <TableCell style={rowStyle(index)}>{listener.port}</TableCell>
+                        <TableCell style={rowStyle(index)}>{listener.bindAddress || 'not configured'}</TableCell>
+                        <TableCell style={rowStyle(index)}>
+                            {listener.requireCertificate ? (
+                                <EnabledIcon fontSize="small" style={{ color: green[500] }} />
+                            ) : (
+                                <DisabledIcon fontSize="small" style={{ color: red[500] }} />
+                            )}
+                        </TableCell>
+                        <TableCell style={rowStyle(index)}>
+                            {listener.tls ? (
+                                <EnabledIcon fontSize="small" style={{ color: green[500] }} />
+                            ) : (
+                                <DisabledIcon fontSize="small" style={{ color: red[500] }} />
+                            )}
+                        </TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+    );
 };
 const getListenersCell = (listeners, onSelect) => {
-	if (listeners == null || !listeners.length) {
-		const text = listeners ? 'No listeners available for selected connection...' : 'Loading available listeners...';
-		return (
-			<Typography variant="h8" gutterBottom component="div">
-				{text}
-			</Typography>
-		);
-	}
-	return <ListenerSelect listeners={listeners} onSelect={onSelect} />;
+    if (listeners == null || !listeners.length) {
+        const text = listeners ? 'No listeners available for selected connection...' : 'Loading available listeners...';
+        return (
+            <Typography variant="h8" gutterBottom component="div">
+                {text}
+            </Typography>
+        );
+    }
+    return <ListenerSelect listeners={listeners} onSelect={onSelect} />;
 };
 
 const byName = (a, b) => {
-	if (a.name < b.name) return -1;
-	return a.name > b.name ? 1 : 0;
+    if (a.name < b.name) return -1;
+    return a.name > b.name ? 1 : 0;
 };
 const ConnectionSelect = ({ connections, selected = {}, onSelect }) => {
-	const classes = useStyles();
-	return (
-		<Select
-			labelId="connection-select"
-			id="connection"
-			value={selected.id}
-			onChange={onSelect}
-			label="Connection"
-			native={false}
-			displayEmpty={true}
-			classes={{
-				root: classes.root,
-				icon: classes.icon
-			}}
-			renderValue={(selectedId) => { // on page reload selectedId is for some reason undefined, unlike selected.id. so we use the latter
-				const selectedItem = connections.find(conn => conn.id === selected.id);
-				return selectedItem ? selectedItem.name : '';
-			  }}
-			input={<CustomInput />}
-		>
-			{connections.sort(byName).map((conn) => (
-				<MenuItem
-					key={conn.name}
-					value={conn.id}
-					disabled={!conn.status?.connected}
-					classes={{ root: classes.select }}
-				>
-					{conn.name}
-				</MenuItem>
-			))}
-		</Select>
-	);
+    const classes = useStyles();
+    return (
+        <Select
+            labelId="connection-select"
+            id="connection"
+            value={selected.id}
+            onChange={onSelect}
+            label="Connection"
+            native={false}
+            displayEmpty={true}
+            classes={{
+                root: classes.root,
+                icon: classes.icon,
+            }}
+            renderValue={(selectedId) => {
+                // on page reload selectedId is for some reason undefined, unlike selected.id. so we use the latter
+                const selectedItem = connections.find((conn) => conn.id === selected.id);
+                return selectedItem ? selectedItem.name : '';
+            }}
+            input={<CustomInput />}
+        >
+            {connections.sort(byName).map((conn) => (
+                <MenuItem
+                    key={conn.name}
+                    value={conn.id}
+                    disabled={!conn.status?.connected}
+                    classes={{ root: classes.select }}
+                >
+                    {conn.name}
+                </MenuItem>
+            ))}
+        </Select>
+    );
 };
-
 
 const listenerKey = ({ bindAddress, host, port }) => `${host}:${port}:${bindAddress || ''}`;
 const markUsedListeners = (certificate, connection, listeners) => {
-	const {usedBy} = certificate;
-	const usedListeners = usedBy[connection.id] || [];
-	const usedListenerKeys = usedListeners.map(listenerKey);
-	return listeners.map((listener) => {
-		const isUsed = usedListenerKeys.includes(listenerKey(listener));
-		return { ...listener, isUsed };
-	});
+    const { usedBy } = certificate;
+    const usedListeners = usedBy[connection.id] || [];
+    const usedListenerKeys = usedListeners.map(listenerKey);
+    return listeners.map((listener) => {
+        const isUsed = usedListenerKeys.includes(listenerKey(listener));
+        return { ...listener, isUsed };
+    });
 };
 const portMessage = (listeners) => {
-	const prefix = listeners.length > 1 ? 'ports' : 'port';
-	return `${prefix}: ${listeners.map((l) => l.port).join(', ')}`;
+    const prefix = listeners.length > 1 ? 'ports' : 'port';
+    return `${prefix}: ${listeners.map((l) => l.port).join(', ')}`;
 };
 const successMessage = (cert, deployed, undeployed) => {
-	// success means at least one of (un)deployed must be > 0
-	const msgDeployed = deployed.length > 0 ? `deployed to ${portMessage(deployed)}` : '';
-	const msgUndeployed = undeployed.length > 0 ? `undeployed from ${portMessage(undeployed)}` : '';
-	const and = msgDeployed && msgUndeployed ? ' and ' : '';
-	if (!msgDeployed && !msgUndeployed) return `Certificate "${cert.name}" had already been deployed.`;
-	return `Certificate "${cert.name}" successfully ${msgDeployed}${and}${msgUndeployed}.`;
+    // success means at least one of (un)deployed must be > 0
+    const msgDeployed = deployed.length > 0 ? `deployed to ${portMessage(deployed)}` : '';
+    const msgUndeployed = undeployed.length > 0 ? `undeployed from ${portMessage(undeployed)}` : '';
+    const and = msgDeployed && msgUndeployed ? ' and ' : '';
+    if (!msgDeployed && !msgUndeployed) return `Certificate "${cert.name}" had already been deployed.`;
+    return `Certificate "${cert.name}" successfully ${msgDeployed}${and}${msgUndeployed}.`;
 };
 const deployMessage = (cert, { deployed = 0, undeployed = 0 } = {}) => ({
-	error: `'Failed to (un)deploy certificate "${cert.name}"`,
-	success: successMessage(cert, deployed, undeployed),
-	warning: `Problems while (un)deploying certificate "${cert.name}"!`
+    error: `'Failed to (un)deploy certificate "${cert.name}"`,
+    success: successMessage(cert, deployed, undeployed),
+    warning: `Problems while (un)deploying certificate "${cert.name}"!`,
 });
 
 const isConnected = (conn) => conn?.status?.connected;
 
 const fetchListeners = async (client, connId) => {
-	try {
-		const { data } = await client.getListeners(connId);
-		return { id: connId, listeners: data };
-	} catch (error) {
-		return { id: connId, listeners: [], error: (error && error.longError && trimMessage(error.longError))
-													|| error.message || error };
-	}
+    try {
+        const { data } = await client.getListeners(connId);
+        return { id: connId, listeners: data };
+    } catch (error) {
+        return {
+            id: connId,
+            listeners: [],
+            error: (error && error.longError && trimMessage(error.longError)) || error.message || error,
+        };
+    }
 };
 
 const CertificateDeploy = ({ connections = [] }) => {
-	const history = useHistory();
-	const [certificate, setCertificate] = useState(history.location.state);
-	const { enqueueSnackbar } = useSnackbar();
-	const [canUpdate, setCanUpdate] = useState(false);
-	const [connection, selectConnection] = useState(connections.find(isConnected) || connections[0]);
-	const [listeners, setListeners] = useState(null);
-	const { client } = useContext(WebSocketContext);
-	const hasConnectedConnection = connections.some(isConnected);
-	const connectionRef = useRef(connection);
+    const history = useHistory();
+    const [certificate, setCertificate] = useState(history.location.state);
+    const { enqueueSnackbar } = useSnackbar();
+    const [canUpdate, setCanUpdate] = useState(false);
+    const [connection, selectConnection] = useState(connections.find(isConnected) || connections[0]);
+    const [listeners, setListeners] = useState(null);
+    const { client } = useContext(WebSocketContext);
+    const hasConnectedConnection = connections.some(isConnected);
+    const connectionRef = useRef(connection);
 
-	const loadListeners = async () => {
-		setListeners(null);
-		if (isConnected(connection)) {
-			const { id, error, listeners } = await fetchListeners(client, connection.id);
-			// check response against current selected connection and ignore if they do not match
-			if (connectionRef.current?.id === id) {
-				if (error) {
-					enqueueSnackbar(`Cannot deploy because listeners could not be loaded. Reason: ${error}`, {
-						variant: 'error'
-					});
-				}
-				setListeners(markUsedListeners(certificate, getConnectionInfo(connection), listeners));
-			}
-		} else {
-			const name = connection?.name || 'n.a.';
-			if (listeners != null) enqueueSnackbar(`Connection "${name}" is not connected`, { variant: 'warning' });
-			setListeners([]);
-		}
-	};
+    const loadListeners = async () => {
+        setListeners(null);
+        if (isConnected(connection)) {
+            const { id, error, listeners } = await fetchListeners(client, connection.id);
+            // check response against current selected connection and ignore if they do not match
+            if (connectionRef.current?.id === id) {
+                if (error) {
+                    enqueueSnackbar(`Cannot deploy because listeners could not be loaded. Reason: ${error}`, {
+                        variant: 'error',
+                    });
+                }
+                setListeners(markUsedListeners(certificate, getConnectionInfo(connection), listeners));
+            }
+        } else {
+            const name = connection?.name || 'n.a.';
+            if (listeners != null) enqueueSnackbar(`Connection "${name}" is not connected`, { variant: 'warning' });
+            setListeners([]);
+        }
+    };
 
-	const updateCertificates = async () => {
-		try {
-			const { data } = await client.getCertificates();
-			const updatedCertificate = data.find((cert) => cert.id === certificate?.id);
-			if (updatedCertificate) {
-				setCertificate(updatedCertificate);
-			}
-		} catch (error) {
-			enqueueSnackbar(`Failed to load certificates from server. Reason: ${error.message || error}`, {
-				variant: 'error'
-			});
-		}
-	};
+    const updateCertificates = async () => {
+        try {
+            const { data } = await client.getCertificates();
+            const updatedCertificate = data.find((cert) => cert.id === certificate?.id);
+            if (updatedCertificate) {
+                setCertificate(updatedCertificate);
+            }
+        } catch (error) {
+            enqueueSnackbar(`Failed to load certificates from server. Reason: ${error.message || error}`, {
+                variant: 'error',
+            });
+        }
+    };
 
-	const onSelectConnection = (event) => {
-		const id = event.target.value;
-		const connection = connections.find((c) => c.id === id);
-		connectionRef.current = connection;
-		selectConnection(connection);
-		setCanUpdate(false);
-	};
+    const onSelectConnection = (event) => {
+        const id = event.target.value;
+        const connection = connections.find((c) => c.id === id);
+        connectionRef.current = connection;
+        selectConnection(connection);
+        setCanUpdate(false);
+    };
 
-	useEffect(() => {
-		loadListeners();
-	}, [connection]);
+    useEffect(() => {
+        loadListeners();
+    }, [connection]);
 
-	useEffect(() => {
-		// loadListeners();
-		if (listeners && certificate && connection) {
-			setListeners(markUsedListeners(certificate, getConnectionInfo(connection), listeners));
-		}
-	}, [certificate]);
+    useEffect(() => {
+        // loadListeners();
+        if (listeners && certificate && connection) {
+            setListeners(markUsedListeners(certificate, getConnectionInfo(connection), listeners));
+        }
+    }, [certificate]);
 
-	useEffect(() => {
-		let currentConnection;
-		if (connection) { // if connection was already chosen
-			currentConnection = connections.find((c) => c.id === connection?.id) || connections[0];
-		} else {
-			currentConnection = connections.find(isConnected) || connections[0];
-			connectionRef.current = currentConnection;
-		}
-		(async () => {
-			await updateCertificates();
-			selectConnection(currentConnection);
-		})();
-	}, [connections]);
+    useEffect(() => {
+        let currentConnection;
+        if (connection) {
+            // if connection was already chosen
+            currentConnection = connections.find((c) => c.id === connection?.id) || connections[0];
+        } else {
+            currentConnection = connections.find(isConnected) || connections[0];
+            connectionRef.current = currentConnection;
+        }
+        (async () => {
+            await updateCertificates();
+            selectConnection(currentConnection);
+        })();
+    }, [connections]);
 
+    const onCancel = () => {
+        history.goBack();
+    };
 
-	const onCancel = () => {
-		history.goBack();
-	};
+    const showSnack = (message, variant) => {
+        enqueueSnackbar(message, { variant });
+        // loadListeners();
+        setCanUpdate(false);
+    };
 
-	const showSnack = (message, variant) => {
-		enqueueSnackbar(message, { variant });
-		// loadListeners();
-		setCanUpdate(false);
-	};
+    const onDeploy = async () => {
+        const selectedListeners = listeners.filter((listener) => listener.isUsed);
+        try {
+            const { status, data = {} } = await client.deployCertificate(certificate, connection, selectedListeners);
+            switch (status) {
+                case 200:
+                    enqueueSnackbar(deployMessage(certificate, data).success, { variant: 'success' });
+                    setCanUpdate(false);
+                    break;
+                case 207:
+                    await updateCertificates();
+                    showSnack(deployMessage(certificate).warning + ` ${data.message}`, 'warning');
+                    console.error('Encountered issues during certificate (un)deploy. Details:', data.longError || data);
+                    break;
+                default:
+                    await updateCertificates();
+                    showSnack(deployMessage(certificate).error, 'error');
+            }
+        } catch (error) {
+            await updateCertificates();
+            showSnack(
+                trimMessage(`Error (un)deploying certificate "${certificate.name}". Reason: ${error.message}`),
+                'error'
+            );
+            console.error('Error (un)deploying certificate "${certificate.name}". Details:', error.longError || error);
+        }
+    };
 
-	const onDeploy = async () => {
-		const selectedListeners = listeners.filter((listener) => listener.isUsed);
-		try {
-			const { status, data = {} } = await client.deployCertificate(certificate, connection, selectedListeners);
-			switch (status) {
-				case 200:
-					enqueueSnackbar(deployMessage(certificate, data).success, { variant: 'success' });
-					setCanUpdate(false);
-					break;
-				case 207:
-					await updateCertificates();
-					showSnack(deployMessage(certificate).warning + ` ${data.message}`, 'warning');
-					console.error('Encountered issues during certificate (un)deploy. Details:', data.longError || data);
-					break;
-				default:
-					await updateCertificates();
-					showSnack(deployMessage(certificate).error, 'error');
-			}
-		} catch (error) {
-			await updateCertificates();
-			showSnack(trimMessage(`Error (un)deploying certificate "${certificate.name}". Reason: ${error.message}`), 'error');
-			console.error('Error (un)deploying certificate "${certificate.name}". Details:', error.longError || error);
-		}
-	};
+    const onSelectListener = (event) => {
+        const id = event.target.dataset.listener;
+        if (id) {
+            setListeners(
+                listeners.map((listener) => {
+                    if (listener.id == id) listener.isUsed = event.target.checked;
+                    return listener;
+                })
+            );
+        }
+        setCanUpdate(true);
+    };
 
-	const onSelectListener = (event) => {
-		const id = event.target.dataset.listener;
-		if (id) {
-			setListeners(
-				listeners.map((listener) => {
-					if (listener.id == id) listener.isUsed = event.target.checked;
-					return listener;
-				})
-			);
-		}
-		setCanUpdate(true);
-	};
-
-	return (
-		<ContentContainer
-			breadCrumbs={<ContainerBreadCrumbs title="Deploy"
-											   links={[{name: 'Home', route: '/home'},
-												   {name: 'Certificates', route: '/certs'}]}
-			/>}
-		>
-			<ContainerHeader
-				title={`Deploy client CA certificate: ${certificate.name}`}
-				subTitle={
-					<Typography variant="inherit" display="inline">
-						Client certificate authorization is only possible, if the connected broker has set the right configuration.
-						The broker configuration must define <i>capath</i> and set <i>require_certificate</i> to true.
-					</Typography>
-				}
-			/>
-			{hasConnectedConnection ? (
-				<Table size="small" aria-label="listeners">
-					<TableHead>
-						<TableRow>
-							<TableCell>Choose connection</TableCell>
-							<TableCell align="left">
-								<ConnectionSelect
-									connections={connections}
-									selected={connection}
-									onSelect={onSelectConnection}
-								/>
-							</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						<TableRow>
-							<TableCell style={{ verticalAlign: 'top' }}>Select target listeners</TableCell>
-							<TableCell align="left">{getListenersCell(listeners, onSelectListener)}</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell style={{ borderBottom: 'none' }}>
-								<SaveCancelButtons
-									saveCaption="Apply"
-									onSave={onDeploy}
-									saveDisabled={!canUpdate}
-									onCancel={onCancel}
-								/>
-							</TableCell>
-							<TableCell style={{ borderBottom: 'none' }}> </TableCell>
-						</TableRow>
-					</TableBody>
-				</Table>
-			) : (
-				ErrorHint({
-					title: 'Deploy not possible!',
-					message: 'Cannot deploy because no connected connection available.'
-				})
-			)}
-		</ContentContainer>
-	);
+    return (
+        <ContentContainer
+            breadCrumbs={
+                <ContainerBreadCrumbs
+                    title="Deploy"
+                    links={[
+                        { name: 'Home', route: '/home' },
+                        { name: 'Certificates', route: '/certs' },
+                    ]}
+                />
+            }
+        >
+            <ContainerHeader
+                title={`Deploy client CA certificate: ${certificate.name}`}
+                subTitle={
+                    <Typography variant="inherit" display="inline">
+                        Client certificate authorization is only possible, if the connected broker has set the right
+                        configuration. The broker configuration must define <i>capath</i> and set{' '}
+                        <i>require_certificate</i> to true.
+                    </Typography>
+                }
+            />
+            {hasConnectedConnection ? (
+                <Table size="small" aria-label="listeners">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Choose connection</TableCell>
+                            <TableCell align="left">
+                                <ConnectionSelect
+                                    connections={connections}
+                                    selected={connection}
+                                    onSelect={onSelectConnection}
+                                />
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell style={{ verticalAlign: 'top' }}>Select target listeners</TableCell>
+                            <TableCell align="left">{getListenersCell(listeners, onSelectListener)}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell style={{ borderBottom: 'none' }}>
+                                <SaveCancelButtons
+                                    saveCaption="Apply"
+                                    onSave={onDeploy}
+                                    saveDisabled={!canUpdate}
+                                    onCancel={onCancel}
+                                />
+                            </TableCell>
+                            <TableCell style={{ borderBottom: 'none' }}> </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            ) : (
+                ErrorHint({
+                    title: 'Deploy not possible!',
+                    message: 'Cannot deploy because no connected connection available.',
+                })
+            )}
+        </ContentContainer>
+    );
 };
 
 const mapStateToProps = (state) => {
-	return { connections: state.brokerConnections?.brokerConnections };
+    return { connections: state.brokerConnections?.brokerConnections };
 };
 
 export default connect(mapStateToProps)(CertificateDeploy);

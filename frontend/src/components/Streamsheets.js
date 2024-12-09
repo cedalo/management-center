@@ -1,6 +1,6 @@
-import React, {useContext} from 'react';
-import {amber, green, red} from '@material-ui/core/colors';
-import {connect, useDispatch} from 'react-redux';
+import React, { useContext } from 'react';
+import { amber, green, red } from '@material-ui/core/colors';
+import { connect, useDispatch } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
@@ -20,7 +20,7 @@ import PluginDisabledIcon from '@material-ui/icons/Cancel';
 import PluginEnabledIcon from '@material-ui/icons/CheckCircle';
 import PremiumPluginIcon from '@material-ui/icons/Stars';
 import PreviewStreamsheetsIcon from '@material-ui/icons/Visibility';
-import {Link as RouterLink} from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import Switch from '@material-ui/core/Switch';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -30,92 +30,90 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import {WebSocketContext} from '../websockets/WebSocket';
-import {makeStyles} from '@material-ui/core/styles';
+import { WebSocketContext } from '../websockets/WebSocket';
+import { makeStyles } from '@material-ui/core/styles';
 import moment from 'moment';
-import {useConfirm} from 'material-ui-confirm';
+import { useConfirm } from 'material-ui-confirm';
 import useFetch from '../helpers/useFetch';
 import ContainerHeader from './ContainerHeader';
 
 const useStyles = makeStyles((theme) => ({
-	button: {
-		margin: theme.spacing(1)
-	},
-	updateButton: {
-		marginLeft: '20px'
-	},
-	badges: {
-		'& > *': {
-			margin: theme.spacing(0.3)
-		}
-	},
-	closeButton: {
-		position: 'absolute',
-		right: theme.spacing(1),
-		top: theme.spacing(1),
-		color: theme.palette.grey[500]
-	},
+    button: {
+        margin: theme.spacing(1),
+    },
+    updateButton: {
+        marginLeft: '20px',
+    },
+    badges: {
+        '& > *': {
+            margin: theme.spacing(0.3),
+        },
+    },
+    closeButton: {
+        position: 'absolute',
+        right: theme.spacing(1),
+        top: theme.spacing(1),
+        color: theme.palette.grey[500],
+    },
 }));
 
 const Streamsheets = (props) => {
-	const classes = useStyles();
-	const context = useContext(WebSocketContext);
-	const dispatch = useDispatch();
-	const confirm = useConfirm();
-	const [previewOpen, setPreviewOpen] = React.useState(false);
-	const [selectedInstance, setSelectedInstance] = React.useState({});
+    const classes = useStyles();
+    const context = useContext(WebSocketContext);
+    const dispatch = useDispatch();
+    const confirm = useConfirm();
+    const [previewOpen, setPreviewOpen] = React.useState(false);
+    const [selectedInstance, setSelectedInstance] = React.useState({});
 
-	const {client} = context;
-	const [response, loading, hasError] = useFetch(
-		`${process.env.PUBLIC_URL}/api/config/tools/streamsheets`
-	);
+    const { client } = context;
+    const [response, loading, hasError] = useFetch(`${process.env.PUBLIC_URL}/api/config/tools/streamsheets`);
 
-	const onPreviewInstance = async (instance) => {
-		setSelectedInstance(instance);
-		setPreviewOpen(true);
-	};
+    const onPreviewInstance = async (instance) => {
+        setSelectedInstance(instance);
+        setPreviewOpen(true);
+    };
 
-	const onClosePreviewInstance = () => {
-		setSelectedInstance({});
-		setPreviewOpen(false);
-	};
+    const onClosePreviewInstance = () => {
+        setSelectedInstance({});
+        setPreviewOpen(false);
+    };
 
-	const onSelectInstance = async (instance) => {
-		window.open(instance.url, '_blank');
-	};
+    const onSelectInstance = async (instance) => {
+        window.open(instance.url, '_blank');
+    };
 
-	const onDownloadStreamsheets = async (instance) => {
-		window.open('https://www.cedalo.com', '_blank');
-	};
+    const onDownloadStreamsheets = async (instance) => {
+        window.open('https://www.cedalo.com', '_blank');
+    };
 
-	if (response) {
-		return (
-			<div>
-				<Dialog
-					onClose={onClosePreviewInstance}
-					aria-labelledby="Streamsheets preview"
-					open={previewOpen}
-					maxWidth={false}
-					// style={{
-					// 	width: '1400px',
-					// }}
-				>
-					<DialogTitle id="streamsheets-preview">
-						{selectedInstance?.name}
-						<Button
-							variant="contained"
-							color="primary"
-							className={classes.button}
-							startIcon={<OpenStreamsheetsIcon/>}
-							onClick={(event) => {
-								event.stopPropagation();
-								onSelectInstance(selectedInstance);
-							}}
-							size="small"
-						>
-							Open in new tab
-						</Button>
-						{/* <IconButton
+    if (response) {
+        return (
+            <div>
+                <Dialog
+                    onClose={onClosePreviewInstance}
+                    aria-labelledby="Streamsheets preview"
+                    open={previewOpen}
+                    maxWidth={false}
+                    // style={{
+                    // 	width: '1400px',
+                    // }}
+                >
+                    <DialogTitle id="streamsheets-preview">
+                        {selectedInstance?.name}
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            className={classes.button}
+                            startIcon={<OpenStreamsheetsIcon />}
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                onSelectInstance(selectedInstance);
+                            }}
+                            size="small"
+                        >
+                            Open in new tab
+                        </Button>
+                        {/* <IconButton
 							size="small"
 							aria-label="Open Streamsheets instance"
 							onClick={(event) => {
@@ -125,74 +123,76 @@ const Streamsheets = (props) => {
 						>
 							<OpenStreamsheetsIcon fontSize="small" />
 						</IconButton> */}
-						<IconButton aria-label="close" className={classes.closeButton} onClick={onClosePreviewInstance}>
-							<CloseIcon/>
-						</IconButton>
-					</DialogTitle>
-					<iframe
-						width="1100px"
-						height="600px"
-						src={selectedInstance?.url}
-						title={selectedInstance?.name}
-					></iframe>
-				</Dialog>
-				<ContainerBreadCrumbs title="Streamsheets" links={[{name: 'Home', route: '/home'}]}/>
-				<div style={{height: 'calc(100% - 26px)'}}>
-					<div style={{display: 'grid', gridTemplateRows: 'max-content auto', height: '100%'}}>
-						<ContainerHeader
-							title="Streamsheets"
-							subTitle="Available Streamsheet Installations. If you click on open, the Streamsheets App will be opened. Streamsheets offer a spreadsheet like user interface to analyze, transform and monitor MQTT data."
-						/>
-						{response?.instances && response?.instances?.length > 0 ? (
-							<div style={{height: '100%', overflowY: 'auto'}}>
-								<TableContainer>
-									<Table size="small">
-										<TableHead>
-											<TableRow>
-												<TableCell>Type</TableCell>
-												<TableCell>ID</TableCell>
-												<TableCell>Version</TableCell>
-												<TableCell>Name</TableCell>
-												<TableCell>Description</TableCell>
-												<TableCell>Actions</TableCell>
-											</TableRow>
-										</TableHead>
-										<TableBody>
-											{response?.instances?.map((streamsheets) => (
-												<TableRow
-													// hover
-													// onClick={(event) => {
-													// 	onSelectInstance(streamsheets);
-													// }}
-													// style={{ cursor: 'pointer' }}
-												>
-													<TableCell>
-														{streamsheets.type === 'premium' ? (
-															<PremiumPluginIcon style={{color: amber[500]}}
-																			   fontSize="small"/>
-														) : (
-															<OpenSourcePluginIcon fontSize="small"/>
-														)}
-													</TableCell>
-													<TableCell>{streamsheets.id}</TableCell>
-													<TableCell>{streamsheets.version}</TableCell>
-													<TableCell>{streamsheets.name}</TableCell>
-													<TableCell>{streamsheets.description}</TableCell>
-													<TableCell>
-														<Tooltip title="Open Streamsheets instance">
-															<Button
-																variant="contained"
-																color="primary"
-																startIcon={<PreviewStreamsheetsIcon/>}
-																onClick={(event) => {
-																	event.stopPropagation();
-																	onPreviewInstance(streamsheets);
-																}}
-																size="small"
-															>
-																Open
-															</Button>
-															{/* <IconButton
+                        <IconButton aria-label="close" className={classes.closeButton} onClick={onClosePreviewInstance}>
+                            <CloseIcon />
+                        </IconButton>
+                    </DialogTitle>
+                    <iframe
+                        width="1100px"
+                        height="600px"
+                        src={selectedInstance?.url}
+                        title={selectedInstance?.name}
+                    ></iframe>
+                </Dialog>
+                <ContainerBreadCrumbs title="Streamsheets" links={[{ name: 'Home', route: '/home' }]} />
+                <div style={{ height: 'calc(100% - 26px)' }}>
+                    <div style={{ display: 'grid', gridTemplateRows: 'max-content auto', height: '100%' }}>
+                        <ContainerHeader
+                            title="Streamsheets"
+                            subTitle="Available Streamsheet Installations. If you click on open, the Streamsheets App will be opened. Streamsheets offer a spreadsheet like user interface to analyze, transform and monitor MQTT data."
+                        />
+                        {response?.instances && response?.instances?.length > 0 ? (
+                            <div style={{ height: '100%', overflowY: 'auto' }}>
+                                <TableContainer>
+                                    <Table size="small">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>Type</TableCell>
+                                                <TableCell>ID</TableCell>
+                                                <TableCell>Version</TableCell>
+                                                <TableCell>Name</TableCell>
+                                                <TableCell>Description</TableCell>
+                                                <TableCell>Actions</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {response?.instances?.map((streamsheets) => (
+                                                <TableRow
+                                                // hover
+                                                // onClick={(event) => {
+                                                // 	onSelectInstance(streamsheets);
+                                                // }}
+                                                // style={{ cursor: 'pointer' }}
+                                                >
+                                                    <TableCell>
+                                                        {streamsheets.type === 'premium' ? (
+                                                            <PremiumPluginIcon
+                                                                style={{ color: amber[500] }}
+                                                                fontSize="small"
+                                                            />
+                                                        ) : (
+                                                            <OpenSourcePluginIcon fontSize="small" />
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell>{streamsheets.id}</TableCell>
+                                                    <TableCell>{streamsheets.version}</TableCell>
+                                                    <TableCell>{streamsheets.name}</TableCell>
+                                                    <TableCell>{streamsheets.description}</TableCell>
+                                                    <TableCell>
+                                                        <Tooltip title="Open Streamsheets instance">
+                                                            <Button
+                                                                variant="contained"
+                                                                color="primary"
+                                                                startIcon={<PreviewStreamsheetsIcon />}
+                                                                onClick={(event) => {
+                                                                    event.stopPropagation();
+                                                                    onPreviewInstance(streamsheets);
+                                                                }}
+                                                                size="small"
+                                                            >
+                                                                Open
+                                                            </Button>
+                                                            {/* <IconButton
 																size="small"
 																aria-label="Preview Streamsheets instance"
 																onClick={(event) => {
@@ -204,8 +204,8 @@ const Streamsheets = (props) => {
 															>
 																<PreviewStreamsheetsIcon fontSize="small" />
 															</IconButton> */}
-														</Tooltip>
-														{/* <Tooltip title="Open Streamsheets instance">
+                                                        </Tooltip>
+                                                        {/* <Tooltip title="Open Streamsheets instance">
 															<Button
 																variant="contained"
 																color="primary"
@@ -219,7 +219,7 @@ const Streamsheets = (props) => {
 															>
 																Open
 															</Button> */}
-														{/* <IconButton
+                                                        {/* <IconButton
 																size="small"
 																aria-label="Open Streamsheets instance"
 																onClick={(event) => {
@@ -229,33 +229,33 @@ const Streamsheets = (props) => {
 															>
 																<OpenStreamsheetsIcon fontSize="small" />
 															</IconButton> */}
-														{/* </Tooltip> */}
-													</TableCell>
-												</TableRow>
-											))}
-										</TableBody>
-									</Table>
-								</TableContainer>
-							</div>
-						) : (
-							<MessagePage
-								message="We could not find any Streamsheets installation."
-								buttonIcon={<DownloadIcon/>}
-								buttonText="Get Streamsheets now!"
-								callToAction={onDownloadStreamsheets}
-							/>
-						)}
-					</div>
-				</div>
-			</div>
-		);
-	} else {
-		return null;
-	}
+                                                        {/* </Tooltip> */}
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </div>
+                        ) : (
+                            <MessagePage
+                                message="We could not find any Streamsheets installation."
+                                buttonIcon={<DownloadIcon />}
+                                buttonText="Get Streamsheets now!"
+                                callToAction={onDownloadStreamsheets}
+                            />
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    } else {
+        return null;
+    }
 };
 
 const mapStateToProps = (state) => {
-	return {};
+    return {};
 };
 
 export default connect(mapStateToProps)(Streamsheets);

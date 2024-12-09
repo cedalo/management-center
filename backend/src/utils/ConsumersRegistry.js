@@ -32,5 +32,4 @@ class ConsumersRegistry {
     }
 }
 
-
 module.exports = ConsumersRegistry;

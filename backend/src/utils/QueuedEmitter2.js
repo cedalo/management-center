@@ -21,13 +21,13 @@ class QueuedEmitter2 extends EventEmitter2 {
             super.emit(event, ...args);
         } else {
             // If not ready, queue the event
-            this.queue.push({event, args});
+            this.queue.push({ event, args });
         }
     }
 
     processQueue() {
         this.ready = true;
-        while(this.queue.length > 0) {
+        while (this.queue.length > 0) {
             const { event, args } = this.queue.shift();
             super.emit(event, ...args);
         }

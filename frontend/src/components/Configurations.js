@@ -37,200 +37,199 @@ import { connect } from 'react-redux';
 // 	colors,
 //   } from '@material-ui/core';
 
-
 const GROUP_TABLE_COLUMNS = [
-	{ id: 'id', key: 'ID' },
-	{ id: 'configurationName', key: 'Name' },
-	{ id: 'URL', key: 'URL' },
-	{ id: 'status', key: 'Status' }
+    { id: 'id', key: 'ID' },
+    { id: 'configurationName', key: 'Name' },
+    { id: 'URL', key: 'URL' },
+    { id: 'status', key: 'Status' },
 ];
 
 const createStatusIcon = (status) =>
-	status && status.connected ? (
-		<ConnectedIcon fontSize="small" style={{ color: green[500] }} />
-	) : (
-		<DisconnectedIcon fontSize="small" style={{ color: red[500] }} />
-	);
+    status && status.connected ? (
+        <ConnectedIcon fontSize="small" style={{ color: green[500] }} />
+    ) : (
+        <DisconnectedIcon fontSize="small" style={{ color: red[500] }} />
+    );
 
 const useStyles = makeStyles((theme) => ({
-	avatar: {
-		backgroundColor: 'white'
-	},
-	imageIcon: {
-		height: '100%',
-		width: '20px'
-	},
-	iconRoot: {
-		textAlign: 'center'
-	},
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+    avatar: {
+        backgroundColor: 'white',
+    },
+    imageIcon: {
+        height: '100%',
+        width: '20px',
+    },
+    iconRoot: {
+        textAlign: 'center',
+    },
+    breadcrumbItem: theme.palette.breadcrumbItem,
+    breadcrumbLink: theme.palette.breadcrumbLink,
 }));
 
 const Configurations = ({ brokerConfigurations, onSort, sortBy, sortDirection }) => {
-	const classes = useStyles();
-	const theme = useTheme();
-	const context = useContext(WebSocketContext);
-	const [connection, setConnection] = React.useState('');
-	const [anchorEl, setAnchorEl] = React.useState(null);
-	const [openedPopoverId, setOpenedPopoverId] = React.useState(null);
+    const classes = useStyles();
+    const theme = useTheme();
+    const context = useContext(WebSocketContext);
+    const [connection, setConnection] = React.useState('');
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [openedPopoverId, setOpenedPopoverId] = React.useState(null);
 
-	const handlePopoverOpen = (target, id) => {
-		setOpenedPopoverId(id);
-		setAnchorEl(target);
-	};
+    const handlePopoverOpen = (target, id) => {
+        setOpenedPopoverId(id);
+        setAnchorEl(target);
+    };
 
-	const handleClose = () => {
-		setOpenedPopoverId(null);
-		setAnchorEl(null);
-	};
+    const handleClose = () => {
+        setOpenedPopoverId(null);
+        setAnchorEl(null);
+    };
 
-	return (
-		<div>
-			<Breadcrumbs aria-label="breadcrumb">
-				<RouterLink className={classes.breadcrumbLink} to="/home">
-					Home
-				</RouterLink>
-				<RouterLink className={classes.breadcrumbLink} to="/config">
-					Config
-				</RouterLink>
-				<Typography className={classes.breadcrumbItem} color="textPrimary">
-					Configurations
-				</Typography>
-			</Breadcrumbs>
-			<br />
-			{brokerConfigurations && brokerConfigurations.connections && brokerConfigurations.connections.length > 0 ? (
-				<div>
-					<Hidden xsDown implementation="css">
-						<TableContainer component={Paper}>
-							<Table>
-								<TableHead>
-									<TableRow>
-										{GROUP_TABLE_COLUMNS.map((column) => (
-											<TableCell
-												key={column.id}
-												sortDirection={sortBy === column.id ? sortDirection : false}
-											>
-												<TableSortLabel
-													active={sortBy === column.id}
-													direction={sortDirection}
-													onClick={() => onSort(column.id)}
-												>
-													{column.key}
-												</TableSortLabel>
-											</TableCell>
-										))}
-										<TableCell />
-									</TableRow>
-								</TableHead>
-								<TableBody>
-									{brokerConfigurations &&
-										brokerConfigurations.connections.map((brokerConfiguration) => (
-											<TableRow
-												hover
-												key={brokerConfiguration.name}
-												//   onClick={() => onSelectConfiguration(brokerConfiguration.name)}
-												//   style={{ cursor: "pointer" }}
-											>
-												<TableCell>{brokerConfiguration.id}</TableCell>
-												<TableCell>{brokerConfiguration.name}</TableCell>
-												<TableCell>{brokerConfiguration.url}</TableCell>
-												<TableCell>
-													<Popover
-														id={brokerConfiguration.id}
-														open={openedPopoverId === brokerConfiguration.id}
-														anchorEl={anchorEl}
-														onClose={handleClose}
-														anchorOrigin={{
-															vertical: 'bottom',
-															horizontal: 'center'
-														}}
-														transformOrigin={{
-															vertical: 'top',
-															horizontal: 'center'
-														}}
-													>
-														<Typography className={classes.typography}>
-															{brokerConfiguration.status.connected ? (
-																<Paper>Broker successfully connected</Paper>
-															) : (
-																<TableContainer component={Paper}>
-																	<Table>
-																		<TableBody>
-																			<TableRow>
-																				<TableCell>
-																					<strong>Error number</strong>
-																				</TableCell>
-																				<TableCell>
-																					{
-																						brokerConfiguration.status
-																							?.error?.errno
-																					}
-																				</TableCell>
-																			</TableRow>
-																			<TableRow>
-																				<TableCell>
-																					<strong>Error code</strong>
-																				</TableCell>
-																				<TableCell>
-																					{
-																						brokerConfiguration.status
-																							?.error?.code
-																					}
-																				</TableCell>
-																			</TableRow>
-																			<TableRow>
-																				<TableCell>
-																					<strong>System call</strong>
-																				</TableCell>
-																				<TableCell>
-																					{
-																						brokerConfiguration.status
-																							?.error?.syscall
-																					}
-																				</TableCell>
-																			</TableRow>
-																			<TableRow>
-																				<TableCell>
-																					<strong>Address</strong>
-																				</TableCell>
-																				<TableCell>
-																					{
-																						brokerConfiguration.status
-																							?.error?.address
-																					}
-																				</TableCell>
-																			</TableRow>
-																			<TableRow>
-																				<TableCell>
-																					<strong>Port</strong>
-																				</TableCell>
-																				<TableCell>
-																					{
-																						brokerConfiguration.status
-																							?.error?.port
-																					}
-																				</TableCell>
-																			</TableRow>
-																		</TableBody>
-																	</Table>
-																</TableContainer>
-															)}
-														</Typography>
-													</Popover>
-													<IconButton
-														size="small"
-														onClick={(event) => {
-															event.stopPropagation();
-															handlePopoverOpen(event.target, brokerConfiguration.id);
-														}}
-													>
-														{createStatusIcon(brokerConfiguration.status)}
-													</IconButton>
-													{}
-												</TableCell>
-												<TableCell align="right">
-													{/* <IconButton
+    return (
+        <div>
+            <Breadcrumbs aria-label="breadcrumb">
+                <RouterLink className={classes.breadcrumbLink} to="/home">
+                    Home
+                </RouterLink>
+                <RouterLink className={classes.breadcrumbLink} to="/config">
+                    Config
+                </RouterLink>
+                <Typography className={classes.breadcrumbItem} color="textPrimary">
+                    Configurations
+                </Typography>
+            </Breadcrumbs>
+            <br />
+            {brokerConfigurations && brokerConfigurations.connections && brokerConfigurations.connections.length > 0 ? (
+                <div>
+                    <Hidden xsDown implementation="css">
+                        <TableContainer component={Paper}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        {GROUP_TABLE_COLUMNS.map((column) => (
+                                            <TableCell
+                                                key={column.id}
+                                                sortDirection={sortBy === column.id ? sortDirection : false}
+                                            >
+                                                <TableSortLabel
+                                                    active={sortBy === column.id}
+                                                    direction={sortDirection}
+                                                    onClick={() => onSort(column.id)}
+                                                >
+                                                    {column.key}
+                                                </TableSortLabel>
+                                            </TableCell>
+                                        ))}
+                                        <TableCell />
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {brokerConfigurations &&
+                                        brokerConfigurations.connections.map((brokerConfiguration) => (
+                                            <TableRow
+                                                hover
+                                                key={brokerConfiguration.name}
+                                                //   onClick={() => onSelectConfiguration(brokerConfiguration.name)}
+                                                //   style={{ cursor: "pointer" }}
+                                            >
+                                                <TableCell>{brokerConfiguration.id}</TableCell>
+                                                <TableCell>{brokerConfiguration.name}</TableCell>
+                                                <TableCell>{brokerConfiguration.url}</TableCell>
+                                                <TableCell>
+                                                    <Popover
+                                                        id={brokerConfiguration.id}
+                                                        open={openedPopoverId === brokerConfiguration.id}
+                                                        anchorEl={anchorEl}
+                                                        onClose={handleClose}
+                                                        anchorOrigin={{
+                                                            vertical: 'bottom',
+                                                            horizontal: 'center',
+                                                        }}
+                                                        transformOrigin={{
+                                                            vertical: 'top',
+                                                            horizontal: 'center',
+                                                        }}
+                                                    >
+                                                        <Typography className={classes.typography}>
+                                                            {brokerConfiguration.status.connected ? (
+                                                                <Paper>Broker successfully connected</Paper>
+                                                            ) : (
+                                                                <TableContainer component={Paper}>
+                                                                    <Table>
+                                                                        <TableBody>
+                                                                            <TableRow>
+                                                                                <TableCell>
+                                                                                    <strong>Error number</strong>
+                                                                                </TableCell>
+                                                                                <TableCell>
+                                                                                    {
+                                                                                        brokerConfiguration.status
+                                                                                            ?.error?.errno
+                                                                                    }
+                                                                                </TableCell>
+                                                                            </TableRow>
+                                                                            <TableRow>
+                                                                                <TableCell>
+                                                                                    <strong>Error code</strong>
+                                                                                </TableCell>
+                                                                                <TableCell>
+                                                                                    {
+                                                                                        brokerConfiguration.status
+                                                                                            ?.error?.code
+                                                                                    }
+                                                                                </TableCell>
+                                                                            </TableRow>
+                                                                            <TableRow>
+                                                                                <TableCell>
+                                                                                    <strong>System call</strong>
+                                                                                </TableCell>
+                                                                                <TableCell>
+                                                                                    {
+                                                                                        brokerConfiguration.status
+                                                                                            ?.error?.syscall
+                                                                                    }
+                                                                                </TableCell>
+                                                                            </TableRow>
+                                                                            <TableRow>
+                                                                                <TableCell>
+                                                                                    <strong>Address</strong>
+                                                                                </TableCell>
+                                                                                <TableCell>
+                                                                                    {
+                                                                                        brokerConfiguration.status
+                                                                                            ?.error?.address
+                                                                                    }
+                                                                                </TableCell>
+                                                                            </TableRow>
+                                                                            <TableRow>
+                                                                                <TableCell>
+                                                                                    <strong>Port</strong>
+                                                                                </TableCell>
+                                                                                <TableCell>
+                                                                                    {
+                                                                                        brokerConfiguration.status
+                                                                                            ?.error?.port
+                                                                                    }
+                                                                                </TableCell>
+                                                                            </TableRow>
+                                                                        </TableBody>
+                                                                    </Table>
+                                                                </TableContainer>
+                                                            )}
+                                                        </Typography>
+                                                    </Popover>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={(event) => {
+                                                            event.stopPropagation();
+                                                            handlePopoverOpen(event.target, brokerConfiguration.id);
+                                                        }}
+                                                    >
+                                                        {createStatusIcon(brokerConfiguration.status)}
+                                                    </IconButton>
+                                                    {}
+                                                </TableCell>
+                                                <TableCell align="right">
+                                                    {/* <IconButton
 						  size="small"
                           onClick={(event) => {
                             event.stopPropagation();
@@ -248,36 +247,36 @@ const Configurations = ({ brokerConfigurations, onSort, sortBy, sortDirection })
                         >
                           <DeleteIcon fontSize="small" />
                         </IconButton> */}
-												</TableCell>
-											</TableRow>
-										))}
-								</TableBody>
-							</Table>
-						</TableContainer>
-					</Hidden>
-					<Hidden smUp implementation="css">
-						<Paper>
-							<List className={classes.root}>
-								{brokerConfigurations && Array.isArray(brokerConfigurations.connections)
-									? brokerConfigurations.connections.map((brokerConfiguration) => (
-											<React.Fragment>
-												<ListItem alignItems="flex-start">
-													<ListItemText
-														primary={<span>{brokerConfiguration.name}</span>}
-														secondary={
-															<React.Fragment>
-																<Typography
-																	component="span"
-																	variant="body2"
-																	className={classes.inline}
-																	color="textPrimary"
-																>
-																	{brokerConfiguration.url}
-																</Typography>
-															</React.Fragment>
-														}
-													/>
-													{/* <ListItemSecondaryAction>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Hidden>
+                    <Hidden smUp implementation="css">
+                        <Paper>
+                            <List className={classes.root}>
+                                {brokerConfigurations && Array.isArray(brokerConfigurations.connections)
+                                    ? brokerConfigurations.connections.map((brokerConfiguration) => (
+                                          <React.Fragment>
+                                              <ListItem alignItems="flex-start">
+                                                  <ListItemText
+                                                      primary={<span>{brokerConfiguration.name}</span>}
+                                                      secondary={
+                                                          <React.Fragment>
+                                                              <Typography
+                                                                  component="span"
+                                                                  variant="body2"
+                                                                  className={classes.inline}
+                                                                  color="textPrimary"
+                                                              >
+                                                                  {brokerConfiguration.url}
+                                                              </Typography>
+                                                          </React.Fragment>
+                                                      }
+                                                  />
+                                                  {/* <ListItemSecondaryAction>
 					  <IconButton edge="end" aria-label="edit">
 						<EditIcon />
 					  </IconButton>
@@ -285,26 +284,26 @@ const Configurations = ({ brokerConfigurations, onSort, sortBy, sortDirection })
 						<DeleteIcon />
 					  </IconButton>
 					</ListItemSecondaryAction> */}
-												</ListItem>
-												<Divider />
-											</React.Fragment>
-									  ))
-									: null}
-							</List>
-						</Paper>
-					</Hidden>
-				</div>
-			) : (
-				<div>No configurations found</div>
-			)}
-		</div>
-	);
+                                              </ListItem>
+                                              <Divider />
+                                          </React.Fragment>
+                                      ))
+                                    : null}
+                            </List>
+                        </Paper>
+                    </Hidden>
+                </div>
+            ) : (
+                <div>No configurations found</div>
+            )}
+        </div>
+    );
 };
 
 const mapStateToProps = (state) => {
-	return {
-		brokerConfigurations: state.brokerConfigurations.brokerConfigurations
-	};
+    return {
+        brokerConfigurations: state.brokerConfigurations.brokerConfigurations,
+    };
 };
 
 export default connect(mapStateToProps)(Configurations);

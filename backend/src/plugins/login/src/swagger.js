@@ -1,116 +1,103 @@
 module.exports = {
-    "tags": [
+    tags: [
         {
-            "name": "auth",
-            "description": "Endpoints for authentication with the MMC (login, logout)"
-        }
+            name: 'auth',
+            description: 'Endpoints for authentication with the MMC (login, logout)',
+        },
     ],
-    "paths": {
-        "/login": {
-            "get": {
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Returns an HTML for user page",
-                "produces": [
-                    "html"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "HTML login page",
-                        "content": {
-                            "text/html": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/LoginPage"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/logout": {
-            "get": {
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Performs logout and redirects to /login (returning the login page)",
-                "produces": [
-                    "application/json"
-                ],
-                "responses": {
-                    "302": {
-                        "description": "Redirect to login page",
-                        "headers": {
-                            "Location": {
-                                "description": "/",
-                                "schema": {
-                                    "type": "string"
-                                }
+    paths: {
+        '/login': {
+            get: {
+                tags: ['auth'],
+                summary: 'Returns an HTML for user page',
+                produces: ['html'],
+                responses: {
+                    200: {
+                        description: 'HTML login page',
+                        content: {
+                            'text/html': {
+                                schema: {
+                                    $ref: '#/components/schemas/LoginPage',
+                                },
                             },
-                        }
+                        },
                     },
-                }
-            }
-        },
-        "/auth": {
-            "post": {
-                "tags": [
-                    "auth"
-                ],
-                "requestBody": {
-                    "description": "Credentials for authentication",
-                    "required": "true",
-                    "content": {
-                        "application/x-www-form-urlencoded": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "username": {
-                                        "type": "string"
-                                    },
-                                    "password": {
-                                        "type": "string"
-                                    }
-                                }
-                            }
-                        }
-                    }
                 },
-                "summary": "Authenticates user and redirects",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "responses": {
-                    "302": {
-                        "description": "Redirect on successful authentication or failed authentication",
-                        "headers": {
-                            "Location": {
-                                "description": "/ or /login?error=authentication-failed",
-                                "schema": {
-                                    "type": "string"
-                                }
+            },
+        },
+        '/logout': {
+            get: {
+                tags: ['auth'],
+                summary: 'Performs logout and redirects to /login (returning the login page)',
+                produces: ['application/json'],
+                responses: {
+                    302: {
+                        description: 'Redirect to login page',
+                        headers: {
+                            Location: {
+                                description: '/',
+                                schema: {
+                                    type: 'string',
+                                },
                             },
-                            "Set-Cookie": {
-                                "description": "If auth sucessful this will be a session cookie that user needs to include into the \"Cookie\" header for every request to the server",
-                                "schema": {
-                                    "type": "string"
-                                }
+                        },
+                    },
+                },
+            },
+        },
+        '/auth': {
+            post: {
+                tags: ['auth'],
+                requestBody: {
+                    description: 'Credentials for authentication',
+                    required: 'true',
+                    content: {
+                        'application/x-www-form-urlencoded': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    username: {
+                                        type: 'string',
+                                    },
+                                    password: {
+                                        type: 'string',
+                                    },
+                                },
                             },
-                        }
-                    }
-                }
-            }
-        }
+                        },
+                    },
+                },
+                summary: 'Authenticates user and redirects',
+                consumes: ['application/json'],
+                produces: ['application/json'],
+                responses: {
+                    302: {
+                        description: 'Redirect on successful authentication or failed authentication',
+                        headers: {
+                            Location: {
+                                description: '/ or /login?error=authentication-failed',
+                                schema: {
+                                    type: 'string',
+                                },
+                            },
+                            'Set-Cookie': {
+                                description:
+                                    'If auth sucessful this will be a session cookie that user needs to include into the "Cookie" header for every request to the server',
+                                schema: {
+                                    type: 'string',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
     },
-    "components": {
-        "schemas": {
-            "LoginPage": {
-                "type": "string",
-                                    "example": `<!DOCTYPE html>
+    components: {
+        schemas: {
+            LoginPage: {
+                type: 'string',
+                example: `<!DOCTYPE html>
 <html lang='en'>
 <head>
     <style>
@@ -374,10 +361,9 @@ module.exports = {
     </script>
 </body>
 
-</html>`
-            }
-        }
+</html>`,
+            },
+        },
     },
-    "statuses": {
-    }
-}
+    statuses: {},
+};

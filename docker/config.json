@@ -1,9 +1,9 @@
 {
-	"connections": [],
-	"tools": {
-		"streamsheets": {
-			"instances": []
-		}
-	},
-	"plugins": []
+    "connections": [],
+    "tools": {
+        "streamsheets": {
+            "instances": []
+        }
+    },
+    "plugins": []
 }

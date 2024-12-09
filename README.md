@@ -2,29 +2,28 @@
 
 The management center for Eclipse Mosquitto. See the [official documentation](https://docs.cedalo.com/) for additional details.
 
-
 <br/>
-
 
 ## Run in development mode
 
 Either go to [official documentation page](https://docs.cedalo.com/management-center/installation) and follow steps there or clone this repository and then:
 
-* Install `Docker` and `docker-compose`
-* Install `yarn` package manager
+- Install `Docker` and `docker-compose`
+- Install `yarn` package manager
 
+- Run the Mosquitto broker:
 
-* Run the Mosquitto broker:
-    * Create `mosquitto` directory
-    * Go inside this directory, create `config` and `data` directories
-    * Go inside `config` directory and create config file `mosquitto.conf`
-    * You can find an example of such file [here](https://github.com/eclipse/mosquitto/blob/master/mosquitto.conf). Be sure to uncomment or add the following lines to this file:
+    - Create `mosquitto` directory
+    - Go inside this directory, create `config` and `data` directories
+    - Go inside `config` directory and create config file `mosquitto.conf`
+    - You can find an example of such file [here](https://github.com/eclipse/mosquitto/blob/master/mosquitto.conf). Be sure to uncomment or add the following lines to this file:
+
         ```
             listener 1883
             allow_anonymous true
         ```
 
-    * Inside the `mosquitto` directory create a `docker-compose.yaml` file with the following content:
+    - Inside the `mosquitto` directory create a `docker-compose.yaml` file with the following content:
 
         ```
         version: '3.8'
@@ -47,23 +46,25 @@ Either go to [official documentation page](https://docs.cedalo.com/management-ce
                 driver: bridge
         ```
 
-    * Inside `mosquitto` directory run the following command to start the broker:
+    - Inside `mosquitto` directory run the following command to start the broker:
         ```
             docker-compose up
         ```
 
-* Now, when Mosquitto broker is installed, go to the root directory of the Management Center and run:
+- Now, when Mosquitto broker is installed, go to the root directory of the Management Center and run:
 
     ```
         yarn install
     ```
 
-* Go to the `/frontend` folder and run:
+- Go to the `/frontend` folder and run:
+
     ```
         yarn run build-without-base-path
     ```
 
-* Set the following environmental variables (Note that `export` command works for Unix. For Windows use `set`):
+- Set the following environmental variables (Note that `export` command works for Unix. For Windows use `set`):
+
     ```
         export CEDALO_MC_BROKER_ID="mosquitto" \
         export CEDALO_MC_BROKER_NAME="Mosquitto" \
@@ -75,10 +76,10 @@ Either go to [official documentation page](https://docs.cedalo.com/management-ce
         export CEDALO_MC_PROXY_HOST="localhost" \
     ```
 
-* Go to the `backend` directory and run:
+- Go to the `backend` directory and run:
+
     ```
         yarn start
     ```
 
-
-* Go to `http://localhost:8088` to start working with the Management Center for Eclipse Mosquitto
+- Go to `http://localhost:8088` to start working with the Management Center for Eclipse Mosquitto

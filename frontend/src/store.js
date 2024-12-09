@@ -27,32 +27,32 @@ import inspectClientsReducer from './admin/inspect/reducers/inspectClientsReduce
 // import bridgesReducer from './admin/cloud/reducers/bridgesReducer';
 
 const store = createStore(
-	combineReducers({
-		brokerConfigurations: brokerConfigurationsReducer,
-		brokerConnections: brokerConnectionsReducer,
-		proxyConnection: proxyConnectionReducer,
-		groups: groupsReducer,
-		userGroups:	userGroupsReducer,
-		license: licenseReducer,
-		version: versionsReducer,
-		roles: rolesReducer,
-		settings: settingsReducer,
-		streams: streamsReducer,
-		systemStatus: systemStatusReducer,
-		topicTree: topicTreeReducer,
-		clients: clientsReducer,
-		userRoles: userRolesReducer,
-		userProfile: userProfileReducer,
-		users: usersReducer,
-		clusters: clustersReducer,
-		inspectClients: inspectClientsReducer,
-		brokerLicense: brokerLicenseReducer,
-		tests: testsReducer,
-		tokens: applicationTokensReducer,
-		loading: loadingReducer,
-		backendParameters: backendParametersReducer,
-		// bridges: bridgesReducer
-	})
+    combineReducers({
+        brokerConfigurations: brokerConfigurationsReducer,
+        brokerConnections: brokerConnectionsReducer,
+        proxyConnection: proxyConnectionReducer,
+        groups: groupsReducer,
+        userGroups: userGroupsReducer,
+        license: licenseReducer,
+        version: versionsReducer,
+        roles: rolesReducer,
+        settings: settingsReducer,
+        streams: streamsReducer,
+        systemStatus: systemStatusReducer,
+        topicTree: topicTreeReducer,
+        clients: clientsReducer,
+        userRoles: userRolesReducer,
+        userProfile: userProfileReducer,
+        users: usersReducer,
+        clusters: clustersReducer,
+        inspectClients: inspectClientsReducer,
+        brokerLicense: brokerLicenseReducer,
+        tests: testsReducer,
+        tokens: applicationTokensReducer,
+        loading: loadingReducer,
+        backendParameters: backendParametersReducer,
+        // bridges: bridgesReducer
+    })
 );
 
 export default store;

@@ -4,17 +4,17 @@ import createStyles from '@material-ui/core/styles/createStyles';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
 const useStyles = makeStyles((theme) =>
-	createStyles({
-		disabled: {
-			color: theme.palette.text.disabled
-		}
-	})
+    createStyles({
+        disabled: {
+            color: theme.palette.text.disabled,
+        },
+    })
 );
 
 // currently only disabled is supported...
 const StyledTypography = ({ disabled, text = '' }) => {
-	const classes = useStyles();
-	return <Typography className={disabled ? classes.disabled : ''}>{text}</Typography>;
+    const classes = useStyles();
+    return <Typography className={disabled ? classes.disabled : ''}>{text}</Typography>;
 };
 export default StyledTypography;
 

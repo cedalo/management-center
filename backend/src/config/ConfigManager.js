@@ -15,397 +15,408 @@ const CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING = process.env.CEDALO_MC_BROK
 const CEDALO_MC_BROKER_CONNECTION_MQTT_PORT = process.env.CEDALO_MC_BROKER_CONNECTION_MQTT_PORT;
 const CEDALO_MC_BROKER_CONNECTION_MQTTS_PORT = process.env.CEDALO_MC_BROKER_CONNECTION_MQTTS_PORT;
 const CEDALO_MC_BROKER_CONNECTION_WEBSOCKET_PATH = process.env.CEDALO_MC_BROKER_CONNECTION_WEBSOCKET_PATH || '/mqtt';
-const configFile = process.env.CEDALO_MC_PROXY_CONFIG || path.join(process.env.CEDALO_MC_PROXY_CONFIG_DIR || getBaseDirectory(__dirname), 'config.json');
+const configFile =
+    process.env.CEDALO_MC_PROXY_CONFIG ||
+    path.join(process.env.CEDALO_MC_PROXY_CONFIG_DIR || getBaseDirectory(__dirname), 'config.json');
 
 const adapter = new FileSync(configFile);
 const db = low(adapter);
 
+const mapStringToMap = (string, converter = (x) => x) => {
+    const map = new Map();
+    const parts = string.split(';');
 
-const mapStringToMap = (string, converter=(x) => x) => {
-	const map = new Map();
-	const parts = string.split(';');
+    for (const part of parts) {
+        const [key, value] = part.split(':');
+        map.set(key, converter(value));
+    }
 
-	for (const part of parts) {
-		const [key, value] = part.split(':');
-		map.set(key, converter(value));
-	}
-
-	return map;
+    return map;
 };
 
-
 const processOldPluginsInConfig = (plugins) => {
-	// this function just converts [{name: plugin}] to [{id: plugin}]
-	let isOldConfigFile = false;
-	const processedPlugins = []
-	if (plugins && Array.isArray(plugins)) {
-		for (const plugin of plugins) {
-			if (plugin.name) {
-				isOldConfigFile = true;
-				processedPlugins.push({id: plugin.name});
-			} else if (plugin.id) {
-				processedPlugins.push(plugin);
-			}
-		}
+    // this function just converts [{name: plugin}] to [{id: plugin}]
+    let isOldConfigFile = false;
+    const processedPlugins = [];
+    if (plugins && Array.isArray(plugins)) {
+        for (const plugin of plugins) {
+            if (plugin.name) {
+                isOldConfigFile = true;
+                processedPlugins.push({ id: plugin.name });
+            } else if (plugin.id) {
+                processedPlugins.push(plugin);
+            }
+        }
 
-		return {plugins: processedPlugins, isOldConfigFile};
-	}
-	return {plugins: null, isOldConfigFile};
+        return { plugins: processedPlugins, isOldConfigFile };
+    }
+    return { plugins: null, isOldConfigFile };
 };
 
 module.exports = class ConfigManager {
+    constructor(maxBrokerConnections, pluginList) {
+        this._maxBrokerConnections = maxBrokerConnections;
+        // construct objects from env vars
+        this.hostMappingString = CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING;
+        this.mqttsMappingString = CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING;
+        this.mqttMappingString = CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING;
+        this.wsMappingString = CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING;
 
-	constructor(maxBrokerConnections, pluginList) {
-		this._maxBrokerConnections = maxBrokerConnections;
-		// construct objects from env vars
-		this.hostMappingString = CEDALO_MC_BROKER_CONNECTION_HOST_MAPPING;
-		this.mqttsMappingString = CEDALO_MC_BROKER_CONNECTION_MQTTS_EXISTS_MAPPING;
-		this.mqttMappingString = CEDALO_MC_BROKER_CONNECTION_MQTT_EXISTS_MAPPING;
-		this.wsMappingString = CEDALO_MC_BROKER_CONNECTION_WS_EXISTS_MAPPING;
+        if (this.hostMappingString) {
+            this.toExternalHostnamesMap = mapStringToMap(this.hostMappingString); // map private network address or docker servicename to an actual external server url
+        }
+        if (this.mqttsMappingString) {
+            this.allowEncryptedMap = mapStringToMap(this.mqttsMappingString, stringToBool); // map private network address or docker servicename to a boolean which allows mqtts traffic
+        }
+        if (this.mqttMappingString) {
+            this.allowUnencryptedMap = mapStringToMap(this.mqttMappingString, stringToBool);
+        }
+        if (this.wsMappingString) {
+            this.allowWebsocketsMap = mapStringToMap(this.wsMappingString, stringToBool);
+        }
 
-		if (this.hostMappingString) {
-			this.toExternalHostnamesMap = mapStringToMap(this.hostMappingString); // map private network address or docker servicename to an actual external server url
-		}
-		if (this.mqttsMappingString) {
-			this.allowEncryptedMap = mapStringToMap(this.mqttsMappingString, stringToBool); // map private network address or docker servicename to a boolean which allows mqtts traffic
-		}
-		if (this.mqttMappingString) {
-			this.allowUnencryptedMap = mapStringToMap(this.mqttMappingString, stringToBool);
-		}
-		if (this.wsMappingString) {
-			this.allowWebsocketsMap = mapStringToMap(this.wsMappingString, stringToBool); 
-		}
+        this._synchronizePluginsToLoad(pluginList);
+    }
 
-		this._synchronizePluginsToLoad(pluginList)
-	}
+    _synchronizePluginsToLoad(pluginList) {
+        const findPluginInConfig = (pluginId) => {
+            const plugins = this.plugins;
+            if (plugins && Array.isArray(plugins)) {
+                const foundPlugin = plugins.find((el) => el.id === pluginId);
+                return foundPlugin;
+            }
+            return undefined;
+        };
 
-	_synchronizePluginsToLoad(pluginList) {
-		const findPluginInConfig = (pluginId) => {
-			const plugins = this.plugins;
-			if (plugins && Array.isArray(plugins)) {
-				const foundPlugin = plugins.find((el) => el.id === pluginId);
-				return foundPlugin;
-			}
-			return undefined;
-		}
+        // if no plugins to load or plugin list is null then return right away
+        // if plugins = [] it means that no plugins will be loaded except OSS ones
+        // if plugins = 'all' then it means that everything from the license will be loaded
+        // if plugins = null this means that plugin.json file doesn't exist and we should either check for existing plugins in config file or load all
+        let explicitPluginLoad = true;
+        let plugins = [];
 
-		// if no plugins to load or plugin list is null then return right away
-		// if plugins = [] it means that no plugins will be loaded except OSS ones
-		// if plugins = 'all' then it means that everything from the license will be loaded
-		// if plugins = null this means that plugin.json file doesn't exist and we should either check for existing plugins in config file or load all
-		let explicitPluginLoad = true;
-		let plugins = [];
-		
-		// if (pluginList) {
-		// 	this.loadMode = {...this.loadMode, softMode: false};
-		// }
-		
-		if (pluginList === 'all') {
-			this.plugins = null;
-			pluginList = [];
-		} else if (!pluginList) {
-			const processedPluginsObject = processOldPluginsInConfig(this.plugins);
-			const noPluginsFoundInConfig = !processedPluginsObject.plugins;
-			const pluginsWereImplicitlyLoadedBefore = this.loadMode.explicitPluginLoad === false;
+        // if (pluginList) {
+        // 	this.loadMode = {...this.loadMode, softMode: false};
+        // }
 
-			if ((!processedPluginsObject.isOldConfigFile && pluginsWereImplicitlyLoadedBefore)
-			|| noPluginsFoundInConfig) {
-				// was loaded with license before
-				explicitPluginLoad = false;
-				// plugins stay implicetely loaded
-			} else { // if plugins were loaded explicitly before or we have an old config file
-				if (!Array.isArray(processedPluginsObject.plugins)) {
-					throw new Error('Invalid plugins entry in config file. Must be an array of objects');
-				}
-				plugins = processedPluginsObject.plugins;
-			}
-		} else if (!Array.isArray(pluginList)) {
-			throw new Error('Invalid plugins entry in plugin list file. Must be an array of objects');
-		} else {
-			// if pluginList exists then update (and sync) the plugins in config
-			for (const plugin of pluginList) {
-			// in case plugins.json list of plugins changed, we need to synchronize it with plugins section in config.json
-				if (!plugin.id) {
-					console.error('Invalid plugin entry in plugin list:', plugin);
-					continue;
-				}
-				const pluginInConfig = findPluginInConfig(plugin.id);
-				if (pluginInConfig) {
-					plugins.push(pluginInConfig);
-				} else {
-					plugins.push({id: plugin.id});
-				}
-			}
-		}
+        if (pluginList === 'all') {
+            this.plugins = null;
+            pluginList = [];
+        } else if (!pluginList) {
+            const processedPluginsObject = processOldPluginsInConfig(this.plugins);
+            const noPluginsFoundInConfig = !processedPluginsObject.plugins;
+            const pluginsWereImplicitlyLoadedBefore = this.loadMode.explicitPluginLoad === false;
 
-		this.loadMode = {...this.loadMode, explicitPluginLoad: explicitPluginLoad};
+            if (
+                (!processedPluginsObject.isOldConfigFile && pluginsWereImplicitlyLoadedBefore) ||
+                noPluginsFoundInConfig
+            ) {
+                // was loaded with license before
+                explicitPluginLoad = false;
+                // plugins stay implicetely loaded
+            } else {
+                // if plugins were loaded explicitly before or we have an old config file
+                if (!Array.isArray(processedPluginsObject.plugins)) {
+                    throw new Error('Invalid plugins entry in config file. Must be an array of objects');
+                }
+                plugins = processedPluginsObject.plugins;
+            }
+        } else if (!Array.isArray(pluginList)) {
+            throw new Error('Invalid plugins entry in plugin list file. Must be an array of objects');
+        } else {
+            // if pluginList exists then update (and sync) the plugins in config
+            for (const plugin of pluginList) {
+                // in case plugins.json list of plugins changed, we need to synchronize it with plugins section in config.json
+                if (!plugin.id) {
+                    console.error('Invalid plugin entry in plugin list:', plugin);
+                    continue;
+                }
+                const pluginInConfig = findPluginInConfig(plugin.id);
+                if (pluginInConfig) {
+                    plugins.push(pluginInConfig);
+                } else {
+                    plugins.push({ id: plugin.id });
+                }
+            }
+        }
 
-		if (explicitPluginLoad) {
-			// hard mode
-			this.softMode = false;
-			this.plugins = plugins;
-		} else { // if plugins were loaded implicitly (everything that is in the license) before
-			// soft mode
-			this.softMode = true;
-			this.plugins = null;
-		}
-	}
+        this.loadMode = { ...this.loadMode, explicitPluginLoad: explicitPluginLoad };
 
-	get config() {
-		return db.value();
-	}
+        if (explicitPluginLoad) {
+            // hard mode
+            this.softMode = false;
+            this.plugins = plugins;
+        } else {
+            // if plugins were loaded implicitly (everything that is in the license) before
+            // soft mode
+            this.softMode = true;
+            this.plugins = null;
+        }
+    }
 
-	get loadMode() {
-		const loadMode = db.get('loadMode').value();
-		return loadMode || {};
-	}
+    get config() {
+        return db.value();
+    }
 
-	set loadMode(newMode) {
-		db.update('loadMode', (oldMode) => newMode).write();
-	}
+    get loadMode() {
+        const loadMode = db.get('loadMode').value();
+        return loadMode || {};
+    }
 
-	get softMode() {
-		const softMode = db.get('softMode').value();
-		return softMode;
-	}
+    set loadMode(newMode) {
+        db.update('loadMode', (oldMode) => newMode).write();
+    }
 
-	set softMode(newMode) {
-		db.update('softMode', (oldMode) => newMode).write();
-	}
+    get softMode() {
+        const softMode = db.get('softMode').value();
+        return softMode;
+    }
 
-	getAllConnections() {
-		return db.get('connections').value();
-	}
+    set softMode(newMode) {
+        db.update('softMode', (oldMode) => newMode).write();
+    }
 
-	get connections() {
-		let connections = this.getAllConnections();
-		if (connections.length > this._maxBrokerConnections) {
-			connections = connections.slice(0, this._maxBrokerConnections);
-		}
-		return connections;
-	}
+    getAllConnections() {
+        return db.get('connections').value();
+    }
 
-	set connections(connections) { 
-		db.update('connections', (oldConnections) => connections).write();
-	}
+    get connections() {
+        let connections = this.getAllConnections();
+        if (connections.length > this._maxBrokerConnections) {
+            connections = connections.slice(0, this._maxBrokerConnections);
+        }
+        return connections;
+    }
 
-	get plugins() {
-		let plugins = db.get('plugins').value();
-		return plugins;
-	}
+    set connections(connections) {
+        db.update('connections', (oldConnections) => connections).write();
+    }
 
-	set plugins(plugins) {
-		db.update('plugins', (oldPlugins) => plugins).write();
-	}
+    get plugins() {
+        let plugins = db.get('plugins').value();
+        return plugins;
+    }
 
-	get parameters() {
-		let parameters = db.get('parameters').value();
-		return parameters;
-	}
+    set plugins(plugins) {
+        db.update('plugins', (oldPlugins) => plugins).write();
+    }
 
-	set parameters(parameters) {
-		db.update('parameters', (oldParameters) => parameters).write();
-	}
+    get parameters() {
+        let parameters = db.get('parameters').value();
+        return parameters;
+    }
 
-	updatePluginFromConfiguration(pluginId, plugin) { //!!!
-		if (!isObject(plugin)) {
-			throw new Error('Plugin is of invalid type/empty/not provided');
-		}
+    set parameters(parameters) {
+        db.update('parameters', (oldParameters) => parameters).write();
+    }
 
-		const result = db.get('plugins')
-					.find({ id: pluginId })
-					.assign({...plugin})
-					.write();
-		
-		this.loadMode = {...this.loadMode, explicitPluginLoad: true}; // set explicit plugin load because user changed the list of loaded plugins manually. Now this change should be respected on next startup and plugin load
-		this.softMode = false;
+    updatePluginFromConfiguration(pluginId, plugin) {
+        //!!!
+        if (!isObject(plugin)) {
+            throw new Error('Plugin is of invalid type/empty/not provided');
+        }
 
-		return result;
-	}
+        const result = db
+            .get('plugins')
+            .find({ id: pluginId })
+            .assign({ ...plugin })
+            .write();
 
-	getConnection(id) {
-		const connection = this.connections.find((connectionObject) => connectionObject.id === id);
-		return connection;
-	}
+        this.loadMode = { ...this.loadMode, explicitPluginLoad: true }; // set explicit plugin load because user changed the list of loaded plugins manually. Now this change should be respected on next startup and plugin load
+        this.softMode = false;
 
-	filterConnectionObject(connection) { // tls plugin injects its own fucntion here
-		const filteredConnection = {
-			id: connection.id,
-			name: connection.name,
-			url: connection.url?.trim(),
-			credentials: {
-				username: connection.credentials?.username?.trim() || undefined,
-				password: connection.credentials?.password,
-				clientId: connection.credentials?.clientId?.trim() || undefined,
-			},
-			noMetricsMode: connection.noMetricsMode,
-		};
-		return filteredConnection;
-	}
+        return result;
+    }
 
-	validateConnection(connection, connections=null) {
-		const allConnections = connections || this.connections;
+    getConnection(id) {
+        const connection = this.connections.find((connectionObject) => connectionObject.id === id);
+        return connection;
+    }
 
-		const isConnectionAnObject = (connection !== null && typeof connection === 'object');
-		if (!isConnectionAnObject) {
-			throw new Error('Connection is of invalid type/empty/not provided');
-		}
+    filterConnectionObject(connection) {
+        // tls plugin injects its own fucntion here
+        const filteredConnection = {
+            id: connection.id,
+            name: connection.name,
+            url: connection.url?.trim(),
+            credentials: {
+                username: connection.credentials?.username?.trim() || undefined,
+                password: connection.credentials?.password,
+                clientId: connection.credentials?.clientId?.trim() || undefined,
+            },
+            noMetricsMode: connection.noMetricsMode,
+        };
+        return filteredConnection;
+    }
 
-		if (!allConnections) {
-			throw new Error(`No connections found when validating connection: ${connection.name}(${connection.id})`);
-		}
+    validateConnection(connection, connections = null) {
+        const allConnections = connections || this.connections;
 
-		if (!allConnections?.length) {
-			return true; // nothing to validate
-		}
+        const isConnectionAnObject = connection !== null && typeof connection === 'object';
+        if (!isConnectionAnObject) {
+            throw new Error('Connection is of invalid type/empty/not provided');
+        }
 
-		for (let i = 0; i < allConnections.length; ++i) {
-			const connectionItem = allConnections[i];
-			if (connectionItem.id === connection.id) {
-				continue;
-			}
-			if (connectionItem.credentials?.clientId && connection.credentials?.clientId
-				&& connectionItem.url === connection.url
-				&& connectionItem.credentials.clientId === connection.credentials.clientId) {
-				throw new Error(`Connection ${connection.name}(${connection.id}) has the same clientId and broker as ${connectionItem.name}(${connectionItem.id})`);
-			}
-			// TODO: we can also validate uniqueness of connection's id and name
-		}
-	}
+        if (!allConnections) {
+            throw new Error(`No connections found when validating connection: ${connection.name}(${connection.id})`);
+        }
 
-	processInternalExternalURLs(connection) {
-		if (connection.internalUrl || connection.websocketsUrl ||
-			connection.externalEncryptedUrl || connection.externalUnencryptedUrl
-		) {
-			return connection;
-		}
+        if (!allConnections?.length) {
+            return true; // nothing to validate
+        }
 
-		const internalMqttPort = CEDALO_MC_BROKER_CONNECTION_MQTT_PORT || 1883;
-		const externalMqttsPort = CEDALO_MC_BROKER_CONNECTION_MQTTS_PORT || 8883;
-		const externalMqttPort = internalMqttPort
-		const hostname = new URL(connection.url).hostname;
-		const externalHostname = this.toExternalHostnamesMap?.get(hostname) || null;
-		const allowUnencrypted = this.allowUnencryptedMap?.get(hostname) || null;
-		const allowEncrypted = this.allowEncryptedMap?.get(hostname) || null;
-		const allowWebsockets = this.allowWebsocketsMap?.get(hostname) || null;
+        for (let i = 0; i < allConnections.length; ++i) {
+            const connectionItem = allConnections[i];
+            if (connectionItem.id === connection.id) {
+                continue;
+            }
+            if (
+                connectionItem.credentials?.clientId &&
+                connection.credentials?.clientId &&
+                connectionItem.url === connection.url &&
+                connectionItem.credentials.clientId === connection.credentials.clientId
+            ) {
+                throw new Error(
+                    `Connection ${connection.name}(${connection.id}) has the same clientId and broker as ${connectionItem.name}(${connectionItem.id})`
+                );
+            }
+            // TODO: we can also validate uniqueness of connection's id and name
+        }
+    }
 
-		let externalWebsocketsUrl = null;
-		let externalEncryptedUrl = null;
-		let externalUnencryptedUrl = null;
+    processInternalExternalURLs(connection) {
+        if (
+            connection.internalUrl ||
+            connection.websocketsUrl ||
+            connection.externalEncryptedUrl ||
+            connection.externalUnencryptedUrl
+        ) {
+            return connection;
+        }
 
-		if (externalHostname) {
-			if (allowEncrypted) {
-				externalEncryptedUrl = 'mqtts://' + externalHostname + `:${externalMqttsPort}`; // modify externalURL
-			}
-			if (allowUnencrypted) {
-				externalUnencryptedUrl = 'mqtt://' + externalHostname + `:${externalMqttPort}`; // modify externalURL
-			}
-			if (allowWebsockets) {
-				externalWebsocketsUrl = 'wss://' + externalHostname + CEDALO_MC_BROKER_CONNECTION_WEBSOCKET_PATH || '/mqtt'; // TODO use URL object to safely concat to url
-			}
-		}
+        const internalMqttPort = CEDALO_MC_BROKER_CONNECTION_MQTT_PORT || 1883;
+        const externalMqttsPort = CEDALO_MC_BROKER_CONNECTION_MQTTS_PORT || 8883;
+        const externalMqttPort = internalMqttPort;
+        const hostname = new URL(connection.url).hostname;
+        const externalHostname = this.toExternalHostnamesMap?.get(hostname) || null;
+        const allowUnencrypted = this.allowUnencryptedMap?.get(hostname) || null;
+        const allowEncrypted = this.allowEncryptedMap?.get(hostname) || null;
+        const allowWebsockets = this.allowWebsocketsMap?.get(hostname) || null;
 
-		const resultingConnection = {
-			...connection,
-			url: connection.url,
-			internalUrl: ((externalEncryptedUrl || externalUnencryptedUrl)  && connection.url) || null, /*if extenal url fouund this means we are using internal url to connect*/
-			websocketsUrl: externalWebsocketsUrl || null,
-			// externalEncryptedUrl: externalEncryptedUrl || (connection.url.includes('mqtts://') && connection.url) || null, // if externalEncryptedURL not found this means that we are already using external url (in connection.url) to connect
-			externalEncryptedUrl: externalEncryptedUrl || null,
-			// externalUnencryptedUrl: externalUnencryptedUrl || (connection.url.includes('mqtt://') && connection.url) || null, // if externalUnencryptedURL not found this means that we are already using external url (in connection.url) to connect
-			externalUnencryptedUrl: externalUnencryptedUrl || null,
-		};
-		return resultingConnection;
-	}
+        let externalWebsocketsUrl = null;
+        let externalEncryptedUrl = null;
+        let externalUnencryptedUrl = null;
 
+        if (externalHostname) {
+            if (allowEncrypted) {
+                externalEncryptedUrl = 'mqtts://' + externalHostname + `:${externalMqttsPort}`; // modify externalURL
+            }
+            if (allowUnencrypted) {
+                externalUnencryptedUrl = 'mqtt://' + externalHostname + `:${externalMqttPort}`; // modify externalURL
+            }
+            if (allowWebsockets) {
+                externalWebsocketsUrl =
+                    'wss://' + externalHostname + CEDALO_MC_BROKER_CONNECTION_WEBSOCKET_PATH || '/mqtt'; // TODO use URL object to safely concat to url
+            }
+        }
 
-	preprocessConnection(connection, keepStatusProperty=false) {
-		const isConnectionAnObject = (connection !== null && typeof connection === 'object');
-		if (!isConnectionAnObject) {
-			throw new Error('Connection is of invalid type/empty/not provided');
-		}
-		connection = removeCircular(connection);
+        const resultingConnection = {
+            ...connection,
+            url: connection.url,
+            internalUrl:
+                ((externalEncryptedUrl || externalUnencryptedUrl) && connection.url) ||
+                null /*if extenal url fouund this means we are using internal url to connect*/,
+            websocketsUrl: externalWebsocketsUrl || null,
+            // externalEncryptedUrl: externalEncryptedUrl || (connection.url.includes('mqtts://') && connection.url) || null, // if externalEncryptedURL not found this means that we are already using external url (in connection.url) to connect
+            externalEncryptedUrl: externalEncryptedUrl || null,
+            // externalUnencryptedUrl: externalUnencryptedUrl || (connection.url.includes('mqtt://') && connection.url) || null, // if externalUnencryptedURL not found this means that we are already using external url (in connection.url) to connect
+            externalUnencryptedUrl: externalUnencryptedUrl || null,
+        };
+        return resultingConnection;
+    }
 
-		// keepStatusProperty is true during the first server connection to all the brokers. This is done to respect the previous status of the connection and act accordingly.
-		// otherwise, the status property would have been filtered out from the connection
-		// cases when we want to filter it out from the connection object include receiving connection object form the frontend in order to ensure integrity of our db data
-		if (keepStatusProperty && connection.status === undefined) { // in case connections status is not defined, which is common for old config files
-			connection.status  = {
-				"connected": false,
-				"timestamp": null
-			}
-		}
+    preprocessConnection(connection, keepStatusProperty = false) {
+        const isConnectionAnObject = connection !== null && typeof connection === 'object';
+        if (!isConnectionAnObject) {
+            throw new Error('Connection is of invalid type/empty/not provided');
+        }
+        connection = removeCircular(connection);
 
-		let newConnection = this.filterConnectionObject(connection);
-		if (newConnection.url && this.hostMappingString) {
-			newConnection = this.processInternalExternalURLs(newConnection);
-		}
+        // keepStatusProperty is true during the first server connection to all the brokers. This is done to respect the previous status of the connection and act accordingly.
+        // otherwise, the status property would have been filtered out from the connection
+        // cases when we want to filter it out from the connection object include receiving connection object form the frontend in order to ensure integrity of our db data
+        if (keepStatusProperty && connection.status === undefined) {
+            // in case connections status is not defined, which is common for old config files
+            connection.status = {
+                connected: false,
+                timestamp: null,
+            };
+        }
 
-		if (keepStatusProperty) {
-			newConnection.status = JSON.parse(JSON.stringify(connection.status)); // make a json deep copy here
-		}
+        let newConnection = this.filterConnectionObject(connection);
+        if (newConnection.url && this.hostMappingString) {
+            newConnection = this.processInternalExternalURLs(newConnection);
+        }
 
-		return newConnection;
-	}
+        if (keepStatusProperty) {
+            newConnection.status = JSON.parse(JSON.stringify(connection.status)); // make a json deep copy here
+        }
 
+        return newConnection;
+    }
 
-	async updateConnection(oldConnectionId, connection) {
-		const newConnection = this.preprocessConnection(connection);
+    async updateConnection(oldConnectionId, connection) {
+        const newConnection = this.preprocessConnection(connection);
 
-		const release = await mutex.acquire();
-		try {
-			const result = db.get('connections')
-				.find({ id: oldConnectionId })
-				.assign({...newConnection})
-				.write();
-			return result;
-		} finally {
-			release();
-		}
-	}
+        const release = await mutex.acquire();
+        try {
+            const result = db
+                .get('connections')
+                .find({ id: oldConnectionId })
+                .assign({ ...newConnection })
+                .write();
+            return result;
+        } finally {
+            release();
+        }
+    }
 
+    async saveConnection(connection, connectionId) {
+        const release = await mutex.acquire();
+        try {
+            const result = db
+                .get('connections')
+                .find({ id: connectionId ? connectionId : connection.id })
+                .assign({ ...connection })
+                .write();
+            return result;
+        } finally {
+            release();
+        }
+    }
 
-	async saveConnection(connection, connectionId) {
-		const release = await mutex.acquire();
-		try {
-			const result = db.get('connections')
-			.find({ id: connectionId ? connectionId : connection.id })
-			.assign({...connection})
-			.write();
-			return result;
-		} finally {
-			release();
-		}
-	}
+    async createConnection(connection) {
+        const newConnection = this.preprocessConnection(connection);
 
+        newConnection.status = {
+            connected: false,
+            timestamp: Date.now(),
+        };
 
-	async createConnection(connection) {
-		const newConnection = this.preprocessConnection(connection);
+        const release = await mutex.acquire();
+        try {
+            db.get('connections').push(newConnection).write();
+        } finally {
+            release();
+        }
+    }
 
-		newConnection.status = {
-			connected: false,
-			timestamp: Date.now()
-		};
-
-		const release = await mutex.acquire();
-		try {
-			db.get('connections')
-				.push(newConnection)
-				.write();
-		} finally {
-			release();
-		}
-	}
-
-
-	async deleteConnection(id) {
-		const release = await mutex.acquire();
-		try {
-			db.get('connections')
-				.remove({ id })
-				.write();
-		} finally {
-			release();
-		}
-	}
+    async deleteConnection(id) {
+        const release = await mutex.acquire();
+        try {
+            db.get('connections').remove({ id }).write();
+        } finally {
+            release();
+        }
+    }
 };

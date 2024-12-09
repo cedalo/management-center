@@ -43,167 +43,165 @@ import { useHistory } from 'react-router-dom';
 import { saveAs } from 'file-saver';
 
 const StyledTableRow = withStyles((theme) => ({
-	root: {
-		'&:nth-of-type(odd)': {
-			backgroundColor: theme.palette.tables?.odd
-		}
-	}
+    root: {
+        '&:nth-of-type(odd)': {
+            backgroundColor: theme.palette.tables?.odd,
+        },
+    },
 }))(TableRow);
 
 const useStyles = makeStyles((theme) => ({
-	tableContainer: {
-		minHeight: '500px',
-		'& td:nth-child(2)': {
-			minWidth: '100px'
-		}
-	},
-	badges: {
-		'& > *': {
-			margin: theme.spacing(0.3)
-		}
-	},
-	// fab: {
-	// 	position: 'absolute',
-	// 	bottom: theme.spacing(2),
-	// 	right: theme.spacing(2)
-	// },
-	breadcrumbItem: theme.palette.breadcrumbItem,
-	breadcrumbLink: theme.palette.breadcrumbLink
+    tableContainer: {
+        minHeight: '500px',
+        '& td:nth-child(2)': {
+            minWidth: '100px',
+        },
+    },
+    badges: {
+        '& > *': {
+            margin: theme.spacing(0.3),
+        },
+    },
+    // fab: {
+    // 	position: 'absolute',
+    // 	bottom: theme.spacing(2),
+    // 	right: theme.spacing(2)
+    // },
+    breadcrumbItem: theme.palette.breadcrumbItem,
+    breadcrumbLink: theme.palette.breadcrumbLink,
 }));
 
 const TABLE_COLUMNS = [
-	{ id: 'testCollectionId', key: 'Testcollection Id' },
-	{ id: 'name', key: 'Name' },
-	{ id: 'description', key: 'Description' },
-	{ id: 'testCount', key: 'Number of tests' },
+    { id: 'testCollectionId', key: 'Testcollection Id' },
+    { id: 'name', key: 'Name' },
+    { id: 'description', key: 'Description' },
+    { id: 'testCount', key: 'Number of tests' },
 ];
 
 const TestCollections = (props) => {
-	const classes = useStyles();
-	const context = useContext(WebSocketContext);
-	const dispatch = useDispatch();
-	const history = useHistory();
-	const confirm = useConfirm();
-	const { enqueueSnackbar } = useSnackbar();
-	const { client: brokerClient } = context;
+    const classes = useStyles();
+    const context = useContext(WebSocketContext);
+    const dispatch = useDispatch();
+    const history = useHistory();
+    const confirm = useConfirm();
+    const { enqueueSnackbar } = useSnackbar();
+    const { client: brokerClient } = context;
 
-	const onSelectTestCollection = async (id) => {
-		const testCollection = await brokerClient.getTestCollection(id);
-		dispatch(updateTestCollection(testCollection));
-		history.push(`/testcollections/detail/${id}`);
-	};
+    const onSelectTestCollection = async (id) => {
+        const testCollection = await brokerClient.getTestCollection(id);
+        dispatch(updateTestCollection(testCollection));
+        history.push(`/testcollections/detail/${id}`);
+    };
 
-	const onDeleteTest = async (username) => {
-	};
+    const onDeleteTest = async (username) => {};
 
+    const onRunTestCollection = async (id) => {
+        try {
+            const response = await brokerClient.runTestCollection(id);
+            console.log(response);
+            enqueueSnackbar(`Test collection successfully executed.`, {
+                variant: 'success',
+            });
+        } catch (error) {
+            enqueueSnackbar(`Error executing test collection. Reason: ${error.message || error}`, {
+                variant: 'error',
+            });
+            throw error;
+        }
+    };
 
-	const onRunTestCollection = async (id) => {
-		try {
-			const response = await brokerClient.runTestCollection(id);
-			console.log(response);
-			enqueueSnackbar(`Test collection successfully executed.`, {
-				variant: 'success'
-			});
-		} catch(error) {
-			enqueueSnackbar(`Error executing test collection. Reason: ${error.message || error}`, {
-				variant: 'error'
-			});
-			throw error;
-		}
-	};
+    const onExportTestCollection = async (testCollection) => {
+        const id = testCollection?.info?.id;
+        const name = testCollection?.info?.name;
+        try {
+            const response = await brokerClient.exportTestCollection(id);
+            const blob = new Blob([JSON.stringify(response, null, 2)], {
+                type: 'application/json;charset=utf8;',
+            });
+            saveAs(blob, `${name}.json`);
+        } catch (error) {
+            enqueueSnackbar(`Error exporting test collection. Reason: ${error.message || error}`, {
+                variant: 'error',
+            });
+            throw error;
+        }
+    };
 
-	const onExportTestCollection = async (testCollection) => {
-		const id = testCollection?.info?.id;
-		const name = testCollection?.info?.name;
-		try {
-			const response = await brokerClient.exportTestCollection(id);
-			const blob = new Blob([JSON.stringify(response, null, 2)], {
-				type: 'application/json;charset=utf8;'
-			});
-			saveAs(blob, `${name}.json`);
-		} catch(error) {
-			enqueueSnackbar(`Error exporting test collection. Reason: ${error.message || error}`, {
-				variant: 'error'
-			});
-			throw error;
-		}
-	};
+    const { dynamicsecurityFeature, connectionID, testCollections = [], onSort, sortBy, sortDirection } = props;
 
-	const { dynamicsecurityFeature, connectionID, testCollections = [], onSort, sortBy, sortDirection } = props;
+    return (
+        <div>
+            <Breadcrumbs aria-label="breadcrumb">
+                <RouterLink className={classes.breadcrumbLink} to="/home">
+                    Home
+                </RouterLink>
+                <Typography className={classes.breadcrumbItem} color="textPrimary">
+                    Test Collections
+                </Typography>
+            </Breadcrumbs>
+            <br />
 
-	return (
-		<div>
-			<Breadcrumbs aria-label="breadcrumb">
-				<RouterLink className={classes.breadcrumbLink} to="/home">
-					Home
-				</RouterLink>
-				<Typography className={classes.breadcrumbItem} color="textPrimary">
-					Test Collections
-				</Typography>
-			</Breadcrumbs>
-			<br/>
-
-			{testCollections && testCollections.length > 0 ? (
-				<div>
-					<Hidden xsDown implementation="css">
-						<TableContainer component={Paper} className={classes.tableContainer}>
-							<Table size="medium">
-								<TableHead>
-									<TableRow>
-										{TABLE_COLUMNS.map((column) => (
-											<TableCell
-												key={column.id}
-												sortDirection={sortBy === column.id ? sortDirection : false}
-											>
-												{/* <TableSortLabel
+            {testCollections && testCollections.length > 0 ? (
+                <div>
+                    <Hidden xsDown implementation="css">
+                        <TableContainer component={Paper} className={classes.tableContainer}>
+                            <Table size="medium">
+                                <TableHead>
+                                    <TableRow>
+                                        {TABLE_COLUMNS.map((column) => (
+                                            <TableCell
+                                                key={column.id}
+                                                sortDirection={sortBy === column.id ? sortDirection : false}
+                                            >
+                                                {/* <TableSortLabel
                       active={sortBy === column.id}
                       direction={sortDirection}
                       onClick={() => onSort(column.id)}
                     > */}
-												{column.key}
-												{/* </TableSortLabel> */}
-											</TableCell>
-										))}
-										<TableCell />
-									</TableRow>
-								</TableHead>
-								<TableBody>
-									{testCollections &&
-										testCollections.map((test) => (
-											<StyledTableRow
-												hover
-												key={test?.info?.id}
-												onClick={(event) => onSelectTestCollection(test?.info?.id)}
-												style={{ cursor: 'pointer' }}
-											>
-												<TableCell>{test?.info?.id}</TableCell>
-												<TableCell>{test?.info?.name}</TableCell>
-												<TableCell>{test?.info?.description}</TableCell>
-												<TableCell>{test?.items?.length}</TableCell>
-												<TableCell align="right">
-													<Tooltip title="Run test collection">
-														<IconButton
-															size="small"
-															onClick={(event) => {
-																event.stopPropagation();
-																onRunTestCollection(test?.info?.id);
-															}}
-														>
-															<RunTestIcon fontSize="small" />
-														</IconButton>
-													</Tooltip>
-													<Tooltip title="Export test collection">
-														<IconButton
-															size="small"
-															onClick={(event) => {
-																event.stopPropagation();
-																onExportTestCollection(test);
-															}}
-														>
-															<ExportTestCollectionIcon fontSize="small" />
-														</IconButton>
-													</Tooltip>
-													{/* <Tooltip title="Delete test collection">
+                                                {column.key}
+                                                {/* </TableSortLabel> */}
+                                            </TableCell>
+                                        ))}
+                                        <TableCell />
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {testCollections &&
+                                        testCollections.map((test) => (
+                                            <StyledTableRow
+                                                hover
+                                                key={test?.info?.id}
+                                                onClick={(event) => onSelectTestCollection(test?.info?.id)}
+                                                style={{ cursor: 'pointer' }}
+                                            >
+                                                <TableCell>{test?.info?.id}</TableCell>
+                                                <TableCell>{test?.info?.name}</TableCell>
+                                                <TableCell>{test?.info?.description}</TableCell>
+                                                <TableCell>{test?.items?.length}</TableCell>
+                                                <TableCell align="right">
+                                                    <Tooltip title="Run test collection">
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={(event) => {
+                                                                event.stopPropagation();
+                                                                onRunTestCollection(test?.info?.id);
+                                                            }}
+                                                        >
+                                                            <RunTestIcon fontSize="small" />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                    <Tooltip title="Export test collection">
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={(event) => {
+                                                                event.stopPropagation();
+                                                                onExportTestCollection(test);
+                                                            }}
+                                                        >
+                                                            <ExportTestCollectionIcon fontSize="small" />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                    {/* <Tooltip title="Delete test collection">
 														<IconButton
 															size="small"
 															onClick={(event) => {
@@ -214,82 +212,82 @@ const TestCollections = (props) => {
 															<DeleteIcon fontSize="small" />
 														</IconButton>
 													</Tooltip> */}
-												</TableCell>
-											</StyledTableRow>
-										))}
-								</TableBody>
-							</Table>
-						</TableContainer>
-					</Hidden>
-					<Hidden smUp implementation="css">
-						<Paper>
-							<List className={classes.root}>
-								{testCollections.map((test) => (
-									<React.Fragment>
-										<ListItem
-											alignItems="flex-start"
-											onClick={(event) => onSelectTestCollection(test?.info?.id)}
-										>
-											<ListItemText
-												primary={<span>{test?.info?.id}</span>}
-												secondary={
-													<React.Fragment>
-														<Typography
-															component="span"
-															variant="body2"
-															className={classes.inline}
-															color="textPrimary"
-														>
-															{test?.info?.name}
-														</Typography>
-														<span></span>
-													</React.Fragment>
-												}
-											/>
-											<ListItemSecondaryAction>
-												<IconButton
-													edge="end"
-													size="small"
-													onClick={(event) => {
-														event.stopPropagation();
-														onSelectTestCollection(test?.info?.id);
-													}}
-													aria-label="edit"
-												>
-													<EditIcon fontSize="small" />
-												</IconButton>
+                                                </TableCell>
+                                            </StyledTableRow>
+                                        ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Hidden>
+                    <Hidden smUp implementation="css">
+                        <Paper>
+                            <List className={classes.root}>
+                                {testCollections.map((test) => (
+                                    <React.Fragment>
+                                        <ListItem
+                                            alignItems="flex-start"
+                                            onClick={(event) => onSelectTestCollection(test?.info?.id)}
+                                        >
+                                            <ListItemText
+                                                primary={<span>{test?.info?.id}</span>}
+                                                secondary={
+                                                    <React.Fragment>
+                                                        <Typography
+                                                            component="span"
+                                                            variant="body2"
+                                                            className={classes.inline}
+                                                            color="textPrimary"
+                                                        >
+                                                            {test?.info?.name}
+                                                        </Typography>
+                                                        <span></span>
+                                                    </React.Fragment>
+                                                }
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <IconButton
+                                                    edge="end"
+                                                    size="small"
+                                                    onClick={(event) => {
+                                                        event.stopPropagation();
+                                                        onSelectTestCollection(test?.info?.id);
+                                                    }}
+                                                    aria-label="edit"
+                                                >
+                                                    <EditIcon fontSize="small" />
+                                                </IconButton>
 
-												<IconButton
-													edge="end"
-													size="small"
-													onClick={(event) => {
-														event.stopPropagation();
-														onDeleteTest(test?.info?.id);
-													}}
-													aria-label="delete"
-												>
-													<DeleteIcon fontSize="small" />
-												</IconButton>
-											</ListItemSecondaryAction>
-										</ListItem>
-										<Divider />
-									</React.Fragment>
-								))}
-							</List>
-						</Paper>
-					</Hidden>
-				</div>
-			) : (
-				<div>No test collections found</div>
-			)}
-		</div>
-	);
+                                                <IconButton
+                                                    edge="end"
+                                                    size="small"
+                                                    onClick={(event) => {
+                                                        event.stopPropagation();
+                                                        onDeleteTest(test?.info?.id);
+                                                    }}
+                                                    aria-label="delete"
+                                                >
+                                                    <DeleteIcon fontSize="small" />
+                                                </IconButton>
+                                            </ListItemSecondaryAction>
+                                        </ListItem>
+                                        <Divider />
+                                    </React.Fragment>
+                                ))}
+                            </List>
+                        </Paper>
+                    </Hidden>
+                </div>
+            ) : (
+                <div>No test collections found</div>
+            )}
+        </div>
+    );
 };
 
 const mapStateToProps = (state) => {
-	return {
-		testCollections: state.tests.testCollections
-	};
+    return {
+        testCollections: state.tests.testCollections,
+    };
 };
 
 export default connect(mapStateToProps)(TestCollections);

@@ -7,41 +7,41 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
-	toolbarButton: {
-		marginTop: '2px',
-		color: theme.palette.type === 'dark' ? 'white' : 'rgba(117, 117, 117)',
+    toolbarButton: {
+        marginTop: '2px',
+        color: theme.palette.type === 'dark' ? 'white' : 'rgba(117, 117, 117)',
 
-		// marginBottom: theme.spacing(0.2)
-	}
+        // marginBottom: theme.spacing(0.2)
+    },
 }));
 
 const InfoButton = () => {
-	const classes = useStyles();
-	const history = useHistory();
+    const classes = useStyles();
+    const history = useHistory();
 
-	const onClickInfo = () => {
-		history.push('/info');
-	};
+    const onClickInfo = () => {
+        history.push('/info');
+    };
 
-	return (
-		<Tooltip title="Show info">
-			<IconButton
-				edge="end"
-				aria-label="Theme Mode"
-				aria-controls="theme-mode"
-				aria-haspopup="true"
-				onClick={onClickInfo}
-				color="inherit"
-				className={classes.toolbarButton}
-			>
-				<InfoIcon fontSize="small" />
-			</IconButton>
-		</Tooltip>
-	);
+    return (
+        <Tooltip title="Show info">
+            <IconButton
+                edge="end"
+                aria-label="Theme Mode"
+                aria-controls="theme-mode"
+                aria-haspopup="true"
+                onClick={onClickInfo}
+                color="inherit"
+                className={classes.toolbarButton}
+            >
+                <InfoIcon fontSize="small" />
+            </IconButton>
+        </Tooltip>
+    );
 };
 
 InfoButton.propTypes = {
-	className: PropTypes.string
+    className: PropTypes.string,
 };
 
 export default InfoButton;

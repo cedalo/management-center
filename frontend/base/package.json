@@ -4,15 +4,14 @@
     "version": "1.0.0",
     "main": "main.js",
     "scripts": {
-      "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "repository": {
-    },
+    "repository": {},
     "keywords": [],
     "author": "",
     "license": "ISC",
     "dependencies": {
         "axios": "^0.27.2",
-        "uuid":  "^8.3.0"
+        "uuid": "^8.3.0"
     }
-  }
+}
