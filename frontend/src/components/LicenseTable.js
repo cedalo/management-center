@@ -129,7 +129,7 @@ const LicenseTable = (props) => {
 								<TableCell>
 									<b>Multiple Connections</b>
 								</TableCell>
-								<TableCell>{createFeatureIcon('multiple-broker-connections', license)}</TableCell>
+								<TableCell>{createFeatureIcon('multiple-connections', license)}</TableCell>
 							</TableRow> */}
                         </TableBody>
                     </Table>
